@@ -17,9 +17,10 @@ def fetch(all: bool = typer.Option(False, "--all", help="Pull every Stage 0 prob
 
     ok, failed = fetch_all()
     for rec in ok:
-        typer.echo(f"OK    {rec['source_id']}  sha256={rec['sha256'][:12]}  {rec['size']} bytes")
+        typer.echo(f"OK    {rec['source_id']}/{rec.get('part', '')}  "
+                   f"sha256={rec['sha256'][:12]}  {rec['size']} bytes")
     for rec in failed:
-        typer.echo(f"FAIL  {rec['source_id']}  {rec['error']}: {rec['detail']}")
+        typer.echo(f"FAIL  {rec['source_id']}/{rec.get('part', '')}  {rec['error']}: {rec['detail']}")
     if failed:
         blocked = [r for r in failed if r["error"] == "FetchBlocked"]
         if blocked:
@@ -47,10 +48,15 @@ def validate():
 
 @app.command()
 def coverage():
-    """Write the coverage matrix (v0 shape until the harvest lands)."""
-    from ggfiscal.coverage import build_v0
+    """Measure first/last usable year per (country, line, source) from the
+    harvested snapshots into coverage_matrix_v0.csv (pre-harvest: empty frame)."""
+    from ggfiscal.coverage import gate0_line_coverage, measure
 
-    typer.echo(f"wrote {build_v0()}")
+    dest = measure()
+    covered, uncovered = gate0_line_coverage()
+    typer.echo(f"wrote {dest}  ({covered}/66 lines covered)")
+    for iso3, classification, line in uncovered:
+        typer.echo(f"  NO_COVERAGE {iso3}/{classification}/{line}")
 
 
 @app.command()
@@ -80,8 +86,22 @@ def build():
 
 @app.command()
 def reconcile():
-    """§8 reconciliation module (Stage 5; base bridge from Stage 0 harvest)."""
-    _not_yet(5)
+    """§8 reconciliation. Stage 0 scope: the §8.2 base-year bridge for every
+    harvested WEO vintage plus the anchor-vs-IMF / anchor-vs-OECD-RS diagnostics.
+    The §8.3-8.5 dynamics decomposition arrives with Stage 5."""
+    from ggfiscal.reconcile import bridge, recon_v0
+
+    dest, summaries = bridge.compute()
+    typer.echo(f"wrote {dest}")
+    for s in summaries:
+        typer.echo(f"  {s['iso3']} WEO {s['weo_vintage']}: base={s['base_year']} "
+                   f"overlap={s['n_overlap']}"
+                   + (f" mean_gap_nlb={s['mean_gap_nlb_pct_te']}%TE"
+                      f" sigma={s['sigma_gap_nlb_pct_te']}"
+                      f" unexplained={s['n_unexplained']}"
+                      if s.get("base_year") else ""))
+    for p in recon_v0.compute():
+        typer.echo(f"wrote {p}")
 
 
 @app.command()

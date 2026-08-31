@@ -1,0 +1,13 @@
+iso3,line_code,comparator,anchor_series,comparator_series,overlap_first,overlap_last,n_overlap,mean_abs_diff_pct,max_abs_diff_pct,note
+GBR,R01,OECD_RS,ONS_GG_RECEIPTS,T_5111,1990,2024,35,0.3,2.334,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+GBR,R03,OECD_RS,ONS_GG_RECEIPTS,T_1100,1990,2024,35,2.461,7.67,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+GBR,R04,OECD_RS,ONS_GG_RECEIPTS,T_1200,1990,2024,35,1.896,4.914,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+GBR,R06,OECD_RS,ONS_GG_RECEIPTS,T_2000,1990,2024,35,19.652,24.926,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+FRA,R01,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_5111,1995,2024,30,0.41,0.715,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+FRA,R03,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_1100,1995,2024,30,1.852,4.787,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+FRA,R04,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_1200,1995,2024,30,14.196,27.882,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+FRA,R06,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_2000,1995,2024,30,10.858,12.808,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+DEU,R01,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_5111,1995,2024,30,0.216,0.986,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+DEU,R03,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_1100,1995,2024,30,5.293,10.269,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+DEU,R04,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_1200,1995,2024,30,29.515,62.004,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+DEU,R06,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_2000,1995,2024,30,18.663,23.574,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"

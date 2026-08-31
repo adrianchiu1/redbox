@@ -70,3 +70,81 @@ extended with the verification fields §6.4 requires (release date, vintage,
 retrieval date, URL, snapshot hash, supersedes, scenario_label, concept_note,
 plus `verification` status). `source_register.csv` is generated from it at
 build time, never hand-edited.
+
+## D-S0-006 — Live endpoint resolution and filtered pulls (serves §12 Stage 0, §13; supersedes the "confirm live" placeholders in D-S0-003)
+2026-08-31, second session (network-enabled). Every machine-readable endpoint
+was resolved against the live catalogs and harvested as D8 snapshots
+(`ggfiscal fetch --all`, 0 failures). Resolutions:
+  - **IMF GFS**: COFOG dataflow `IMF.STA:GFS_COFOG(11.0.0)`; main-aggregates
+    companion `IMF.STA:GFS_SOO(12.0.0)` (GFSM Statement of Operations).
+    GFS XDC observations arrive in raw LCU units; readers scale to millions.
+  - **OECD Table 11**: `OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1` (13-dim
+    DSD_NASEC10), filtered to S13 per country.
+  - **OECD Revenue Statistics**: `OECD.CTP.TPS,DSD_REV_COMP_OECD@DF_RSOECD,2.0`
+    — NOT the §13-era candidate `DF_RSGLOBAL`: only the members flow carries
+    S13 XDC from 1965 as D15 requires (global flow starts 1990; both checked
+    live). UNIT_MULT 9 (billions); readers scale to millions.
+  - **ONS_GG_RECEIPTS** resolved to **ESA Table 2**
+    (`esatable2mainaggregatesofgeneralgovernment`, June 2026 EDP transmission):
+    OTR/OTE/B9 plus receipts by ESA code 1990–2025, including direct
+    D51M/D51O household–corporate splits. **ONS_TAX_DETAIL** (new):
+    `esaquestionnairedetailedtaxandsocialcontributions` (NTL table 9),
+    per-tax ESA-coded detail 1995–2025 — the R03/R04/R06 mapping evidence.
+    **ONS_TAX_LIST** (new): `esatable9listoftaxes`, flagged stale (2023-10),
+    mapping evidence only. **ONS_PSF_INTEREST** resolved into the same ESA
+    Table 2 file (GG D.41 payable/receivable, accrued, 1990–2025); kept as a
+    distinct register entry because its D10 role differs.
+  - **ONS_GDP** (new): timeseries YBHA (QNA), nominal GDP £m CY 1948–2025;
+    needed because ESA Table 2 has no GDP row. `countries.yaml` GBR
+    `gdp_source` updated accordingly.
+  - **AMECO**: chapter zips at
+    `ec.europa.eu/economy_finance/db_indicators/ameco/documents/ameco{n}.zip`;
+    chapters 6 (GDP) and 16–18 (GG accounts, EDP, debt) snapshotted, Spring
+    2026 vintage. Finding: **no UK TR/TE level history** (2026–27 only;
+    UBLG/UYIG from 1987) — AMECO cannot serve as a UK envelope, reinforcing
+    the Q12 OBR-primary default.
+  - **Pull granularity**: Eurostat pulls are country-filtered (the SDMX 3.0
+    key parser accepts single values only) and unit-filtered to MIO_NAC; the
+    full-table pull attempted first proved impractical (>1 GB stream). The
+    filter is part of the recorded snapshot URL, so each snapshot remains a
+    complete, reproducible extraction definition. This narrows D-S0-003's
+    "full-dataset pull" note; provenance guarantees are unchanged.
+
+## D-S0-007 — WEO vintages: the API exposes 3; Q11 satisfied by taking all of them (serves §15 Q11, §8.5)
+2026-08-31. Enumerating `api.imf.org` live: WEO editions are exposed partly as
+dataflow versions and partly as named vintage flows. Exactly three are
+available today: **2026-04 = WEO/9.0.0** (publication date 2026-04-14, per the
+API's own attributes; the first session's search-derived 2026-04-08 is
+superseded), **2025-10 = WEO_2025_OCT_VINTAGE/1.0.0** (2025-10-14), and
+**2025-04 = WEO/6.0.0** (2025-04-22). Q11's rule for this case ("if the API
+exposes fewer than 5, take what it has and note the earliest") applies: all 3
+retained, earliest 2025-04, one source_id per vintage. Consequence for §8.5:
+old editions can disappear from the API, so `detect-vintages` must snapshot
+each new edition promptly. WEO pulls are one per (country, subject): the API
+only serves the series-level attributes that pin the §8.1 base year
+(LATEST_ACTUAL_ANNUAL_DATA) on single-series queries.
+
+## D-S0-008 — interest_anchor stays `level2` for all three countries (serves D10, §12 Stage 0)
+2026-08-31. Stage 0 was to set `interest_anchor` from measured Level II
+coverage. Measured: GF0107 available from the anchor's own COFOG table for
+every year of every country's expenditure history (GBR 1995–2024 ONS T11;
+FRA/DEU 1995–2024 Eurostat). The `level2` default in `countries.yaml` is
+therefore confirmed, not changed. The D.41-payable fallback series
+(ONS ESA T2 / gov_10a_main D41PAY, both from 1990/1995, AMECO UYIG from
+1978/1987/1991) are measured and registered for years outside Level II
+coverage in Stage 2.
+
+## D-S0-009 — §8.2 bridge computed for all three vintages; classification heuristic at Stage 0 (serves §8.2, D16)
+2026-08-31. `ggfiscal reconcile` writes `data/canonical/weo_base_bridge.csv`
+for every (country, harvested WEO vintage) — 9 pairs, not just the latest,
+since §8.5 keys everything by vintage anyway. Base year per §8.1 =
+min(WEO LATEST_ACTUAL_ANNUAL_DATA across GGR/GGX/GGXCNL/NGDP, last anchor
+year). Latest vintage (2026-04): GBR b=2025, FRA b=2024, DEU b=2025.
+Gap classification at Stage 0 is a documented heuristic (FRA/DEU: 'revision'
+within the 1%-of-TE tolerance, else 'unexplained'; GBR: 'perimeter' where the
+NLB gap ratio is within tolerance of the country mean, else 'unexplained') —
+V24 formalises this at Stage 5. Results match §14's priors: GBR TR/TE gaps
+≈ 6% of TE but NLB gap mean −0.10% of TE with σ 0.36 (stable perimeter);
+FRA/DEU gaps ≈ 0 (revisions only); GBR 1995–96 flagged unexplained (early-year
+WEO history divergence, to revisit in Stage 5). Nothing was scaled or
+adjusted (D13).

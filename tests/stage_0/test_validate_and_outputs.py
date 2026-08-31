@@ -27,16 +27,31 @@ def test_exceptions_csv_written(tmp_path):
     assert len(rows) == len(findings)
 
 
-def test_coverage_v0_has_66_rows(tmp_path):
+def test_coverage_v0_prehravest_frame_has_66_rows(tmp_path):
     dest = coverage.build_v0(path=tmp_path / "coverage_matrix_v0.csv")
     rows = list(csv.DictReader(open(dest)))
     assert len(rows) == 66
-    # candidate sources known for every line even pre-harvest
-    for row in rows:
-        assert row["candidate_sources"], f"{row['iso3']}/{row['line_code']} has no candidate source"
+    assert all(r["status"] == "awaiting_harvest" for r in rows)
     # D7 notes present where declared
     gf03 = [r for r in rows if r["line_code"] == "GF03"]
     assert all("D7" in r["notes"] for r in gf03)
+
+
+def test_coverage_measured_covers_all_66_lines(tmp_path):
+    # Gate 0: measured from the harvested snapshot store (skips if empty)
+    from ggfiscal.standardise.readers import latest_snapshots
+
+    if not latest_snapshots():
+        import pytest
+        pytest.skip("no snapshots harvested in this environment")
+    dest = coverage.measure(path=tmp_path / "coverage_matrix_v0.csv")
+    rows = list(csv.DictReader(open(dest)))
+    assert all(r["status"] == "measured" for r in rows)
+    measured_lines = {(r["iso3"], r["classification"], r["line_code"]) for r in rows}
+    assert len(measured_lines) == 66
+    for r in rows:
+        assert int(r["first_usable_year"]) <= int(r["last_usable_year"])
+        assert int(r["n_years"]) > 0
 
 
 def test_source_register_csv(tmp_path):

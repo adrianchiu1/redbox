@@ -92,12 +92,56 @@ def check_s0_manifest_hashes() -> list[Finding]:
     return out
 
 
+def check_s0_coverage() -> list[Finding]:
+    """Gate 0: all 66 lines must have programmatically measured coverage."""
+    from ggfiscal.coverage import gate0_line_coverage
+    from ggfiscal.standardise.readers import latest_snapshots
+
+    if not latest_snapshots():
+        return [Finding("S0_COVERAGE", "WARN", "-",
+                        "no snapshots — coverage not measurable yet")]
+    covered, uncovered = gate0_line_coverage()
+    if uncovered:
+        return [Finding("S0_COVERAGE", "ERROR", f"{i}/{c}/{l}",
+                        "line has no measurable source in the harvest (Gate 0)")
+                for i, c, l in uncovered]
+    return [Finding("S0_COVERAGE", "OK", "-",
+                    f"{covered}/66 lines have measured coverage from >=1 source")]
+
+
+def check_s0_bridge() -> list[Finding]:
+    """Gate 0: §8.2 bridge computed for all three countries, latest WEO vintage."""
+    import csv as _csv
+
+    from ggfiscal.ingest.endpoints import WEO_VINTAGES
+
+    latest = next(iter(WEO_VINTAGES))
+    path = config.repo_root() / "data" / "canonical" / "weo_base_bridge.csv"
+    if not path.exists():
+        return [Finding("S0_BRIDGE", "WARN", "-",
+                        "weo_base_bridge.csv not yet computed (run: ggfiscal reconcile)")]
+    with open(path, encoding="utf-8") as f:
+        rows = [r for r in _csv.DictReader(f) if r["weo_vintage"] == latest]
+    out = []
+    for iso3 in config.COUNTRIES:
+        base = [r for r in rows if r["iso3"] == iso3 and r["is_base_year"] == "True"]
+        if not base:
+            out.append(Finding("S0_BRIDGE", "ERROR", f"{iso3}/{latest}",
+                               "no base-year row in the §8.2 bridge (Gate 0)"))
+    if not out:
+        out.append(Finding("S0_BRIDGE", "OK", "-",
+                           f"§8.2 bridge computed for all 3 countries on WEO {latest}"))
+    return out
+
+
 def run_all() -> list[Finding]:
     stage = current_stage()
     findings: list[Finding] = []
     findings += check_s0_line_universe()
     findings += check_s0_register()
     findings += check_s0_manifest_hashes()
+    findings += check_s0_coverage()
+    findings += check_s0_bridge()
     for vid, first_stage in sorted(V_SUITE_STAGE.items(), key=lambda kv: int(kv[0][1:])):
         if stage < first_stage:
             findings.append(Finding(vid, "SKIP", "-",
