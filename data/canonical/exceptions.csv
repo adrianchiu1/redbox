@@ -426,7 +426,7 @@ V21,WARN,DEU/2023,Level II 01.7 vs D.41 payable diff 8.45% > 5.0%
 V21,WARN,DEU/2024,Level II 01.7 vs D.41 payable diff 7.00% > 5.0%
 V22,OK,-,R01+...+R10 = TR within tolerance in all complete years
 V23,OK,-,TR − TE equals anchor B.9 within tolerance
-V24,SKIP,-,not runnable before stage 5 (current stage 4)
+V24,OK,-,FRA/DEU level gaps within 1.0% of TE in all overlap years; GBR NLB-gap sigma below 0.5%
 V25,WARN,GBR/R03/1991,OECD RS diff -6.7448% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,GBR/R03/1992,OECD RS diff -7.6697% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,GBR/R03/1993,OECD RS diff -6.0359% beyond 3.0% (concept wedge carried by the crosswalk)
@@ -633,6 +633,6 @@ V25,WARN,DEU/R06/2021,OECD RS diff -15.4895% beyond 3.0% (concept wedge carried 
 V25,WARN,DEU/R06/2022,OECD RS diff -15.0135% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R06/2023,OECD RS diff -14.9832% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R06/2024,OECD RS diff -14.9687% beyond 3.0% (concept wedge carried by the crosswalk)
-V26,OK,-,history contributions sum to Δ(NLB/GDP) exactly
-V27,SKIP,-,not runnable before stage 5 (current stage 4)
-V28,SKIP,-,not runnable before stage 5 (current stage 4)
+V26,OK,-,history contributions sum to Δ(NLB/GDP) exactly; forecast components sum to the WEO change exactly
+V27,OK,-,"net-interest cross-check present for all 112 (country, variant, vintage, horizon) cells; non-computable cells carry their reason (R07 declared, OQ-6)"
+V28,OK,-,all reconciliation tables keyed by weo_vintage; forecast tables carry source_vintage_set_hash

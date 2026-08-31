@@ -435,3 +435,66 @@ horizon (the A/B sources) or the last actual (declared lines). Variant
 divergence is now two-sided: maximum is deeper in history (Stage 2 C-grade
 backward stitches) and longer in the forecast (Stage 4 C/D applications);
 strict remains a proper subset row-by-row (Gate 4 leakage tests + V9/V17).
+
+## D-S5-001 — §8.3 forecast decomposition: exact-additive construction and the GDP-path choices (serves §8.3, D16, V26)
+2026-08-31, session 3 (continued). `src/ggfiscal/reconcile/explanation.py`
+decomposes each WEO balance change ΔB = Δ(GGXCNL/NGDP) from base year b
+(per country, variant, vintage, horizon) into: covered-line contributions on
+the WEO NGDP path (signed), a per-side denominator effect (the same
+contributions on each line's own source-GDP path minus the NGDP version —
+§6.3's per-line forecast GDP is taken from the rows' gdp_lcu_mn), per-side
+resid_coverage (official total minus covered lines, both on national paths)
+and resid_disagreement (WEO minus official total, each on its own path) —
+collapsing to a labelled resid_total where no independent total exists —
+plus a weo_internal_wedge (GGXCNL vs GGR−GGX rounding inside WEO, ~1e-8).
+The construction telescopes, so V26's forecast-side additivity is exact by
+identity and verified numerically to 1e-9. §8.3's single-GDP-path rule is
+read per table: the forecast tables live entirely at t ≥ b and use NGDP_w
+unscaled (comparing shares of WEO GDP with WEO's own path); the history
+table (deficit_dynamics) lives at t ≤ b on anchor GDP (D-S1-004) — the two
+legs of the chained-at-b path. The §8.3 plausibility memo (implied
+annualised growth of the uncovered lines under the official total, with the
+same lines' 5-year historical growth alongside) rides as memo rows, marked
+% per year, never entering the additivity. Nothing is scaled or allocated
+(§8.6): residual rows carry no line_code, tested.
+
+## D-S5-002 — Independent totals, the Q12 deviation made concrete, and the V24 sigma threshold (serves §8.1, §15 Q12/Q4)
+2026-08-31. Independent official totals: AMECO URTG/UUTG with the AMECO
+UVGD GDP path, all three countries. GBR consequence (OQ-4 + OQ-6): AMECO
+has no UK level at any base year, so both GBR sides carry resid_total at
+every horizon — the OBR-primary Q12 default remains impossible while obr.uk
+is blocked; the rows say so. FRA/DEU get the full coverage/disagreement
+split through the AMECO horizon (2027) and resid_total beyond. V24
+formalised from D-S0-009's heuristic: FRA/DEU TR/TE/NLB gaps within 1% of
+TE in all overlap years; GBR NLB-gap sigma threshold set at 0.5% of TE
+(`gbr_perimeter_sigma_pct_te`, Q4 space — measured 0.36–0.42 across
+vintages, so green with headroom). All green on the current harvest.
+
+## D-S5-003 — §8.4 net-interest check reported even where not computable; §8.5 keys (serves §8.4-8.5, V27, V28)
+2026-08-31. `net_interest_check.csv` carries a row for every (country,
+variant, vintage, horizon): NI_weo = GGXONLB − GGXCNL always; NI_ours only
+where both GF01_7 and R07 have values — which in forecast years is nowhere
+(R07 is declared no-source, OQ-6), so those rows state the reason instead of
+being silently absent (V27 enforces both presence and stated reasons). The
+one computable class: FRA at h=2025 under the b=2024 vintages (stitched
+GF01_7 + anchor R07), gap ≈ −0.5 to +2.1bn EUR — the V21-tier wedge, as
+expected. §8.5: every forecast-side table is keyed by (iso3, series_variant,
+weo_vintage, source_vintage_set_hash) where the hash digests the
+(source_id, release) set actually used by the variant's forecast rows;
+`weo_residual_history.csv` extracts the residual time series across the
+three harvested vintages (V28 checks the keys on every table).
+
+## D-S5-004 — Gate 5 record: what the granular forecasts explain (headline, WEO 2026-04)
+2026-08-31. explained_share = covered contributions / WEO change, strict
+(maximum in brackets): **GBR** ≈ 0.04–0.06 (same) through 2027, 0 beyond —
+only AMECO lines are covered while OBR is blocked; the WEO's projected
+3.8pp-of-GDP consolidation to 2031 is essentially unexplained by reachable
+granular forecasts. **DEU** ≈ −0.2–0.2 strict (0.38–0.56 maximum): the
+maximum variant's D.62+interest proxies explain roughly half of the WEO's
+deficit widening. **FRA** 1.13 at h=2025 (covered actuals slightly
+over-explain), then strict ≈ 0.13–0.16 in 2026-27; maximum −2.1 to −2.7:
+the covered official forecasts (interest and social benefits, both rising)
+move AGAINST the WEO's projected 1.0–2.9pp consolidation — the entire
+projected French improvement sits in the uncovered/disagreement residuals.
+That directional finding is the module's point (decompose, never force) and
+is now stated in reconciliation_report.html for the committee.

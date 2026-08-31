@@ -1,96 +1,89 @@
 # HANDOFF.md
 
-Rewritten 2026-08-31, end of session 3 (Stages 3 AND 4 completed this
+Rewritten 2026-08-31, end of session 3 (Stages 3, 4 AND 5 completed this
 session, sequentially, on `claude/repo-review-stage-3-xamnht`; Stages 0–2
 merged earlier via PR #1).
 
 ## Current stage
 
-**Stage 4 (maximum-extension forecasts) — COMPLETE. Gate 4 PASSED.**
-(Gate 3 passed earlier this session; see git history and D-S3-001..005.)
+**Stage 5 (reconciliation module) — COMPLETE. Gate 5 PASSED.**
+(Gates 3 and 4 passed earlier this session; see git history, D-S3-*, D-S4-*.)
 
-## Gate 4 status: PASSED
+## Gate 5 status: PASSED
 
-| Gate 4 requirement | Status |
+| Gate 5 requirement | Status |
 |---|---|
-| Variants distinguishable row-by-row | **Done.** Strict is a proper subset of maximum_extension (tested). Maximum adds: GF01 to 2027 (§7.9 mandated proxy, grade D, all three), GF10 to 2027 (GBR) / **2070** (FRA/DEU: AMECO D.62 proxy chained into the AR pensions+LTC composite per D12 — this join's overlap divergence is 0.010, under the V16 threshold, unlike the withheld interest join), FRA R05 to 2027 (C proxy). 315 maximum forecast rows vs 215 strict. |
-| No leakage | **Done.** No C/D grade, no `proxy_forecast`, no maximum-only row in strict (Gate 4 tests + V9 + V17's §7.8 check). |
-| Coverage matrix complete | **Done.** `data/canonical/coverage_matrix.csv` (§11.6 deliverable 9): 66 rows, spans per variant, stitch counts, grades, principal sources, residual_method, reason-series-ends — assembled from canonical + boundaries + declarations in the build. |
+| Additivity exact | **Done.** §8.3 forecast decomposition (`weo_explanation.csv`, 1,636 rows: 3 countries × 2 variants × 3 WEO vintages × horizons to 2030/2031) sums covered lines + denominator effect + residuals + WEO-internal wedge to the WEO balance change to 1e-9 — exact by telescoping construction (D-S5-001); history side unchanged and exact (V26 covers both). |
+| Net-interest cross-check present | **Done.** `net_interest_check.csv`: a row for every (country, variant, vintage, horizon); non-computable cells (R07 has no forecast anywhere — declared, OQ-6) state the reason; FRA h=2025 is computable (gap ≈ V21-tier). V27 enforces presence + reasons. |
+| Residual history populated | **Done.** `weo_residual_history.csv` across all three harvested WEO vintages, keyed per §8.5 by (iso3, series_variant, weo_vintage, source_vintage_set_hash); V28 checks the keys on every reconciliation table. |
+| Reader can state how much is explained | **Done.** Explicit `explained_share` rows per (country, variant, vintage, horizon) + the summary table in `reports/reconciliation_report.html`. Headline (D-S5-004): GBR ~0–6% (OBR blocked), DEU ~40–56% in maximum, FRA's projected consolidation entirely in the residuals — the covered French forecasts move the other way. |
 
-`pytest`: **63 passed.** `ggfiscal validate`: OK=52 SKIP=3 WARN=582, **no
-ERROR** (V17 implemented and green; remaining SKIPs are V24/V27/V28, Stage 5).
-WARN tiers unchanged and documented (V1/V21/V25/V5 wedges, V16 the withheld
-DSM join OQ-7, V18 blocked sources OQ-6, S0_SNAPSHOTS old-manifest notices).
+`pytest`: **71 passed.** `ggfiscal validate`: **OK=55 WARN=582, no ERROR, no
+SKIP — all 28 V-checks now run.** V24 formalised and green (FRA/DEU gaps
+within 1% of TE; GBR NLB-gap sigma 0.36–0.42 < 0.5 threshold, D-S5-002).
+WARN tiers unchanged (documented wedges + OQ-6/OQ-7 visibility).
 
-## What Stage 4 added
+## What Stage 5 added
 
-Engine: grade/§7.8 variant routing (D-S4-001) — C tier and single-component
-proxies apply to maximum only; D measured-never-applied except §7.9's
-mandated GF01-via-GF01_7 (applied at measured D: coverage 0.17–0.50,
-D-S4-002); `residual_method` on every proxy/composite row (D2/Q3
-`grow_with_proxy`, no overrides in `config/residual.yaml` yet); GF01_X
-deliberately NOT derived from the proxy GF01 (D-S4-002). New crosswalk
-`EC_AMECO_to_COFOG.csv` v1.0 (UYIG→GF01, UYTGH→GF10). V17 implemented
-(coverage year + residual_method on proxy/composite rows; §7.8 strict ban).
-Coverage matrix builder in `src/ggfiscal/coverage.py::write_matrix`, wired
-into `ggfiscal build`.
+`src/ggfiscal/reconcile/explanation.py` (§8.3–8.5: decomposition with
+per-side denominator effect and coverage/disagreement residuals collapsing
+to labelled resid_total where no independent total exists; §8.4 NI check;
+§8.5 vintage keys + residual history; the §8.3 implied-uncovered-growth
+plausibility memos). `src/ggfiscal/report/reconciliation.py`
+(`reconciliation_report.html`: 12 stacked-contribution charts — history and
+forecast, strict and maximum, WEO path overlaid, residuals in grey — plus
+explained-share, NI and residual-history tables). Validators
+`validate/stage5.py` (V24, V26 forecast side, V27, V28); new tolerance
+`gbr_perimeter_sigma_pct_te: 0.5`. Independent totals: AMECO for all three
+(Q12 deviation for GBR made concrete — both GBR sides are resid_total,
+D-S5-002). `ggfiscal reconcile` and `ggfiscal report` write everything.
 
 ## Blocked on whom
 
-Unchanged from Stage 3 — nothing blocks Stage 5:
-- **OQ-6:** obr.uk (Cloudflare) + gov.uk/bmas.de (egress) block all
-  GBR-specific sources, GF02 everywhere, and the BMAS leg of DEU GF10.
-- **OQ-7:** AMECO→DSM interest join awaiting committee (options are
-  config-only). The GF10 join shows the same rule joining when vintages
-  agree.
+Unchanged — nothing blocks Stage 6:
+- **OQ-6:** obr.uk/gov.uk/bmas.de blocks (GBR granular forecasts + GF02 +
+  BMAS). Unblocking OBR would transform the GBR explained share.
+- **OQ-7:** AMECO→DSM interest join awaiting committee (config-only).
 - **OQ-5:** §11.4 second keying (PDF sources).
 
 ## Exact next command
 
-Stage 5 (reconciliation module — §8.2–8.5 in full): extend
-`src/ggfiscal/reconcile/` — chained-at-b GDP path (§8.3), forecast-side
-decomposition with `resid_coverage`/`resid_disagreement`/`denom_effect`
-(exact additivity, V26), net-interest cross-check (§8.4, V27; note R07 has
-no forecast so NI_ours forecast years come only from maximum GF01_7 minus a
-missing R07 — §8.4 says report the gap, expect the coverage residual to
-carry it), vintage keys + `weo_residual_history.csv` (§8.5, V28),
-`weo_explanation.csv`, contribution charts, `reconciliation_report.html`.
-Implement V24 (formalising D-S0-009's heuristic), V26 forecast side, V27,
-V28. Gate 5: additivity exact; net-interest cross-check present; residual
-history populated; a reader can state how much of each WEO balance change
-the granular forecasts explain. Independent totals: OBR unavailable (OQ-6) —
-use AMECO for all three and record the Q12 deviation for GBR.
+Stage 6 (packaging and vintage re-run — §12): generated README (§11.6
+deliverable 10), `validation_report.html`, run manifest completeness,
+`detect-vintages` with a simulated new-vintage fixture showing rebuild
+without code change (§11.7), plus Gate 6's reproducibility proof: any
+stitched value reproducible from anchor + recorded growth using only
+deliverables. Remaining §11.6 gaps to close: parquet twins for the Stage 5
+tables if wanted (CSVs committed), `source_register.csv` already
+generated, `crosswalks.csv` concatenation, `exceptions.csv` committed ✓.
 
 ```
-pip install -e .[dev] && ggfiscal fetch --all && ggfiscal build && pytest && ggfiscal validate
+pip install -e .[dev] && ggfiscal fetch --all && ggfiscal build && ggfiscal reconcile && ggfiscal report && pytest && ggfiscal validate
 ```
 
-(fresh container: raw snapshots are not committed, D-S0-004; `fetch --all`
-includes the Stage 3 pulls with their required browser-like headers.)
+(fresh container: raw snapshots are not committed, D-S0-004.)
 
-## Data facts Stage 5+ must not rediscover
+## Data facts Stage 6 must not rediscover
 
-- Everything in the Stage 3 list (AMECO horizons/units, AR annual tables +
-  constructed GDP, Steuerschätzung Kasse/Tab 8.2, DSM sheet quirks, V6
-  direction-awareness, boundary-file separation) — see git history of this
-  file at commit 80f877f.
-- Variant routing lives in `extend_forward` (rows carry `variants`); the
-  §7.9 GF01 proxy is `mandated=True` and is the only D-grade application.
-- Coverage matrix "final_actual_year" counts stitched actuals (a 2025
-  D-grade proxy-stitched year counts as actual — grades column disambiguates).
-- WEO vintages in store: 2026-04, 2025-10, 2025-04 (D-S0-007); §8.5 keys by
-  (weo_vintage, source_vintage_set_hash) — the source vintage set now
-  includes EC_AMECO Spring 2026, EC_AGEING_2024, EC_DSM 2025,
-  DEU_STEUERSCHAETZUNG 2026-05.
-- Forecast-side §8.3 "covered" means the line has a forecast value in the
-  given variant — strict and maximum now genuinely differ per year (the
-  decomposition must be computed per variant).
+- All Stage 3/4 facts (see this file's history at commits 80f877f, f32d7a7).
+- WEO forecast horizons: 2031 (2026-04), 2030 (2025-10, 2025-04); §8.1 base
+  years per vintage from the bridge (GBR/DEU 2025, FRA 2024 on the latest).
+- WEO raw units are LCU singles — ÷1e6 to millions (bridge.weo_aggregates
+  does this; ratios cancel scale but NI levels do not).
+- GBR has no AMECO level at any base year → resid_total both sides, every
+  horizon (not a bug; D-S5-002).
+- explained_share rows are ratios, implied/historical growth memos are
+  % per year — neither enters the V26 additivity set (component kinds are
+  the six listed in explanation.py).
+- The §8.3 history table stays on anchor GDP per D-S1-004/D-S5-001; the
+  forecast tables are the t ≥ b leg on unscaled NGDP_w.
+- detect-vintages (§11.7) must snapshot new WEO editions promptly — the API
+  drops old ones (D-S0-007) — and re-run reconcile when either side changes.
 
 ## §15 dependencies currently riding on defaults
 
-Q1, Q3 (`grow_with_proxy` everywhere — first real exercise at Stage 4), Q4
-(D-S2-002 V5; D-S3-005 V16 = 0.02), Q7 (moot, OQ-6), Q8, Q13 defaults; Q11
-pinned (D-S0-007); Q12 deviated by necessity (AMECO envelope while obr.uk
-blocked — D-S3-001; Stage 5's independent-total choice inherits this);
-Q10 (envelope-consistent third variant) remains "No" — the Stage 5 residuals
-stay lumps.
+Q1, Q3 (grow_with_proxy), Q4 (D-S2-002 V5; D-S3-005 V16; **D-S5-002 GBR
+sigma 0.5**), Q7 (moot, OQ-6), Q8, Q10 (**exercised**: residuals published
+as lumps, no envelope-consistent variant), Q13 defaults; Q11 pinned
+(D-S0-007); Q12 deviated by necessity (AMECO independent total for GBR —
+D-S5-002; revisit when OBR is reachable).

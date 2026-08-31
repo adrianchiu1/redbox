@@ -98,10 +98,11 @@ def build():
 
 @app.command()
 def reconcile():
-    """§8 reconciliation. Stage 0 scope: the §8.2 base-year bridge for every
-    harvested WEO vintage plus the anchor-vs-IMF / anchor-vs-OECD-RS diagnostics.
-    The §8.3-8.5 dynamics decomposition arrives with Stage 5."""
-    from ggfiscal.reconcile import bridge, recon_v0
+    """§8 reconciliation: the §8.2 base-year bridge, the §8.3-8.5 forecast
+    decomposition (weo_explanation, net_interest_check, weo_residual_history)
+    for both variants and every harvested WEO vintage, plus the anchor-vs-IMF
+    / anchor-vs-OECD-RS diagnostics."""
+    from ggfiscal.reconcile import bridge, explanation, recon_v0
 
     dest, summaries = bridge.compute()
     typer.echo(f"wrote {dest}")
@@ -112,16 +113,21 @@ def reconcile():
                       f" sigma={s['sigma_gap_nlb_pct_te']}"
                       f" unexplained={s['n_unexplained']}"
                       if s.get("base_year") else ""))
+    for name, p in explanation.write().items():
+        typer.echo(f"wrote {name}: {p}")
     for p in recon_v0.compute():
         typer.echo(f"wrote {p}")
 
 
 @app.command()
 def report():
-    """Stage 1 reports: small multiples (66 lines + ledger, % of GDP)."""
+    """Reports: small multiples (Stage 1) and the reconciliation report
+    with contribution charts (Stage 5, §10)."""
+    from ggfiscal.report.reconciliation import write as write_recon
     from ggfiscal.report.small_multiples import write
 
     typer.echo(f"wrote {write()}")
+    typer.echo(f"wrote {write_recon()}")
 
 
 @app.command("detect-vintages")

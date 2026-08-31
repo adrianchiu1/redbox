@@ -38,6 +38,8 @@ V_SUITE_STAGE = {
 def current_stage() -> int:
     """Highest stage whose artifacts exist. Stage 0 until canonical data lands."""
     canonical = config.repo_root() / "data" / "canonical"
+    if (canonical / "weo_explanation.csv").exists():
+        return 5
     if (canonical / "coverage_matrix.csv").exists():
         return 4
     if (canonical / "forecast_boundaries.csv").exists():
@@ -152,7 +154,10 @@ def run_all() -> list[Finding]:
     from ggfiscal.validate.stage2 import IMPLEMENTED as S2
     from ggfiscal.validate.stage3 import IMPLEMENTED as S3
     from ggfiscal.validate.stage4 import IMPLEMENTED as S4
-    IMPLEMENTED = {**S1, **S2, **S3, **S4}  # S3's V13/V6 cover both directions
+    from ggfiscal.validate.stage5 import IMPLEMENTED as S5
+    # later stages override where they extend a check (S3: V6/V13 both
+    # directions; S5: V26 history + forecast additivity)
+    IMPLEMENTED = {**S1, **S2, **S3, **S4, **S5}
     for vid, first_stage in sorted(V_SUITE_STAGE.items(), key=lambda kv: int(kv[0][1:])):
         if stage < first_stage:
             findings.append(Finding(vid, "SKIP", "-",

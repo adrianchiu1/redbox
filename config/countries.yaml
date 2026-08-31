@@ -50,5 +50,8 @@ tolerances:
   v16_overlap_divergence: 0.02         # V16/D12 (D-S3-005): above this, the
                                        # long-term leg is NOT auto-joined —
                                        # flagged for committee review (OQ-7)
+  gbr_perimeter_sigma_pct_te: 0.5      # V24 (D-S5-002): GBR NLB-gap stability —
+                                       # sigma of gap/TE across overlap years;
+                                       # D-S0-009 measured 0.36-0.42
 
 variants: [strict, maximum_extension]
