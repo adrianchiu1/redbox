@@ -1,0 +1,2 @@
+source_code,source_label,target_line,allocation_pct,inclusion_note,consolidation_treatment,evidence,reviewer,crosswalk_version
+GF01_T..GF10_T,"IMF GFS COFOG total expenditure by division (XDC)",GF01..GF10,100,"growth only, DEU 1991-94 backward extension; same Destatis ESA data redistributed by the IMF; never below 1991 (reunification perimeter break, §14)",S13 consolidated,"boundary ratios GFS/Eurostat at 1995: 0.994-1.000 per line (stitch_boundaries.csv); anchor-vs-GFS recon ~0% (recon_anchor_vs_imf_v0.csv)",stage2-build,1.0

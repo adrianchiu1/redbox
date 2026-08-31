@@ -31,7 +31,10 @@ def check_v1() -> list[Finding]:
     out = []
     tol = config.tolerances()["imf_gfs_reconciliation_pct"]
     df = _tables()["strict"]
-    bad = df[df.anchor_value.notna() & (df.value_lcu_mn != df.anchor_value)]
+    # anchor reproduction applies to rows observed at their own anchor year;
+    # stitched rows carry the boundary anchor (anchor_year = F != year)
+    own = df[df.anchor_value.notna() & (df.anchor_year == df.year)]
+    bad = own[own.value_lcu_mn != own.anchor_value]
     for _, r in bad.iterrows():
         out.append(Finding("V1", "ERROR", f"{r.iso3}/{r.line_code}/{r.year}",
                            f"value {r.value_lcu_mn} != anchor {r.anchor_value}"))
@@ -173,12 +176,15 @@ def check_v14() -> list[Finding]:
     for iso3 in config.COUNTRIES:
         srcs = anchor_series(iso3)
         for (cls, code), meta in srcs.items():
-            got = set(df[(df.iso3 == iso3) & (df.line_code == code)
-                         & (df.classification == cls)].year)
+            # anchor-era rows only: anchor_year == year (stitched rows carry
+            # the boundary anchor year and legitimately extend the year set)
+            sub = df[(df.iso3 == iso3) & (df.line_code == code)
+                     & (df.classification == cls) & (df.anchor_year == df.year)]
+            got = set(sub.year)
             want = {int(y) for y in meta["series"].index}
             if got != want:
                 out.append(Finding("V14", "ERROR", f"{iso3}/{code}",
-                                   f"canonical years != anchor years "
+                                   f"canonical anchor-era years != anchor years "
                                    f"(extra: {sorted(got - want)[:4]}, "
                                    f"missing: {sorted(want - got)[:4]})"))
     return out or [Finding("V14", "OK", "-", "no filled values; year sets match the anchors")]

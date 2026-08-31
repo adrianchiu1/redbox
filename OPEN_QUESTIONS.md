@@ -40,6 +40,20 @@ noted. No committee action needed unless the committee wants pre-2025-04
 vintages sourced from the WEO archive downloads instead (a new decision, not
 the default).
 
+## OQ-5 — Pre-1995 expenditure archives need manual ingestion or committee guidance (NEW; limits Stage 2 depth for GBR/FRA expenditure)
+Raised 2026-08-31. The §12 Stage 2 archive leg (INSEE pre-ESA95 base series;
+GBR PESA "only if reconcilable"; archived ONS T11 vintages all start 1995) has
+no machine-readable path in the harvest: these are PDF/scan-era publications
+whose ingestion falls under §11.4, which requires an independent second keying
+that a single-agent session cannot supply. Expenditure lines therefore stop at
+1995 (GBR, FRA) / 1991 (DEU, deliberate reunification stop) with reasons per
+line in D-S2-004. **Ask:** either (a) accept the current depth, (b) authorise
+a manual-ingest workflow with a second keyer, or (c) point to machine-readable
+archive endpoints (e.g. INSEE long series API paths) to register and pull.
+Candidate quick win needing neither: ONS long-run PSF series could push GBR
+GF01_7/R07 interest history before 1987/1990 — approve a follow-up pull if
+wanted.
+
 ## OQ-4 — AMECO cannot serve as a UK envelope (NEW, informational; affects Stage 3)
 Raised 2026-08-31. AMECO Spring 2026 carries no UK TR/TE level history
 (URTG/UUTG exist for 2026–27 only; UBLG/UYIG from 1987). §6.3/Q12 already make

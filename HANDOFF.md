@@ -1,62 +1,73 @@
 # HANDOFF.md
 
-Rewritten 2026-08-31, end of session 2 (continued: Stage 1 in the same session).
+Rewritten 2026-08-31, end of session 2 (Stages 0, 1 and 2 all completed this
+session, sequentially, on `claude/gg-fiscal-stage-0-harvest-de9qld`).
 
 ## Current stage
 
-**Stage 1 (canonical history, both trees) — COMPLETE. Gate 1 PASSED.**
-(Gate 0 passed earlier this session; see git history and D-S0-006…009.)
+**Stage 2 (backward extension) — COMPLETE. Gate 2 PASSED.**
+(Gates 0 and 1 passed earlier this session; see git history.)
 
-## Gate 1 status: PASSED
+## Gate 2 status: PASSED (per country, per tree)
 
-| Gate 1 requirement | Status |
+| Gate 2 requirement | Status |
 |---|---|
-| 66 lines + ledgers built from anchors | **Done.** `ggfiscal build` → `data/canonical/{expenditure,revenue}_long_{strict,maximum_extension}.{csv,parquet}` (§5 long format, pandera-enforced) + `balance_ledger.csv` (TR/TE/NLB/NI/PB, `complete_both_sides`). Variants identical at this stage by design. |
-| Data model, schemas, anchoring, GF01 split, revenue identity, IMF/OECD RS reconciliation fields | **Done.** §5 schema in `src/ggfiscal/model.py`; GF01_7/GF01_X split with the D10 proxy for DEU 1995–99 (grade B, D-S1-003); `imf_value`/`imf_diff_pct` on COFOG lines, `oecd_rs_value`/`oecd_rs_diff_pct` on R01/R03/R04/R06. |
-| V1–V4, V7–V9, V12, V14, V19–V23 implemented and green | **Done.** `ggfiscal validate`: OK=18 SKIP=13 WARN=110, **no ERROR**. The WARNs are real diagnostics: V1 IMF-GFS wedges on FRA/DEU GF01/GF01_7 (up to ~6% — GFS vintage/consolidation differences), V21 L2-vs-D.41 wedges 5–10% in some FRA/DEU years. Both are expected-by-spec WARN tier; nothing was adjusted. |
-| Small multiples render | **Done.** `ggfiscal report` → `reports/small_multiples_stage1.html` (22 lines × 3 countries + NLB, % of GDP). |
-| History-side §8.3 decomposition runs and passes V26 | **Done.** `data/canonical/deficit_dynamics.csv`; additivity exact (V26 in the suite); anchor-B9 and WEO deltas carried as memo rows (D-S1-004). |
+| Every backward stitch has a boundary record | **Done.** `data/canonical/stitch_boundaries.csv` (committed): one record per (line, incoming source) transition — year, outgoing, incoming, anchor value, growth, scope note, break flag — including three `not_applied_grade_D` skip records. |
+| Crosswalk version + grade on every stitch | **Done.** `OECD_RS_to_ESA_REV.csv`, `EC_AMECO_to_INTEREST.csv`, `IMF_GFS_to_COFOG.csv` (all v1.0, §11.5 format, measured coverage as evidence); every stitched row carries grade, crosswalk_version, coverage_share + year (§9.2). |
+| V5 | **Done** (plus V6, V13, V25). V5 WARNs on the R04/R05 proxies (RMSE ~0.15) — consistent with their C/D grades; V6 (growth reproduces from raw sources) and V13 (concept note per stitch) green; V25 documents the known RS concept wedges (up to −25% on GBR R06). No ERROR anywhere. |
+| DECISIONS.md records why each line stops | **Done** — D-S2-004 has the full per-country, per-line table with binding constraints. |
 
-`pytest`: **35 passed** (stage_0 + stage_1). Canonical CSV deliverables are
-now committed (gitignore keeps parquet + raw local; everything regenerates
-from the hash-recorded snapshots).
+`pytest`: **42 passed.** `ggfiscal validate`: OK=47 SKIP=9 WARN=321, no ERROR
+(WARNs = V1 GFS wedges, V21 interest wedges, V5 proxy diagnostics, V25 RS
+wedges — all expected-tier documentation, nothing adjusted).
 
-## Data facts Stage 2+ must not rediscover
+## What Stage 2 added
 
-- FRA/DEU revenue lines are built from `gov_10a_main` REC codes, NOT
-  `gov_10a_taxag` (D-S1-002: taxag drifts 0.5% from main in the freshest
-  year and breaks V22). taxag = detail/verification only.
-- DEU GF0107 starts 2000; 1995–99 are D10 proxy rows (grade B).
-- Expenditure lines end 2024; FRA/DEU revenue lines reach provisional 2025;
-  GBR revenue (ESA T2) spans 1990–2025 — so GBR R-lines already have five
-  pre-1995 years in canonical while GF-lines start 1995.
-- GBR: COFOG-tree TE is ONS Table 11's total (Apr 2026 release); the ledger
-  runs on ESA Table 2 (Jun 2026). Different releases — do not force-align.
-- AMECO has no UK TR/TE levels (OQ-4).
+Strict variant: 212 stitched rows, all grade B — GBR interest to 1987 (two
+stitches: ONS ESA T2 D.41 then AMECO), FRA interest to 1978, GBR R01 to 1973
+(VAT introduction), R03/R04 to 1965; FRA R01/R03 to 1965; DEU everything to
+1991 (hard reunification break, never below). Maximum adds 118 C-grade rows
+(R04/R06 and GBR/FRA R02/R06 deeper history). Variants now genuinely diverge.
+Three mappings measured out of bounds were NOT applied (grade D, recorded):
+FRA R02 (47%), FRA R05 (348%), GBR R05 (145%).
 
 ## Blocked on whom
 
-**Nothing blocks Stage 2.** Standing committee notes: OQ-3 (raw archival),
-OQ-4 (AMECO UK envelope), and the WEO 3-vintage retention note (OQ-2/D-S0-007).
+**Nothing blocks Stage 3.** Committee items outstanding (none blocking):
+OQ-5 (pre-1995 GBR/FRA expenditure archives: manual-ingest authorisation or
+machine-readable endpoints; quick win: ONS long-run PSF interest series),
+OQ-4 (AMECO no UK TR/TE levels), OQ-3 (raw archival).
 
 ## Exact next command
 
-Stage 2 (backward extension — §12): revenue tax lines via OECD RS (crosswalk
-`crosswalks/OECD_RS_to_ESA_REV.csv` to be written, D15/D17; RS harvested from
-1965 already), then interest lines via GG D.41 history (GBR ESA T2 back to
-1990 is in hand), then pre-1995 expenditure (INSEE/Destatis archives; GBR
-archived T11 vintages — new pulls needed, hosts already allowlisted). Wire
-V5/V6/V13/V25; every stitch gets a boundary record per §7.4.
+Stage 3 (strict forecasts — §12): priority `GF01_7`, `R07`, GF02 (all
+three) → R01/R03/R04/R06 (OBR; Steuerschätzung + BMAS; AMECO/LPFP) → GF07,
+GF09 (Ageing Report; OBR) → GF10 composites → remaining AMECO lines → D7
+declarations. Machine-readable first; PDF via §11.4. New harvest pulls needed
+(obr.uk, webgate/circabc for AR annexes, bundesfinanzministerium.de,
+Steuerschätzung tables) — hosts were listed in OQ-1's "later stages" set and
+have NOT yet been probed; if blocked, that reopens OQ-1 for those hosts.
+Implement §7.5 (% GDP paths), §7.10 (GBR FY→CY conversion), D11/D12, V10,
+V11, V15, V16, V18.
 
 ```
 pip install -e .[dev] && pytest && ggfiscal validate   # green baseline
 ```
 
-Start in `src/ggfiscal/stitch/` (empty package). The stitch engine must write
-boundary records (year, outgoing, incoming, anchor value, growth, scope,
-break flag) and honour §7.2–7.4, §7.12 (no growth across missing/zero).
+## Data facts Stage 3+ must not rediscover
+
+- FRA/DEU revenue lines run off `gov_10a_main` REC codes (D-S1-002); taxag is
+  detail-only. DEU GF01_7 1995-99 are D10 proxy rows (grade B).
+- DEU never extends below 1991 (D-S2-003); GBR R01 stops at 1973 by law of
+  nature (VAT introduction).
+- AMECO chapter values are Mrd (billions) — unit_factor 1000 in the stitch
+  spec; growth unaffected.
+- Grade bands: B 90-110%, C 50-90%, else D-not-applied (D-S2-001).
+- AMECO has no UK TR/TE levels (OQ-4) — OBR is the only UK envelope.
+- V5 thresholds are D-S2-002's choice, not spec-given.
 
 ## §15 dependencies currently riding on defaults
 
-Unchanged: Q1, Q3, Q4, Q7, Q8, Q12, Q13 on defaults; Q11 pinned at 3
-vintages (D-S0-007). Nothing yet forces a committee call.
+Unchanged: Q1, Q3, Q4 (+ D-S2-002 filling V5's gap), Q7, Q8, Q12, Q13 on
+defaults; Q11 pinned at 3 vintages (D-S0-007). Stage 3 will exercise Q7
+(defence plans strict-B) and Q12 (OBR primary) directly.

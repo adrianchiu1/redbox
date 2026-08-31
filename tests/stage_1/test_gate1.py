@@ -42,11 +42,14 @@ def test_history_only_all_grade_a_or_b_no_forecasts():
     for cls in ("COFOG", "ESA_REV"):
         df = load_canonical(cls, "strict")
         assert not df.is_forecast.any()
+        # strict carries only A anchors and B extensions/proxies (V9: no C/D)
         assert set(df.quality_grade) <= {"A", "B"}
-        # B appears only on D10 proxy years (DEU 1995-99) and their GF01_X
-        b_rows = df[df.quality_grade == "B"]
-        assert set(b_rows.iso3) <= {"DEU"}
-        assert set(b_rows.line_code) <= {"GF01_7", "GF01_X"}
+        # anchor-era rows are A except the D10 proxy years (DEU GF01_7 1995-99
+        # and their GF01_X); every other B row is a Stage 2 backward stitch
+        anchor_era = df[df.anchor_year == df.year]
+        b_anchor = anchor_era[anchor_era.quality_grade == "B"]
+        assert set(b_anchor.iso3) <= {"DEU"}
+        assert set(b_anchor.line_code) <= {"GF01_7", "GF01_X"}
 
 
 def test_v_suite_green_at_stage_1():

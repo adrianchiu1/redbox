@@ -202,3 +202,70 @@ direct rows, so R03/R04 need no constructed split; NICs sit in D.61 → R06 per
 §14; payable tax credits follow the anchor's gross ESA treatment (D17). NTL
 table 9 (ONS_TAX_DETAIL) is the per-tax evidence trail. Allocation is 100%
 cell-to-line; no weights were estimated.
+
+## D-S2-001 — Backward-extension engine and §9 grade bands; D-graded mappings are never applied (serves §7.3-7.4, §7.12, §9, D6, D15)
+2026-08-31. `src/ggfiscal/stitch/backward.py` implements §7.3 (growth, never
+level), §7.4 (sequential sources, boundary record per transition) and §7.12
+(stop at missing/zero/negative or a configured perimeter break). Grades from
+the measured coverage share at the last common year (§9.2):
+**B = 90-110%**, **C = 50-90%**, anything else **D**. B rows enter both
+variants; C rows enter maximum_extension only (§9); **D-graded mappings are
+not applied at all** — D15 grades RS extensions "B/C", and a source covering
+<50% or materially more than the line (FRA T_4000 at 348% of R05) is a weak
+crosswalk whose growth would fabricate dynamics. D skips are still written to
+`stitch_boundaries.csv` (`variants = not_applied_grade_D`) so the stop is
+machine-documented. All boundary records land in
+`data/canonical/stitch_boundaries.csv` (committed).
+
+## D-S2-002 — V5 WARN thresholds (Q4 space, undefined in §10)
+2026-08-31. §10 gives V5 no numeric threshold. Chosen: WARN when |bias| >
+0.01 or RMSE > 0.05 on annual growth factors over the overlap; below that the
+diagnostic reports at OK severity with its stats. Fired for R04/R05 proxies
+(DEU R04 RMSE 0.149, GBR R05 0.148) — consistent with their C/D grades.
+Supersede via config if the committee sets different values.
+
+## D-S2-003 — Extension map actually applied (serves §12 Stage 2 order)
+2026-08-31. Tax lines via OECD RS (`DF_RSOECD`, growth of the matching
+heading, crosswalk `OECD_RS_to_ESA_REV.csv` v1.0): R01←5111, R02←5000−5111,
+R03←1100, R04←1200, R05←4000, R06←2000. Interest via GG D.41 history
+(`EC_AMECO_to_INTEREST.csv` v1.0): GBR GF01_7 ← ONS ESA T2 D.41 payable
+1990-94 then AMECO UYIG 1987-89 (two stitches); FRA ← UYIG to 1978;
+DEU ← UYIG to 1991. DEU expenditure GF01-GF10 1991-94 via IMF GFS COFOG
+(`IMF_GFS_to_COFOG.csv` v1.0; boundary ratios 0.994-1.000). GF01_X derived in
+stitched years where both components exist (DEU 1991-94, grade B). DEU has a
+hard break at 1991: pre-reunification data is West Germany, a different
+universe (§14) — no DEU line extends below 1991.
+
+## D-S2-004 — Why each line stops where it does (Gate 2 record)
+2026-08-31. First year per line after Stage 2, with the binding constraint.
+"OQ-5" = pre-1995 archives need either §11.4 manual ingestion (independent
+second keying unavailable to a single-agent session) or a machine-readable
+archive endpoint — committee item.
+
+**GBR** — GF01-GF10, GF01_X: 1995 (ONS T11 starts 1995; pre-1995 functional
+spending is PESA, "only if reconcilable" → OQ-5). GF01_7: 1987 (AMECO UYIG
+begins 1987; earlier D.41 would need ONS long-run PSF series — candidate for
+a Stage 2 follow-up pull). R01: 1973 (VAT introduced 1973; no tax exists
+before — final stop). R02: strict 1990 / maximum 1965 (C-grade RS composite).
+R03, R04: 1965 (RS series start — earliest machine-readable history). R05:
+1990 (RS 4000 mapping grade D, 145% coverage — not applied; no other source
+harvested). R06: strict 1990 / maximum 1965 (C: imputed+voluntary wedge).
+R07-R10: 1990 (ESA Table 2 start; no receivable-side history source in the
+harvest).
+
+**FRA** — GF01-GF10, GF01_X: 1995 (Eurostat starts 1995; INSEE pre-ESA95
+base series are non-SDMX archives → OQ-5). GF01_7: 1978 (AMECO UYIG start).
+R01: 1965 (RS start). R02: 1995 (RS composite grade D, 47% coverage — French
+production taxes sit largely outside 5000-ex-VAT). R03: 1965. R04: strict
+1995 / maximum 1965 (C: payable tax credits, D17). R05: 1995 (RS 4000 grade
+D, 348% coverage). R06: strict 1995 / maximum 1965 (C). R07-R10: 1995
+(gov_10a_main start).
+
+**DEU** — every extended line stops at 1991 (reunification perimeter break;
+pre-1991 is D-at-best per §14 — deliberate stop, not a data gap): GF01-GF10,
+GF01_7, GF01_X, R01, R02, R03, R05 at 1991 (strict); R04, R06 at 1991 in
+maximum only (C). R07-R10: 1995 (gov_10a_main start; no earlier D.41
+receivable source).
+
+Totals (TE, TR) and the ledger are not extended: §6.1 ties envelopes to the
+anchor's own aggregates; a stitched total would not be an anchor total.

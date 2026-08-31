@@ -194,6 +194,8 @@ def build_run_id() -> str:
 
 
 def build(run_id: str | None = None) -> dict[str, Path]:
+    from ggfiscal.stitch.backward import extend_line, extensions_for
+
     run_id = run_id or build_run_id()
     canonical = config.repo_root() / "data" / "canonical"
     canonical.mkdir(parents=True, exist_ok=True)
@@ -201,6 +203,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
 
     frames: dict[str, list[dict]] = {"COFOG": [], "ESA_REV": []}
     ledger_rows: list[dict] = []
+    boundary_rows: list[dict] = []
     for iso3 in config.COUNTRIES:
         series_map = anchor_series(iso3)
         gdp, gdp_src = gdp_series(iso3)
@@ -261,6 +264,101 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "is_forecast": False, "run_id": run_id,
                         "notes": notes,
                     })
+        # --- Stage 2: backward extension (§7.3-7.4, D6, D15) ---
+        stitched_vals: dict[str, dict[tuple[str, str], dict[int, tuple[float, str]]]] = {
+            "strict": {}, "maximum_extension": {}}
+        for (classification, line_code), sources in extensions_for(iso3).items():
+            meta = series_map.get((classification, line_code))
+            if meta is None:
+                continue
+            ext_rows, bnds = extend_line(iso3, classification, line_code,
+                                         meta["series"], sources)
+            boundary_rows += bnds
+            for er in ext_rows:
+                src = er["source"]
+                release, vintage = _release(src.source_id)
+                year = er["year"]
+                gdp_v = float(gdp[year]) if year in gdp.index else None
+                variants = (("strict", "maximum_extension") if er["grade"] == "B"
+                            else ("maximum_extension",))
+                for variant in variants:
+                    stitched_vals[variant].setdefault((classification, line_code), {})[
+                        year] = (er["value"], er["grade"])
+                    frames[classification].append({
+                        "series_id": f"{iso3}_{line_code}_{variant}",
+                        "iso3": iso3, "classification": classification,
+                        "line_code": line_code, "line_level": meta["line_level"],
+                        "line_label": meta["line_label"], "year": year,
+                        "native_period": str(year), "source_period_basis": "CY",
+                        "value_lcu_mn": er["value"], "currency": currency[iso3],
+                        "gdp_lcu_mn": gdp_v, "gdp_source_id": gdp_src,
+                        "pct_gdp": (round(100 * er["value"] / gdp_v, 6)
+                                    if gdp_v else None),
+                        "total_lcu_mn": None, "total_source_id": None,
+                        "pct_total": None,
+                        "series_variant": variant,
+                        "observation_type": "stitched_actual",
+                        "anchor_source": meta["source_id"],
+                        "anchor_year": float(er["anchor_year"]),
+                        "anchor_value": er["anchor_value"],
+                        "growth_source_id": src.source_id,
+                        "growth_rate": er["growth_rate"],
+                        "residual_method": None, "interpolation_method": None,
+                        "period_conversion_method": None,
+                        "coverage_share": er["coverage_share"],
+                        "coverage_share_year": (float(er["coverage_share_year"])
+                                                if er["coverage_share_year"] else None),
+                        "quality_grade": er["grade"], "crosswalk_version":
+                            src.crosswalk_version,
+                        "source_id": src.source_id,
+                        "source_release_date": release, "source_vintage": vintage,
+                        "source_status": "current", "scenario_label": None,
+                        "concept_flag": src.concept_flag or None,
+                        "imf_value": None, "imf_diff_pct": None,
+                        "oecd_rs_value": None, "oecd_rs_diff_pct": None,
+                        "is_interpolated": False, "is_period_converted": False,
+                        "is_forecast": False, "run_id": run_id,
+                        "notes": src.concept_note,
+                    })
+        # GF01_X in stitched years: derive where both components exist (D10)
+        for variant, vals in stitched_vals.items():
+            gf01 = vals.get(("COFOG", "GF01"), {})
+            gf017 = vals.get(("COFOG", "GF01_7"), {})
+            meta_x = series_map[("COFOG", "GF01_X")]
+            for year in sorted(set(gf01) & set(gf017)):
+                v01, g01 = gf01[year]
+                v017, g017 = gf017[year]
+                grade = max(g01, g017)  # worst grade ('C' > 'B' lexically)
+                gdp_v = float(gdp[year]) if year in gdp.index else None
+                value = v01 - v017
+                frames["COFOG"].append({
+                    "series_id": f"{iso3}_GF01_X_{variant}",
+                    "iso3": iso3, "classification": "COFOG",
+                    "line_code": "GF01_X", "line_level": "derived",
+                    "line_label": meta_x["line_label"], "year": year,
+                    "native_period": str(year), "source_period_basis": "CY",
+                    "value_lcu_mn": value, "currency": currency[iso3],
+                    "gdp_lcu_mn": gdp_v, "gdp_source_id": gdp_src,
+                    "pct_gdp": round(100 * value / gdp_v, 6) if gdp_v else None,
+                    "total_lcu_mn": None, "total_source_id": None, "pct_total": None,
+                    "series_variant": variant, "observation_type": "derived_actual",
+                    "anchor_source": meta_x["source_id"], "anchor_year": None,
+                    "anchor_value": None, "growth_source_id": None,
+                    "growth_rate": None, "residual_method": None,
+                    "interpolation_method": None, "period_conversion_method": None,
+                    "coverage_share": None, "coverage_share_year": None,
+                    "quality_grade": grade, "crosswalk_version": None,
+                    "source_id": meta_x["source_id"],
+                    "source_release_date": _release(meta_x["source_id"])[0],
+                    "source_vintage": _release(meta_x["source_id"])[1],
+                    "source_status": "current", "scenario_label": None,
+                    "concept_flag": None,
+                    "imf_value": None, "imf_diff_pct": None,
+                    "oecd_rs_value": None, "oecd_rs_diff_pct": None,
+                    "is_interpolated": False, "is_period_converted": False,
+                    "is_forecast": False, "run_id": run_id,
+                    "notes": "derived GF01 - GF01_7 in backward-stitched years (D10)",
+                })
         # balance ledger from the balance anchor's own TR/TE/B9 (V23 exact)
         if iso3 == "GBR":
             btr, bte, b9 = (R.ons_t2_series("OTR", ""), R.ons_t2_series("OTE", ""),
@@ -303,6 +401,10 @@ def build(run_id: str | None = None) -> dict[str, Path]:
     ledger.to_parquet(canonical / "balance_ledger.parquet", index=False)
     ledger.to_csv(canonical / "balance_ledger.csv", index=False)
     out["balance_ledger"] = canonical / "balance_ledger.parquet"
+    boundaries = pd.DataFrame(boundary_rows).sort_values(
+        ["iso3", "classification", "line_code", "boundary_year"])
+    boundaries.to_csv(canonical / "stitch_boundaries.csv", index=False)
+    out["stitch_boundaries"] = canonical / "stitch_boundaries.csv"
 
     # run manifest (§11.1): snapshots and config the build consumed
     snaps = {f"{sid}/{part}": e["sha256"] for (sid, part), e in R.latest_snapshots().items()}
