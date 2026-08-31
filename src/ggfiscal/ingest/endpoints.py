@@ -1,70 +1,172 @@
-"""URL builders for every registered machine-readable source (D-S0-003).
+"""URL builders for every registered machine-readable source.
 
-These encode the endpoint decisions verified in reports/source_verification.md.
-Anything still marked `confirm live` must be checked against the live catalog
-before its first pull is trusted (Stage 0 gate item).
+D-S0-003 chose the access paths; D-S0-006 (2026-08-31, second session) resolved
+every id against the live catalogs and switched the Eurostat/OECD/IMF pulls
+from full-table to filtered extractions (the filter is part of the recorded
+URL, so a snapshot remains a complete, reproducible extraction definition).
+
+Confirmed live 2026-08-31:
+  - Eurostat dissemination API, SDMX 3.0 SDMX-CSV; key order
+    freq.unit.sector[.cofog99].na_item.geo (nama_10_gdp: freq.unit.na_item.geo).
+    The key parser accepts single values only -> one pull per country.
+  - IMF api.imf.org SDMX 3.0. WEO editions exposed as THREE vintages today:
+    WEO/9.0.0 (April 2026), WEO_2025_OCT_VINTAGE/1.0.0 (October 2025),
+    WEO/6.0.0 (April 2025). `+` multi-values accepted in keys.
+  - IMF GFS COFOG dataflow: IMF.STA:GFS_COFOG(11.0.0); main-aggregates
+    companion IMF.STA:GFS_SOO(12.0.0).
+  - OECD Table 11: OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1 (13-dim DSD).
+  - OECD Revenue Statistics: OECD.CTP.TPS,DSD_REV_COMP_GLOBAL@DF_RSGLOBAL,2.1
+    (7-dim DSD: REF_AREA.MEASURE.SECTOR.STANDARD_REVENUE.CTRY_SPECIFIC_REVENUE.
+    UNIT_MEASURE.FREQ).
+  - AMECO bulk zips: ec.europa.eu/economy_finance/db_indicators/ameco/documents/
+    ameco{1..18}.zip; Stage 0 takes 6 (domestic product) and 16-18 (government).
+  - ONS: dataset pages serve the latest file at
+    /file?uri={dataset_uri}/current/{filename}.
 """
 
 from __future__ import annotations
 
+import dataclasses
+
 EUROSTAT_BASE = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0"
 IMF_BASE = "https://api.imf.org/external/sdmx/3.0"
 OECD_BASE = "https://sdmx.oecd.org/public/rest"
-AMECO_LANDING = ("https://economy-finance.ec.europa.eu/economic-research-and-databases/"
-                 "economic-databases/ameco-database/"
-                 "download-annual-data-set-macro-economic-database-ameco_en")
+AMECO_DOC_BASE = "https://ec.europa.eu/economy_finance/db_indicators/ameco/documents"
+ONS_BASE = "https://www.ons.gov.uk"
+ONS_DATASETS = "/economy/governmentpublicsectorandtaxes/publicspending/datasets"
 
 # Eurostat country codes for our ISO3s
 EUROSTAT_GEO = {"FRA": "FR", "DEU": "DE"}
+ISO3 = ("GBR", "FRA", "DEU")
 # WEO subject codes used by the reconciliation module (§6.3, §8.1)
 WEO_SUBJECTS = ("GGR", "GGX", "GGXCNL", "GGXONLB", "NGDP")
 
+# WEO vintages actually exposed by api.imf.org on 2026-08-31 (Q11, D-S0-006):
+# vintage label -> (dataflow id, dataflow version)
+WEO_VINTAGES = {
+    "2026-04": ("WEO", "9.0.0"),
+    "2025-10": ("WEO_2025_OCT_VINTAGE", "1.0.0"),
+    "2025-04": ("WEO", "6.0.0"),
+}
 
-def eurostat_data_url(dataset: str, params: str = "") -> str:
-    """Full-dataset SDMX-CSV pull; filtering happens in standardise so the raw
-    snapshot is the complete table (simpler provenance, stable hash per vintage)."""
-    url = f"{EUROSTAT_BASE}/data/dataflow/ESTAT/{dataset}/1.0/?format=csvdata&compress=false"
-    return url + (f"&{params}" if params else "")
+GFS_COFOG_FLOW = ("IMF.STA", "GFS_COFOG", "11.0.0")
+GFS_SOO_FLOW = ("IMF.STA", "GFS_SOO", "12.0.0")
+OECD_T11_FLOW = "OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1"
+# DF_RSOECD (OECD members) not DF_RSGLOBAL: only the members flow carries the
+# 1965– history D15 requires (global flow starts 1990; verified live 2026-08-31).
+OECD_RS_FLOW = "OECD.CTP.TPS,DSD_REV_COMP_OECD@DF_RSOECD,2.0"
+AMECO_CHAPTERS = (6, 16, 17, 18)
+
+# ONS dataset slug -> current filename (resolved live via {slug}/current/data JSON)
+ONS_FILES = {
+    "ONS_ESA_T11": ("esatable11annualexpenditureofgeneralgovernment",
+                    "esatable11generalgovernment.xlsx"),
+    "ONS_GG_RECEIPTS": ("esatable2mainaggregatesofgeneralgovernment",
+                        "esatable0200.xls"),
+    "ONS_TAX_DETAIL": ("esaquestionnairedetailedtaxandsocialcontributions",
+                       "esantl0999.xls"),
+    "ONS_TAX_LIST": ("esatable9listoftaxes", "esatable0900.xls"),
+}
 
 
-def imf_dataflow_catalog_url(agency: str = "IMF.RES", dataflow: str = "WEO") -> str:
-    """Enumerate available editions: WEO editions are dataflow versions (Q11)."""
-    return f"{IMF_BASE}/structure/dataflow/{agency}/{dataflow}/%2A"
+@dataclasses.dataclass(frozen=True)
+class Pull:
+    source_id: str     # register id (config/sources.yaml)
+    part: str          # sub-identifier within the source (country, vintage, chapter)
+    url: str
+    accept: str = ""   # optional Accept header (IMF needs the sdmx csv media type)
 
 
-def imf_weo_data_url(version: str) -> str:
-    """One WEO edition = one dataflow version; full pull, filter downstream."""
-    return f"{IMF_BASE}/data/dataflow/IMF.RES/WEO/{version}/?format=csv"
+def eurostat_data_url(dataset: str, key: str) -> str:
+    return (f"{EUROSTAT_BASE}/data/dataflow/ESTAT/{dataset}/1.0/{key}"
+            f"?format=csvdata&compress=false")
 
 
-def imf_gfs_cofog_data_url() -> str:
-    # Dataflow id to confirm live against the migrated portal catalog (source_verification.md)
-    return f"{IMF_BASE}/data/dataflow/IMF.STA/GFS_COFOG/+/?format=csv"
+def imf_dataflow_catalog_url(agency: str = "IMF.RES") -> str:
+    """Enumerate an agency's dataflows (all ids, all versions): WEO editions
+    appear both as WEO versions and as *_VINTAGE flows (Q11)."""
+    return f"{IMF_BASE}/structure/dataflow/{agency}/%2A/%2A"
 
 
-def oecd_rs_data_url() -> str:
-    """OECD Revenue Statistics (global), SDMX-CSV; version resolved as latest."""
-    return (f"{OECD_BASE}/data/OECD.CTP.TPS,DSD_REV_COMP_GLOBAL@DF_RSGLOBAL,"
-            f"/all?format=csvfile")
+def imf_weo_data_url(flow: str, version: str, iso3: str, subject: str) -> str:
+    """One (country, subject) per pull: the API only serves series-level
+    attributes (LATEST_ACTUAL_ANNUAL_DATA, PUBLICATION_DATE — needed for the
+    §8.1 base year) on single-series queries; multi-value keys drop them."""
+    return (f"{IMF_BASE}/data/dataflow/IMF.RES/{flow}/{version}/"
+            f"{iso3}.{subject}.A?attributes=all")
 
 
-def oecd_dataflow_catalog_url() -> str:
-    """Full catalog — used once, live, to pin the Table 11 / National Accounts flow ids."""
-    return f"{OECD_BASE}/dataflow/all/all/latest"
+def imf_gfs_data_url(flow: tuple[str, str, str], iso3: str) -> str:
+    agency, flow_id, version = flow
+    return (f"{IMF_BASE}/data/dataflow/{agency}/{flow_id}/{version}/"
+            f"{iso3}.S13.%2A.%2A.%2A.A?attributes=none")
+
+
+def oecd_rs_data_url(iso3: str) -> str:
+    return f"{OECD_BASE}/data/{OECD_RS_FLOW}/{iso3}......A?format=csvfile"
+
+
+def oecd_t11_data_url(iso3: str) -> str:
+    # 13-dim key: FREQ.REF_AREA.SECTOR then 10 wildcards
+    return f"{OECD_BASE}/data/{OECD_T11_FLOW}/A.{iso3}.S13..........?format=csvfile"
+
+
+def ameco_chapter_url(chapter: int) -> str:
+    return f"{AMECO_DOC_BASE}/ameco{chapter}.zip"
+
+
+def ons_file_url(slug: str, filename: str) -> str:
+    return f"{ONS_BASE}/file?uri={ONS_DATASETS}/{slug}/current/{filename}"
+
+
+def ons_dataset_meta_url(slug: str) -> str:
+    """Landing-page JSON: carries the dataset title and latest releaseDate."""
+    return f"{ONS_BASE}{ONS_DATASETS}/{slug}/data"
+
+
+def ons_gdp_url() -> str:
+    """YBHA — nominal GDP at market prices, £m, calendar years from 1948 (QNA).
+    The GBR anchor-vintage GDP denominator (§6.3); ESA Table 2 has no GDP row."""
+    return f"{ONS_BASE}/economy/grossdomesticproductgdp/timeseries/ybha/qna/data"
+
+
+SDMX_CSV = "application/vnd.sdmx.data+csv"
+
+
+def all_stage0_pulls() -> list[Pull]:
+    """Every Stage 0 pull: anchors, GDP, WEO vintages, GFS, OECD RS/T11, AMECO, ONS."""
+    pulls: list[Pull] = []
+    for dataset, sid, key_fmt in (
+        ("gov_10a_exp", "EUROSTAT_GOV10A_EXP", "A.MIO_NAC.S13.*.*.{geo}"),
+        ("gov_10a_main", "EUROSTAT_GOV10A_MAIN", "A.MIO_NAC.S13.*.{geo}"),
+        ("gov_10a_taxag", "EUROSTAT_GOV10A_TAXAG", "A.MIO_NAC.S13.*.{geo}"),
+        ("nama_10_gdp", "EUROSTAT_NAMA10_GDP", "A.CP_MNAC.B1GQ.{geo}"),
+    ):
+        for iso3, geo in EUROSTAT_GEO.items():
+            pulls.append(Pull(sid, iso3, eurostat_data_url(dataset, key_fmt.format(geo=geo))))
+
+    pulls.append(Pull("IMF_WEO", "catalog", imf_dataflow_catalog_url(),
+                      "application/vnd.sdmx.structure+json"))
+    for vintage, (flow, version) in WEO_VINTAGES.items():
+        for iso3 in ISO3:
+            for subject in WEO_SUBJECTS:
+                pulls.append(Pull(f"IMF_WEO_{vintage.replace('-', '_')}",
+                                  f"{iso3}_{subject}",
+                                  imf_weo_data_url(flow, version, iso3, subject),
+                                  SDMX_CSV))
+    for iso3 in ISO3:
+        pulls.append(Pull("IMF_GFS", f"cofog_{iso3}", imf_gfs_data_url(GFS_COFOG_FLOW, iso3), SDMX_CSV))
+        pulls.append(Pull("IMF_GFS", f"soo_{iso3}", imf_gfs_data_url(GFS_SOO_FLOW, iso3), SDMX_CSV))
+        pulls.append(Pull("OECD_RS", iso3, oecd_rs_data_url(iso3)))
+        pulls.append(Pull("OECD_T11", iso3, oecd_t11_data_url(iso3)))
+    for ch in AMECO_CHAPTERS:
+        pulls.append(Pull("EC_AMECO", f"chapter{ch}", ameco_chapter_url(ch)))
+    for sid, (slug, filename) in ONS_FILES.items():
+        pulls.append(Pull(sid, "current", ons_file_url(slug, filename)))
+    pulls.append(Pull("ONS_GDP", "ybha", ons_gdp_url()))
+    return pulls
 
 
 def all_stage0_probe_urls() -> dict[str, str]:
-    """The endpoints Stage 0 must confirm, keyed by register source_id."""
-    return {
-        "EUROSTAT_GOV10A_EXP": eurostat_data_url("gov_10a_exp"),
-        "EUROSTAT_GOV10A_MAIN": eurostat_data_url("gov_10a_main"),
-        "EUROSTAT_GOV10A_TAXAG": eurostat_data_url("gov_10a_taxag"),
-        "EUROSTAT_NAMA10_GDP": eurostat_data_url("nama_10_gdp"),
-        "IMF_WEO": imf_dataflow_catalog_url(),
-        "IMF_GFS": imf_gfs_cofog_data_url(),
-        "OECD_RS": oecd_rs_data_url(),
-        "OECD_T11": oecd_dataflow_catalog_url(),
-        "EC_AMECO": AMECO_LANDING,
-        "ONS_ESA_T11": ("https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/"
-                        "publicspending/datasets/esatable11annualexpenditureofgeneralgovernment"),
-    }
+    """Back-compat view keyed '{source_id}/{part}'."""
+    return {f"{p.source_id}/{p.part}": p.url for p in all_stage0_pulls()}

@@ -70,3 +70,202 @@ extended with the verification fields §6.4 requires (release date, vintage,
 retrieval date, URL, snapshot hash, supersedes, scenario_label, concept_note,
 plus `verification` status). `source_register.csv` is generated from it at
 build time, never hand-edited.
+
+## D-S0-006 — Live endpoint resolution and filtered pulls (serves §12 Stage 0, §13; supersedes the "confirm live" placeholders in D-S0-003)
+2026-08-31, second session (network-enabled). Every machine-readable endpoint
+was resolved against the live catalogs and harvested as D8 snapshots
+(`ggfiscal fetch --all`, 0 failures). Resolutions:
+  - **IMF GFS**: COFOG dataflow `IMF.STA:GFS_COFOG(11.0.0)`; main-aggregates
+    companion `IMF.STA:GFS_SOO(12.0.0)` (GFSM Statement of Operations).
+    GFS XDC observations arrive in raw LCU units; readers scale to millions.
+  - **OECD Table 11**: `OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1` (13-dim
+    DSD_NASEC10), filtered to S13 per country.
+  - **OECD Revenue Statistics**: `OECD.CTP.TPS,DSD_REV_COMP_OECD@DF_RSOECD,2.0`
+    — NOT the §13-era candidate `DF_RSGLOBAL`: only the members flow carries
+    S13 XDC from 1965 as D15 requires (global flow starts 1990; both checked
+    live). UNIT_MULT 9 (billions); readers scale to millions.
+  - **ONS_GG_RECEIPTS** resolved to **ESA Table 2**
+    (`esatable2mainaggregatesofgeneralgovernment`, June 2026 EDP transmission):
+    OTR/OTE/B9 plus receipts by ESA code 1990–2025, including direct
+    D51M/D51O household–corporate splits. **ONS_TAX_DETAIL** (new):
+    `esaquestionnairedetailedtaxandsocialcontributions` (NTL table 9),
+    per-tax ESA-coded detail 1995–2025 — the R03/R04/R06 mapping evidence.
+    **ONS_TAX_LIST** (new): `esatable9listoftaxes`, flagged stale (2023-10),
+    mapping evidence only. **ONS_PSF_INTEREST** resolved into the same ESA
+    Table 2 file (GG D.41 payable/receivable, accrued, 1990–2025); kept as a
+    distinct register entry because its D10 role differs.
+  - **ONS_GDP** (new): timeseries YBHA (QNA), nominal GDP £m CY 1948–2025;
+    needed because ESA Table 2 has no GDP row. `countries.yaml` GBR
+    `gdp_source` updated accordingly.
+  - **AMECO**: chapter zips at
+    `ec.europa.eu/economy_finance/db_indicators/ameco/documents/ameco{n}.zip`;
+    chapters 6 (GDP) and 16–18 (GG accounts, EDP, debt) snapshotted, Spring
+    2026 vintage. Finding: **no UK TR/TE level history** (2026–27 only;
+    UBLG/UYIG from 1987) — AMECO cannot serve as a UK envelope, reinforcing
+    the Q12 OBR-primary default.
+  - **Pull granularity**: Eurostat pulls are country-filtered (the SDMX 3.0
+    key parser accepts single values only) and unit-filtered to MIO_NAC; the
+    full-table pull attempted first proved impractical (>1 GB stream). The
+    filter is part of the recorded snapshot URL, so each snapshot remains a
+    complete, reproducible extraction definition. This narrows D-S0-003's
+    "full-dataset pull" note; provenance guarantees are unchanged.
+
+## D-S0-007 — WEO vintages: the API exposes 3; Q11 satisfied by taking all of them (serves §15 Q11, §8.5)
+2026-08-31. Enumerating `api.imf.org` live: WEO editions are exposed partly as
+dataflow versions and partly as named vintage flows. Exactly three are
+available today: **2026-04 = WEO/9.0.0** (publication date 2026-04-14, per the
+API's own attributes; the first session's search-derived 2026-04-08 is
+superseded), **2025-10 = WEO_2025_OCT_VINTAGE/1.0.0** (2025-10-14), and
+**2025-04 = WEO/6.0.0** (2025-04-22). Q11's rule for this case ("if the API
+exposes fewer than 5, take what it has and note the earliest") applies: all 3
+retained, earliest 2025-04, one source_id per vintage. Consequence for §8.5:
+old editions can disappear from the API, so `detect-vintages` must snapshot
+each new edition promptly. WEO pulls are one per (country, subject): the API
+only serves the series-level attributes that pin the §8.1 base year
+(LATEST_ACTUAL_ANNUAL_DATA) on single-series queries.
+
+## D-S0-008 — interest_anchor stays `level2` for all three countries (serves D10, §12 Stage 0)
+2026-08-31. Stage 0 was to set `interest_anchor` from measured Level II
+coverage. Measured: GF0107 available from the anchor's own COFOG table for
+every year of every country's expenditure history (GBR 1995–2024 ONS T11;
+FRA/DEU 1995–2024 Eurostat). The `level2` default in `countries.yaml` is
+therefore confirmed, not changed. The D.41-payable fallback series
+(ONS ESA T2 / gov_10a_main D41PAY, both from 1990/1995, AMECO UYIG from
+1978/1987/1991) are measured and registered for years outside Level II
+coverage in Stage 2.
+
+## D-S0-009 — §8.2 bridge computed for all three vintages; classification heuristic at Stage 0 (serves §8.2, D16)
+2026-08-31. `ggfiscal reconcile` writes `data/canonical/weo_base_bridge.csv`
+for every (country, harvested WEO vintage) — 9 pairs, not just the latest,
+since §8.5 keys everything by vintage anyway. Base year per §8.1 =
+min(WEO LATEST_ACTUAL_ANNUAL_DATA across GGR/GGX/GGXCNL/NGDP, last anchor
+year). Latest vintage (2026-04): GBR b=2025, FRA b=2024, DEU b=2025.
+Gap classification at Stage 0 is a documented heuristic (FRA/DEU: 'revision'
+within the 1%-of-TE tolerance, else 'unexplained'; GBR: 'perimeter' where the
+NLB gap ratio is within tolerance of the country mean, else 'unexplained') —
+V24 formalises this at Stage 5. Results match §14's priors: GBR TR/TE gaps
+≈ 6% of TE but NLB gap mean −0.10% of TE with σ 0.36 (stable perimeter);
+FRA/DEU gaps ≈ 0 (revisions only); GBR 1995–96 flagged unexplained (early-year
+WEO history divergence, to revisit in Stage 5). Nothing was scaled or
+adjusted (D13).
+
+## D-S1-001 — Stage 1 build shape: §5 long format for the trees, compact wide ledger (serves §5, §4.3, §11.6)
+2026-08-31. `ggfiscal build` writes `expenditure_long_{variant}` and
+`revenue_long_{variant}` in the full §5 long format (pandera-enforced,
+`src/ggfiscal/model.py`), containing the 66 lines plus each tree's own total
+row (TE from the COFOG table's total; TR from the revenue anchor). The balance
+ledger (§11.6 deliverable 3) is a compact wide file
+(`balance_ledger.csv`: TR, TE, NLB, NI, PB, `complete_both_sides`) built from
+the balance anchor's own TR/TE/B9, so V23 is an exact within-source identity;
+NI = GF01_7 − R07 only where both sides exist. Both variants carry identical
+anchor history at this stage; they diverge when forecasts arrive (Stages 3–4).
+COFOG-tree TE for GBR comes from ONS Table 11's own total row (V2 is a
+within-table identity), while the GBR ledger runs on ESA Table 2 — the two
+totals are different releases of the same accounts (Apr vs Jun 2026); any
+wedge shows up in V2/V23 diagnostics, never silently reconciled.
+
+## D-S1-002 — FRA/DEU revenue lines built from gov_10a_main's own REC codes; gov_10a_taxag demoted to detail/verification (serves §4.2, V22; narrows D-S0-003's dataset roles)
+2026-08-31. Root-caused a V22 failure: for FRA 2024, `gov_10a_taxag` D.2
+differs from `gov_10a_main` D2REC by 0.54% (transmission-timing drift in the
+freshest year), which breaks R01..R10 = TR at the 0.1% tolerance when tax
+lines come from taxag but TR from main. `gov_10a_main` itself carries
+D211REC, D51A_C1REC, D51B_C2REC, D5REC, D91REC — building every revenue line
+from the main table makes the identity exact in every year for both
+countries, provisional 2025 included, and extends the tax lines to 2025.
+taxag remains registered as the detail/verification source (D.59/D.91
+breakdowns, national tax lists). No value was adjusted; the source cell
+choice changed (D13-clean).
+
+## D-S1-003 — D10 Level II gap handling: DEU 1995–99 GF01_7 from D.41 payable, grade B (serves D10)
+2026-08-31. Measured during the build: Eurostat DEU `gov_10a_exp` lacks
+GF0107 for 1995–99 while GF01 exists. Exactly D10's fallback case: those five
+years carry GG gross D.41 payable from `gov_10a_main` (same institution),
+`observation_type = level2_proxy_actual`, grade B; the derived GF01_X years
+that use them are likewise grade B with a note. FRA and GBR need no proxy
+(full Level II coverage). V21 monitors the L2-vs-D.41 wedge (5–10% for
+FRA/DEU in some years — FISIM/consolidation differences, WARN tier).
+
+## D-S1-004 — §8.3 history decomposition: exact additivity via the sum-based balance; wedges reported, never allocated (serves §8.3, D16, V26)
+2026-08-31. The history decomposition (`deficit_dynamics.csv`) decomposes
+Δ((ΣR − ΣE)/GDP) over the 20 Level I lines, so V26 additivity is exact by
+construction. The wedge to the anchor's own Δ(B9/GDP) (rounding-level;
+policed by V2/V22/V23 at 0.1%) is reported as `ANCHOR_B9_DELTA`, and the
+latest WEO vintage's Δ(GGXCNL/NGDP) rides along as `WEO_GGXCNL_DELTA` — both
+memo rows, never allocated to lines. Denominator: anchor GDP throughout the
+history side; the chained-at-b path and forecast-side residuals arrive with
+Stage 5.
+
+## D-S1-005 — GBR receipts crosswalk documented from the anchor's own splits (serves §4.2, §11.5, D17)
+2026-08-31. `crosswalks/ONS_RECEIPTS_to_ESA_REV.csv` v1.0: ONS ESA Table 2
+provides D51M (households incl. holding gains) and D51O (corporations) as
+direct rows, so R03/R04 need no constructed split; NICs sit in D.61 → R06 per
+§14; payable tax credits follow the anchor's gross ESA treatment (D17). NTL
+table 9 (ONS_TAX_DETAIL) is the per-tax evidence trail. Allocation is 100%
+cell-to-line; no weights were estimated.
+
+## D-S2-001 — Backward-extension engine and §9 grade bands; D-graded mappings are never applied (serves §7.3-7.4, §7.12, §9, D6, D15)
+2026-08-31. `src/ggfiscal/stitch/backward.py` implements §7.3 (growth, never
+level), §7.4 (sequential sources, boundary record per transition) and §7.12
+(stop at missing/zero/negative or a configured perimeter break). Grades from
+the measured coverage share at the last common year (§9.2):
+**B = 90-110%**, **C = 50-90%**, anything else **D**. B rows enter both
+variants; C rows enter maximum_extension only (§9); **D-graded mappings are
+not applied at all** — D15 grades RS extensions "B/C", and a source covering
+<50% or materially more than the line (FRA T_4000 at 348% of R05) is a weak
+crosswalk whose growth would fabricate dynamics. D skips are still written to
+`stitch_boundaries.csv` (`variants = not_applied_grade_D`) so the stop is
+machine-documented. All boundary records land in
+`data/canonical/stitch_boundaries.csv` (committed).
+
+## D-S2-002 — V5 WARN thresholds (Q4 space, undefined in §10)
+2026-08-31. §10 gives V5 no numeric threshold. Chosen: WARN when |bias| >
+0.01 or RMSE > 0.05 on annual growth factors over the overlap; below that the
+diagnostic reports at OK severity with its stats. Fired for R04/R05 proxies
+(DEU R04 RMSE 0.149, GBR R05 0.148) — consistent with their C/D grades.
+Supersede via config if the committee sets different values.
+
+## D-S2-003 — Extension map actually applied (serves §12 Stage 2 order)
+2026-08-31. Tax lines via OECD RS (`DF_RSOECD`, growth of the matching
+heading, crosswalk `OECD_RS_to_ESA_REV.csv` v1.0): R01←5111, R02←5000−5111,
+R03←1100, R04←1200, R05←4000, R06←2000. Interest via GG D.41 history
+(`EC_AMECO_to_INTEREST.csv` v1.0): GBR GF01_7 ← ONS ESA T2 D.41 payable
+1990-94 then AMECO UYIG 1987-89 (two stitches); FRA ← UYIG to 1978;
+DEU ← UYIG to 1991. DEU expenditure GF01-GF10 1991-94 via IMF GFS COFOG
+(`IMF_GFS_to_COFOG.csv` v1.0; boundary ratios 0.994-1.000). GF01_X derived in
+stitched years where both components exist (DEU 1991-94, grade B). DEU has a
+hard break at 1991: pre-reunification data is West Germany, a different
+universe (§14) — no DEU line extends below 1991.
+
+## D-S2-004 — Why each line stops where it does (Gate 2 record)
+2026-08-31. First year per line after Stage 2, with the binding constraint.
+"OQ-5" = pre-1995 archives need either §11.4 manual ingestion (independent
+second keying unavailable to a single-agent session) or a machine-readable
+archive endpoint — committee item.
+
+**GBR** — GF01-GF10, GF01_X: 1995 (ONS T11 starts 1995; pre-1995 functional
+spending is PESA, "only if reconcilable" → OQ-5). GF01_7: 1987 (AMECO UYIG
+begins 1987; earlier D.41 would need ONS long-run PSF series — candidate for
+a Stage 2 follow-up pull). R01: 1973 (VAT introduced 1973; no tax exists
+before — final stop). R02: strict 1990 / maximum 1965 (C-grade RS composite).
+R03, R04: 1965 (RS series start — earliest machine-readable history). R05:
+1990 (RS 4000 mapping grade D, 145% coverage — not applied; no other source
+harvested). R06: strict 1990 / maximum 1965 (C: imputed+voluntary wedge).
+R07-R10: 1990 (ESA Table 2 start; no receivable-side history source in the
+harvest).
+
+**FRA** — GF01-GF10, GF01_X: 1995 (Eurostat starts 1995; INSEE pre-ESA95
+base series are non-SDMX archives → OQ-5). GF01_7: 1978 (AMECO UYIG start).
+R01: 1965 (RS start). R02: 1995 (RS composite grade D, 47% coverage — French
+production taxes sit largely outside 5000-ex-VAT). R03: 1965. R04: strict
+1995 / maximum 1965 (C: payable tax credits, D17). R05: 1995 (RS 4000 grade
+D, 348% coverage). R06: strict 1995 / maximum 1965 (C). R07-R10: 1995
+(gov_10a_main start).
+
+**DEU** — every extended line stops at 1991 (reunification perimeter break;
+pre-1991 is D-at-best per §14 — deliberate stop, not a data gap): GF01-GF10,
+GF01_7, GF01_X, R01, R02, R03, R05 at 1991 (strict); R04, R06 at 1991 in
+maximum only (C). R07-R10: 1995 (gov_10a_main start; no earlier D.41
+receivable source).
+
+Totals (TE, TR) and the ledger are not extended: §6.1 ties envelopes to the
+anchor's own aggregates; a stitched total would not be an anchor total.

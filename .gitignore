@@ -14,3 +14,7 @@ data/canonical/*
 !data/raw/.gitkeep
 !data/standard/.gitkeep
 !data/canonical/.gitkeep
+# §11.6 CSV deliverables double as gate evidence and are committed (the
+# parquet twins stay local; everything regenerates via `ggfiscal build`,
+# `reconcile`, `validate` from the hash-recorded snapshots):
+!data/canonical/*.csv

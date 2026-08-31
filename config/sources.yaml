@@ -88,24 +88,84 @@ sources:
 
   ONS_GG_RECEIPTS:
     institution: ONS
-    object: ESA-basis GG receipts by code (PSF / national accounts)
+    object: "ESA Table 2 — GG main aggregates: TR, TE, B9, receipts by ESA code, D41 both directions"
     trees: [revenue, balance]
     countries: [GBR]
     role: anchor
     api:
-      kind: xlsx_download
-      landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance
-      note: exact dataset (PSA/ESA receipts) to pin down live; document income tax / NICs / CT mapping in crosswalk
-    verification: {status: unverified, note: candidate datasets identified; needs live check (OQ-1)}
+      kind: xls_download
+      landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicspending/datasets/esatable2mainaggregatesofgeneralgovernment
+      file: esatable0200.xls
+      note: resolved live (D-S0-006); latest file served at {landing}/current/esatable0200.xls
+    verification:
+      status: confirmed_live
+      checked: 2026-08-31
+      last_update_observed: "2026-06-18"     # June 2026 EDP transmission
+      note: income tax / NICs / CT mapping for R03/R04/R06 comes from ONS_TAX_DETAIL + ONS_TAX_LIST (crosswalk)
+
+  ONS_TAX_DETAIL:
+    institution: ONS
+    object: "ESA questionnaire table 9 — detailed tax and social contribution receipts by type and receiving subsector (D211, D51 splits, D61, D91)"
+    trees: [revenue]
+    countries: [GBR]
+    role: anchor_detail
+    api:
+      kind: xls_download
+      landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicspending/datasets/esaquestionnairedetailedtaxandsocialcontributions
+      file: esantl0999.xls
+    verification:
+      status: confirmed_live
+      checked: 2026-08-31
+      last_update_observed: "2026-06-18"
+      note: resolved live (D-S0-006); GBR analogue of EUROSTAT_GOV10A_TAXAG
+
+  ONS_TAX_LIST:
+    institution: ONS
+    object: "ESA table 9 — national tax list (per-tax detail with ESA codes; income tax / NICs / CT mapping evidence)"
+    trees: [revenue]
+    countries: [GBR]
+    role: crosswalk_evidence
+    api:
+      kind: xls_download
+      landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicspending/datasets/esatable9listoftaxes
+      file: esatable0900.xls
+    verification:
+      status: confirmed_live
+      checked: 2026-08-31
+      last_update_observed: "2023-10-26"
+      note: "FLAGGED stale: file last saved 2023-10; use for tax-to-ESA mapping evidence only, not levels — ONS_TAX_DETAIL carries the current levels"
 
   ONS_PSF_INTEREST:
     institution: ONS
-    object: GG interest payable and receivable, accrued (D.41)
+    object: GG interest payable and receivable, accrued (D.41) — served by the D41 rows of ESA Table 2
     trees: [expenditure, revenue]
     countries: [GBR]
     role: interest_history
-    api: {kind: xlsx_download, landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance}
-    verification: {status: unverified, note: needs live check (OQ-1)}
+    api:
+      kind: xls_download
+      landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicspending/datasets/esatable2mainaggregatesofgeneralgovernment
+      file: esatable0200.xls
+      note: same physical dataset as ONS_GG_RECEIPTS (D-S0-006); kept as a distinct register
+            entry because the role (D10 interest history) and the rows used differ
+    verification:
+      status: confirmed_live
+      checked: 2026-08-31
+      last_update_observed: "2026-06-18"
+
+  ONS_GDP:
+    institution: ONS
+    object: "YBHA — GDP at market prices, current prices, £m, calendar years (QNA)"
+    trees: [denominator]
+    countries: [GBR]
+    role: gdp
+    api:
+      kind: timeseries_json
+      landing: https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ybha/qna
+      note: resolved live (D-S0-006); annual values from 1948; ESA Table 2 carries no GDP row
+    verification:
+      status: confirmed_live
+      checked: 2026-08-31
+      last_update_observed: "2026-06-29"
 
   INSEE_APU:
     institution: INSEE
@@ -134,22 +194,27 @@ sources:
     api:
       kind: sdmx
       base: https://api.imf.org/external/sdmx/3.0
-      note: dataset GFS_COFOG on data.imf.org (agency IMF.STA); exact dataflow id to confirm live.
-            Legacy dataservices.imf.org paths NOT used (portal migrated 2025).
+      dataflow_cofog: IMF.STA,GFS_COFOG,11.0.0
+      dataflow_main: IMF.STA,GFS_SOO,12.0.0
+      note: dataflow ids resolved live 2026-08-31 (D-S0-006); GFS_SOO is the
+            main-aggregates companion (Statement of Operations). Legacy
+            dataservices.imf.org paths NOT used (portal migrated 2025).
     landing: https://data.imf.org/Datasets/GFS_COFOG
-    verification: {status: confirmed_search, checked: 2026-08-31, note: dataset exists on migrated portal; dataflow id pending live check (OQ-1)}
+    verification: {status: confirmed_live, checked: 2026-08-31}
 
   OECD_T11:
     institution: OECD
-    object: Table 11 — government expenditure by function (secondary)
+    object: Table 11 — annual government expenditure by function, COFOG (secondary)
     trees: [expenditure]
     countries: [GBR, FRA, DEU]
     role: secondary
     api:
       kind: sdmx
       base: https://sdmx.oecd.org/public/rest
-      note: COFOG dataflow id to confirm live (national accounts SDD.NAD family)
-    verification: {status: unverified, note: dataflow id not confirmable by search; needs live catalog query (OQ-1)}
+      dataflow: OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1
+      note: resolved live from the OECD catalog 2026-08-31 (D-S0-006); 13-dim
+            DSD_NASEC10, filtered to S13 per country
+    verification: {status: confirmed_live, checked: 2026-08-31}
 
   OECD_RS:
     institution: OECD
@@ -160,13 +225,15 @@ sources:
     api:
       kind: sdmx
       base: https://sdmx.oecd.org/public/rest
-      dataflow: OECD.CTP.TPS,DSD_REV_COMP_GLOBAL@DF_RSGLOBAL
-      note: dataflow id confirmed via search 2026-08-31; version to confirm live
-    verification: {status: confirmed_search, checked: 2026-08-31}
+      dataflow: OECD.CTP.TPS,DSD_REV_COMP_OECD@DF_RSOECD,2.0
+      note: "resolved live 2026-08-31 (D-S0-006): DF_RSOECD (OECD members) carries
+            S13 XDC from 1965 as D15 requires; the §13-era candidate DF_RSGLOBAL
+            only starts 1990 and is not used"
+    verification: {status: confirmed_live, checked: 2026-08-31}
 
   IMF_WEO:
     institution: IMF
-    object: "WEO: GGR, GGX, GGXCNL, GGXONLB, NGDP (LCU); latest + 4-9 prior vintages (Q11)"
+    object: "WEO: GGR, GGX, GGXCNL, GGXONLB, NGDP (LCU); vintages actually exposed (Q11)"
     trees: [reconciliation]
     countries: [GBR, FRA, DEU]
     role: reconciliation_only          # §8 only; never an envelope or extension source (D4, D13)
@@ -175,14 +242,18 @@ sources:
       base: https://api.imf.org/external/sdmx/3.0
       agency: IMF.RES
       dataflow: WEO
-      note: editions exposed as dataflow versions; enumerate live via dataflow/IMF.RES/WEO/*
+      note: "vintages resolved live 2026-08-31 (D-S0-006, Q11): the API exposes exactly 3 —
+            2026-04 = WEO/9.0.0 (publication 2026-04-14), 2025-10 = WEO_2025_OCT_VINTAGE/1.0.0
+            (publication 2025-10-14), 2025-04 = WEO/6.0.0 (publication 2025-04-22).
+            One source_id per vintage at ingest: IMF_WEO_2026_04, IMF_WEO_2025_10, IMF_WEO_2025_04."
     landing: https://data.imf.org/en/datasets/IMF.RES:WEO
     verification:
-      status: confirmed_search
+      status: confirmed_live
       checked: 2026-08-31
-      latest_vintage: "2026-04"        # WEO April 2026, published 2026-04-08
-      note: one source_id per vintage at ingest (IMF_WEO_2026_04, ...); vintages actually
-            exposed by the API recorded at fetch time (Q11)
+      latest_vintage: "2026-04"        # WEO April 2026, publication date 2026-04-14 (per API attributes)
+      vintages_exposed: ["2026-04", "2025-10", "2025-04"]
+      note: fewer than the Q11 target of 5-10 — per Q11, take what the API exposes and
+            note the earliest (2025-04)
 
   EC_AMECO:
     institution: European Commission (DG ECFIN)
@@ -193,7 +264,9 @@ sources:
     api:
       kind: bulk_zip
       landing: https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database/download-annual-data-set-macro-economic-database-ameco_en
-      note: zip-per-chapter CSV; UK coverage to verify at pull time (§13 note)
+      zip_base: https://ec.europa.eu/economy_finance/db_indicators/ameco/documents
+      chapters: [6, 16, 17, 18]   # domestic product; GG revenue/expenditure; EDP; public debt
+      note: zip URLs ameco{n}.zip resolved live 2026-08-31 (D-S0-006); UK coverage verified at pull
     verification:
       status: confirmed_search
       checked: 2026-08-31

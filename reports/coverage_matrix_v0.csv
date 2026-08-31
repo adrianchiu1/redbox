@@ -1,67 +1,181 @@
-iso3,classification,line_code,candidate_sources,first_historical_year,final_actual_year,first_forecast_year,final_strict_year,final_maximum_year,status,notes
-GBR,COFOG,GF01,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-GBR,COFOG,GF01_7,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-GBR,COFOG,GF01_X,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-GBR,COFOG,GF02,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-GBR,COFOG,GF03,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-GBR,COFOG,GF04,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-GBR,COFOG,GF05,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-GBR,COFOG,GF06,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-GBR,COFOG,GF07,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-GBR,COFOG,GF08,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-GBR,COFOG,GF09,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-GBR,COFOG,GF10,ONS_ESA_T11;ONS_PSF_INTEREST;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-GBR,ESA_REV,R01,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-GBR,ESA_REV,R02,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-GBR,ESA_REV,R03,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-GBR,ESA_REV,R04,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-GBR,ESA_REV,R05,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7 partial: other-taxes component partial
-GBR,ESA_REV,R06,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7 partial: imputed component
-GBR,ESA_REV,R07,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-GBR,ESA_REV,R08,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-GBR,ESA_REV,R09,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-GBR,ESA_REV,R10,ONS_GG_RECEIPTS;ONS_PSF_INTEREST;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,COFOG,GF01,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-FRA,COFOG,GF01_7,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-FRA,COFOG,GF01_X,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,COFOG,GF02,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-FRA,COFOG,GF03,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,COFOG,GF04,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,COFOG,GF05,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,COFOG,GF06,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,COFOG,GF07,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-FRA,COFOG,GF08,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,COFOG,GF09,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-FRA,COFOG,GF10,EUROSTAT_GOV10A_EXP;INSEE_APU;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-FRA,ESA_REV,R01,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-FRA,ESA_REV,R02,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-FRA,ESA_REV,R03,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-FRA,ESA_REV,R04,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-FRA,ESA_REV,R05,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7 partial: other-taxes component partial
-FRA,ESA_REV,R06,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7 partial: imputed component
-FRA,ESA_REV,R07,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-FRA,ESA_REV,R08,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-FRA,ESA_REV,R09,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-FRA,ESA_REV,R10,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;INSEE_APU;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,COFOG,GF01,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-DEU,COFOG,GF01_7,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-DEU,COFOG,GF01_X,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,COFOG,GF02,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-DEU,COFOG,GF03,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,COFOG,GF04,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,COFOG,GF05,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,COFOG,GF06,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,COFOG,GF07,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-DEU,COFOG,GF08,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,COFOG,GF09,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-DEU,COFOG,GF10,EUROSTAT_GOV10A_EXP;DESTATIS_81000;IMF_GFS;OECD_T11;EC_AMECO,,,,,,awaiting_harvest,
-DEU,ESA_REV,R01,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-DEU,ESA_REV,R02,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-DEU,ESA_REV,R03,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-DEU,ESA_REV,R04,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-DEU,ESA_REV,R05,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7 partial: other-taxes component partial
-DEU,ESA_REV,R06,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7 partial: imputed component
-DEU,ESA_REV,R07,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-DEU,ESA_REV,R08,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
-DEU,ESA_REV,R09,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,
-DEU,ESA_REV,R10,EUROSTAT_GOV10A_MAIN;EUROSTAT_GOV10A_TAXAG;DESTATIS_81000;IMF_GFS;OECD_RS;EC_AMECO,,,,,,awaiting_harvest,D7: no identified forecast source; declared at outset
+iso3,classification,line_code,source_id,first_usable_year,last_usable_year,n_years,status,notes
+GBR,COFOG,GF01,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
+GBR,COFOG,GF01,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+GBR,COFOG,GF01,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,COFOG,GF01_7,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
+GBR,COFOG,GF01_7,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+GBR,COFOG,GF01_7,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,COFOG,GF01_7,ONS_PSF_INTEREST,1990,2025,36,measured,"D10 fallback concept: GG D.41 payable, accrued"
+GBR,COFOG,GF01_7,EC_AMECO,1987,2027,41,measured,envelope forecast source; ESA gross GG interest (D.41 pay)
+GBR,COFOG,GF01_X,ONS_ESA_T11,1995,2024,30,measured,derived GF01 - GF01_7; years where both exist | D7: no identified forecast source
+GBR,COFOG,GF02,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
+GBR,COFOG,GF02,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+GBR,COFOG,GF02,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,COFOG,GF03,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
+GBR,COFOG,GF03,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+GBR,COFOG,GF03,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+GBR,COFOG,GF04,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
+GBR,COFOG,GF04,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+GBR,COFOG,GF04,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+GBR,COFOG,GF05,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
+GBR,COFOG,GF05,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+GBR,COFOG,GF05,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+GBR,COFOG,GF06,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
+GBR,COFOG,GF06,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+GBR,COFOG,GF06,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+GBR,COFOG,GF07,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
+GBR,COFOG,GF07,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+GBR,COFOG,GF07,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,COFOG,GF08,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
+GBR,COFOG,GF08,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+GBR,COFOG,GF08,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+GBR,COFOG,GF09,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
+GBR,COFOG,GF09,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+GBR,COFOG,GF09,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,COFOG,GF10,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
+GBR,COFOG,GF10,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+GBR,COFOG,GF10,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,ESA_REV,R01,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.211 receivable
+GBR,ESA_REV,R01,ONS_TAX_DETAIL,1995,2025,31,measured,NTL detail
+GBR,ESA_REV,R01,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5111 VAT
+GBR,ESA_REV,R01,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 11411 VAT
+GBR,ESA_REV,R02,ONS_GG_RECEIPTS,1990,2025,36,measured,derived D.2 - D.211
+GBR,ESA_REV,R02,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5000 taxes on goods and services (minus VAT in crosswalk)
+GBR,ESA_REV,R03,ONS_GG_RECEIPTS,1990,2025,36,measured,D51M = household income taxes incl. holding gains
+GBR,ESA_REV,R03,ONS_TAX_DETAIL,1995,2025,31,measured,NTL detail
+GBR,ESA_REV,R03,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1100 taxes on income of individuals
+GBR,ESA_REV,R03,IMF_GFS,1972,2024,48,measured,"reconciliation; GFSM 1111 income taxes, individuals"
+GBR,ESA_REV,R04,ONS_GG_RECEIPTS,1990,2025,36,measured,D51O = corporate income taxes incl. holding gains
+GBR,ESA_REV,R04,ONS_TAX_DETAIL,1995,2025,31,measured,NTL detail
+GBR,ESA_REV,R04,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1200 corporate taxes on income
+GBR,ESA_REV,R04,IMF_GFS,1972,2024,48,measured,"reconciliation; GFSM 1112 income taxes, corporations"
+GBR,ESA_REV,R05,ONS_GG_RECEIPTS,1990,2025,36,measured,derived D.5 - D.51M - D.51O + D.59 + D.91 | D7 partial: other-taxes component partial
+GBR,ESA_REV,R05,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 4000 property taxes (partial concept) | D7 partial: other-taxes component partial
+GBR,ESA_REV,R06,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.61 receivable | D7 partial: imputed component
+GBR,ESA_REV,R06,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 2000 social security contributions | D7 partial: imputed component
+GBR,ESA_REV,R06,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM 12 social contributions | D7 partial: imputed component
+GBR,ESA_REV,R07,ONS_GG_RECEIPTS,1990,2025,36,measured,"anchor; D.41 receivable, accrued"
+GBR,ESA_REV,R07,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 1411 interest revenue
+GBR,ESA_REV,R08,ONS_GG_RECEIPTS,1990,2025,36,measured,derived D.4 - D.41 receivable | D7: no identified forecast source
+GBR,ESA_REV,R09,ONS_GG_RECEIPTS,1990,2025,36,measured,derived P.11 + P.12 + P.131
+GBR,ESA_REV,R10,ONS_GG_RECEIPTS,1990,2025,36,measured,derived D.39 + D.7 + (D.9 - D.91) receivable | D7: no identified forecast source
+FRA,COFOG,GF01,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+FRA,COFOG,GF01,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+FRA,COFOG,GF01,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,COFOG,GF01_7,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+FRA,COFOG,GF01_7,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+FRA,COFOG,GF01_7,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,COFOG,GF01_7,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,D10 fallback concept: GG D.41 payable
+FRA,COFOG,GF01_7,EC_AMECO,1978,2027,50,measured,envelope forecast source; ESA gross GG interest (D.41 pay)
+FRA,COFOG,GF01_X,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,derived GF01 - GF01_7; years where both exist | D7: no identified forecast source
+FRA,COFOG,GF02,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+FRA,COFOG,GF02,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+FRA,COFOG,GF02,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,COFOG,GF03,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+FRA,COFOG,GF03,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+FRA,COFOG,GF03,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+FRA,COFOG,GF04,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+FRA,COFOG,GF04,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+FRA,COFOG,GF04,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+FRA,COFOG,GF05,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+FRA,COFOG,GF05,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+FRA,COFOG,GF05,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+FRA,COFOG,GF06,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+FRA,COFOG,GF06,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+FRA,COFOG,GF06,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+FRA,COFOG,GF07,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+FRA,COFOG,GF07,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+FRA,COFOG,GF07,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,COFOG,GF08,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+FRA,COFOG,GF08,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+FRA,COFOG,GF08,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+FRA,COFOG,GF09,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+FRA,COFOG,GF09,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+FRA,COFOG,GF09,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,COFOG,GF10,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+FRA,COFOG,GF10,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+FRA,COFOG,GF10,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,ESA_REV,R01,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.211 (D-S1-002)
+FRA,ESA_REV,R01,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
+FRA,ESA_REV,R01,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5111 VAT
+FRA,ESA_REV,R01,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 11411 VAT
+FRA,ESA_REV,R02,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.2 - D.211
+FRA,ESA_REV,R02,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5000 taxes on goods and services (minus VAT in crosswalk)
+FRA,ESA_REV,R03,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; household income taxes incl. holding gains
+FRA,ESA_REV,R03,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
+FRA,ESA_REV,R03,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1100 taxes on income of individuals
+FRA,ESA_REV,R03,IMF_GFS,1987,2024,33,measured,"reconciliation; GFSM 1111 income taxes, individuals"
+FRA,ESA_REV,R04,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; corporate income taxes incl. holding gains
+FRA,ESA_REV,R04,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
+FRA,ESA_REV,R04,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1200 corporate taxes on income
+FRA,ESA_REV,R04,IMF_GFS,1987,2024,33,measured,"reconciliation; GFSM 1112 income taxes, corporations"
+FRA,ESA_REV,R05,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.5 - R03 - R04 + D.91 (D.59 inside D.5) | D7 partial: other-taxes component partial
+FRA,ESA_REV,R05,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 4000 property taxes (partial concept) | D7 partial: other-taxes component partial
+FRA,ESA_REV,R06,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.61 resources | D7 partial: imputed component
+FRA,ESA_REV,R06,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 2000 social security contributions | D7 partial: imputed component
+FRA,ESA_REV,R06,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM 12 social contributions | D7 partial: imputed component
+FRA,ESA_REV,R07,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.41 resources
+FRA,ESA_REV,R07,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 1411 interest revenue
+FRA,ESA_REV,R08,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.4 - D.41 resources | D7: no identified forecast source
+FRA,ESA_REV,R09,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor
+FRA,ESA_REV,R10,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.39 + D.7 + D.92 + D.99 resources | D7: no identified forecast source
+DEU,COFOG,GF01,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+DEU,COFOG,GF01,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+DEU,COFOG,GF01,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
+DEU,COFOG,GF01_7,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,anchor; na_item TE
+DEU,COFOG,GF01_7,OECD_T11,2000,2024,25,measured,secondary; S13 XDC OTE
+DEU,COFOG,GF01_7,IMF_GFS,2000,2024,25,measured,reconciliation; GFSM XDC
+DEU,COFOG,GF01_7,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,D10 fallback concept: GG D.41 payable
+DEU,COFOG,GF01_7,EC_AMECO,1991,2027,37,measured,envelope forecast source; ESA gross GG interest (D.41 pay)
+DEU,COFOG,GF01_X,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,derived GF01 - GF01_7; years where both exist | D7: no identified forecast source
+DEU,COFOG,GF02,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+DEU,COFOG,GF02,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+DEU,COFOG,GF02,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
+DEU,COFOG,GF03,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+DEU,COFOG,GF03,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+DEU,COFOG,GF03,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+DEU,COFOG,GF04,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+DEU,COFOG,GF04,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+DEU,COFOG,GF04,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+DEU,COFOG,GF05,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+DEU,COFOG,GF05,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+DEU,COFOG,GF05,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+DEU,COFOG,GF06,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+DEU,COFOG,GF06,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+DEU,COFOG,GF06,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+DEU,COFOG,GF07,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+DEU,COFOG,GF07,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+DEU,COFOG,GF07,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
+DEU,COFOG,GF08,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+DEU,COFOG,GF08,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+DEU,COFOG,GF08,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+DEU,COFOG,GF09,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+DEU,COFOG,GF09,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+DEU,COFOG,GF09,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
+DEU,COFOG,GF10,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+DEU,COFOG,GF10,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+DEU,COFOG,GF10,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
+DEU,ESA_REV,R01,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.211 (D-S1-002)
+DEU,ESA_REV,R01,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
+DEU,ESA_REV,R01,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5111 VAT
+DEU,ESA_REV,R01,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM 11411 VAT
+DEU,ESA_REV,R02,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.2 - D.211
+DEU,ESA_REV,R02,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5000 taxes on goods and services (minus VAT in crosswalk)
+DEU,ESA_REV,R03,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; household income taxes incl. holding gains
+DEU,ESA_REV,R03,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
+DEU,ESA_REV,R03,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1100 taxes on income of individuals
+DEU,ESA_REV,R03,IMF_GFS,1974,2024,50,measured,"reconciliation; GFSM 1111 income taxes, individuals"
+DEU,ESA_REV,R04,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; corporate income taxes incl. holding gains
+DEU,ESA_REV,R04,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
+DEU,ESA_REV,R04,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1200 corporate taxes on income
+DEU,ESA_REV,R04,IMF_GFS,1991,2024,34,measured,"reconciliation; GFSM 1112 income taxes, corporations"
+DEU,ESA_REV,R05,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.5 - R03 - R04 + D.91 (D.59 inside D.5) | D7 partial: other-taxes component partial
+DEU,ESA_REV,R05,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 4000 property taxes (partial concept) | D7 partial: other-taxes component partial
+DEU,ESA_REV,R06,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.61 resources | D7 partial: imputed component
+DEU,ESA_REV,R06,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 2000 social security contributions | D7 partial: imputed component
+DEU,ESA_REV,R06,IMF_GFS,1972,2024,52,measured,reconciliation; GFSM 12 social contributions | D7 partial: imputed component
+DEU,ESA_REV,R07,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.41 resources
+DEU,ESA_REV,R07,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM 1411 interest revenue
+DEU,ESA_REV,R08,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.4 - D.41 resources | D7: no identified forecast source
+DEU,ESA_REV,R09,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor
+DEU,ESA_REV,R10,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.39 + D.7 + D.92 + D.99 resources | D7: no identified forecast source

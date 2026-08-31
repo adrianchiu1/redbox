@@ -11,7 +11,7 @@ countries:
       expenditure: ONS_ESA_T11
       revenue: ONS_GG_RECEIPTS
       balance: ONS_GG_RECEIPTS
-    gdp_source: ONS_GG_RECEIPTS   # anchor-vintage national accounts GDP (§6.3); confirm series in Stage 1
+    gdp_source: ONS_GDP           # YBHA, £m CY (D-S0-006); ESA Table 2 has no GDP row
     interest_anchor: level2       # provisional — Stage 0 measures L2 coverage
     envelope_forecast: [OBR_EFO_LATEST, EC_AMECO]   # §15 Q12 default: OBR primary, AMECO cross-check
     period_basis_forecast: FY     # OBR/HMT Apr–Mar; convert per §7.10

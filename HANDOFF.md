@@ -1,59 +1,73 @@
 # HANDOFF.md
 
-Rewritten 2026-08-31, end of session 1.
+Rewritten 2026-08-31, end of session 2 (Stages 0, 1 and 2 all completed this
+session, sequentially, on `claude/gg-fiscal-stage-0-harvest-de9qld`).
 
 ## Current stage
 
-**Stage 0 (verify and harvest) — in progress, harvest blocked.**
+**Stage 2 (backward extension) — COMPLETE. Gate 2 PASSED.**
+(Gates 0 and 1 passed earlier this session; see git history.)
 
-## Gate 0 status: OPEN (blocked, not failed)
+## Gate 2 status: PASSED (per country, per tree)
 
-| Gate 0 requirement | Status |
+| Gate 2 requirement | Status |
 |---|---|
-| Endpoints confirmed (incl. IMF 2025 portal migration) | Partially: migration confirmed, new base `api.imf.org/external/sdmx/3.0` adopted, WEO-editions-as-dataflow-versions understood; 4 dataflow ids still need one live catalog query each (see `reports/source_verification.md`). |
-| All anchors + WEO + GFS + OECD RS + AMECO pulled as D8 snapshots | **Blocked — OQ-1**: org egress policy denies every statistical host (confirmed live via `ggfiscal fetch --all`). |
-| 66 lines with programmatic coverage → `coverage_matrix_v0.csv` | Frame emitted (66 rows, candidate sources per line, D7 notes); year columns empty pending harvest — deliberately not hand-filled (D13). |
-| §8.2 base-year bridge, 3 countries, latest WEO vintage (2026-04) | Blocked on the same harvest. |
-| `reports/source_verification.md` | Written; complete to the limit of search-only verification; flagged entries listed. |
+| Every backward stitch has a boundary record | **Done.** `data/canonical/stitch_boundaries.csv` (committed): one record per (line, incoming source) transition — year, outgoing, incoming, anchor value, growth, scope note, break flag — including three `not_applied_grade_D` skip records. |
+| Crosswalk version + grade on every stitch | **Done.** `OECD_RS_to_ESA_REV.csv`, `EC_AMECO_to_INTEREST.csv`, `IMF_GFS_to_COFOG.csv` (all v1.0, §11.5 format, measured coverage as evidence); every stitched row carries grade, crosswalk_version, coverage_share + year (§9.2). |
+| V5 | **Done** (plus V6, V13, V25). V5 WARNs on the R04/R05 proxies (RMSE ~0.15) — consistent with their C/D grades; V6 (growth reproduces from raw sources) and V13 (concept note per stitch) green; V25 documents the known RS concept wedges (up to −25% on GBR R06). No ERROR anywhere. |
+| DECISIONS.md records why each line stops | **Done** — D-S2-004 has the full per-country, per-line table with binding constraints. |
+
+`pytest`: **42 passed.** `ggfiscal validate`: OK=47 SKIP=9 WARN=321, no ERROR
+(WARNs = V1 GFS wedges, V21 interest wedges, V5 proxy diagnostics, V25 RS
+wedges — all expected-tier documentation, nothing adjusted).
+
+## What Stage 2 added
+
+Strict variant: 212 stitched rows, all grade B — GBR interest to 1987 (two
+stitches: ONS ESA T2 D.41 then AMECO), FRA interest to 1978, GBR R01 to 1973
+(VAT introduction), R03/R04 to 1965; FRA R01/R03 to 1965; DEU everything to
+1991 (hard reunification break, never below). Maximum adds 118 C-grade rows
+(R04/R06 and GBR/FRA R02/R06 deeper history). Variants now genuinely diverge.
+Three mappings measured out of bounds were NOT applied (grade D, recorded):
+FRA R02 (47%), FRA R05 (348%), GBR R05 (145%).
 
 ## Blocked on whom
 
-**The committee (AC)** — OQ-1 in `OPEN_QUESTIONS.md`: either allowlist the
-listed hosts for this repo's remote sessions, or run the harvest from a
-network-enabled machine (`pip install -e . && ggfiscal fetch --all`) and sync
-`data/manifest/` + `data/raw/` back. Nothing else blocks.
-
-## What exists and is verified working
-
-- Repo skeleton per §11.2; configs (`countries/lines/sources/residual.yaml`)
-  encoding D1–D17 and the Q1–Q13 defaults; §13 register with verification fields.
-- `ggfiscal` package: immutable content-hashed snapshot store (D8) with
-  append-only manifest and hash re-verification; endpoint builders (no legacy
-  IMF paths, enforced by test); fetch orchestration distinguishing egress
-  denial from source failure; validation runner (V1–V28 registered with
-  stage-gated SKIP semantics + Stage 0 structural checks) writing
-  `exceptions.csv`; coverage-matrix and source-register generators; typer CLI.
-- `pytest`: 20/20 green. `ggfiscal validate`: OK=2 SKIP=28 WARN=1, **no ERROR**
-  (the WARN is the absent harvest, which is correct).
+**Nothing blocks Stage 3.** Committee items outstanding (none blocking):
+OQ-5 (pre-1995 GBR/FRA expenditure archives: manual-ingest authorisation or
+machine-readable endpoints; quick win: ONS long-run PSF interest series),
+OQ-4 (AMECO no UK TR/TE levels), OQ-3 (raw archival).
 
 ## Exact next command
 
-In a network-enabled environment (or after allowlisting):
+Stage 3 (strict forecasts — §12): priority `GF01_7`, `R07`, GF02 (all
+three) → R01/R03/R04/R06 (OBR; Steuerschätzung + BMAS; AMECO/LPFP) → GF07,
+GF09 (Ageing Report; OBR) → GF10 composites → remaining AMECO lines → D7
+declarations. Machine-readable first; PDF via §11.4. New harvest pulls needed
+(obr.uk, webgate/circabc for AR annexes, bundesfinanzministerium.de,
+Steuerschätzung tables) — hosts were listed in OQ-1's "later stages" set and
+have NOT yet been probed; if blocked, that reopens OQ-1 for those hosts.
+Implement §7.5 (% GDP paths), §7.10 (GBR FY→CY conversion), D11/D12, V10,
+V11, V15, V16, V18.
 
 ```
-pip install -e .[dev] && ggfiscal fetch --all && ggfiscal validate
+pip install -e .[dev] && pytest && ggfiscal validate   # green baseline
 ```
 
-Then, same session: enumerate WEO dataflow versions from the fetched catalog
-(pin Q11 vintage count), confirm the 4 open dataflow ids, write the
-standardise step for the fetched snapshots, measure first/last usable years
-into `coverage_matrix_v0.csv`, and compute the §8.2 base-year bridge on WEO
-2026-04. That completes Gate 0.
+## Data facts Stage 3+ must not rediscover
+
+- FRA/DEU revenue lines run off `gov_10a_main` REC codes (D-S1-002); taxag is
+  detail-only. DEU GF01_7 1995-99 are D10 proxy rows (grade B).
+- DEU never extends below 1991 (D-S2-003); GBR R01 stops at 1973 by law of
+  nature (VAT introduction).
+- AMECO chapter values are Mrd (billions) — unit_factor 1000 in the stitch
+  spec; growth unaffected.
+- Grade bands: B 90-110%, C 50-90%, else D-not-applied (D-S2-001).
+- AMECO has no UK TR/TE levels (OQ-4) — OBR is the only UK envelope.
+- V5 thresholds are D-S2-002's choice, not spec-given.
 
 ## §15 dependencies currently riding on defaults
 
-Q1 (nominal LCU primitive), Q3 (`grow_with_proxy`), Q4 (tolerances as
-tabled — in `countries.yaml`), Q7 (defence plans strict-B if ≥90% GG),
-Q8 (keep uplift), Q11 (5–10 WEO vintages — final count pinned at harvest),
-Q12 (OBR primary for GBR §8.3), Q13 (R06 single line). No default has been
-overridden; none has yet forced a committee call.
+Unchanged: Q1, Q3, Q4 (+ D-S2-002 filling V5's gap), Q7, Q8, Q12, Q13 on
+defaults; Q11 pinned at 3 vintages (D-S0-007). Stage 3 will exercise Q7
+(defence plans strict-B) and Q12 (OBR primary) directly.
