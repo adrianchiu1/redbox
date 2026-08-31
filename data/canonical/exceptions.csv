@@ -4,31 +4,139 @@ S0_REGISTER,OK,-,29 register entries structurally complete
 S0_SNAPSHOTS,OK,-,248 snapshots verified
 S0_COVERAGE,OK,-,66/66 lines have measured coverage from >=1 source
 S0_BRIDGE,OK,-,§8.2 bridge computed for all 3 countries on WEO 2026-04
-V1,SKIP,-,not runnable before stage 1 (current stage 0)
-V2,SKIP,-,not runnable before stage 1 (current stage 0)
-V3,SKIP,-,not runnable before stage 1 (current stage 0)
-V4,SKIP,-,not runnable before stage 1 (current stage 0)
-V5,SKIP,-,not runnable before stage 2 (current stage 0)
-V6,SKIP,-,not runnable before stage 2 (current stage 0)
-V7,SKIP,-,not runnable before stage 1 (current stage 0)
-V8,SKIP,-,not runnable before stage 1 (current stage 0)
-V9,SKIP,-,not runnable before stage 1 (current stage 0)
-V10,SKIP,-,not runnable before stage 3 (current stage 0)
-V11,SKIP,-,not runnable before stage 3 (current stage 0)
-V12,SKIP,-,not runnable before stage 1 (current stage 0)
-V13,SKIP,-,not runnable before stage 2 (current stage 0)
-V14,SKIP,-,not runnable before stage 1 (current stage 0)
-V15,SKIP,-,not runnable before stage 3 (current stage 0)
-V16,SKIP,-,not runnable before stage 3 (current stage 0)
-V17,SKIP,-,not runnable before stage 4 (current stage 0)
-V18,SKIP,-,not runnable before stage 3 (current stage 0)
-V19,SKIP,-,not runnable before stage 1 (current stage 0)
-V20,SKIP,-,not runnable before stage 1 (current stage 0)
-V21,SKIP,-,not runnable before stage 1 (current stage 0)
-V22,SKIP,-,not runnable before stage 1 (current stage 0)
-V23,SKIP,-,not runnable before stage 1 (current stage 0)
-V24,SKIP,-,not runnable before stage 5 (current stage 0)
-V25,SKIP,-,not runnable before stage 2 (current stage 0)
-V26,SKIP,-,not runnable before stage 1 (current stage 0)
-V27,SKIP,-,not runnable before stage 5 (current stage 0)
-V28,SKIP,-,not runnable before stage 5 (current stage 0)
+V1,WARN,FRA/GF01/2001,IMF GFS diff -1.0426% beyond 0.5%
+V1,WARN,FRA/GF01/2002,IMF GFS diff -0.6244% beyond 0.5%
+V1,WARN,FRA/GF01/2004,IMF GFS diff -0.6974% beyond 0.5%
+V1,WARN,FRA/GF01/2008,IMF GFS diff -0.6675% beyond 0.5%
+V1,WARN,FRA/GF01/2023,IMF GFS diff -0.6048% beyond 0.5%
+V1,WARN,FRA/GF01_7/1996,IMF GFS diff -0.5307% beyond 0.5%
+V1,WARN,FRA/GF01_7/1998,IMF GFS diff -0.6254% beyond 0.5%
+V1,WARN,FRA/GF01_7/2001,IMF GFS diff -2.578% beyond 0.5%
+V1,WARN,FRA/GF01_7/2002,IMF GFS diff -1.5476% beyond 0.5%
+V1,WARN,FRA/GF01_7/2003,IMF GFS diff -0.6666% beyond 0.5%
+V1,WARN,FRA/GF01_7/2004,IMF GFS diff -1.785% beyond 0.5%
+V1,WARN,FRA/GF01_7/2005,IMF GFS diff -0.8196% beyond 0.5%
+V1,WARN,FRA/GF01_7/2006,IMF GFS diff -0.6382% beyond 0.5%
+V1,WARN,FRA/GF01_7/2007,IMF GFS diff -0.9751% beyond 0.5%
+V1,WARN,FRA/GF01_7/2008,IMF GFS diff -1.674% beyond 0.5%
+V1,WARN,FRA/GF01_7/2009,IMF GFS diff -0.8377% beyond 0.5%
+V1,WARN,FRA/GF01_7/2010,IMF GFS diff -0.7803% beyond 0.5%
+V1,WARN,FRA/GF01_7/2011,IMF GFS diff -0.9739% beyond 0.5%
+V1,WARN,FRA/GF01_7/2012,IMF GFS diff -0.574% beyond 0.5%
+V1,WARN,FRA/GF01_7/2015,IMF GFS diff -0.6342% beyond 0.5%
+V1,WARN,FRA/GF01_7/2016,IMF GFS diff -0.6838% beyond 0.5%
+V1,WARN,FRA/GF01_7/2017,IMF GFS diff -0.7059% beyond 0.5%
+V1,WARN,FRA/GF01_7/2018,IMF GFS diff -0.7043% beyond 0.5%
+V1,WARN,FRA/GF01_7/2019,IMF GFS diff -0.7647% beyond 0.5%
+V1,WARN,FRA/GF01_7/2020,IMF GFS diff -0.6651% beyond 0.5%
+V1,WARN,FRA/GF01_7/2022,IMF GFS diff -0.5111% beyond 0.5%
+V1,WARN,FRA/GF01_7/2023,IMF GFS diff -2.0442% beyond 0.5%
+V1,WARN,DEU/GF01/1995,IMF GFS diff -2.3207% beyond 0.5%
+V1,WARN,DEU/GF01/1996,IMF GFS diff -1.964% beyond 0.5%
+V1,WARN,DEU/GF01/1997,IMF GFS diff -1.5126% beyond 0.5%
+V1,WARN,DEU/GF01/1998,IMF GFS diff -1.1264% beyond 0.5%
+V1,WARN,DEU/GF01/1999,IMF GFS diff -1.2034% beyond 0.5%
+V1,WARN,DEU/GF01/2000,IMF GFS diff -0.7572% beyond 0.5%
+V1,WARN,DEU/GF01/2001,IMF GFS diff -0.7703% beyond 0.5%
+V1,WARN,DEU/GF01/2002,IMF GFS diff -0.9543% beyond 0.5%
+V1,WARN,DEU/GF01/2003,IMF GFS diff -0.6288% beyond 0.5%
+V1,WARN,DEU/GF01/2004,IMF GFS diff -0.6547% beyond 0.5%
+V1,WARN,DEU/GF01/2005,IMF GFS diff -0.6487% beyond 0.5%
+V1,WARN,DEU/GF01/2006,IMF GFS diff -0.6501% beyond 0.5%
+V1,WARN,DEU/GF01/2009,IMF GFS diff -1.0965% beyond 0.5%
+V1,WARN,DEU/GF01/2010,IMF GFS diff -1.1208% beyond 0.5%
+V1,WARN,DEU/GF01/2011,IMF GFS diff -1.2029% beyond 0.5%
+V1,WARN,DEU/GF01/2012,IMF GFS diff -1.4416% beyond 0.5%
+V1,WARN,DEU/GF01/2013,IMF GFS diff -1.3207% beyond 0.5%
+V1,WARN,DEU/GF01/2014,IMF GFS diff -1.2914% beyond 0.5%
+V1,WARN,DEU/GF01/2015,IMF GFS diff -1.3258% beyond 0.5%
+V1,WARN,DEU/GF01/2016,IMF GFS diff -1.2608% beyond 0.5%
+V1,WARN,DEU/GF01/2017,IMF GFS diff -1.0591% beyond 0.5%
+V1,WARN,DEU/GF01/2018,IMF GFS diff -0.9386% beyond 0.5%
+V1,WARN,DEU/GF01/2019,IMF GFS diff -0.8502% beyond 0.5%
+V1,WARN,DEU/GF01/2020,IMF GFS diff -0.8029% beyond 0.5%
+V1,WARN,DEU/GF01/2021,IMF GFS diff -0.6364% beyond 0.5%
+V1,WARN,DEU/GF01/2022,IMF GFS diff -0.6291% beyond 0.5%
+V1,WARN,DEU/GF01/2023,IMF GFS diff -0.7378% beyond 0.5%
+V1,WARN,DEU/GF01/2024,IMF GFS diff -0.5718% beyond 0.5%
+V1,WARN,DEU/GF01_7/2000,IMF GFS diff -1.5375% beyond 0.5%
+V1,WARN,DEU/GF01_7/2001,IMF GFS diff -1.597% beyond 0.5%
+V1,WARN,DEU/GF01_7/2002,IMF GFS diff -2.0046% beyond 0.5%
+V1,WARN,DEU/GF01_7/2003,IMF GFS diff -1.3582% beyond 0.5%
+V1,WARN,DEU/GF01_7/2004,IMF GFS diff -1.4188% beyond 0.5%
+V1,WARN,DEU/GF01_7/2005,IMF GFS diff -1.4235% beyond 0.5%
+V1,WARN,DEU/GF01_7/2006,IMF GFS diff -1.4295% beyond 0.5%
+V1,WARN,DEU/GF01_7/2007,IMF GFS diff -0.9723% beyond 0.5%
+V1,WARN,DEU/GF01_7/2008,IMF GFS diff -0.8284% beyond 0.5%
+V1,WARN,DEU/GF01_7/2009,IMF GFS diff -2.7057% beyond 0.5%
+V1,WARN,DEU/GF01_7/2010,IMF GFS diff -2.941% beyond 0.5%
+V1,WARN,DEU/GF01_7/2011,IMF GFS diff -3.0875% beyond 0.5%
+V1,WARN,DEU/GF01_7/2012,IMF GFS diff -3.9377% beyond 0.5%
+V1,WARN,DEU/GF01_7/2013,IMF GFS diff -4.4024% beyond 0.5%
+V1,WARN,DEU/GF01_7/2014,IMF GFS diff -4.6075% beyond 0.5%
+V1,WARN,DEU/GF01_7/2015,IMF GFS diff -5.132% beyond 0.5%
+V1,WARN,DEU/GF01_7/2016,IMF GFS diff -5.5566% beyond 0.5%
+V1,WARN,DEU/GF01_7/2017,IMF GFS diff -5.3539% beyond 0.5%
+V1,WARN,DEU/GF01_7/2018,IMF GFS diff -5.2214% beyond 0.5%
+V1,WARN,DEU/GF01_7/2019,IMF GFS diff -5.5339% beyond 0.5%
+V1,WARN,DEU/GF01_7/2020,IMF GFS diff -6.6745% beyond 0.5%
+V1,WARN,DEU/GF01_7/2021,IMF GFS diff -5.9409% beyond 0.5%
+V1,WARN,DEU/GF01_7/2022,IMF GFS diff -4.8903% beyond 0.5%
+V1,WARN,DEU/GF01_7/2023,IMF GFS diff -4.6981% beyond 0.5%
+V1,WARN,DEU/GF01_7/2024,IMF GFS diff -3.2244% beyond 0.5%
+V2,OK,-,GF01+...+GF10 = TE within tolerance in all complete years
+V3,OK,-,Level I shares sum to 100 within tolerance
+V4,OK,-,no negative values outside R08/R10 and ledger balances
+V5,SKIP,-,not runnable before stage 2 (current stage 1)
+V6,SKIP,-,not runnable before stage 2 (current stage 1)
+V7,OK,-,every forecast row carries source metadata (none yet at Stage 1)
+V8,OK,-,interpolated/converted rows labelled (none yet)
+V9,OK,-,observation types and grades consistent with variant
+V10,SKIP,-,not runnable before stage 3 (current stage 1)
+V11,SKIP,-,not runnable before stage 3 (current stage 1)
+V12,OK,-,all sources S13; no unnoted perimeter
+V13,SKIP,-,not runnable before stage 2 (current stage 1)
+V14,OK,-,no filled values; year sets match the anchors
+V15,SKIP,-,not runnable before stage 3 (current stage 1)
+V16,SKIP,-,not runnable before stage 3 (current stage 1)
+V17,SKIP,-,not runnable before stage 4 (current stage 1)
+V18,SKIP,-,not runnable before stage 3 (current stage 1)
+V19,OK,-,GF01 split identities hold; GF01_X never forecast
+V20,OK,-,interest rows flagged; strict rows gross
+V21,WARN,FRA/1999,Level II 01.7 vs D.41 payable diff 5.44% > 5.0%
+V21,WARN,FRA/2000,Level II 01.7 vs D.41 payable diff 5.58% > 5.0%
+V21,WARN,FRA/2010,Level II 01.7 vs D.41 payable diff 6.77% > 5.0%
+V21,WARN,FRA/2011,Level II 01.7 vs D.41 payable diff 5.10% > 5.0%
+V21,WARN,FRA/2012,Level II 01.7 vs D.41 payable diff 5.04% > 5.0%
+V21,WARN,FRA/2013,Level II 01.7 vs D.41 payable diff 6.34% > 5.0%
+V21,WARN,FRA/2014,Level II 01.7 vs D.41 payable diff 7.98% > 5.0%
+V21,WARN,FRA/2015,Level II 01.7 vs D.41 payable diff 8.48% > 5.0%
+V21,WARN,FRA/2016,Level II 01.7 vs D.41 payable diff 9.22% > 5.0%
+V21,WARN,FRA/2017,Level II 01.7 vs D.41 payable diff 8.80% > 5.0%
+V21,WARN,FRA/2018,Level II 01.7 vs D.41 payable diff 7.87% > 5.0%
+V21,WARN,FRA/2019,Level II 01.7 vs D.41 payable diff 7.89% > 5.0%
+V21,WARN,FRA/2020,Level II 01.7 vs D.41 payable diff 9.69% > 5.0%
+V21,WARN,FRA/2021,Level II 01.7 vs D.41 payable diff 7.79% > 5.0%
+V21,WARN,DEU/2000,Level II 01.7 vs D.41 payable diff 5.51% > 5.0%
+V21,WARN,DEU/2001,Level II 01.7 vs D.41 payable diff 5.69% > 5.0%
+V21,WARN,DEU/2002,Level II 01.7 vs D.41 payable diff 6.11% > 5.0%
+V21,WARN,DEU/2012,Level II 01.7 vs D.41 payable diff 5.48% > 5.0%
+V21,WARN,DEU/2013,Level II 01.7 vs D.41 payable diff 6.16% > 5.0%
+V21,WARN,DEU/2014,Level II 01.7 vs D.41 payable diff 7.52% > 5.0%
+V21,WARN,DEU/2015,Level II 01.7 vs D.41 payable diff 7.97% > 5.0%
+V21,WARN,DEU/2016,Level II 01.7 vs D.41 payable diff 8.07% > 5.0%
+V21,WARN,DEU/2017,Level II 01.7 vs D.41 payable diff 7.54% > 5.0%
+V21,WARN,DEU/2018,Level II 01.7 vs D.41 payable diff 7.28% > 5.0%
+V21,WARN,DEU/2019,Level II 01.7 vs D.41 payable diff 8.31% > 5.0%
+V21,WARN,DEU/2020,Level II 01.7 vs D.41 payable diff 9.43% > 5.0%
+V21,WARN,DEU/2021,Level II 01.7 vs D.41 payable diff 7.48% > 5.0%
+V21,WARN,DEU/2022,Level II 01.7 vs D.41 payable diff 6.47% > 5.0%
+V21,WARN,DEU/2023,Level II 01.7 vs D.41 payable diff 8.45% > 5.0%
+V21,WARN,DEU/2024,Level II 01.7 vs D.41 payable diff 7.00% > 5.0%
+V22,OK,-,R01+...+R10 = TR within tolerance in all complete years
+V23,OK,-,TR − TE equals anchor B.9 within tolerance
+V24,SKIP,-,not runnable before stage 5 (current stage 1)
+V25,SKIP,-,not runnable before stage 2 (current stage 1)
+V26,OK,-,history contributions sum to Δ(NLB/GDP) exactly
+V27,SKIP,-,not runnable before stage 5 (current stage 1)
+V28,SKIP,-,not runnable before stage 5 (current stage 1)

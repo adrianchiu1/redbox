@@ -142,10 +142,13 @@ def run_all() -> list[Finding]:
     findings += check_s0_manifest_hashes()
     findings += check_s0_coverage()
     findings += check_s0_bridge()
+    from ggfiscal.validate.stage1 import IMPLEMENTED
     for vid, first_stage in sorted(V_SUITE_STAGE.items(), key=lambda kv: int(kv[0][1:])):
         if stage < first_stage:
             findings.append(Finding(vid, "SKIP", "-",
                                     f"not runnable before stage {first_stage} (current stage {stage})"))
+        elif vid in IMPLEMENTED:
+            findings += IMPLEMENTED[vid]()
         else:
             findings.append(Finding(vid, "ERROR", "-",
                                     f"{vid} is due at stage {first_stage} but not yet implemented"))

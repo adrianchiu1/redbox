@@ -120,7 +120,7 @@ def ons_t11() -> pd.DataFrame:
             continue
         for _, r in df.iloc[6:].iterrows():
             label = str(r.iloc[0])
-            m = re.match(r"^(GF\d{2,4})\s*-", label)
+            m = re.match(r"^(GF\d{2,4}|_T)\s*-", label)
             if not m:
                 continue
             val = pd.to_numeric(r.iloc[ote_col], errors="coerce")

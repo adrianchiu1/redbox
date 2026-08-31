@@ -1,79 +1,62 @@
 # HANDOFF.md
 
-Rewritten 2026-08-31, end of session 2 (network-enabled).
+Rewritten 2026-08-31, end of session 2 (continued: Stage 1 in the same session).
 
 ## Current stage
 
-**Stage 0 (verify and harvest) — COMPLETE. Gate 0 PASSED.**
+**Stage 1 (canonical history, both trees) — COMPLETE. Gate 1 PASSED.**
+(Gate 0 passed earlier this session; see git history and D-S0-006…009.)
 
-## Gate 0 status: PASSED
+## Gate 1 status: PASSED
 
-| Gate 0 requirement | Status |
+| Gate 1 requirement | Status |
 |---|---|
-| Endpoints confirmed (incl. IMF 2025 portal migration) | **Done.** All machine-readable §13 endpoints resolved against live catalogs and harvested; the 4 previously-open dataflow ids pinned (IMF `IMF.STA:GFS_COFOG(11.0.0)` + `GFS_SOO(12.0.0)`; OECD `DSD_NASEC10@DF_TABLE11,1.1`; ONS receipts = ESA Table 2; ONS interest = same file's D.41 rows). See D-S0-006 and `reports/source_verification.md`. |
-| All anchors + WEO + GFS + OECD RS/T11 + AMECO pulled as D8 snapshots | **Done.** `ggfiscal fetch --all`: 75 pulls, 0 failures; content-hashed snapshots in `data/raw/` (gitignored per D-S0-004), provenance in `data/manifest/snapshots.jsonl` (committed). |
-| 66 lines with programmatic coverage → `coverage_matrix_v0.csv` | **Done.** 66/66 lines measured from ≥1 source; 174 (line, source) rows with first/last usable year and n_years. `ggfiscal coverage` regenerates. |
-| §8.2 base-year bridge, 3 countries, latest WEO vintage | **Done** — and for all 3 harvested vintages (9 country-vintage pairs). Latest (2026-04): GBR b=2025, FRA b=2024, DEU b=2025. `data/canonical/weo_base_bridge.csv`; `ggfiscal reconcile` regenerates. D-S0-009. |
-| `reports/source_verification.md` | **Done**: every machine entry confirmed_live with release dates; stale/superseded items flagged (RSGLOBAL→RSOECD, ONS tax list stale, AMECO-UK envelope gap, WEO 3-vintage retention). |
+| 66 lines + ledgers built from anchors | **Done.** `ggfiscal build` → `data/canonical/{expenditure,revenue}_long_{strict,maximum_extension}.{csv,parquet}` (§5 long format, pandera-enforced) + `balance_ledger.csv` (TR/TE/NLB/NI/PB, `complete_both_sides`). Variants identical at this stage by design. |
+| Data model, schemas, anchoring, GF01 split, revenue identity, IMF/OECD RS reconciliation fields | **Done.** §5 schema in `src/ggfiscal/model.py`; GF01_7/GF01_X split with the D10 proxy for DEU 1995–99 (grade B, D-S1-003); `imf_value`/`imf_diff_pct` on COFOG lines, `oecd_rs_value`/`oecd_rs_diff_pct` on R01/R03/R04/R06. |
+| V1–V4, V7–V9, V12, V14, V19–V23 implemented and green | **Done.** `ggfiscal validate`: OK=18 SKIP=13 WARN=110, **no ERROR**. The WARNs are real diagnostics: V1 IMF-GFS wedges on FRA/DEU GF01/GF01_7 (up to ~6% — GFS vintage/consolidation differences), V21 L2-vs-D.41 wedges 5–10% in some FRA/DEU years. Both are expected-by-spec WARN tier; nothing was adjusted. |
+| Small multiples render | **Done.** `ggfiscal report` → `reports/small_multiples_stage1.html` (22 lines × 3 countries + NLB, % of GDP). |
+| History-side §8.3 decomposition runs and passes V26 | **Done.** `data/canonical/deficit_dynamics.csv`; additivity exact (V26 in the suite); anchor-B9 and WEO deltas carried as memo rows (D-S1-004). |
 
-Checks: `pytest` 28 passed; `ggfiscal validate` OK=5 SKIP=28, **no ERROR, no
-WARN**. Stage 0 recon diagnostics: `reports/recon_anchor_vs_imf_v0.csv`
-(anchor vs GFS ≈ 0%), `reports/recon_anchor_vs_oecd_rs_v0.csv` (concept
-wedges quantified for the Stage 2 crosswalk).
+`pytest`: **35 passed** (stage_0 + stage_1). Canonical CSV deliverables are
+now committed (gitignore keeps parquet + raw local; everything regenerates
+from the hash-recorded snapshots).
 
-## Q11 pinned (D-S0-007)
+## Data facts Stage 2+ must not rediscover
 
-The IMF API exposes exactly **3** WEO vintages today — 2026-04 (WEO/9.0.0,
-publication 2026-04-14), 2025-10 (WEO_2025_OCT_VINTAGE/1.0.0), 2025-04
-(WEO/6.0.0) — fewer than the 5–10 target; per Q11's fallback all three are
-retained, earliest 2025-04. Old editions can drop off the API, so
-`detect-vintages` (Stage 6) must snapshot new editions promptly (WEO Oct 2026
-lands ~mid-October).
+- FRA/DEU revenue lines are built from `gov_10a_main` REC codes, NOT
+  `gov_10a_taxag` (D-S1-002: taxag drifts 0.5% from main in the freshest
+  year and breaks V22). taxag = detail/verification only.
+- DEU GF0107 starts 2000; 1995–99 are D10 proxy rows (grade B).
+- Expenditure lines end 2024; FRA/DEU revenue lines reach provisional 2025;
+  GBR revenue (ESA T2) spans 1990–2025 — so GBR R-lines already have five
+  pre-1995 years in canonical while GF-lines start 1995.
+- GBR: COFOG-tree TE is ONS Table 11's total (Apr 2026 release); the ledger
+  runs on ESA Table 2 (Jun 2026). Different releases — do not force-align.
+- AMECO has no UK TR/TE levels (OQ-4).
 
 ## Blocked on whom
 
-**Nothing blocks Stage 1.** Two standing notes for the committee, neither
-blocking: OQ-3 (raw-snapshot archival location), OQ-4 (AMECO has no UK TR/TE
-levels — Stage 3 cross-check will be balance/interest only).
-
-## What exists and is verified working
-
-- Everything from session 1 (repo skeleton, configs, D8 snapshot store,
-  validation runner with stage-gated SKIP semantics, register generator).
-- `ggfiscal fetch --all` — the full Stage 0 harvest, per-country filtered
-  Eurostat/OECD/GFS pulls, per-(country,subject) WEO pulls (attributes intact),
-  AMECO chapter zips, ONS files incl. the new ESA T2 / NTL / YBHA sources.
-- `src/ggfiscal/standardise/readers.py` — snapshot → tidy series for every
-  harvested source, with unit normalisation to LCU millions (GFS raw units,
-  OECD UNIT_MULT) verified against anchors (test: FRA GF02 anchor-vs-GFS
-  < 0.5% every year).
-- `src/ggfiscal/coverage.py` — measured coverage matrix + Gate 0 check.
-- `src/ggfiscal/reconcile/bridge.py` (§8.2) and `recon_v0.py` (diagnostics).
-- Validation: S0_COVERAGE and S0_BRIDGE gate checks added; V1–V28 still
-  stage-gated SKIPs.
+**Nothing blocks Stage 2.** Standing committee notes: OQ-3 (raw archival),
+OQ-4 (AMECO UK envelope), and the WEO 3-vintage retention note (OQ-2/D-S0-007).
 
 ## Exact next command
 
-Stage 1 (canonical history, both trees — §12): build the §5 data model +
-pandera schema, anchoring, GF01 split, revenue identity, balance ledger, and
-V1–V4, V7–V9, V12, V14, V19–V23. Start from:
+Stage 2 (backward extension — §12): revenue tax lines via OECD RS (crosswalk
+`crosswalks/OECD_RS_to_ESA_REV.csv` to be written, D15/D17; RS harvested from
+1965 already), then interest lines via GG D.41 history (GBR ESA T2 back to
+1990 is in hand), then pre-1995 expenditure (INSEE/Destatis archives; GBR
+archived T11 vintages — new pulls needed, hosts already allowlisted). Wire
+V5/V6/V13/V25; every stitch gets a boundary record per §7.4.
 
 ```
-pip install -e .[dev] && pytest && ggfiscal validate
+pip install -e .[dev] && pytest && ggfiscal validate   # green baseline
 ```
 
-then implement `ggfiscal standardise` and `ggfiscal build` (they currently
-exit 2 as "arrives with Stage 1"). The readers in
-`src/ggfiscal/standardise/readers.py` already deliver anchor series in LCU
-millions; Stage 1 wraps them in the §5 long format. Watch items for Stage 1:
-Eurostat 2025 main-aggregate values are provisional (final actual for COFOG
-lines is 2024); ONS T2's D51M/D51O give the GBR R03/R04 split directly, but
-the crosswalk (`crosswalks/ONS_RECEIPTS_to_ESA_REV.csv`) must still document
-income tax/NICs/CT treatment from ONS_TAX_DETAIL before Gate 1.
+Start in `src/ggfiscal/stitch/` (empty package). The stitch engine must write
+boundary records (year, outgoing, incoming, anchor value, growth, scope,
+break flag) and honour §7.2–7.4, §7.12 (no growth across missing/zero).
 
 ## §15 dependencies currently riding on defaults
 
-Q1 (nominal LCU primitive), Q3 (`grow_with_proxy`), Q4 (tolerances as tabled),
-Q7 (defence plans strict-B if ≥90% GG), Q8 (keep uplift), **Q11 now pinned:
-3 vintages retained (D-S0-007)**, Q12 (OBR primary for GBR §8.3 — reinforced
-by OQ-4), Q13 (R06 single line). No default has been overridden.
+Unchanged: Q1, Q3, Q4, Q7, Q8, Q12, Q13 on defaults; Q11 pinned at 3
+vintages (D-S0-007). Nothing yet forces a committee call.

@@ -74,14 +74,26 @@ def _not_yet(stage: int) -> None:
 
 @app.command()
 def standardise():
-    """Raw → standard tidy tables (Stage 1)."""
-    _not_yet(1)
+    """Raw snapshots → tidy per-country anchor tables in data/standard/."""
+    from ggfiscal.standardise.materialise import write
+
+    for p in write():
+        typer.echo(f"wrote {p}")
 
 
 @app.command()
 def build():
-    """Standard → canonical deliverables (Stage 1)."""
-    _not_yet(1)
+    """Anchors → canonical history, both trees + balance ledger (§5 schema).
+    Also refreshes the standard layer and the §8.3 history decomposition."""
+    from ggfiscal.build import build as run_build
+    from ggfiscal.reconcile.dynamics import write as write_dynamics
+    from ggfiscal.standardise.materialise import write as write_standard
+
+    for p in write_standard():
+        typer.echo(f"wrote {p}")
+    for name, p in run_build().items():
+        typer.echo(f"wrote {name}: {p}")
+    typer.echo(f"wrote {write_dynamics()}")
 
 
 @app.command()
@@ -106,8 +118,10 @@ def reconcile():
 
 @app.command()
 def report():
-    """Validation and reconciliation reports (Stage 1+)."""
-    _not_yet(1)
+    """Stage 1 reports: small multiples (66 lines + ledger, % of GDP)."""
+    from ggfiscal.report.small_multiples import write
+
+    typer.echo(f"wrote {write()}")
 
 
 @app.command("detect-vintages")

@@ -14,7 +14,7 @@ data/canonical/*
 !data/raw/.gitkeep
 !data/standard/.gitkeep
 !data/canonical/.gitkeep
-# Small §11.6 deliverables double as gate evidence and are committed
-# (regenerable via `ggfiscal reconcile` / `ggfiscal validate`):
-!data/canonical/weo_base_bridge.csv
-!data/canonical/exceptions.csv
+# §11.6 CSV deliverables double as gate evidence and are committed (the
+# parquet twins stay local; everything regenerates via `ggfiscal build`,
+# `reconcile`, `validate` from the hash-recorded snapshots):
+!data/canonical/*.csv

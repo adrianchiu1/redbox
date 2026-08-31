@@ -1,0 +1,12 @@
+source_code,source_label,target_line,allocation_pct,inclusion_note,consolidation_treatment,evidence,reviewer,crosswalk_version
+D211,"VAT receivable (ESA T2 S13)",R01,100,"direct ESA cell",S13 consolidated,"ONS ESA Table 2 row D211; NTL table 9 confirms composition (VAT incl. RoW share)",stage1-build,1.0
+D2,"Taxes on production and imports receivable minus D211",R02,100,"derived D.2 - D.211",S13 consolidated,"ONS ESA Table 2 rows D2 and D211",stage1-build,1.0
+D51M,"Taxes on individual or household income including holding gains",R03,100,"income tax + CGT(household share); NICs are excluded here - they are D.61 (R06) per §14; payable tax credits gross per anchor treatment (D17)",S13 consolidated,"ONS ESA Table 2 row D51M; NTL table 9 rows under D51M (income tax, household holding gains)",stage1-build,1.0
+D51O,"Taxes on income or profits of corporations including holding gains",R04,100,"corporation tax incl. diverted profits tax and corporate holding gains",S13 consolidated,"ONS ESA Table 2 row D51O; NTL table 9 rows under D51O/D51B",stage1-build,1.0
+D5;D51M;D51O;D91,"Current taxes residual plus capital taxes",R05,100,"derived D.5 - D51M - D51O + D.91 (D.59 inside D.5: council tax etc.)",S13 consolidated,"ONS ESA Table 2 rows D5, D51M, D51O, D91",stage1-build,1.0
+D61,"Net social contributions receivable",R06,100,"NICs and other social contributions; imputed component flagged in notes (Q13)",S13 consolidated,"ONS ESA Table 2 row D61",stage1-build,1.0
+D41,"Property income interest receivable (accrued)",R07,100,"gross accrued interest receivable (concept_flag d41_gross_accrued)",S13 consolidated,"ONS ESA Table 2 row D41 receivable",stage1-build,1.0
+D4;D41,"Property income receivable minus interest",R08,100,"derived D.4 - D.41; may be negative",S13 consolidated,"ONS ESA Table 2 rows D4 and D41 receivable",stage1-build,1.0
+P11;P12;P131,"Market output + own final use + payments for non-market output",R09,100,"derived P.11 + P.12 + P.131",S13 consolidated,"ONS ESA Table 2 output rows",stage1-build,1.0
+D39R;D7;D9;D91,"Other subsidies + current transfers + capital transfers receivable net of capital taxes",R10,100,"derived D.39 + D.7 + (D.9 - D.91); may be negative; incl. EU flows",S13 consolidated,"ONS ESA Table 2 rows D39R, D7, D9, D91 receivable",stage1-build,1.0
+OTR,"Total revenue",TR,100,"anchor's own TR; V22 identity exact against R01..R10",S13 consolidated,"ONS ESA Table 2 row OTR",stage1-build,1.0
