@@ -53,11 +53,15 @@ def test_gate3_every_strict_forecast_row_a_or_b_with_measured_coverage():
 def test_every_forward_stitch_has_boundary_record(boundaries):
     fc = _forecast("maximum_extension")
     stitched = set(zip(fc.iso3, fc.line_code, fc.growth_source_id))
-    applied = boundaries[boundaries.variants == "strict+maximum"]
+    applied = boundaries[boundaries.variants.isin(["strict+maximum", "maximum_only"])]
     recorded = set(zip(applied.iso3, applied.line_code, applied.incoming_source))
     assert stitched <= recorded
     assert applied.crosswalk_version.notna().all()
-    assert set(applied.grade) <= {"A", "B"}
+    # strict-tier boundaries are A/B; the maximum-only tier adds C and the
+    # §7.9-mandated D (Stage 4)
+    strict_tier = applied[applied.variants == "strict+maximum"]
+    assert set(strict_tier.grade) <= {"A", "B"}
+    assert set(applied.grade) <= {"A", "B", "C", "D"}
     assert applied.coverage_share.notna().all()
     # concept note per stitch (V13 tier)
     assert (applied.scope.astype(str).str.len() >= 20).all()

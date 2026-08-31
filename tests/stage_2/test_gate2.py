@@ -23,9 +23,12 @@ def boundaries():
 
 
 def _stitched(variant):
+    """Backward stitches only (year < anchor_year): Stage 3+ also writes
+    forward newer-actual stitches, which tests/stage_3+ cover."""
     df = pd.concat([load_canonical("COFOG", variant),
                     load_canonical("ESA_REV", variant)], ignore_index=True)
-    return df[df.observation_type == "stitched_actual"]
+    return df[(df.observation_type == "stitched_actual")
+              & (df.year < df.anchor_year)]
 
 
 def test_every_stitch_has_boundary_record_grade_and_crosswalk(boundaries):

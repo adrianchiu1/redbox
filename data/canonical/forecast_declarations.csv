@@ -1,5 +1,5 @@
 iso3,classification,line_code,status,note
-DEU,COFOG,GF01,no_official_forecast,§7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension via GF01_7 growth with explicit residual_method arrives with Stage 4
+DEU,COFOG,GF01,no_official_forecast,"§7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension carries the mandated GF01_7-growth proxy (grade D, coverage measured, residual_method recorded; D-S4-002)"
 DEU,COFOG,GF01_X,no_official_forecast,never forecast by construction (D10); derived only
 DEU,COFOG,GF02,source_blocked,identified source DEU_BMF_FINPLAN (Epl. 14 + Sondervermögen Bundeswehr) is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
 DEU,COFOG,GF03,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
@@ -7,7 +7,7 @@ DEU,COFOG,GF04,no_official_forecast,"D7: no official forecast identified anywher
 DEU,COFOG,GF05,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 DEU,COFOG,GF06,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 DEU,COFOG,GF08,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
-DEU,COFOG,GF10,grade_below_strict,"AR pensions+LTC composite measured at 61% of GF10 (grade C); BMAS Rentenversicherungsbericht blocked (bmas.de egress, OQ-6) — recorded for Stage 4 maximum_extension"
+DEU,COFOG,GF10,grade_below_strict,"AR pensions+LTC composite measured at 61% of GF10 (grade C); BMAS Rentenversicherungsbericht blocked (bmas.de egress, OQ-6) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12"
 DEU,COFOG,TE,not_extended,"totals are envelopes (§6.1, D4): the envelope constrains V15 but is not published as a stitched TE path"
 DEU,ESA_REV,R02,no_machine_readable_source,"Steuerschätzung publishes Länder-/Gemeindesteuern only as cash aggregates mixing D.2, D.59 and D.91 — no ESA-complete component set for D.2 minus D.211; AMECO UTVG is total D.2 only"
 DEU,ESA_REV,R05,grade_below_strict,"AMECO UTKG covers 34% of the line (D, not applied); Erbschaftsteuer is not separately published in the Steuerschätzung tables; D7 lists R05 as partial"
@@ -15,7 +15,7 @@ DEU,ESA_REV,R07,no_machine_readable_source,no reachable machine-readable GG inte
 DEU,ESA_REV,R08,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 DEU,ESA_REV,R10,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 DEU,ESA_REV,TR,not_extended,"totals are envelopes (§6.1, D4): used in V15 only"
-FRA,COFOG,GF01,no_official_forecast,§7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension via GF01_7 growth with explicit residual_method arrives with Stage 4
+FRA,COFOG,GF01,no_official_forecast,"§7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension carries the mandated GF01_7-growth proxy (grade D, coverage measured, residual_method recorded; D-S4-002)"
 FRA,COFOG,GF01_X,no_official_forecast,never forecast by construction (D10); derived only
 FRA,COFOG,GF02,source_blocked,identified source FRA_LPM_2030 (military programming law) is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
 FRA,COFOG,GF03,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
@@ -23,18 +23,18 @@ FRA,COFOG,GF04,no_official_forecast,"D7: no official forecast identified anywher
 FRA,COFOG,GF05,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 FRA,COFOG,GF06,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 FRA,COFOG,GF08,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
-FRA,COFOG,GF10,grade_below_strict,AR pensions+LTC composite measured at 69% of GF10 (grade C: no official projection of family/housing/unemployment components) — recorded for Stage 4 maximum_extension
+FRA,COFOG,GF10,grade_below_strict,"AR pensions+LTC composite measured at 69% of GF10 (grade C: no official projection of family/housing/unemployment components) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12, overlap divergence under the V16 threshold"
 FRA,COFOG,TE,not_extended,"totals are envelopes (§6.1, D4): the envelope constrains V15 but is not published as a stitched TE path"
 FRA,ESA_REV,R01,source_blocked,identified source FRA_LPFP_PSTAB (prélèvements obligatoires) is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
 FRA,ESA_REV,R02,source_blocked,identified source FRA_LPFP_PSTAB is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
 FRA,ESA_REV,R03,source_blocked,identified source FRA_LPFP_PSTAB is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
 FRA,ESA_REV,R04,source_blocked,identified source FRA_LPFP_PSTAB is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
-FRA,ESA_REV,R05,grade_below_strict,AMECO UTKG covers 76% of the line (grade C) — recorded for Stage 4 maximum_extension; D7 lists R05 as partial
+FRA,ESA_REV,R05,grade_below_strict,AMECO UTKG covers 76% of the line (grade C) — no strict forecast; applied in maximum_extension as a §7.8 single-component proxy to 2027; D7 lists R05 as partial
 FRA,ESA_REV,R07,no_machine_readable_source,no reachable machine-readable GG interest-receivable forecast: AMECO has no D.41 resources series (UYVG is subsidies); DSM publishes payable interest only; OBR receipts detail is behind the obr.uk challenge (OQ-6); NI/PB forecast ledger therefore stays empty (§4.3)
 FRA,ESA_REV,R08,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 FRA,ESA_REV,R10,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 FRA,ESA_REV,TR,not_extended,"totals are envelopes (§6.1, D4): used in V15 only"
-GBR,COFOG,GF01,no_official_forecast,§7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension via GF01_7 growth with explicit residual_method arrives with Stage 4
+GBR,COFOG,GF01,no_official_forecast,"§7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension carries the mandated GF01_7-growth proxy (grade D, coverage measured, residual_method recorded; D-S4-002)"
 GBR,COFOG,GF01_X,no_official_forecast,never forecast by construction (D10); derived only
 GBR,COFOG,GF02,source_blocked,identified source UK_DEFENCE_PLAN (Spending Review tables) blocked by the egress policy (gov.uk / assets.publishing.service.gov.uk CONNECT denied) — OQ-6; strict ends at the last actual
 GBR,COFOG,GF03,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
@@ -44,7 +44,7 @@ GBR,COFOG,GF06,no_official_forecast,"D7: no official forecast identified anywher
 GBR,COFOG,GF07,source_blocked,"identified source OBR (FRS July 2026) unreachable this session: obr.uk serves a Cloudflare JS challenge to every available client (curl, headless browser, server-side fetch) — OQ-6; strict ends at the last actual"
 GBR,COFOG,GF08,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 GBR,COFOG,GF09,source_blocked,"identified source OBR (FRS July 2026) unreachable this session: obr.uk serves a Cloudflare JS challenge to every available client (curl, headless browser, server-side fetch) — OQ-6; strict ends at the last actual"
-GBR,COFOG,GF10,source_blocked,"identified source OBR (EFO welfare tables) unreachable this session: obr.uk serves a Cloudflare JS challenge to every available client (curl, headless browser, server-side fetch) — OQ-6; strict ends at the last actual"
+GBR,COFOG,GF10,source_blocked,"identified source OBR (EFO welfare tables) unreachable this session: obr.uk serves a Cloudflare JS challenge to every available client (curl, headless browser, server-side fetch) — OQ-6; strict ends at the last actual; maximum_extension carries the AMECO D.62 dominant-component proxy to 2027 (grade C, §7.8)"
 GBR,COFOG,TE,not_extended,"totals are envelopes (§6.1, D4): the envelope constrains V15 but is not published as a stitched TE path"
 GBR,ESA_REV,R01,source_blocked,"identified source OBR (EFO receipts) unreachable this session: obr.uk serves a Cloudflare JS challenge to every available client (curl, headless browser, server-side fetch) — OQ-6; strict ends at the last actual"
 GBR,ESA_REV,R02,source_blocked,"identified source OBR (EFO receipts) unreachable this session: obr.uk serves a Cloudflare JS challenge to every available client (curl, headless browser, server-side fetch) — OQ-6; strict ends at the last actual"

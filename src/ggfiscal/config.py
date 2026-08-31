@@ -45,6 +45,14 @@ def no_forecast_lines() -> dict:
     return _load("sources")["no_forecast_lines"]
 
 
+def residual_method(iso3: str, line_code: str) -> str:
+    """D2/§15 Q3: residual_method per (iso3, line_code) for maximum_extension
+    proxies — the Q3 default unless config/residual.yaml overrides it."""
+    cfg = _load("residual")
+    return ((cfg.get("overrides") or {}).get(iso3) or {}).get(
+        line_code, cfg.get("default", "grow_with_proxy"))
+
+
 def line_universe() -> list[tuple[str, str, str]]:
     """The 66 (iso3, classification, line_code) series of §1: per country,
     12 COFOG lines (GF01..GF10, GF01_7, GF01_X) + 10 ESA_REV lines (R01..R10).

@@ -1,104 +1,96 @@
 # HANDOFF.md
 
-Rewritten 2026-08-31, end of session 3 (Stage 3 completed on
-`claude/repo-review-stage-3-xamnht`; Stages 0–2 were completed in session 2
-and merged via PR #1).
+Rewritten 2026-08-31, end of session 3 (Stages 3 AND 4 completed this
+session, sequentially, on `claude/repo-review-stage-3-xamnht`; Stages 0–2
+merged earlier via PR #1).
 
 ## Current stage
 
-**Stage 3 (strict forecasts) — COMPLETE. Gate 3 PASSED.**
+**Stage 4 (maximum-extension forecasts) — COMPLETE. Gate 4 PASSED.**
+(Gate 3 passed earlier this session; see git history and D-S3-001..005.)
 
-## Gate 3 status: PASSED
+## Gate 4 status: PASSED
 
-| Gate 3 requirement | Status |
+| Gate 4 requirement | Status |
 |---|---|
-| Every strict forecast row A or B with measured coverage | **Done.** 215 strict forecast rows across 15 (country, line) series, every one grade A or B with `coverage_share` + year measured per §9.2 (see `data/canonical/forecast_boundaries.csv`); plus 3 newer-actual 2025 interest stitches (§7.2). C/D measurements recorded as `not_applied_*`, never applied. |
-| Every D7 line has its note | **Done.** `data/canonical/forecast_declarations.csv`: 57 rows covering every (country, line) without an applied forecast — D7 declarations, blocked-source notes (OQ-6), below-strict-grade records, and the never-extended totals. Tested (tests/stage_3). |
-| V-tests green | **Done.** V10, V11, V15, V18 implemented; V13 and V6 extended to forward stitches; V16 implemented and firing (see below). `pytest`: **56 passed**. `ggfiscal validate`: OK=49 SKIP=4 WARN=582, **no ERROR**. |
+| Variants distinguishable row-by-row | **Done.** Strict is a proper subset of maximum_extension (tested). Maximum adds: GF01 to 2027 (§7.9 mandated proxy, grade D, all three), GF10 to 2027 (GBR) / **2070** (FRA/DEU: AMECO D.62 proxy chained into the AR pensions+LTC composite per D12 — this join's overlap divergence is 0.010, under the V16 threshold, unlike the withheld interest join), FRA R05 to 2027 (C proxy). 315 maximum forecast rows vs 215 strict. |
+| No leakage | **Done.** No C/D grade, no `proxy_forecast`, no maximum-only row in strict (Gate 4 tests + V9 + V17's §7.8 check). |
+| Coverage matrix complete | **Done.** `data/canonical/coverage_matrix.csv` (§11.6 deliverable 9): 66 rows, spans per variant, stitch counts, grades, principal sources, residual_method, reason-series-ends — assembled from canonical + boundaries + declarations in the build. |
 
-WARN tiers are all expected-documentation: V1 GFS wedges, V21 interest
-wedges, V5 proxy diagnostics, V25 RS wedges (Stage 2 carry-overs, unchanged),
-plus new **V16** (the withheld DSM join, OQ-7), **V18** (blocked/unverified
-register entries — intended visibility of OQ-6), and S0_SNAPSHOTS notices for
-session-2 manifest entries whose raw bytes were never committed (D-S0-004;
-this session's fresh harvest verifies clean).
+`pytest`: **63 passed.** `ggfiscal validate`: OK=52 SKIP=3 WARN=582, **no
+ERROR** (V17 implemented and green; remaining SKIPs are V24/V27/V28, Stage 5).
+WARN tiers unchanged and documented (V1/V21/V25/V5 wedges, V16 the withheld
+DSM join OQ-7, V18 blocked sources OQ-6, S0_SNAPSHOTS old-manifest notices).
 
-## What Stage 3 added
+## What Stage 4 added
 
-Strict forecasts (mirrored into maximum_extension, which Stage 4 will extend
-further): GF01_7 to 2027 all three (AMECO UYIG, B; 2025 stitched as newer
-actual); R06 to 2027 all three (AMECO UTSG, the one grade-A source: same
-D.61 aggregate at coverage 0.999–1.000); R09 to 2027 FRA/DEU (AMECO
-UTOG−UROG sales composite, coverage exactly 1.0); DEU R01/R03/R04 to 2030
-(Steuerschätzung May 2026, B at 0.999/0.979/0.946 — Soli split by payer from
-the source's own Tab 8.2, Gewerbesteuer in R04 per the national tax list);
-FRA/DEU GF07 and GF09 annual to **2070** (Ageing Report 2024 baseline, %GDP
-per §7.5 with constructed nominal GDP). Engine: `src/ggfiscal/forecast/`
-(§7.2 chaining, §7.5, §7.8 composites, §7.10 FY→CY ready-but-unused, D11
-both methods, D12 ordering with the V16 guard). New crosswalks v1.0:
-EC_AMECO_to_ESA_REV, EC_DSM_to_INTEREST, EC_AGEING_to_COFOG,
-DEU_STEUERSCHAETZUNG_to_ESA_REV.
-
-Not applied, recorded with measurements: GF10 AR composites (C: 0.685/0.611),
-R05 everywhere (0.11–0.76), GBR R09 (unmeasurable), and the DSM 2028–2036
-interest leg (D12/V16 divergence — committee item OQ-7).
+Engine: grade/§7.8 variant routing (D-S4-001) — C tier and single-component
+proxies apply to maximum only; D measured-never-applied except §7.9's
+mandated GF01-via-GF01_7 (applied at measured D: coverage 0.17–0.50,
+D-S4-002); `residual_method` on every proxy/composite row (D2/Q3
+`grow_with_proxy`, no overrides in `config/residual.yaml` yet); GF01_X
+deliberately NOT derived from the proxy GF01 (D-S4-002). New crosswalk
+`EC_AMECO_to_COFOG.csv` v1.0 (UYIG→GF01, UYTGH→GF10). V17 implemented
+(coverage year + residual_method on proxy/composite rows; §7.8 strict ban).
+Coverage matrix builder in `src/ggfiscal/coverage.py::write_matrix`, wired
+into `ggfiscal build`.
 
 ## Blocked on whom
 
-- **OQ-6 (committee/infra):** obr.uk Cloudflare challenge + gov.uk/bmas.de
-  egress denials block ALL GBR-specific forecasts (GF02, GF07, GF09, GF10,
-  R01–R04, R07) and DEU GF10's BMAS leg. Q12's OBR-primary envelope runs on
-  the AMECO cross-check meanwhile.
-- **OQ-7 (committee):** approve/reject the AMECO→DSM interest join (options
-  enumerated; any choice is config-only).
-- **OQ-5 (standing):** §11.4 second keying — now also gates FRA tax lines
-  and all three GF02 lines.
-Nothing blocks Stage 4 (maximum-extension forecasts) on the harvested
-sources: the C-grade records in `forecast_boundaries.csv` are its queue.
+Unchanged from Stage 3 — nothing blocks Stage 5:
+- **OQ-6:** obr.uk (Cloudflare) + gov.uk/bmas.de (egress) block all
+  GBR-specific sources, GF02 everywhere, and the BMAS leg of DEU GF10.
+- **OQ-7:** AMECO→DSM interest join awaiting committee (options are
+  config-only). The GF10 join shows the same rule joining when vintages
+  agree.
+- **OQ-5:** §11.4 second keying (PDF sources).
 
 ## Exact next command
 
-Stage 4 (maximum-extension forecasts — §12): apply the recorded C-grade
-sources (GF10 ← AR pensions+LTC for FRA/DEU; R05 ← UTKG for FRA), add
-proxies with explicit `residual_method` from `config/residual.yaml` (§15 Q3
-default `grow_with_proxy`), `GF01` via `GF01_7` growth (§7.9), grades C/D,
-V17, and complete `coverage_matrix.csv` (§11.6 deliverable 9). Variants must
-stay distinguishable row-by-row with no leakage (Gate 4).
+Stage 5 (reconciliation module — §8.2–8.5 in full): extend
+`src/ggfiscal/reconcile/` — chained-at-b GDP path (§8.3), forecast-side
+decomposition with `resid_coverage`/`resid_disagreement`/`denom_effect`
+(exact additivity, V26), net-interest cross-check (§8.4, V27; note R07 has
+no forecast so NI_ours forecast years come only from maximum GF01_7 minus a
+missing R07 — §8.4 says report the gap, expect the coverage residual to
+carry it), vintage keys + `weo_residual_history.csv` (§8.5, V28),
+`weo_explanation.csv`, contribution charts, `reconciliation_report.html`.
+Implement V24 (formalising D-S0-009's heuristic), V26 forecast side, V27,
+V28. Gate 5: additivity exact; net-interest cross-check present; residual
+history populated; a reader can state how much of each WEO balance change
+the granular forecasts explain. Independent totals: OBR unavailable (OQ-6) —
+use AMECO for all three and record the Q12 deviation for GBR.
 
 ```
 pip install -e .[dev] && ggfiscal fetch --all && ggfiscal build && pytest && ggfiscal validate
 ```
 
-(`fetch --all` is needed in a fresh container — raw snapshots are not
-committed, D-S0-004. It now includes the four Stage 3 pulls; the EC document
-store requires the browser-like headers already encoded in the pulls.)
+(fresh container: raw snapshots are not committed, D-S0-004; `fetch --all`
+includes the Stage 3 pulls with their required browser-like headers.)
 
-## Data facts Stage 4+ must not rediscover
+## Data facts Stage 5+ must not rediscover
 
-- AMECO Spring 2026: horizon 2027, last actual 2025; UTSG is D.61 exactly
-  (A); UTOG−UROG is sales exactly (FRA/DEU); **no UK** UTOG/UROG/URTG/UUTG
-  history (OQ-4) — UK envelope levels exist for 2026–27 only.
-- AR 2024 statistical annex is ANNUAL 2022–2070 (no D11 interpolation
-  needed); no nominal GDP or deflator published — construct growth as
-  (1+potential)(1+HICP) per §7.5 (D-S3-002). AR total cost of ageing =
-  pensions + health + LTC + education exactly (no unemployment item).
-- Steuerschätzung xlsx: Kasse series (not Tab 8.1 brutto — D17 wedge puts
-  brutto composites out of band); Tab 8.2 has the official Soli payer split;
-  Tab 7 Gewerbesteuer brutto forecasts to 2030; Ländersteuern/Gemeindesteuern
-  exist only as mixed-code aggregates (no R02/R05 path).
-- DSM 2025 fiches: interest %GDP + real growth + inflation rows per country
-  sheet to 2036; label column varies (readers handle it); published
-  2026-02-12, superseded ~Feb 2027 (V11 watch, as is the next
-  Steuerschätzung session and a possible 2027 AR).
-- V6 is direction-aware: backward rows verified in stage2, forward rows in
-  stage3 against the live forecast specs.
-- Gate 2's stitch_boundaries.csv invariants are untouched — forward records
-  live in forecast_boundaries.csv.
+- Everything in the Stage 3 list (AMECO horizons/units, AR annual tables +
+  constructed GDP, Steuerschätzung Kasse/Tab 8.2, DSM sheet quirks, V6
+  direction-awareness, boundary-file separation) — see git history of this
+  file at commit 80f877f.
+- Variant routing lives in `extend_forward` (rows carry `variants`); the
+  §7.9 GF01 proxy is `mandated=True` and is the only D-grade application.
+- Coverage matrix "final_actual_year" counts stitched actuals (a 2025
+  D-grade proxy-stitched year counts as actual — grades column disambiguates).
+- WEO vintages in store: 2026-04, 2025-10, 2025-04 (D-S0-007); §8.5 keys by
+  (weo_vintage, source_vintage_set_hash) — the source vintage set now
+  includes EC_AMECO Spring 2026, EC_AGEING_2024, EC_DSM 2025,
+  DEU_STEUERSCHAETZUNG 2026-05.
+- Forecast-side §8.3 "covered" means the line has a forecast value in the
+  given variant — strict and maximum now genuinely differ per year (the
+  decomposition must be computed per variant).
 
 ## §15 dependencies currently riding on defaults
 
-Q1, Q3, Q4 (D-S2-002 for V5; **D-S3-005 for V16 = 0.02**), Q7 (defence
-plans: moot until a source is reachable — OQ-6), Q8, Q13 on defaults;
-Q11 pinned (D-S0-007); **Q12 deviated by necessity**: OBR-primary envelope
-impossible while obr.uk is blocked, AMECO cross-check serving as the GBR
-envelope (D-S3-001, OQ-6).
+Q1, Q3 (`grow_with_proxy` everywhere — first real exercise at Stage 4), Q4
+(D-S2-002 V5; D-S3-005 V16 = 0.02), Q7 (moot, OQ-6), Q8, Q13 defaults; Q11
+pinned (D-S0-007); Q12 deviated by necessity (AMECO envelope while obr.uk
+blocked — D-S3-001; Stage 5's independent-total choice inherits this);
+Q10 (envelope-consistent third variant) remains "No" — the Stage 5 residuals
+stay lumps.

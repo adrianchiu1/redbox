@@ -382,3 +382,56 @@ divergence exceeds the threshold (`not_applied_v16_divergence` boundary
 record) and V16 WARNs. FRA/DEU GF01_7 therefore ends at 2027 pending the
 committee's call (OQ-7); approving the join or raising the threshold is a
 config change plus rebuild, no code change.
+
+## D-S4-001 — Maximum-extension routing: C tier applied, D never applied except the §7.9 mandate (serves §9, §12 Stage 4, D-S2-001 lineage)
+2026-08-31, session 3 (continued). The forward engine now routes by grade and
+§7.8 status: A/B direct/composite rows enter strict and maximum_extension
+(unchanged); grade-C rows and single-component proxies (`max_only`, §7.8)
+enter maximum_extension only; grade-D sources stay measured-but-not-applied
+(D-S2-001's reasoning: a sub-50% or over-110% mapping fabricates dynamics) —
+with exactly one exception, the §7.9-mandated GF01-via-GF01_7 construction
+(D-S4-002). Boundary records now carry three applied tiers
+(`strict+maximum`, `maximum_only`) plus the non-application records. D2 is
+now fully honoured: every proxy/composite row records `residual_method`
+(from `config/residual.yaml`, §15 Q3 default `grow_with_proxy` everywhere —
+no overrides yet), including the Stage 3 composites that previously carried
+None (backfilled; V17 enforces it).
+
+## D-S4-002 — GF01 via GF01_7 growth: applied at its measured D grade (serves §7.9, D2)
+2026-08-31. Measured coverage of AMECO UYIG against the GF01 anchor: GBR
+0.499, FRA 0.332, DEU 0.165 — all in the D band (interest is the minor share
+of general public services). §7.9 nonetheless mandates this exact
+construction for maximum_extension ("GF01 total in maximum_extension is
+extended via GF01_7 growth with explicit residual_method"), so it is applied
+as `proxy_forecast`, grade D, `residual_method = grow_with_proxy`, horizon
+2027, with the measured share on every row — the one D-grade application in
+the repo, sanctioned by the spec rather than by the grade bands. GF01_X is
+NOT derived in these years (D10 "never forecast" read strictly: deriving it
+from a proxy GF01 would launder proxy noise into a "derived" observation;
+V19's identity check simply has no complete year to bite on). Strict GF01
+still ends at the last actual (§7.9).
+
+## D-S4-003 — GF10 dominant-component proxy and the D12 chain that DID join (serves §6.2(4), §7.8, D12; complements D-S3-005)
+2026-08-31. AMECO UYTGH (D.62 social benefits other than in kind) measured
+against GF10: GBR 0.848, FRA 0.813, DEU 0.803 — clean C-band §6.2(4)
+proxies, maximum_extension only per §7.8, horizon 2027. This gives GBR its
+only GF10 path (OBR blocked, OQ-6). For FRA/DEU the engine chains UYTGH
+(short-term) into the AR pensions+LTC composite (long-term, to 2070) per
+D12: overlap divergence measured at most 0.010/yr (2025-27) — UNDER the
+0.02 V16 threshold, so this join proceeds where the AMECO→DSM interest join
+(D-S3-005) was withheld; both outcomes come from the same rule, which is the
+point. Crosswalk `EC_AMECO_to_COFOG.csv` v1.0 carries both mappings.
+Not added: a D.62 proxy for lines other than GF10 (no other function is
+dominated by cash benefits), and any superset mapping (UTVG→R01/R02,
+UTYG→R03/R04 — coverage >110%, grade D by construction).
+
+## D-S4-004 — Gate 4 record: coverage matrix and where maximum now ends
+2026-08-31. `data/canonical/coverage_matrix.csv` (§11.6 deliverable 9, 66
+rows) is assembled in the build from the canonical tables, both boundary
+files and the declarations — never hand-filled. Maximum-extension horizons
+beyond strict: GF01 2027 (D proxy, all three); GF10 GBR 2027 / FRA+DEU 2070
+(C chain); FRA R05 2027 (C proxy). Everything else: maximum = strict
+horizon (the A/B sources) or the last actual (declared lines). Variant
+divergence is now two-sided: maximum is deeper in history (Stage 2 C-grade
+backward stitches) and longer in the forecast (Stage 4 C/D applications);
+strict remains a proper subset row-by-row (Gate 4 leakage tests + V9/V17).

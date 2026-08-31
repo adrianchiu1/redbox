@@ -33,7 +33,8 @@ ggfiscal --help
 
 ## Stage status
 
-Stages 0–3 complete (gates passed): harvest, canonical history (both trees),
-backward extension, and strict forecasts. Next: Stage 4 (maximum-extension
-forecasts). See `HANDOFF.md` for the live state and `OPEN_QUESTIONS.md`
-OQ-6/OQ-7 for the blocked forecast sources awaiting the committee.
+Stages 0–4 complete (gates passed): harvest, canonical history (both trees),
+backward extension, strict forecasts, and maximum-extension forecasts with
+the full coverage matrix. Next: Stage 5 (WEO reconciliation module). See
+`HANDOFF.md` for the live state and `OPEN_QUESTIONS.md` OQ-6/OQ-7 for the
+blocked forecast sources awaiting the committee.

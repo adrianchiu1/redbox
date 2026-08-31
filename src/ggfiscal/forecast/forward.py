@@ -1,5 +1,5 @@
-"""Stage 3 forward extension — strict forecasts (§7.2, §7.4-7.8, §7.12-7.13,
-§12 Stage 3, D7, D12).
+"""Forward extension — strict forecasts (Stage 3) and maximum-extension
+forecasts (Stage 4) (§7.2, §7.4-7.9, §7.12-7.13, §12, D2, D7, D12).
 
 Y_t = Y_{t-1} × X_t / X_{t-1} for t > T: growth of the forecast source, never
 its level (§7.2). Sources are applied sequentially per D12 — the short-term
@@ -14,10 +14,13 @@ source publishes no nominal GDP (Ageing Report, DSM) —
 
 Grading (§9, §9.2, D6): coverage_share = source level / anchor level at the
 last common year. A = direct forecast of the same ESA aggregate with
-|share − 1| ≤ 0.005; B = 0.90-1.10; C = 0.50-0.90 (maximum_extension tier —
-recorded here, applied in Stage 4); else D (never applied). Stage 3 applies
-only A/B (strict rows are mirrored into maximum_extension); C/D
-non-applications are machine-recorded like Stage 2's D skips.
+|share − 1| ≤ 0.005; B = 0.90-1.10; C = 0.50-0.90; else D. Variant routing
+(Stage 4, D-S4-001): A/B non-proxy rows enter strict and maximum_extension;
+C rows and §7.8 single-component proxies (`max_only`) enter
+maximum_extension only; D is measured and recorded but never applied — with
+one spec-mandated exception, §7.9's GF01-via-GF01_7 (`mandated`), which
+enters maximum_extension at its measured D grade with an explicit
+`residual_method` (D2/Q3).
 
 Lines with no applicable source get a declaration row (D7 for "no identified
 forecast"; blocked / below-strict-grade otherwise) in
@@ -34,6 +37,7 @@ from ggfiscal.standardise import readers as R
 
 AMECO_REV_XWALK = "EC_AMECO_to_ESA_REV:1.0"
 AMECO_INT_XWALK = "EC_AMECO_to_INTEREST:1.0"
+AMECO_COFOG_XWALK = "EC_AMECO_to_COFOG:1.0"
 DSM_XWALK = "EC_DSM_to_INTEREST:1.0"
 AR_XWALK = "EC_AGEING_to_COFOG:1.0"
 STSCH_XWALK = "DEU_STEUERSCHAETZUNG_to_ESA_REV:1.0"
@@ -58,9 +62,13 @@ class FcSource:
     unit_factor: float = 1.0       # multiply source level -> LCU mn
     concept_flag: str = ""
     scenario_label: str | None = None
-    observation_type: str = "direct_forecast"   # or composite_forecast
+    observation_type: str = "direct_forecast"   # or composite_forecast / proxy_forecast
     interpolation_method: str | None = None     # D11, when benchmark-interpolated
     period_conversion_method: str | None = None  # §7.10, when FY->CY converted
+    max_only: bool = False         # §7.8: single-component proxies never enter strict
+    residual_method: str | None = None  # D2: recorded on every proxy/composite row
+    mandated: bool = False         # §7.9 GF01-via-GF01_7: applied (maximum only)
+    #                                even when measured coverage falls in the D band
 
 
 @dataclasses.dataclass
@@ -152,6 +160,19 @@ AR_NOTE = {
              "(no family/housing/unemployment/social-exclusion projections); "
              "coverage measured; " + CONSTRUCTED_NOTE),
 }
+AMECO_GF01_NOTE = ("§7.9: GF01 total extended via GF01_7 growth (AMECO UYIG) "
+                   "with explicit residual_method — the spec-mandated "
+                   "maximum_extension construction; interest is the minor "
+                   "share of GF01 (coverage measured, D band), so the "
+                   "uncovered general-services residual rides the declared "
+                   "residual assumption (D2); " + CONSTRUCTED_NOTE)
+AMECO_GF10_NOTE = ("AMECO UYTGH: social benefits other than social transfers "
+                   "in kind (D.62), general government — the dominant cash "
+                   "component of COFOG GF10 (§6.2(4) single-component proxy, "
+                   "maximum_extension only per §7.8); excludes in-kind social "
+                   "protection and includes some non-GF10 cash benefits "
+                   "(perimeter mismatch measured in coverage_share); "
+                   + CONSTRUCTED_NOTE)
 STSCH_NOTE = ("Arbeitskreis Steuerschätzungen (170th, May 2026), cash "
               "Finanzstatistik by tax, all government levels; growth only "
               "(§7.11); cash timing and Kindergeld/Zulagen netting differ "
@@ -169,7 +190,10 @@ def _dsm_interest(iso3: str) -> FcSource:
 
 
 def _ar(iso3: str, line: str, items: list[str]) -> FcSource:
+    from ggfiscal import config
+
     series = sum(R.ar_series(iso3, i) for i in items)
+    composite = len(items) > 1
     return FcSource(
         source_id="EC_AGEING_2024", series=series, kind="pct_gdp",
         horizon_year=2070, last_actual_year=2022,
@@ -177,7 +201,8 @@ def _ar(iso3: str, line: str, items: list[str]) -> FcSource:
         gdp_growth=R.ar_nominal_gdp_growth(iso3),
         gdp_source_id="EC_AGEING_2024_constructed",
         scenario_label="baseline",
-        observation_type="composite_forecast" if len(items) > 1 else "direct_forecast")
+        observation_type="composite_forecast" if composite else "direct_forecast",
+        residual_method=config.residual_method(iso3, line) if composite else None)
 
 
 def _stsch(labels: list[tuple[str, str]], note_extra: str = "") -> FcSource:
@@ -202,13 +227,25 @@ _SOLI_R03 = [("Tab 8.2", "- Lohnsteuer"), ("Tab 8.2", "- veranl. Einkommensteuer
 
 def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
     """Ordered (short-term first, D12) forecast sources per (classification,
-    line_code) — §12 Stage 3 priority: interest, defence, big revenue lines,
-    health/education, GF10 composites, remaining AMECO lines."""
+    line_code) — §12 Stage 3 priority (interest, defence, big revenue lines,
+    health/education, GF10, remaining AMECO lines) plus the Stage 4
+    maximum-extension proxies (§7.8-7.9, D-S4-002/003)."""
+    from ggfiscal import config
+
     out: dict[tuple[str, str], list[FcSource]] = {}
     uyig = _ameco(iso3, "UYIG", AMECO_UYIG_NOTE, AMECO_INT_XWALK,
                   direct=False, flag="d41_gross_accrued")
     out[("COFOG", "GF01_7")] = [uyig] + (
         [_dsm_interest(iso3)] if iso3 in ("FRA", "DEU") else [])
+    # §7.9 (Stage 4): GF01 via GF01_7 growth — mandated, maximum only, with
+    # the explicit D2 residual assumption; measured coverage is D band
+    # everywhere (interest is the minor share of GF01)
+    gf01 = _ameco(iso3, "UYIG", AMECO_GF01_NOTE, AMECO_COFOG_XWALK, direct=False)
+    gf01.observation_type = "proxy_forecast"
+    gf01.max_only = True
+    gf01.mandated = True
+    gf01.residual_method = config.residual_method(iso3, "GF01")
+    out[("COFOG", "GF01")] = [gf01]
     out[("ESA_REV", "R06")] = [_ameco(iso3, "UTSG", AMECO_UTSG_NOTE,
                                       AMECO_REV_XWALK, direct=True)]
     # R09 via AMECO sales = UTOG - UROG (complete composite; GBR lacks the series)
@@ -217,34 +254,53 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         src = _ameco(iso3, "UTOG", AMECO_SALES_NOTE, AMECO_REV_XWALK, direct=False)
         src.series = sales * 1000.0
         src.observation_type = "composite_forecast"
+        src.residual_method = config.residual_method(iso3, "R09")
         out[("ESA_REV", "R09")] = [src]
-    # R05 candidate: AMECO UTKG covers only the D.91 component — measured C/D,
-    # recorded as a non-application (Stage 4 decides the C cases)
-    out[("ESA_REV", "R05")] = [_ameco(
-        iso3, "UTKG", "AMECO UTKG: capital taxes (D.91) only — a component of "
-        "R05 (D.51 other + D.59 + D.91); coverage measured", AMECO_REV_XWALK,
-        direct=False)]
+    # R05: AMECO UTKG covers only the D.91 component — a §7.8 single-component
+    # proxy: maximum_extension where the C band is met (FRA), recorded
+    # otherwise (GBR/DEU are D)
+    r05 = _ameco(
+        iso3, "UTKG", "AMECO UTKG: capital taxes (D.91) only — one component "
+        "of R05 (D.51 other + D.59 + D.91); §6.2(4) single-component proxy, "
+        "maximum_extension only per §7.8; " + CONSTRUCTED_NOTE, AMECO_REV_XWALK,
+        direct=False)
+    r05.observation_type = "proxy_forecast"
+    r05.max_only = True
+    r05.residual_method = config.residual_method(iso3, "R05")
+    out[("ESA_REV", "R05")] = [r05]
+    # GF10 (Stage 4): AMECO D.62 dominant-component proxy (short-term, C band,
+    # all three countries), chained per D12 into the AR pensions+LTC composite
+    # beyond 2027 for FRA/DEU (overlap divergence under the V16 threshold)
+    gf10 = _ameco(iso3, "UYTGH", AMECO_GF10_NOTE, AMECO_COFOG_XWALK, direct=False)
+    gf10.observation_type = "proxy_forecast"
+    gf10.max_only = True
+    gf10.residual_method = config.residual_method(iso3, "GF10")
+    out[("COFOG", "GF10")] = [gf10]
     if iso3 in ("FRA", "DEU"):
         out[("COFOG", "GF07")] = [_ar(iso3, "GF07", ["health"])]
         out[("COFOG", "GF09")] = [_ar(iso3, "GF09", ["education"])]
-        out[("COFOG", "GF10")] = [_ar(iso3, "GF10", ["pensions", "ltc"])]
+        out[("COFOG", "GF10")] = [gf10, _ar(iso3, "GF10", ["pensions", "ltc"])]
     if iso3 == "DEU":
         out[("ESA_REV", "R01")] = [_stsch(
             [("Tab 2", "Steuern vom Umsatz")],
             "Steuern vom Umsatz = Umsatzsteuer + Einfuhrumsatzsteuer -> D.211")]
-        out[("ESA_REV", "R03")] = [_stsch(
+        r03 = _stsch(
             [("Tab 2", "Lohnsteuer"), ("Tab 2", "veranl. Einkommensteuer"),
              ("Tab 2", "nicht veranl. St. v. Ertrag*"),
              ("Tab 2", "AbgSt. a. Zins- u. V.-ertr.")] + _SOLI_R03,
             "household income taxes incl. the Solidaritätszuschlag parts "
-            "levied on them (payer-type split per Tab 8.2, §14)")]
-        out[("ESA_REV", "R04")] = [_stsch(
+            "levied on them (payer-type split per Tab 8.2, §14)")
+        r03.residual_method = config.residual_method(iso3, "R03")
+        r04 = _stsch(
             [("Tab 2", "Körperschaftsteuer"), ("Tab 2", "Mindeststeuer"),
              ("Tab 7", "Gewerbesteuer brutto"),
              ("Tab 8.2", "- Körperschaftsteuer")],
             "corporate income taxes: KSt + Mindeststeuer + Gewerbesteuer "
             "(gross, D.51 corporations per the national tax list) + Soli on "
-            "KSt (payer-type split per Tab 8.2, §14)")]
+            "KSt (payer-type split per Tab 8.2, §14)")
+        r04.residual_method = config.residual_method(iso3, "R04")
+        out[("ESA_REV", "R03")] = [r03]
+        out[("ESA_REV", "R04")] = [r04]
     return out
 
 
@@ -275,8 +331,9 @@ def declarations_for(iso3: str) -> list[Declaration]:
     out = [
         d("COFOG", "GF01", "no_official_forecast",
           "§7.9: GF01 total has no direct forecast source; strict ends at the "
-          "last actual — maximum_extension via GF01_7 growth with explicit "
-          "residual_method arrives with Stage 4"),
+          "last actual — maximum_extension carries the mandated GF01_7-growth "
+          "proxy (grade D, coverage measured, residual_method recorded; "
+          "D-S4-002)"),
         d("COFOG", "GF01_X", "no_official_forecast",
           "never forecast by construction (D10); derived only"),
         d("COFOG", "TE", "not_extended",
@@ -302,7 +359,10 @@ def declarations_for(iso3: str) -> list[Declaration]:
                                   "tables)", host="gov.uk / assets.publishing.service.gov.uk")),
             d("COFOG", "GF07", "source_blocked", _OBR_BLOCKED.format(obj="FRS July 2026")),
             d("COFOG", "GF09", "source_blocked", _OBR_BLOCKED.format(obj="FRS July 2026")),
-            d("COFOG", "GF10", "source_blocked", _OBR_BLOCKED.format(obj="EFO welfare tables")),
+            d("COFOG", "GF10", "source_blocked",
+              _OBR_BLOCKED.format(obj="EFO welfare tables")
+              + "; maximum_extension carries the AMECO D.62 dominant-component "
+                "proxy to 2027 (grade C, §7.8)"),
             d("ESA_REV", "R01", "source_blocked", _OBR_BLOCKED.format(obj="EFO receipts")),
             d("ESA_REV", "R02", "source_blocked", _OBR_BLOCKED.format(obj="EFO receipts")),
             d("ESA_REV", "R03", "source_blocked", _OBR_BLOCKED.format(obj="EFO receipts")),
@@ -321,7 +381,9 @@ def declarations_for(iso3: str) -> list[Declaration]:
             d("COFOG", "GF10", "grade_below_strict",
               "AR pensions+LTC composite measured at 69% of GF10 (grade C: "
               "no official projection of family/housing/unemployment "
-              "components) — recorded for Stage 4 maximum_extension"),
+              "components) — no strict forecast; maximum_extension chains the "
+              "AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per "
+              "D12, overlap divergence under the V16 threshold"),
             d("ESA_REV", "R01", "source_blocked",
               _PDF_BLOCKED.format(src="FRA_LPFP_PSTAB (prélèvements obligatoires)")),
             d("ESA_REV", "R02", "source_blocked",
@@ -331,8 +393,9 @@ def declarations_for(iso3: str) -> list[Declaration]:
             d("ESA_REV", "R04", "source_blocked",
               _PDF_BLOCKED.format(src="FRA_LPFP_PSTAB")),
             d("ESA_REV", "R05", "grade_below_strict",
-              "AMECO UTKG covers 76% of the line (grade C) — recorded for "
-              "Stage 4 maximum_extension; D7 lists R05 as partial"),
+              "AMECO UTKG covers 76% of the line (grade C) — no strict "
+              "forecast; applied in maximum_extension as a §7.8 "
+              "single-component proxy to 2027; D7 lists R05 as partial"),
         ]
     if iso3 == "DEU":
         out += [
@@ -342,7 +405,8 @@ def declarations_for(iso3: str) -> list[Declaration]:
             d("COFOG", "GF10", "grade_below_strict",
               "AR pensions+LTC composite measured at 61% of GF10 (grade C); "
               "BMAS Rentenversicherungsbericht blocked (bmas.de egress, "
-              "OQ-6) — recorded for Stage 4 maximum_extension"),
+              "OQ-6) — no strict forecast; maximum_extension chains the AMECO "
+              "D.62 proxy (to 2027) into the AR composite (to 2070) per D12"),
             d("ESA_REV", "R02", "no_machine_readable_source",
               "Steuerschätzung publishes Länder-/Gemeindesteuern only as "
               "cash aggregates mixing D.2, D.59 and D.91 — no ESA-complete "
@@ -444,7 +508,7 @@ def extend_forward(iso3: str, classification: str, line_code: str,
                     "variants": "not_applied_v16_divergence",
                 })
                 continue
-        if grade in ("C", "D"):
+        if grade == "D" and not src.mandated:
             boundaries.append({
                 "iso3": iso3, "classification": classification,
                 "line_code": line_code, "boundary_year": frontier,
@@ -453,9 +517,14 @@ def extend_forward(iso3: str, classification: str, line_code: str,
                 "scope": src.concept_note, "break_flag": False,
                 "grade": grade, "crosswalk_version": src.crosswalk_version,
                 "coverage_share": share, "coverage_share_year": share_year,
-                "variants": f"not_applied_grade_{grade}",
+                "variants": "not_applied_grade_D",
             })
             continue
+        # variant routing (D-S4-001): C-grade and §7.8 proxies (and the §7.9
+        # mandated D) are maximum_extension only; A/B direct/composite rows
+        # enter both variants
+        max_only = grade in ("C", "D") or src.max_only
+        variants_label = "maximum_only" if max_only else "strict+maximum"
         t = frontier + 1
         started = False
         gdp_running: float | None = None
@@ -494,6 +563,8 @@ def extend_forward(iso3: str, classification: str, line_code: str,
                 "coverage_share_year": share_year, "anchor_year": T,
                 "anchor_value": float(anchor[T]), "is_forecast": is_forecast,
                 "gdp_lcu_mn": gdp_t,
+                "variants": (("maximum_extension",) if max_only
+                             else ("strict", "maximum_extension")),
             })
             if not started:
                 boundaries.append({
@@ -504,7 +575,7 @@ def extend_forward(iso3: str, classification: str, line_code: str,
                     "scope": src.concept_note, "break_flag": False,
                     "grade": grade, "crosswalk_version": src.crosswalk_version,
                     "coverage_share": share, "coverage_share_year": share_year,
-                    "variants": "strict+maximum",
+                    "variants": variants_label,
                 })
                 started = True
             value_prev = value_t

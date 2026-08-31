@@ -255,3 +255,74 @@ def build_v0(path: Path | None = None) -> Path:
                 "n_years": 0, "status": "awaiting_harvest", "notes": " | ".join(notes),
             })
     return dest
+
+
+# ---------- §11.6 deliverable 9: the final coverage matrix (Stage 4) ----------
+
+MATRIX_COLUMNS = [
+    "iso3", "classification", "line_code",
+    "first_historical_year", "final_actual_year", "first_forecast_year",
+    "final_strict_year", "final_maximum_year",
+    "stitch_count", "grades", "principal_sources",
+    "residual_method", "reason_series_ends",
+]
+
+
+def build_matrix() -> pd.DataFrame:
+    """One row per §1 line series (66): span per variant, stitch counts,
+    grades, principal sources, residual method, and why the series ends —
+    assembled from the canonical tables, both boundary files and the
+    declarations, never hand-filled (D13)."""
+    from ggfiscal.build import load_canonical
+
+    root = config.repo_root() / "data" / "canonical"
+    bwd = pd.read_csv(root / "stitch_boundaries.csv")
+    fwd = pd.read_csv(root / "forecast_boundaries.csv")
+    dec = pd.read_csv(root / "forecast_declarations.csv")
+    frames = {v: pd.concat([load_canonical("COFOG", v), load_canonical("ESA_REV", v)],
+                           ignore_index=True) for v in ("strict", "maximum_extension")}
+    rows = []
+    for iso3, classification, line in config.line_universe():
+        mx = frames["maximum_extension"]
+        st = frames["strict"]
+        m = mx[(mx.iso3 == iso3) & (mx.line_code == line)
+               & (mx.classification == classification)]
+        s = st[(st.iso3 == iso3) & (st.line_code == line)
+               & (st.classification == classification)]
+        fc = m[m.is_forecast]
+        applied_b = bwd[(bwd.iso3 == iso3) & (bwd.line_code == line)
+                        & (~bwd.variants.str.startswith("not_applied"))]
+        applied_f = fwd[(fwd.iso3 == iso3) & (fwd.line_code == line)
+                        & (~fwd.variants.str.startswith("not_applied"))]
+        d = dec[(dec.iso3 == iso3) & (dec.line_code == line)]
+        if not d.empty:
+            reason = "; ".join(f"[{r.status}] {r.note}" for _, r in d.iterrows())
+        elif not fc.empty:
+            src = fc.sort_values("year").iloc[-1]
+            reason = (f"source horizon: {src.source_id} ends "
+                      f"{int(src.year)} (V10)")
+        else:
+            reason = "no rows built"
+        rows.append({
+            "iso3": iso3, "classification": classification, "line_code": line,
+            "first_historical_year": int(m.year.min()) if len(m) else None,
+            "final_actual_year": (int(m[~m.is_forecast].year.max())
+                                  if len(m[~m.is_forecast]) else None),
+            "first_forecast_year": int(fc.year.min()) if len(fc) else None,
+            "final_strict_year": int(s.year.max()) if len(s) else None,
+            "final_maximum_year": int(m.year.max()) if len(m) else None,
+            "stitch_count": len(applied_b) + len(applied_f),
+            "grades": "".join(sorted(set(m.quality_grade.dropna()))),
+            "principal_sources": "+".join(dict.fromkeys(
+                list(applied_b.incoming_source) + list(applied_f.incoming_source)
+                or list(m.source_id.dropna().unique()[:1]))),
+            "residual_method": "+".join(sorted(set(m.residual_method.dropna()))),
+            "reason_series_ends": reason,
+        })
+    return pd.DataFrame(rows, columns=MATRIX_COLUMNS)
+
+
+def write_matrix(path: Path | None = None) -> Path:
+    dest = path or config.repo_root() / "data" / "canonical" / "coverage_matrix.csv"
+    build_matrix().to_csv(dest, index=False)
+    return dest

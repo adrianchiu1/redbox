@@ -344,7 +344,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                 gdp_v = er["gdp_lcu_mn"]
                 obs_type = (src.observation_type if er["is_forecast"]
                             else "stitched_actual")
-                for variant in ("strict", "maximum_extension"):
+                for variant in er["variants"]:
                     frames[classification].append({
                         "series_id": f"{iso3}_{line_code}_{variant}",
                         "iso3": iso3, "classification": classification,
@@ -364,7 +364,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "anchor_value": er["anchor_value"],
                         "growth_source_id": src.source_id,
                         "growth_rate": er["growth_rate"],
-                        "residual_method": None,
+                        "residual_method": src.residual_method,
                         "interpolation_method": src.interpolation_method,
                         "period_conversion_method": src.period_conversion_method,
                         "coverage_share": er["coverage_share"],
@@ -477,6 +477,10 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         ["iso3", "classification", "line_code"])
     declarations.to_csv(canonical / "forecast_declarations.csv", index=False)
     out["forecast_declarations"] = canonical / "forecast_declarations.csv"
+    # §11.6 deliverable 9 (Stage 4): the final coverage matrix, assembled from
+    # what was just written
+    from ggfiscal.coverage import write_matrix
+    out["coverage_matrix"] = write_matrix()
 
     # run manifest (§11.1): snapshots and config the build consumed
     snaps = {f"{sid}/{part}": e["sha256"] for (sid, part), e in R.latest_snapshots().items()}

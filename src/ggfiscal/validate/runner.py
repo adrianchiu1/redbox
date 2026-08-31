@@ -38,6 +38,8 @@ V_SUITE_STAGE = {
 def current_stage() -> int:
     """Highest stage whose artifacts exist. Stage 0 until canonical data lands."""
     canonical = config.repo_root() / "data" / "canonical"
+    if (canonical / "coverage_matrix.csv").exists():
+        return 4
     if (canonical / "forecast_boundaries.csv").exists():
         return 3
     if (canonical / "stitch_boundaries.csv").exists():
@@ -149,7 +151,8 @@ def run_all() -> list[Finding]:
     from ggfiscal.validate.stage1 import IMPLEMENTED as S1
     from ggfiscal.validate.stage2 import IMPLEMENTED as S2
     from ggfiscal.validate.stage3 import IMPLEMENTED as S3
-    IMPLEMENTED = {**S1, **S2, **S3}  # S3's V13 covers backward + forward
+    from ggfiscal.validate.stage4 import IMPLEMENTED as S4
+    IMPLEMENTED = {**S1, **S2, **S3, **S4}  # S3's V13/V6 cover both directions
     for vid, first_stage in sorted(V_SUITE_STAGE.items(), key=lambda kv: int(kv[0][1:])):
         if stage < first_stage:
             findings.append(Finding(vid, "SKIP", "-",
