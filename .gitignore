@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+build/
+dist/
+
+# Data layers: raw snapshots are immutable but large; they are versioned by
+# hash in the manifest, not committed. manual/ IS committed (hand-keyed CSVs).
+data/raw/*
+data/standard/*
+data/canonical/*
+!data/raw/.gitkeep
+!data/standard/.gitkeep
+!data/canonical/.gitkeep

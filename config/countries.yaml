@@ -1,0 +1,51 @@
+# Per-country configuration (D1, §2). anchor_source is per country per tree.
+# interest_anchor: level2 = COFOG 01.7 from the anchor's Level II table;
+#                  d41    = GG gross D.41 payable from the same institution (D10).
+# Set programmatically in Stage 0 once Level II coverage is measured; the
+# values below are the D10 defaults (level2 where the anchor publishes L2).
+
+countries:
+  GBR:
+    currency: GBP
+    anchors:
+      expenditure: ONS_ESA_T11
+      revenue: ONS_GG_RECEIPTS
+      balance: ONS_GG_RECEIPTS
+    gdp_source: ONS_GG_RECEIPTS   # anchor-vintage national accounts GDP (§6.3); confirm series in Stage 1
+    interest_anchor: level2       # provisional — Stage 0 measures L2 coverage
+    envelope_forecast: [OBR_EFO_LATEST, EC_AMECO]   # §15 Q12 default: OBR primary, AMECO cross-check
+    period_basis_forecast: FY     # OBR/HMT Apr–Mar; convert per §7.10
+    weo_perimeter_gap_expected: true   # §8.2: small stable perimeter gap expected
+  FRA:
+    currency: EUR
+    anchors:
+      expenditure: EUROSTAT_GOV10A_EXP
+      revenue: EUROSTAT_GOV10A_MAIN   # + EUROSTAT_GOV10A_TAXAG for tax detail
+      balance: EUROSTAT_GOV10A_MAIN
+    gdp_source: EUROSTAT_NAMA10_GDP
+    interest_anchor: level2
+    envelope_forecast: [EC_AMECO, EC_DSM]
+    period_basis_forecast: CY
+    weo_perimeter_gap_expected: false
+  DEU:
+    currency: EUR
+    anchors:
+      expenditure: EUROSTAT_GOV10A_EXP
+      revenue: EUROSTAT_GOV10A_MAIN
+      balance: EUROSTAT_GOV10A_MAIN
+    gdp_source: EUROSTAT_NAMA10_GDP
+    interest_anchor: level2
+    envelope_forecast: [EC_AMECO, EC_DSM]
+    period_basis_forecast: CY
+    weo_perimeter_gap_expected: false
+
+# Tolerances (§15 Q4 defaults, as stated)
+tolerances:
+  imf_gfs_reconciliation_pct: 0.5      # V1
+  sum_to_total_pct: 0.1                # V2, V22, V23
+  level2_vs_d41_pct: 5.0               # V21
+  oecd_rs_reconciliation_pct: 3.0      # V25
+  base_bridge_pct_of_te: 1.0           # V24
+  envelope_excess_pct: 1.0             # V15 (tol)
+
+variants: [strict, maximum_extension]

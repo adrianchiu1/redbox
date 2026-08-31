@@ -1,0 +1,31 @@
+[project]
+name = "ggfiscal"
+version = "0.0.1"
+description = "gg-fiscal: long-horizon general-government expenditure by COFOG function, revenue by ESA type, and WEO reconciliation (GBR, FRA, DEU)"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.1",
+    "pyarrow>=14",
+    "pandera>=0.17",
+    "typer>=0.9",
+    "requests>=2.31",
+    "pyyaml>=6.0",
+    "matplotlib>=3.8",
+    "plotly>=5.18",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+ggfiscal = "ggfiscal.cli:app"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

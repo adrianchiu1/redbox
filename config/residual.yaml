@@ -1,0 +1,8 @@
+# residual_method per (iso3, line_code) for maximum_extension proxies (D2, §15 Q3).
+# Q3 default in force: grow_with_proxy everywhere until the committee says otherwise.
+# Entries are added per line as Stage 4 builds each proxy; a missing entry means
+# the default applies and the row records it explicitly.
+
+default: grow_with_proxy
+
+overrides: {}   # e.g.  DEU: {GF10: constant_pct_gdp}

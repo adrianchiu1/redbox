@@ -1,0 +1,54 @@
+# Line definitions per §4, with source code mappings (verify flags cleared in
+# Stage 0/1 as live metadata confirms each code).
+
+expenditure:   # classification = COFOG (§4.1)
+  GF01:   {level: "1", label: General public services, eurostat_cofog: GF01}
+  GF01_7: {level: "2", label: Public debt transactions (interest), eurostat_cofog: GF0107,
+           fallback: d41_payable, grade_on_fallback: B}   # D10
+  GF01_X: {level: derived, label: General public services excluding interest,
+           derived: GF01 - GF01_7, never_forecast: true}  # D10
+  GF02:   {level: "1", label: Defence, eurostat_cofog: GF02}
+  GF03:   {level: "1", label: Public order and safety, eurostat_cofog: GF03}
+  GF04:   {level: "1", label: Economic affairs, eurostat_cofog: GF04}
+  GF05:   {level: "1", label: Environmental protection, eurostat_cofog: GF05}
+  GF06:   {level: "1", label: Housing and community amenities, eurostat_cofog: GF06}
+  GF07:   {level: "1", label: Health, eurostat_cofog: GF07}
+  GF08:   {level: "1", label: Recreation culture and religion, eurostat_cofog: GF08}
+  GF09:   {level: "1", label: Education, eurostat_cofog: GF09}
+  GF10:   {level: "1", label: Social protection, eurostat_cofog: GF10}
+  TE:     {level: total, label: Total expenditure, eurostat_na_item: TE}
+
+revenue:       # classification = ESA_REV (§4.2)
+  R01: {esa: D.211, label: Value added tax, eurostat: {dataset: gov_10a_taxag, code: D211}}
+  R02: {esa: D.2 - D.211, label: Other taxes on production and imports,
+        derived_from: {minuend: D2, subtrahend: D211}}
+  R03: {esa: D.51 households, label: Taxes on household income,
+        eurostat: {dataset: gov_10a_taxag, code: D51A_C1},
+        concept_flags: [tax_credits_net]}   # D17 watch
+  R04: {esa: D.51 corporations, label: Taxes on corporate income,
+        eurostat: {dataset: gov_10a_taxag, code: D51B_C2}}
+  R05: {esa: D.51 other + D.59 + D.91, label: Other current taxes and capital taxes,
+        derived_from: {residual_of: D5, plus: [D59, D91]}}
+  R06: {esa: D.61, label: Net social contributions,
+        eurostat: {dataset: gov_10a_main, code: D61}}   # §15 Q13: one line, imputed flagged in notes
+  R07: {esa: D.41 resources, label: Interest receivable,
+        eurostat: {dataset: gov_10a_main, code: D41, direction: resources}}  # D10
+  R08: {esa: D.4 - D.41, label: Other property income,
+        derived_from: {minuend: D4, subtrahend: D41}, may_be_negative: true}
+  R09: {esa: P.11 + P.12 + P.131, label: Sales of goods and services,
+        eurostat: {dataset: gov_10a_main, code: P11_P12_P131}}
+  R10: {esa: D.39 + D.7 + D.92 + D.99, label: Other current and capital transfers receivable,
+        derived_from: {residual: true}, may_be_negative: true}
+  TR:  {esa: total, label: Total revenue, eurostat: {dataset: gov_10a_main, code: TR}}
+
+balance:       # classification = BALANCE (§4.3) — derived, never stitched
+  TR:  {derived: sum of revenue lines / anchor TR}
+  TE:  {derived: sum of expenditure lines / anchor TE}
+  NLB: {derived: TR - TE, esa: B.9, may_be_negative: true}
+  NI:  {derived: GF01_7 - R07, may_be_negative: true}
+  PB:  {derived: NLB + NI, may_be_negative: true}
+
+# GBR mapping notes (§4.2, §14): build the same lines from ONS ESA-basis
+# receipts. NICs are D.61 → R06 (not income tax). Household/corporate D.51
+# split from ONS income tax vs corporation tax lines; document in
+# crosswalks/ONS_RECEIPTS_to_ESA_REV.csv before Stage 1 closes.

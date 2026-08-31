@@ -1,0 +1,305 @@
+# Source register, seeded from §13 (drafted 2026-08-31, UNVERIFIED there) and
+# extended with §6.4 fields. `verification.status` values:
+#   confirmed_live      — endpoint hit and snapshot taken (none yet: egress blocked, OQ-1)
+#   confirmed_search    — existence/release confirmed via web search 2026-08-31; live check pending
+#   unverified          — straight from the §13 seed
+# source_register.csv is generated from this file; do not hand-edit the CSV.
+
+sources:
+
+  # ---------- Historical / anchor / reconciliation ----------
+
+  EUROSTAT_GOV10A_EXP:
+    institution: Eurostat
+    object: gov_10a_exp — GG expenditure by COFOG, Level I+II, S13
+    trees: [expenditure]
+    countries: [FRA, DEU]
+    role: anchor
+    api:
+      kind: sdmx
+      base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0
+      data_path: data/dataflow/ESTAT/gov_10a_exp/1.0/
+      format: csvdata
+      filter_hint: "S13, MIO_NAC, all COFOG99, FR+DE"
+    landing: https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table?lang=en
+    verification:
+      status: confirmed_search
+      checked: 2026-08-31
+      last_update_observed: "2026-07-23"      # per Eurostat metadata via search
+      last_observation: 2025                   # some countries provisional; t+11m rule
+      note: from 1995 for FRA/DEU as expected; live pull pending (OQ-1)
+
+  EUROSTAT_GOV10A_MAIN:
+    institution: Eurostat
+    object: gov_10a_main — ESA main aggregates incl. TR, TE, B9, D41 both directions, D61, P11_P12_P131
+    trees: [revenue, balance]
+    countries: [FRA, DEU]
+    role: anchor
+    api:
+      kind: sdmx
+      base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0
+      data_path: data/dataflow/ESTAT/gov_10a_main/1.0/
+      format: csvdata
+    landing: https://ec.europa.eu/eurostat/databrowser/view/gov_10a_main/default/table?lang=en
+    verification: {status: confirmed_search, checked: 2026-08-31, note: live pull pending (OQ-1)}
+
+  EUROSTAT_GOV10A_TAXAG:
+    institution: Eurostat
+    object: gov_10a_taxag — D211, D51A_C1, D51B_C2, D59, D91 tax detail
+    trees: [revenue]
+    countries: [FRA, DEU]
+    role: anchor_detail
+    api:
+      kind: sdmx
+      base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0
+      data_path: data/dataflow/ESTAT/gov_10a_taxag/1.0/
+      format: csvdata
+    landing: https://ec.europa.eu/eurostat/databrowser/view/gov_10a_taxag/default/table?lang=en
+    verification: {status: confirmed_search, checked: 2026-08-31, note: live pull pending (OQ-1)}
+
+  EUROSTAT_NAMA10_GDP:
+    institution: Eurostat
+    object: nama_10_gdp — nominal GDP (B1GQ, current prices, MIO_NAC)
+    trees: [denominator]
+    countries: [FRA, DEU]
+    role: gdp
+    api:
+      kind: sdmx
+      base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0
+      data_path: data/dataflow/ESTAT/nama_10_gdp/1.0/
+      format: csvdata
+    verification: {status: confirmed_search, checked: 2026-08-31}
+
+  ONS_ESA_T11:
+    institution: ONS
+    object: ESA Table 11 — GG expenditure by function, Level I+II
+    trees: [expenditure]
+    countries: [GBR]
+    role: anchor
+    api:
+      kind: xlsx_download
+      landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicspending/datasets/esatable11annualexpenditureofgeneralgovernment
+      note: versioned xlsx from landing page; archived vintages via "previous versions" for pre-1995
+    verification:
+      status: confirmed_search
+      checked: 2026-08-31
+      last_update_observed: "2026-04-23"
+      note: dataset page live and updated April 2026; live pull pending (OQ-1)
+
+  ONS_GG_RECEIPTS:
+    institution: ONS
+    object: ESA-basis GG receipts by code (PSF / national accounts)
+    trees: [revenue, balance]
+    countries: [GBR]
+    role: anchor
+    api:
+      kind: xlsx_download
+      landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance
+      note: exact dataset (PSA/ESA receipts) to pin down live; document income tax / NICs / CT mapping in crosswalk
+    verification: {status: unverified, note: candidate datasets identified; needs live check (OQ-1)}
+
+  ONS_PSF_INTEREST:
+    institution: ONS
+    object: GG interest payable and receivable, accrued (D.41)
+    trees: [expenditure, revenue]
+    countries: [GBR]
+    role: interest_history
+    api: {kind: xlsx_download, landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance}
+    verification: {status: unverified, note: needs live check (OQ-1)}
+
+  INSEE_APU:
+    institution: INSEE
+    object: Dépenses et recettes des administrations publiques (pre-1995 base series)
+    trees: [expenditure, revenue]
+    countries: [FRA]
+    role: backward_extension
+    api: {kind: html_download, landing: https://www.insee.fr/fr/statistiques}
+    verification: {status: unverified, note: Stage 2 concern; perimeter pre-ESA95 to document}
+
+  DESTATIS_81000:
+    institution: Destatis
+    object: GENESIS 81000 family; Fachserie 18 R1.4 archived (1991 start check)
+    trees: [expenditure, revenue]
+    countries: [DEU]
+    role: backward_extension
+    api: {kind: genesis_api, landing: https://www-genesis.destatis.de}
+    verification: {status: unverified, note: Stage 2 concern}
+
+  IMF_GFS:
+    institution: IMF
+    object: GFS COFOG and main aggregates (reconciliation only, D1)
+    trees: [expenditure, revenue]
+    countries: [GBR, FRA, DEU]
+    role: reconciliation
+    api:
+      kind: sdmx
+      base: https://api.imf.org/external/sdmx/3.0
+      note: dataset GFS_COFOG on data.imf.org (agency IMF.STA); exact dataflow id to confirm live.
+            Legacy dataservices.imf.org paths NOT used (portal migrated 2025).
+    landing: https://data.imf.org/Datasets/GFS_COFOG
+    verification: {status: confirmed_search, checked: 2026-08-31, note: dataset exists on migrated portal; dataflow id pending live check (OQ-1)}
+
+  OECD_T11:
+    institution: OECD
+    object: Table 11 — government expenditure by function (secondary)
+    trees: [expenditure]
+    countries: [GBR, FRA, DEU]
+    role: secondary
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      note: COFOG dataflow id to confirm live (national accounts SDD.NAD family)
+    verification: {status: unverified, note: dataflow id not confirmable by search; needs live catalog query (OQ-1)}
+
+  OECD_RS:
+    institution: OECD
+    object: Revenue Statistics, 1965– (backward extension R01–R06 via crosswalk, D15)
+    trees: [revenue]
+    countries: [GBR, FRA, DEU]
+    role: backward_extension
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      dataflow: OECD.CTP.TPS,DSD_REV_COMP_GLOBAL@DF_RSGLOBAL
+      note: dataflow id confirmed via search 2026-08-31; version to confirm live
+    verification: {status: confirmed_search, checked: 2026-08-31}
+
+  IMF_WEO:
+    institution: IMF
+    object: "WEO: GGR, GGX, GGXCNL, GGXONLB, NGDP (LCU); latest + 4-9 prior vintages (Q11)"
+    trees: [reconciliation]
+    countries: [GBR, FRA, DEU]
+    role: reconciliation_only          # §8 only; never an envelope or extension source (D4, D13)
+    api:
+      kind: sdmx
+      base: https://api.imf.org/external/sdmx/3.0
+      agency: IMF.RES
+      dataflow: WEO
+      note: editions exposed as dataflow versions; enumerate live via dataflow/IMF.RES/WEO/*
+    landing: https://data.imf.org/en/datasets/IMF.RES:WEO
+    verification:
+      status: confirmed_search
+      checked: 2026-08-31
+      latest_vintage: "2026-04"        # WEO April 2026, published 2026-04-08
+      note: one source_id per vintage at ingest (IMF_WEO_2026_04, ...); vintages actually
+            exposed by the API recorded at fetch time (Q11)
+
+  EC_AMECO:
+    institution: European Commission (DG ECFIN)
+    object: "AMECO: TR, TE, B9, interest, D2, D5, D61 and sub-items, nominal GDP; 2-year forecast"
+    trees: [envelope, revenue, expenditure]
+    countries: [GBR, FRA, DEU]
+    role: envelope
+    api:
+      kind: bulk_zip
+      landing: https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database/download-annual-data-set-macro-economic-database-ameco_en
+      note: zip-per-chapter CSV; UK coverage to verify at pull time (§13 note)
+    verification:
+      status: confirmed_search
+      checked: 2026-08-31
+      last_update_observed: "2026-06-03"   # Spring 2026 Economic Forecast vintage
+      note: live pull pending (OQ-1)
+
+  # ---------- Forecast (Stage 3+; registered now, verified before use) ----------
+
+  OBR_EFO_LATEST:
+    institution: OBR
+    object: Economic and Fiscal Outlook + supplementary tables
+    countries: [GBR]
+    lines: [R01, R02, R03, R04, R05, R06, GF01_7, GF10_components, envelope]
+    horizon_claimed: 5
+    concept_note: Public sector, FY (Apr-Mar), accrued incl. index-linked uplift; convert per §7.10; coverage_share on GG anchor (§7.11)
+    api: {kind: xlsx_download, landing: https://obr.uk/efo/}
+    verification: {status: unverified, note: Stage 3; latest EFO edition to pin live}
+
+  OBR_FRS_2026:
+    institution: OBR
+    object: Fiscal Risks and Sustainability, July 2026 (% GDP, 50 yrs)
+    countries: [GBR]
+    lines: [GF07, GF09, GF10_components, GF01_7, major_receipts]
+    concept_note: Public sector perimeter
+    api: {kind: xlsx_download, landing: https://obr.uk/frs/}
+    verification: {status: unverified, note: existence of July 2026 edition to confirm live}
+
+  UK_DEFENCE_PLAN:
+    institution: HMT / MoD
+    object: Spending Review / defence investment plan (cash plans)
+    countries: [GBR]
+    lines: [GF02]
+    verification: {status: unverified, note: "§15 Q7 default: strict grade B if GG share >= 90%"}
+
+  EC_AGEING_2024:
+    institution: European Commission
+    object: 2024 Ageing Report (benchmark years, % GDP, to 2070)
+    countries: [FRA, DEU]
+    lines: [GF07, GF09, GF10_components]
+    concept_note: Construct nominal GDP per §7.5 from AR real growth + deflator
+    verification: {status: unverified, note: check whether 2027 AR supersedes before Stage 3 (3-yearly cycle)}
+
+  EC_DSM:
+    institution: European Commission
+    object: Debt Sustainability Monitor, baseline (~10 yrs)
+    countries: [FRA, DEU]
+    lines: [GF01_7, envelope]
+    concept_note: GG, ESA
+    verification: {status: unverified, note: latest DSM edition to pin live}
+
+  FRA_LPFP_PSTAB:
+    institution: France (DG Trésor / Gouvernement)
+    object: Loi de programmation / programme de stabilité, prélèvements obligatoires (4-5 yrs)
+    countries: [FRA]
+    lines: [R01, R02, R03, R04, R05, R06, envelope]
+    concept_note: ESA-ish; CSG is D.5 -> R03 not R06 (§14); charge de la dette is central-only
+    verification: {status: unverified}
+
+  COR_2026:
+    institution: COR
+    object: COR annual report, pensions (long-term)
+    countries: [FRA]
+    lines: [GF10_pensions]
+    verification: {status: unverified, note: 2023 reform vs AR2024 assumptions — expect V16 divergence (§14)}
+
+  FRA_LPM_2030:
+    institution: France
+    object: Military programming law to 2030 (central budgetary)
+    countries: [FRA]
+    lines: [GF02]
+    concept_note: Central; gendarmerie (GF03) excluded
+    verification: {status: unverified}
+
+  FRA_LFSS:
+    institution: France
+    object: LFSS projections (short-term)
+    countries: [FRA]
+    lines: [GF07, GF10, R06]
+    verification: {status: unverified}
+
+  DEU_STEUERSCHAETZUNG:
+    institution: Arbeitskreis Steuerschätzung
+    object: Revenue by tax, all levels (~5 yrs)
+    countries: [DEU]
+    lines: [R01, R02, R03, R04, R05]
+    concept_note: Cash Finanzstatistik; bridge to ESA via Destatis/Bundesbank tables, growth only (§7.11);
+      EU own resources are D.7 payable in ESA, not revenue reductions
+    verification: {status: unverified}
+
+  DEU_BMAS_RVB:
+    institution: BMAS / DRV
+    object: Rentenversicherungsbericht (15 yrs, GRV only)
+    countries: [DEU]
+    lines: [GF10_grv, R06_grv]
+    verification: {status: unverified}
+
+  DEU_BMF_FINPLAN:
+    institution: BMF
+    object: Federal budget and financial plan to 2030 (federal only)
+    countries: [DEU]
+    lines: [GF02, federal_interest]
+    concept_note: Epl. 14 + Sondervermoegen Bundeswehr; Epl. 32 interest is federal — AMECO/DSM preferred for GF01_7 (§14)
+    verification: {status: unverified}
+
+# D7 — no identified forecast anywhere (declare, do not construct):
+no_forecast_lines:
+  expenditure: [GF03, GF04, GF05, GF06, GF08, GF01_X]
+  revenue: [R08, R10]
+  revenue_partial: {R05: other-taxes component partial, R06: imputed component}
