@@ -28,6 +28,7 @@ do (complete_both_sides flag).
 
 from __future__ import annotations
 
+import dataclasses
 import datetime as dt
 import hashlib
 import json
@@ -204,6 +205,8 @@ def build(run_id: str | None = None) -> dict[str, Path]:
     frames: dict[str, list[dict]] = {"COFOG": [], "ESA_REV": []}
     ledger_rows: list[dict] = []
     boundary_rows: list[dict] = []
+    forecast_boundary_rows: list[dict] = []
+    declaration_rows: list[dict] = []
     for iso3 in config.COUNTRIES:
         series_map = anchor_series(iso3)
         gdp, gdp_src = gdp_series(iso3)
@@ -320,6 +323,67 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "is_forecast": False, "run_id": run_id,
                         "notes": src.concept_note,
                     })
+        # --- Stage 3: forward extension, strict forecasts (§7.2, §12 Stage 3) ---
+        # A/B rows only; strict rows are mirrored into maximum_extension so the
+        # strict set stays a subset (V9); C/D measurements are recorded in
+        # forecast_boundaries.csv without value rows (Stage 4 decides the Cs).
+        from ggfiscal.forecast.forward import declarations_for, extend_forward, forecasts_for
+
+        declaration_rows.extend(dataclasses.asdict(dec) for dec in declarations_for(iso3))
+        for (classification, line_code), sources in forecasts_for(iso3).items():
+            meta = series_map.get((classification, line_code))
+            if meta is None:
+                continue
+            fc_rows, fbnds = extend_forward(iso3, classification, line_code,
+                                            meta["series"], sources, gdp)
+            forecast_boundary_rows += fbnds
+            for er in fc_rows:
+                src = er["source"]
+                release, vintage = _release(src.source_id)
+                year = er["year"]
+                gdp_v = er["gdp_lcu_mn"]
+                obs_type = (src.observation_type if er["is_forecast"]
+                            else "stitched_actual")
+                for variant in ("strict", "maximum_extension"):
+                    frames[classification].append({
+                        "series_id": f"{iso3}_{line_code}_{variant}",
+                        "iso3": iso3, "classification": classification,
+                        "line_code": line_code, "line_level": meta["line_level"],
+                        "line_label": meta["line_label"], "year": year,
+                        "native_period": str(year), "source_period_basis": "CY",
+                        "value_lcu_mn": er["value"], "currency": currency[iso3],
+                        "gdp_lcu_mn": gdp_v, "gdp_source_id": src.gdp_source_id or None,
+                        "pct_gdp": (round(100 * er["value"] / gdp_v, 6)
+                                    if gdp_v else None),
+                        "total_lcu_mn": None, "total_source_id": None,
+                        "pct_total": None,
+                        "series_variant": variant,
+                        "observation_type": obs_type,
+                        "anchor_source": meta["source_id"],
+                        "anchor_year": float(er["anchor_year"]),
+                        "anchor_value": er["anchor_value"],
+                        "growth_source_id": src.source_id,
+                        "growth_rate": er["growth_rate"],
+                        "residual_method": None,
+                        "interpolation_method": src.interpolation_method,
+                        "period_conversion_method": src.period_conversion_method,
+                        "coverage_share": er["coverage_share"],
+                        "coverage_share_year": (float(er["coverage_share_year"])
+                                                if er["coverage_share_year"] else None),
+                        "quality_grade": er["grade"],
+                        "crosswalk_version": src.crosswalk_version,
+                        "source_id": src.source_id,
+                        "source_release_date": release, "source_vintage": vintage,
+                        "source_status": "current",
+                        "scenario_label": src.scenario_label,
+                        "concept_flag": src.concept_flag or None,
+                        "imf_value": None, "imf_diff_pct": None,
+                        "oecd_rs_value": None, "oecd_rs_diff_pct": None,
+                        "is_interpolated": src.interpolation_method is not None,
+                        "is_period_converted": src.period_conversion_method is not None,
+                        "is_forecast": er["is_forecast"], "run_id": run_id,
+                        "notes": src.concept_note,
+                    })
         # GF01_X in stitched years: derive where both components exist (D10)
         for variant, vals in stitched_vals.items():
             gf01 = vals.get(("COFOG", "GF01"), {})
@@ -405,6 +469,14 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         ["iso3", "classification", "line_code", "boundary_year"])
     boundaries.to_csv(canonical / "stitch_boundaries.csv", index=False)
     out["stitch_boundaries"] = canonical / "stitch_boundaries.csv"
+    fboundaries = pd.DataFrame(forecast_boundary_rows).sort_values(
+        ["iso3", "classification", "line_code", "boundary_year"])
+    fboundaries.to_csv(canonical / "forecast_boundaries.csv", index=False)
+    out["forecast_boundaries"] = canonical / "forecast_boundaries.csv"
+    declarations = pd.DataFrame(declaration_rows).sort_values(
+        ["iso3", "classification", "line_code"])
+    declarations.to_csv(canonical / "forecast_declarations.csv", index=False)
+    out["forecast_declarations"] = canonical / "forecast_declarations.csv"
 
     # run manifest (§11.1): snapshots and config the build consumed
     snaps = {f"{sid}/{part}": e["sha256"] for (sid, part), e in R.latest_snapshots().items()}
@@ -412,7 +484,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         (config.repo_root() / "config" / f"{n}.yaml").read_bytes()
         for n in ("countries", "lines", "sources", "residual"))).hexdigest()
     manifest = config.repo_root() / "data" / "manifest" / f"run_{run_id}.json"
-    manifest.write_text(json.dumps({"run_id": run_id, "stage": 1,
+    manifest.write_text(json.dumps({"run_id": run_id, "stage": 3,
                                     "config_sha256": cfg_hash,
                                     "snapshots": snaps}, indent=1, sort_keys=True))
     out["run_manifest"] = manifest

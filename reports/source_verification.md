@@ -69,3 +69,26 @@ BMAS RVB, BMF Finanzplan.
 - `reports/recon_anchor_vs_imf_v0.csv`, `reports/recon_anchor_vs_oecd_rs_v0.csv`:
   Stage 0 reconciliation diagnostics.
 - `pytest`: 28 passed. `ggfiscal validate`: OK=5 SKIP=28, no ERROR, no WARN.
+
+---
+
+# Stage 3 addendum — forecast-source verification (2026-08-31, session 3)
+
+Live probes and harvest of the §13 forecast register (details: D-S3-001,
+OQ-6; register statuses updated in `config/sources.yaml`):
+
+| source_id | Outcome |
+|---|---|
+| EC_AGEING_2024 | **Resolved + snapshotted.** Statistical annex xlsx (country fiches + horizontal tables) on economy-finance.ec.europa.eu; annual 2022–2070; browser-like headers required (EC document store anti-bot page otherwise) and recorded in the pull. No 2027 AR exists yet. |
+| EC_DSM | **Resolved + snapshotted.** DSM 2025 country-fiches xlsx (published 2026-02-12): baseline interest % GDP + assumptions to 2036. |
+| DEU_STEUERSCHAETZUNG | **Resolved + snapshotted.** 170th session (May 2026) results, xlsx edition, per-tax to 2030 incl. Tab 8.2 Soli split. Next session supersedes (V11 watch). |
+| EC_AMECO | Already harvested (Spring 2026); forecast horizon 2027, last actual 2025. Confirmed: no UK TR/TE/UTOG/UROG history (OQ-4). |
+| OBR_EFO_LATEST, OBR_FRS_2026 | **Blocked by publisher**: obr.uk Cloudflare JS challenge defeats every client available here (curl 403, server-side fetch 403, headless Chromium cannot tunnel through the egress proxy). |
+| UK_DEFENCE_PLAN | **Blocked by egress policy**: gov.uk and assets.publishing.service.gov.uk CONNECT denied. |
+| DEU_BMAS_RVB | **Blocked by egress policy**: bmas.de CONNECT denied. |
+| FRA_LPFP_PSTAB, FRA_LPM_2030, FRA_LFSS, COR_2026, DEU_BMF_FINPLAN | **Not machine-readable** (PDF/law-text only); §11.4 second keying unavailable (OQ-5). cor-retraites.fr itself is reachable. |
+| circabc.europa.eu | Egress-denied, but not needed — the economy-finance copies of the AR annexes sufficed. |
+
+Gate 3 evidence: `data/canonical/forecast_boundaries.csv` (measured coverage
+per applied/withheld source), `data/canonical/forecast_declarations.csv`
+(57 per-line notes), `pytest` 56 passed, `ggfiscal validate` no ERROR.

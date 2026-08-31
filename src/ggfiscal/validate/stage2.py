@@ -63,11 +63,14 @@ def check_v5() -> list[Finding]:
 
 def check_v6() -> list[Finding]:
     """Recompute X_t/X_{t+1} from the raw extension series and compare with
-    both the recorded growth_rate and the chained values."""
+    both the recorded growth_rate and the chained values. Backward stitches
+    only (year < anchor_year); forward stitches are verified by the Stage 3
+    V6 extension against the forecast specs (§7.2 growth runs the other way)."""
     ext = _ext_series()
     out = []
     for variant in ("strict", "maximum_extension"):
         st = _stitched(variant)
+        st = st[st.year < st.anchor_year]
         for (iso3, line), g in st.groupby(["iso3", "line_code"]):
             g = g.sort_values("year")
             values = dict(zip(g.year, g.value_lcu_mn))

@@ -33,5 +33,7 @@ ggfiscal --help
 
 ## Stage status
 
-Stage 0 (verify + harvest) is in progress; the harvest is blocked on network
-egress policy — see `HANDOFF.md` and OQ-1 in `OPEN_QUESTIONS.md`.
+Stages 0–3 complete (gates passed): harvest, canonical history (both trees),
+backward extension, and strict forecasts. Next: Stage 4 (maximum-extension
+forecasts). See `HANDOFF.md` for the live state and `OPEN_QUESTIONS.md`
+OQ-6/OQ-7 for the blocked forecast sources awaiting the committee.

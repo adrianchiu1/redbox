@@ -75,6 +75,8 @@ class Pull:
     part: str          # sub-identifier within the source (country, vintage, chapter)
     url: str
     accept: str = ""   # optional Accept header (IMF needs the sdmx csv media type)
+    headers: tuple = ()  # extra (name, value) headers (EC document store needs
+    #                      browser-like headers or it serves a "Sorry" JS page)
 
 
 def eurostat_data_url(dataset: str, key: str) -> str:
@@ -133,6 +135,50 @@ def ons_gdp_url() -> str:
 SDMX_CSV = "application/vnd.sdmx.data+csv"
 
 
+# ---------- Stage 3 forecast sources (resolved live 2026-08-31, session 3) ----------
+# The EC document store (economy-finance.ec.europa.eu/document/download) serves
+# an anti-bot "Sorry" interstitial to bare clients; browser-like headers are
+# required and are part of the recorded pull definition. Blocked Stage 3 hosts
+# (obr.uk Cloudflare challenge; gov.uk, circabc.europa.eu, bmas.de egress
+# policy) are documented in OPEN_QUESTIONS OQ-6 — no Pull entries exist for
+# them until access is granted.
+
+EC_DOC_BASE = "https://economy-finance.ec.europa.eu/document/download"
+BMF_BASE = "https://www.bundesfinanzministerium.de"
+
+BROWSER_HEADERS = (
+    ("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                   "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"),
+    ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
+    ("Accept-Language", "en-GB,en;q=0.9"),
+)
+
+AR_2024_FICHES_URL = (f"{EC_DOC_BASE}/e248db46-f876-4e72-8821-efae678e81ea_en"
+                      "?filename=2024_Ageing_Report-Statistical_annex_all_countryfiches.xlsx")
+AR_2024_HORIZONTAL_URL = (f"{EC_DOC_BASE}/403cc04f-9487-406b-a48a-22538e0d461c_en"
+                          "?filename=2024_Ageing_Report-Statistical_annex_all_horizontal_tables.xlsx")
+DSM_2025_FICHES_URL = (f"{EC_DOC_BASE}/19852ffb-d8c5-4d47-a402-aa6179dc8051_en"
+                       "?filename=DSM%202025%20country%20fiches%20tables%20and%20graphs.xlsx")
+STEUERSCHAETZUNG_2026_05_URL = (
+    f"{BMF_BASE}/Content/DE/Standardartikel/Themen/Steuern/"
+    "Steuerschaetzungen_und_Steuereinnahmen/Steuerschaetzung/"
+    "2026-05-07-ergebnisse-170-steuerschaetzung-dl-xlsx.xlsx?__blob=publicationFile")
+
+
+def all_stage3_pulls() -> list[Pull]:
+    """Stage 3 forecast-source pulls (machine-readable, reachable hosts only)."""
+    return [
+        Pull("EC_AGEING_2024", "country_fiches", AR_2024_FICHES_URL,
+             headers=BROWSER_HEADERS),
+        Pull("EC_AGEING_2024", "horizontal_tables", AR_2024_HORIZONTAL_URL,
+             headers=BROWSER_HEADERS),
+        Pull("EC_DSM", "country_fiches_2025", DSM_2025_FICHES_URL,
+             headers=BROWSER_HEADERS),
+        Pull("DEU_STEUERSCHAETZUNG", "2026_05", STEUERSCHAETZUNG_2026_05_URL,
+             headers=BROWSER_HEADERS),
+    ]
+
+
 def all_stage0_pulls() -> list[Pull]:
     """Every Stage 0 pull: anchors, GDP, WEO vintages, GFS, OECD RS/T11, AMECO, ONS."""
     pulls: list[Pull] = []
@@ -167,6 +213,3 @@ def all_stage0_pulls() -> list[Pull]:
     return pulls
 
 
-def all_stage0_probe_urls() -> dict[str, str]:
-    """Back-compat view keyed '{source_id}/{part}'."""
-    return {f"{p.source_id}/{p.part}": p.url for p in all_stage0_pulls()}

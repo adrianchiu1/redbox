@@ -28,9 +28,10 @@ class FetchError(RuntimeError):
     pass
 
 
-def _get(url: str, accept: str = "") -> requests.Response:
+def _get(url: str, accept: str = "", extra_headers: tuple = ()) -> requests.Response:
     last: Exception | None = None
     headers = {"Accept": accept} if accept else {}
+    headers.update(dict(extra_headers))
     for attempt in range(RETRIES):
         try:
             resp = requests.get(url, timeout=TIMEOUT, headers=headers)
@@ -67,7 +68,7 @@ def _ext_for(url: str, resp: requests.Response) -> str:
 def fetch_pull(pull: endpoints.Pull, store: SnapshotStore | None = None) -> dict:
     """Execute one Pull into the store. Returns a manifest-style record."""
     store = store or SnapshotStore()
-    resp = _get(pull.url, pull.accept)
+    resp = _get(pull.url, pull.accept, pull.headers)
     snap = store.save(pull.source_id, resp.content, url=pull.url,
                       ext=_ext_for(pull.url, resp),
                       extra={"part": pull.part,
@@ -87,7 +88,7 @@ def fetch_all(store: SnapshotStore | None = None) -> tuple[list[dict], list[dict
     the reason so source_verification.md can name blocked hosts."""
     store = store or SnapshotStore()
     ok, failed = [], []
-    for pull in endpoints.all_stage0_pulls():
+    for pull in endpoints.all_stage0_pulls() + endpoints.all_stage3_pulls():
         try:
             ok.append(fetch_pull(pull, store))
         except (FetchBlocked, FetchError) as e:

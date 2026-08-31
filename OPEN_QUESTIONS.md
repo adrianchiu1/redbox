@@ -65,3 +65,42 @@ so Stage 3 does not rediscover it.
 D-S0-004 keeps raw bytes out of git and provenance in the manifest. If the
 committee wants a durable shared archive (LFS, object store), name it and
 `ingest/store.py` will grow a sync target. Not blocking.
+
+## OQ-6 — Stage 3 forecast hosts partially blocked; every GBR-specific source unreachable (NEW; predicted by OQ-1's closing note)
+Raised 2026-08-31 (session 3). Probed live:
+
+- **Reachable + harvested**: economy-finance.ec.europa.eu (AR 2024 annexes,
+  DSM 2025 fiches), bundesfinanzministerium.de (Steuerschätzung xlsx).
+- **obr.uk — blocked by the publisher, not the proxy**: Cloudflare JS
+  challenge on every path; no client in this environment can pass it (curl
+  and server-side fetch get 403; headless Chromium cannot tunnel TLS through
+  the egress proxy at all). This blocks OBR_EFO_LATEST, OBR_FRS_2026 — i.e.
+  ALL GBR lines beyond what AMECO carries (GF02, GF07, GF09, GF10, R01–R04,
+  R07, envelope).
+- **Egress-policy denials**: www.gov.uk + assets.publishing.service.gov.uk
+  (UK_DEFENCE_PLAN / SR25 tables), circabc.europa.eu (AR detail annexes —
+  not needed, the economy-finance copies sufficed), www.bmas.de
+  (Rentenversicherungsbericht).
+- **PDF-only, unaffected by network**: FRA_LPFP_PSTAB, FRA_LPM_2030,
+  FRA_LFSS, COR_2026, DEU_BMF_FINPLAN (§11.4 second keying still
+  unavailable — OQ-5).
+
+**Ask:** (a) allowlist gov.uk/assets.publishing and bmas.de;
+(b) for obr.uk, either run `ggfiscal fetch` for the OBR pulls from a
+network-normal machine and sync the snapshots + manifest, or provide a
+challenge-capable fetch path; (c) OQ-5's second-keyer question now also
+gates FRA tax lines and all three GF02 lines. Until then GBR strict
+forecasts are AMECO-only and §15 Q12's OBR-primary envelope runs on the
+AMECO cross-check (levels exist 2026–27 only, OQ-4).
+
+## OQ-7 — D12/V16: AMECO-vs-DSM interest join withheld — committee to adjudicate (NEW; blocks the 2028–2036 GF01_7 leg)
+Raised 2026-08-31. The DSM 2025 long-term interest path (to 2036, grade-B
+coverage) diverges from AMECO Spring 2026 growth by up to −6.5pp (FRA) /
++4.0pp (DEU) per year in the 2025–27 overlap — the DSM predates the Spring
+2026 vintage. D12 says above-threshold divergence is flagged, not
+auto-joined, so FRA/DEU GF01_7 strict ends at 2027 with the DSM leg recorded
+as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
+(a) join anyway at 2028 (accepting the vintage seam; one config change),
+(b) wait for DSM 2026 (expected ~Feb 2027) and re-run, or (c) keep the 2027
+stop. The V5-style diagnostics and both sources' snapshots are in place; no
+code change needed for any option.

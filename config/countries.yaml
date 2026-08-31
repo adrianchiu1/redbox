@@ -47,5 +47,8 @@ tolerances:
   oecd_rs_reconciliation_pct: 3.0      # V25
   base_bridge_pct_of_te: 1.0           # V24
   envelope_excess_pct: 1.0             # V15 (tol)
+  v16_overlap_divergence: 0.02         # V16/D12 (D-S3-005): above this, the
+                                       # long-term leg is NOT auto-joined —
+                                       # flagged for committee review (OQ-7)
 
 variants: [strict, maximum_extension]

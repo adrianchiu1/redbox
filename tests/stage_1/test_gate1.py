@@ -41,7 +41,11 @@ def test_schema_validates():
 def test_history_only_all_grade_a_or_b_no_forecasts():
     for cls in ("COFOG", "ESA_REV"):
         df = load_canonical(cls, "strict")
-        assert not df.is_forecast.any()
+        # history side: no anchor-era or backward-stitched row is a forecast
+        # (Stage 3 adds forward rows beyond the anchor; those are is_forecast
+        # and covered by tests/stage_3 — the Stage 1 invariant is that nothing
+        # at or before the anchor frontier is one)
+        assert not df[df.year <= df.anchor_year].is_forecast.any()
         # strict carries only A anchors and B extensions/proxies (V9: no C/D)
         assert set(df.quality_grade) <= {"A", "B"}
         # anchor-era rows are A except the D10 proxy years (DEU GF01_7 1995-99

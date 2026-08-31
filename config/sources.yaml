@@ -283,7 +283,11 @@ sources:
     horizon_claimed: 5
     concept_note: Public sector, FY (Apr-Mar), accrued incl. index-linked uplift; convert per §7.10; coverage_share on GG anchor (§7.11)
     api: {kind: xlsx_download, landing: https://obr.uk/efo/}
-    verification: {status: unverified, note: Stage 3; latest EFO edition to pin live}
+    verification: {status: blocked, checked: 2026-08-31,
+                   note: "obr.uk serves a Cloudflare JS challenge to every client
+                   available in this environment (curl, headless Chromium — no
+                   working browser tunnel through the egress proxy — and
+                   server-side fetch); OQ-6"}
 
   OBR_FRS_2026:
     institution: OBR
@@ -292,30 +296,60 @@ sources:
     lines: [GF07, GF09, GF10_components, GF01_7, major_receipts]
     concept_note: Public sector perimeter
     api: {kind: xlsx_download, landing: https://obr.uk/frs/}
-    verification: {status: unverified, note: existence of July 2026 edition to confirm live}
+    verification: {status: blocked, checked: 2026-08-31,
+                   note: "same obr.uk Cloudflare challenge as OBR_EFO_LATEST (OQ-6);
+                   July 2026 edition existence not confirmable from here"}
 
   UK_DEFENCE_PLAN:
     institution: HMT / MoD
     object: Spending Review / defence investment plan (cash plans)
     countries: [GBR]
     lines: [GF02]
-    verification: {status: unverified, note: "§15 Q7 default: strict grade B if GG share >= 90%"}
+    verification: {status: blocked, checked: 2026-08-31,
+                   note: "§15 Q7 default: strict grade B if GG share >= 90%;
+                   gov.uk and assets.publishing.service.gov.uk CONNECT denied by
+                   the egress policy (OQ-6)"}
 
   EC_AGEING_2024:
     institution: European Commission
-    object: 2024 Ageing Report (benchmark years, % GDP, to 2070)
+    object: 2024 Ageing Report statistical annex (annual, % GDP, 2022-2070)
     countries: [FRA, DEU]
     lines: [GF07, GF09, GF10_components]
-    concept_note: Construct nominal GDP per §7.5 from AR real growth + deflator
-    verification: {status: unverified, note: check whether 2027 AR supersedes before Stage 3 (3-yearly cycle)}
+    horizon_year: 2070
+    last_actual_year: 2022
+    concept_note: AWG perimeter vs COFOG functions — coverage measured per line;
+      nominal GDP constructed per §7.5 from AR potential-growth and HICP assumptions;
+      DE country note — cash and in-kind LTC both public under current rules
+    api:
+      kind: xlsx_download
+      landing: https://economy-finance.ec.europa.eu/publications/2024-ageing-report-economic-and-budgetary-projections-eu-member-states-2022-2070_en
+      note: statistical annex xlsx served from the EC document store; browser-like
+        headers required (anti-bot interstitial otherwise) — recorded in the pull
+    verification:
+      status: resolved_live
+      checked: 2026-08-31
+      last_update_observed: "2024-04-18"
+      note: annual tables (not benchmark-only) verified in the snapshot; no 2027 AR
+        published as of 2026-08-31 (3-yearly cycle -> next expected 2027; V11 watch)
 
   EC_DSM:
     institution: European Commission
-    object: Debt Sustainability Monitor, baseline (~10 yrs)
+    object: Debt Sustainability Monitor 2025, baseline country fiches (to 2036)
     countries: [FRA, DEU]
     lines: [GF01_7, envelope]
-    concept_note: GG, ESA
-    verification: {status: unverified, note: latest DSM edition to pin live}
+    horizon_year: 2036
+    last_actual_year: 2024
+    concept_note: GG, ESA; interest expenditure % of GDP (gross accrued D.41, EDP
+      concept); nominal path via DSM real-growth and inflation assumptions (§7.5)
+    api:
+      kind: xlsx_download
+      landing: https://economy-finance.ec.europa.eu/publications/debt-sustainability-monitor-2025_en
+      note: country fiches tables xlsx from the EC document store (browser headers required)
+    verification:
+      status: resolved_live
+      checked: 2026-08-31
+      last_update_observed: "2026-02-12"
+      note: DSM 2025 published 2026-02-12 confirmed as the latest edition live
 
   FRA_LPFP_PSTAB:
     institution: France (DG Trésor / Gouvernement)
@@ -323,14 +357,19 @@ sources:
     countries: [FRA]
     lines: [R01, R02, R03, R04, R05, R06, envelope]
     concept_note: ESA-ish; CSG is D.5 -> R03 not R06 (§14); charge de la dette is central-only
-    verification: {status: unverified}
+    verification: {status: not_machine_readable, checked: 2026-08-31,
+                   note: PDF-only publication; §11.4 second keying unavailable to a
+                   single-agent session (OQ-5 precedent, OQ-6)}
 
   COR_2026:
     institution: COR
     object: COR annual report, pensions (long-term)
     countries: [FRA]
     lines: [GF10_pensions]
-    verification: {status: unverified, note: 2023 reform vs AR2024 assumptions — expect V16 divergence (§14)}
+    verification: {status: not_machine_readable, checked: 2026-08-31,
+                   note: "cor-retraites.fr reachable but the annual report is
+                   PDF-only (§11.4 blocked, OQ-5/OQ-6); 2023 reform vs AR2024
+                   assumptions — expect V16 divergence (§14)"}
 
   FRA_LPM_2030:
     institution: France
@@ -338,30 +377,46 @@ sources:
     countries: [FRA]
     lines: [GF02]
     concept_note: Central; gendarmerie (GF03) excluded
-    verification: {status: unverified}
+    verification: {status: not_machine_readable, checked: 2026-08-31,
+                   note: law text with annual credits table, no machine-readable
+                   dataset (§11.4 blocked, OQ-6)}
 
   FRA_LFSS:
     institution: France
     object: LFSS projections (short-term)
     countries: [FRA]
     lines: [GF07, GF10, R06]
-    verification: {status: unverified}
+    verification: {status: not_machine_readable, checked: 2026-08-31,
+                   note: annex PDFs only (§11.4 blocked, OQ-6)}
 
   DEU_STEUERSCHAETZUNG:
-    institution: Arbeitskreis Steuerschätzung
-    object: Revenue by tax, all levels (~5 yrs)
+    institution: Arbeitskreis Steuerschätzungen (BMF)
+    object: 170th session (May 2026) results, revenue by tax, all levels, to 2030
     countries: [DEU]
-    lines: [R01, R02, R03, R04, R05]
-    concept_note: Cash Finanzstatistik; bridge to ESA via Destatis/Bundesbank tables, growth only (§7.11);
-      EU own resources are D.7 payable in ESA, not revenue reductions
-    verification: {status: unverified}
+    lines: [R01, R03, R04]
+    horizon_year: 2030
+    last_actual_year: 2025
+    concept_note: Cash Finanzstatistik, growth only (§7.11); Kindergeld/Zulagen
+      netting differs from the anchor's gross accrued ESA treatment (D17);
+      EU own resources are financing items outside the tax lines used;
+      Soli payer-type split from the source's own Tab 8.2 (§14)
+    api:
+      kind: xlsx_download
+      landing: https://www.bundesfinanzministerium.de/Content/DE/Standardartikel/Themen/Steuern/Steuerschaetzungen_und_Steuereinnahmen/Steuerschaetzung/2026-05-07-ergebnisse-170-sitzung-steuerschaetzung.html
+    verification:
+      status: resolved_live
+      checked: 2026-08-31
+      last_update_observed: "2026-05-07"
+      note: xlsx edition of the Tabellen 1-8 results confirmed and snapshotted;
+        next session (Oct/Nov 2026) supersedes — V11 watch
 
   DEU_BMAS_RVB:
     institution: BMAS / DRV
     object: Rentenversicherungsbericht (15 yrs, GRV only)
     countries: [DEU]
     lines: [GF10_grv, R06_grv]
-    verification: {status: unverified}
+    verification: {status: blocked, checked: 2026-08-31,
+                   note: bmas.de CONNECT denied by the egress policy (OQ-6)}
 
   DEU_BMF_FINPLAN:
     institution: BMF
@@ -369,7 +424,8 @@ sources:
     countries: [DEU]
     lines: [GF02, federal_interest]
     concept_note: Epl. 14 + Sondervermoegen Bundeswehr; Epl. 32 interest is federal — AMECO/DSM preferred for GF01_7 (§14)
-    verification: {status: unverified}
+    verification: {status: not_machine_readable, checked: 2026-08-31,
+                   note: Finanzplan is PDF-only (§11.4 blocked, OQ-6)}
 
 # D7 — no identified forecast anywhere (declare, do not construct):
 no_forecast_lines:

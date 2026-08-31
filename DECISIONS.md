@@ -269,3 +269,116 @@ receivable source).
 
 Totals (TE, TR) and the ledger are not extended: §6.1 ties envelopes to the
 anchor's own aggregates; a stitched total would not be an anchor total.
+
+## D-S3-001 — Stage 3 source access: what resolved, what is blocked, and the forced Q12 deviation (serves §12 Stage 3, §6.4; reopens OQ-1 as OQ-6)
+2026-08-31, third session. The OQ-1 "later stages" hosts were probed live:
+  - **Resolved and harvested (D8 snapshots)**: `economy-finance.ec.europa.eu`
+    (2024 Ageing Report statistical annexes — country fiches + horizontal
+    tables, ANNUAL 2022–2070, not benchmark-only; DSM 2025 country fiches to
+    2036; the EC document store needs browser-like headers, which are part of
+    the recorded pull), `www.bundesfinanzministerium.de` (Steuerschätzung
+    May 2026 results, xlsx edition, per-tax to 2030 including the Tab 8.2
+    Soli payer-type split), plus the already-harvested EC_AMECO Spring 2026
+    (forecast horizon 2027; last actual 2025).
+  - **Blocked**: `obr.uk` (Cloudflare JS challenge to every available client —
+    curl, WebFetch, and headless Chromium, which cannot tunnel through the
+    egress proxy at all); `www.gov.uk` + `assets.publishing.service.gov.uk`,
+    `circabc.europa.eu`, `www.bmas.de` (egress-policy CONNECT denials).
+    PDF-only sources (LPFP/PSTAB, LPM, LFSS, COR, BMF Finanzplan) stay
+    blocked by §11.4's second-keying requirement (OQ-5 precedent).
+Consequence: every GBR-specific forecast source is unreachable, so GBR
+strict forecasts are limited to AMECO lines (GF01_7, R06), and §15 Q12's
+OBR-primary envelope cannot be exercised — the AMECO UK TR/TE levels
+(2026–27 only, OQ-4) serve as the V15 envelope until OBR access exists.
+Recorded as OQ-6; nothing was scraped around the blocks (D13-clean: no
+mirror, no cached third-party copy).
+
+## D-S3-002 — Forward-forecast engine, grading and non-application records (serves §7.2, §7.4-7.5, §7.8, §9, §12 Stage 3)
+2026-08-31. `src/ggfiscal/forecast/forward.py` implements §7.2 (growth, never
+level, chained from the last anchor year), §7.4 (sequential sources, boundary
+record per transition — in `forecast_boundaries.csv`, separate from the
+backward file so Gate 2's invariants stay closed), §7.5 (%-GDP sources
+levelled with same-source nominal GDP; AR/DSM publish none, so it is
+constructed from their own real-growth and price assumptions,
+`gdp_source_id = {source}_constructed`; HICP stands in for the AR deflator —
+both converge to the same 2% assumption), §7.10 (FY→CY, exercised by tests
+only until a GBR source is reachable) and D11 (both interpolation methods;
+unused by the annual AR tables). Grades from measured §9.2 coverage at the
+last common year: **A** only for a direct forecast of the same ESA aggregate
+within 0.5% of the anchor (AMECO UTSG→R06: 0.999–1.000); **B** 90–110%;
+**C** 50–90% and **D** otherwise are measured and recorded
+(`not_applied_grade_*`) but never applied at Stage 3 — strict carries A/B
+only (V9), and the C records are Stage 4's worked queue. Source years at or
+before the source's last actual stitch as `stitched_actual` (§7.2 "newer
+national actuals first": the 2025 GF01_7 values), not as forecasts.
+Every line without an applied forecast carries a declaration row
+(`forecast_declarations.csv`: D7 / blocked / below-strict-grade / not
+extended) — Gate 3's note requirement, tested.
+
+## D-S3-003 — Forecast map actually applied and the crosswalk calls (serves §12 Stage 3 order, §11.5, §14, D17)
+2026-08-31. Applied (all coverage shares in `forecast_boundaries.csv`):
+  - **GF01_7 ← AMECO UYIG** growth to 2027, grade B (coverage GBR 1.044,
+    FRA 1.021, DEU 0.930 — the D.41-for-Level-II wedge V21 already monitors);
+    2025 stitched as newer actual. The DSM long-term leg was measured
+    (B-coverage) but withheld per D-S3-005/OQ-7.
+  - **R06 ← AMECO UTSG** (D.61 direct) grade A everywhere (0.9987–1.0000).
+  - **R09 ← AMECO UTOG − UROG** (sales of goods and services as the exact
+    difference of two official aggregates, §6.2(3) composite) grade B at
+    coverage 1.0000 for FRA/DEU; GBR has no UTOG/UROG history (OQ-4 pattern)
+    → unmeasurable → not applied, declared.
+  - **DEU R01 ← Steuerschätzung "Steuern vom Umsatz"** (0.999), **R03 ←**
+    Lohnsteuer + veranl. ESt + nicht veranl. StvE + AbgSt + their Soli parts
+    (0.979), **R04 ←** KSt + Mindeststeuer + Gewerbesteuer brutto + Soli auf
+    KSt (0.946) — all B, growth only (§7.11), horizon 2030. Crosswalk calls
+    (`DEU_STEUERSCHAETZUNG_to_ESA_REV.csv` v1.0): the **Kasse** series are
+    used, not the Tab 8.1 brutto series — measured: brutto composites
+    overshoot the anchor beyond the B band because ESA's netting of
+    Kindergeld/Zulagen sits between cash and brutto (D17 wedge documented);
+    the **Soli split is the source's own Tab 8.2 decomposition** (official
+    weights, §11.5) resolving §14's payer-type requirement; **Gewerbesteuer
+    sits in the corporate D.51 block** per the national tax list (measured:
+    without it R04 coverage is 0.33, with it 0.95). No R02/R05 application:
+    the source's Länder-/Gemeindesteuern aggregates mix D.2/D.59/D.91.
+  - **FRA/DEU GF07 ← AR health baseline** (0.942/1.021) and **GF09 ← AR
+    education baseline** (0.920/0.974), grade B, annual to 2070. LTC is NOT
+    added to GF07: the AR gives no GF07/GF10 split of LTC and its
+    institutional/home/cash split does not map to COFOG functions.
+  - **GF10 ← AR pensions+LTC** measured 0.685 (FRA) / 0.611 (DEU) → C →
+    recorded, not applied (no official projection of family, housing,
+    unemployment or social-exclusion benefits exists in the harvest; BMAS
+    blocked). Stage 4 maximum_extension candidate.
+  - **R05 ← AMECO UTKG** measured 0.108 (GBR, D) / 0.763 (FRA, C) / 0.336
+    (DEU, D) — recorded, not applied.
+Envelope for V15: AMECO URTG/UUTG ×1000 per country-year (through 2027).
+
+## D-S3-004 — Where each line's strict forecast ends, and why (Gate 3 record)
+2026-08-31. Horizon per line after Stage 3 (strict; "—" = ends at last
+actual, reason in `forecast_declarations.csv`):
+**All three** — GF01_7: 2027 (AMECO horizon; DSM leg to 2036 withheld per
+OQ-7 for FRA/DEU; no UK DSM). R06: 2027 (AMECO). GF01, GF01_X, GF03–GF06,
+GF08, R08, R10: — (D7, declared). R07: — (no reachable machine-readable
+receivable-interest forecast anywhere: AMECO has none, DSM is payable-only,
+OBR blocked; NI/PB ledger therefore has no forecast years, §4.3). R05: —
+(component coverage below strict everywhere). TE/TR: — (envelopes, never
+stitched).
+**GBR** — GF02, GF07, GF09, GF10, R01–R04: — (OBR/gov.uk blocked, OQ-6);
+R09: — (no AMECO UK series).
+**FRA** — GF07, GF09: 2070 (AR). R09: 2027 (AMECO). GF02 (LPM), R01–R04
+(LPFP/PSTAB): — (PDF-only, §11.4). GF10: — (composite C).
+**DEU** — GF07, GF09: 2070 (AR). R01, R03, R04: 2030 (Steuerschätzung).
+R09: 2027 (AMECO). GF02 (BMF Finanzplan PDF), R02 (no ESA-complete set),
+GF10 (composite C; BMAS blocked): —.
+
+## D-S3-005 — V16 threshold and the first firing: the DSM interest leg is withheld (Q4 space; serves D12, §10 V16)
+2026-08-31. §10 gives V16 no numeric threshold. Chosen: 0.02 on annual
+growth-factor divergence between consecutive sources in their overlap years
+(`tolerances.v16_overlap_divergence`, committee-adjustable). First firing:
+AMECO Spring 2026 vs DSM 2025 interest growth diverges up to **−0.065 (FRA)**
+and **+0.040 (DEU)** in 2025–27 — the DSM predates the Spring 2026 forecast
+and the 2026 rate repricing, so the two vintages disagree exactly where they
+would be joined. D12 is explicit ("flag for committee review rather than
+auto-joining"), so the engine withholds any long-term leg whose overlap
+divergence exceeds the threshold (`not_applied_v16_divergence` boundary
+record) and V16 WARNs. FRA/DEU GF01_7 therefore ends at 2027 pending the
+committee's call (OQ-7); approving the join or raising the threshold is a
+config change plus rebuild, no code change.

@@ -316,6 +316,193 @@ def weo_latest_actual(vintage: str, iso3: str, indicator: str) -> int | None:
     return int(vals.iloc[0]) if len(vals) else None
 
 
+# ---------- Stage 3 forecast sources ----------
+
+AR_CC = {"FRA": "FR", "DEU": "DE"}  # Ageing Report / DSM sheet codes
+
+
+@lru_cache(maxsize=None)
+def _ar_fiche_sheet(sheet: str) -> pd.DataFrame:
+    path = _snap_path("EC_AGEING_2024", "country_fiches")
+    if path is None:
+        return pd.DataFrame()
+    return pd.read_excel(path, sheet_name=sheet, engine="openpyxl", header=None)
+
+
+_YEAR_RE = re.compile(r"(19|20)\d{2}(\.0)?$")
+
+
+def _year_columns(row: pd.Series) -> dict[int, int]:
+    """Column index -> year for every cell matching a 4-digit year."""
+    return {j: int(float(str(v).strip())) for j, v in row.items()
+            if isinstance(j, int) and _YEAR_RE.fullmatch(str(v).strip())}
+
+
+def _first_label(row: pd.Series, max_col: int = 7) -> tuple[int, str]:
+    """(column, text) of the first non-empty, non-numeric cell in a row."""
+    for j, v in row.items():
+        if not isinstance(j, int) or j > max_col:
+            break
+        s = str(v).strip()
+        if s and s != "nan" and not _YEAR_RE.fullmatch(s):
+            return j, s
+    return -1, ""
+
+
+def _ar_section_series(df: pd.DataFrame, section_prefix: str, row_label: str) -> pd.Series:
+    """AR fiche layout: a section header row carries the section title, a
+    'Ch 22-70'/'AVG 22-70' cell, then annual year columns 2022-2070; data rows
+    below carry the row label in the title column. Column positions vary by
+    sheet, so both are located by content. The first matching row after the
+    matching section header wins (scenario blocks repeat titles with a
+    '- (diff...)' suffix, which the exact title match excludes)."""
+    years: dict[int, int] = {}
+    label_col = 1
+    in_section = False
+    for i in range(len(df)):
+        row = df.iloc[i]
+        if any(str(v).strip() in ("Ch 22-70", "AVG 22-70") for v in row[:8]):
+            col, title = _first_label(row)
+            # scenario blocks repeat the title with a '- (diff. ...)' suffix
+            in_section = title.startswith(section_prefix) and "diff" not in title
+            if in_section:
+                years = _year_columns(row)
+                label_col = col
+            continue
+        if in_section and str(row.iloc[label_col]).strip() == row_label:
+            vals = {}
+            for j, y in years.items():
+                v = pd.to_numeric(row.iloc[j], errors="coerce")
+                if pd.notna(v):
+                    vals[y] = float(v)
+            return pd.Series(vals).sort_index()
+    return pd.Series(dtype=float)
+
+
+AR_ITEMS = {  # item -> (fiche sheet suffix, section header prefix, row label)
+    "pensions": ("b", "Baseline as % of GDP", "Public pensions, gross"),
+    "health": ("c", "Health care spending as % of GDP", "Baseline"),
+    "ltc": ("c", "Long-term care spending as % of GDP", "Baseline"),
+    "education": ("c", "Education spending as % of GDP", "Baseline"),
+    "potential_gdp_growth": ("a", "Macroeconomic assumptions", "Potential GDP (growth rate)"),
+    "hicp_growth": ("a", "Macroeconomic assumptions", "HICP (growth rate)"),
+}
+
+
+def ar_series(iso3: str, item: str) -> pd.Series:
+    """2024 Ageing Report country-fiche series: expenditure items as % of GDP,
+    assumptions as growth rates (%), annual 2022-2070."""
+    cc = AR_CC.get(iso3)
+    if cc is None:
+        return pd.Series(dtype=float)
+    suffix, section, label = AR_ITEMS[item]
+    return _ar_section_series(_ar_fiche_sheet(cc + suffix), section, label)
+
+
+def ar_nominal_gdp_growth(iso3: str) -> pd.Series:
+    """§7.5: AR nominal GDP growth factors constructed from the AR's own
+    real-growth (potential GDP) and price (HICP) assumptions."""
+    real = ar_series(iso3, "potential_gdp_growth")
+    price = ar_series(iso3, "hicp_growth")
+    common = real.index.intersection(price.index)
+    return ((1 + real[common] / 100) * (1 + price[common] / 100)).sort_index()
+
+
+@lru_cache(maxsize=None)
+def _dsm_sheet(iso3: str) -> pd.DataFrame:
+    path = _snap_path("EC_DSM", "country_fiches_2025")
+    cc = AR_CC.get(iso3)
+    if path is None or cc is None:
+        return pd.DataFrame()
+    return pd.read_excel(path, sheet_name=cc, engine="openpyxl", header=None)
+
+
+def dsm_series(iso3: str, row_label: str) -> pd.Series:
+    """DSM 2025 country fiche: annual years (2024-2036) come from the nearest
+    preceding header row ('... - baseline scenario ...' / '1. Baseline');
+    row labels sit in the same column as the header title. Expenditure rows
+    are % of GDP; assumption rows are growth rates (%). The first match after
+    a header wins (later scenario blocks repeat the assumption labels)."""
+    df = _dsm_sheet(iso3)
+    if df.empty:
+        return pd.Series(dtype=float)
+    years: dict[int, int] = {}
+    label_col = 3
+    for i in range(len(df)):
+        row = df.iloc[i]
+        cand_years = _year_columns(row)
+        if len(cand_years) >= 5:
+            # the header title cell ('... baseline scenario ...' / '1. Baseline')
+            # sits in the same column as the row labels below it; a scenario
+            # key ('BASELINE') can precede it, so the rightmost match wins
+            matches = [j for j, v in row.items()
+                       if isinstance(j, int) and j <= 7 and "baseline" in str(v).lower()]
+            if matches:
+                years = cand_years
+                label_col = matches[-1]
+            continue
+        if years and str(row.iloc[label_col]).strip() == row_label:
+            vals = {}
+            for j, y in years.items():
+                v = pd.to_numeric(row.iloc[j], errors="coerce")
+                if pd.notna(v):
+                    vals[y] = float(v)
+            return pd.Series(vals).sort_index()
+    return pd.Series(dtype=float)
+
+
+def dsm_nominal_gdp_growth(iso3: str) -> pd.Series:
+    """DSM baseline nominal GDP growth factors from its own real growth and
+    inflation (GDP deflator proxy) assumption rows (§7.5)."""
+    real = dsm_series(iso3, "Real GDP growth")
+    price = dsm_series(iso3, "Inflation rate")
+    common = real.index.intersection(price.index)
+    return ((1 + real[common] / 100) * (1 + price[common] / 100)).sort_index()
+
+
+@lru_cache(maxsize=None)
+def _steuerschaetzung_tab(sheet: str) -> dict[str, pd.Series]:
+    """One Steuerschätzung tab -> {row label: series}. Layout: a year header
+    row ('2024', '2025', ... under Ist/Schätzung), then labelled rows; labels
+    repeat in the 'vH gegenüber Vorjahr' block — the first occurrence (levels,
+    Mio EUR) wins."""
+    path = _snap_path("DEU_STEUERSCHAETZUNG", "2026_05")
+    if path is None:
+        return {}
+    df = pd.read_excel(path, sheet_name=sheet, engine="openpyxl", header=None)
+    years: dict[int, int] = {}
+    rows: dict[str, pd.Series] = {}
+    for i in range(len(df)):
+        cells = df.iloc[i]
+        if not years:
+            cand = {j: str(v).strip() for j, v in cells.items()
+                    if isinstance(j, int) and j >= 1 and str(v) != "nan"}
+            if cand and re.fullmatch(r"2024(\.0)?", next(iter(cand.values()), "")):
+                years = {j: int(float(v)) for j, v in cand.items()
+                         if re.fullmatch(r"\d{4}(\.0)?", v)}
+            continue
+        label = str(cells.iloc[0]).strip()
+        if label in ("nan", "") or label in rows:
+            continue
+        vals = {}
+        for j, y in years.items():
+            v = pd.to_numeric(cells.iloc[j], errors="coerce")
+            if pd.notna(v):
+                vals[y] = float(v)
+        if vals:
+            rows[label] = pd.Series(vals).sort_index()
+    return rows
+
+
+def steuerschaetzung_series(sheet: str, label: str) -> pd.Series:
+    return _steuerschaetzung_tab(sheet).get(label, pd.Series(dtype=float))
+
+
+def steuerschaetzung_gdp() -> pd.Series:
+    """Tab 1 'BIP, nominal (Mrd. €)' -> EUR millions."""
+    return steuerschaetzung_series("Tab 1", "BIP, nominal (Mrd. €)") * 1000.0
+
+
 # ---------- AMECO ----------
 
 @lru_cache(maxsize=None)
