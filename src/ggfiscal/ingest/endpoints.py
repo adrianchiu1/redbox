@@ -41,13 +41,17 @@ ISO3 = ("GBR", "FRA", "DEU")
 # WEO subject codes used by the reconciliation module (§6.3, §8.1)
 WEO_SUBJECTS = ("GGR", "GGX", "GGXCNL", "GGXONLB", "NGDP")
 
-# WEO vintages actually exposed by api.imf.org on 2026-08-31 (Q11, D-S0-006):
-# vintage label -> (dataflow id, dataflow version)
-WEO_VINTAGES = {
-    "2026-04": ("WEO", "9.0.0"),
-    "2025-10": ("WEO_2025_OCT_VINTAGE", "1.0.0"),
-    "2025-04": ("WEO", "6.0.0"),
-}
+# WEO vintages: vintage label -> (dataflow id, dataflow version), latest first.
+# Since Stage 6 (D-S6-001) the mapping lives in config/sources.yaml
+# (IMF_WEO.api.vintages) so that registering a new WEO edition is a config
+# change plus rebuild, never a code change (§11.7); the API drops old
+# editions, so new ones must be snapshotted promptly (D-S0-007).
+def weo_vintages() -> dict[str, tuple[str, str]]:
+    from ggfiscal import config
+
+    reg = config.sources()["IMF_WEO"]["api"]["vintages"]
+    return {label: (str(v["dataflow"]), str(v["version"]))
+            for label, v in reg.items()}
 
 GFS_COFOG_FLOW = ("IMF.STA", "GFS_COFOG", "11.0.0")
 GFS_SOO_FLOW = ("IMF.STA", "GFS_SOO", "12.0.0")
@@ -193,7 +197,7 @@ def all_stage0_pulls() -> list[Pull]:
 
     pulls.append(Pull("IMF_WEO", "catalog", imf_dataflow_catalog_url(),
                       "application/vnd.sdmx.structure+json"))
-    for vintage, (flow, version) in WEO_VINTAGES.items():
+    for vintage, (flow, version) in weo_vintages().items():
         for iso3 in ISO3:
             for subject in WEO_SUBJECTS:
                 pulls.append(Pull(f"IMF_WEO_{vintage.replace('-', '_')}",

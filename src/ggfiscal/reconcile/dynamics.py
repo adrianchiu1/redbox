@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 
 from ggfiscal import config
-from ggfiscal.ingest.endpoints import WEO_VINTAGES
+from ggfiscal.ingest.endpoints import weo_vintages
 from ggfiscal.standardise import readers as R
 
 REV_LINES = [f"R{n:02d}" for n in range(1, 11)]
@@ -38,7 +38,7 @@ def decompose(variant: str = "strict") -> pd.DataFrame:
     rev = load_canonical("ESA_REV", variant)
     if exp.empty or rev.empty:
         return pd.DataFrame(columns=COLUMNS)
-    latest_vintage = next(iter(WEO_VINTAGES))
+    latest_vintage = next(iter(weo_vintages()))
     ledger = load_ledger()
     rows = []
     for iso3 in config.COUNTRIES:

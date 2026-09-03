@@ -26,7 +26,7 @@ from pathlib import Path
 import pandas as pd
 
 from ggfiscal import config
-from ggfiscal.ingest.endpoints import WEO_VINTAGES
+from ggfiscal.ingest.endpoints import weo_vintages
 from ggfiscal.standardise import readers as R
 
 COLUMNS = [
@@ -89,7 +89,7 @@ def compute(path: Path | None = None,
     dest = path or config.repo_root() / "data" / "canonical" / "weo_base_bridge.csv"
     dest.parent.mkdir(parents=True, exist_ok=True)
     rows, summaries = [], []
-    for vintage in (vintages or list(WEO_VINTAGES)):
+    for vintage in (vintages or list(weo_vintages())):
         for iso3 in config.COUNTRIES:
             anchor = anchor_aggregates(iso3)
             weo = weo_aggregates(vintage, iso3)

@@ -30,8 +30,6 @@ from __future__ import annotations
 
 import dataclasses
 import datetime as dt
-import hashlib
-import json
 from pathlib import Path
 
 import pandas as pd
@@ -482,17 +480,30 @@ def build(run_id: str | None = None) -> dict[str, Path]:
     from ggfiscal.coverage import write_matrix
     out["coverage_matrix"] = write_matrix()
 
-    # run manifest (§11.1): snapshots and config the build consumed
+    # §11.6 deliverable 8 (Stage 6): crosswalks.csv — the concatenation of
+    # every versioned crosswalk in crosswalks/, keyed by its file name
+    out["crosswalks"] = write_crosswalks()
+
+    # run manifest (§11.1, D-S6-003): every input hash the build consumed,
+    # completed with deliverable hashes as the later pipeline steps run
+    from ggfiscal import manifest as M
     snaps = {f"{sid}/{part}": e["sha256"] for (sid, part), e in R.latest_snapshots().items()}
-    cfg_hash = hashlib.sha256(b"".join(
-        (config.repo_root() / "config" / f"{n}.yaml").read_bytes()
-        for n in ("countries", "lines", "sources", "residual"))).hexdigest()
-    manifest = config.repo_root() / "data" / "manifest" / f"run_{run_id}.json"
-    manifest.write_text(json.dumps({"run_id": run_id, "stage": 3,
-                                    "config_sha256": cfg_hash,
-                                    "snapshots": snaps}, indent=1, sort_keys=True))
-    out["run_manifest"] = manifest
+    out["run_manifest"] = M.write_base(run_id, snaps)
+    M.update_deliverables(out["run_manifest"])
     return out
+
+
+def write_crosswalks(path: Path | None = None) -> Path:
+    """Concatenate crosswalks/*.csv (identical §11.5 headers) into the
+    canonical crosswalks.csv deliverable, keyed by source file."""
+    dest = path or config.repo_root() / "data" / "canonical" / "crosswalks.csv"
+    frames = []
+    for p in sorted((config.repo_root() / "crosswalks").glob("*.csv")):
+        df = pd.read_csv(p, dtype=str)
+        df.insert(0, "crosswalk", p.stem)
+        frames.append(df)
+    pd.concat(frames, ignore_index=True).to_csv(dest, index=False)
+    return dest
 
 
 def load_canonical(classification: str, variant: str = "strict") -> pd.DataFrame:

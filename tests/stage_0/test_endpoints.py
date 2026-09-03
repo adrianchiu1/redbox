@@ -17,8 +17,8 @@ def test_imf_weo_uses_new_portal():
 
 def test_weo_vintages_pinned():
     # D-S0-006 / Q11: the API exposes exactly these three vintages (2026-08-31).
-    assert list(endpoints.WEO_VINTAGES) == ["2026-04", "2025-10", "2025-04"]
-    ids = {f"IMF_WEO_{v.replace('-', '_')}" for v in endpoints.WEO_VINTAGES}
+    assert list(endpoints.weo_vintages()) == ["2026-04", "2025-10", "2025-04"]
+    ids = {f"IMF_WEO_{v.replace('-', '_')}" for v in endpoints.weo_vintages()}
     pulled = {p.source_id for p in endpoints.all_stage0_pulls()}
     assert ids <= pulled
 

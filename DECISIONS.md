@@ -498,3 +498,84 @@ move AGAINST the WEO's projected 1.0–2.9pp consolidation — the entire
 projected French improvement sits in the uncovered/disagreement residuals.
 That directional finding is the module's point (decompose, never force) and
 is now stated in reconciliation_report.html for the committee.
+
+## D-S6-001 — WEO vintage register moved into config (serves §11.7, §8.5; narrows D-S0-006's code-side pin; honours D-S0-007)
+2026-09-03, session 4. The vintage map (label → dataflow, version,
+publication date) now lives in `config/sources.yaml` under
+`IMF_WEO.api.vintages`, read by `endpoints.weo_vintages()`; every consumer
+(the fetch pull set, §8.2 bridge, §8.3–8.5 explanation, reports, V-checks)
+enumerates vintages from it. Registering a new WEO edition is therefore
+literally what §11.7 requires — **one config entry plus rebuild, never a
+code change**. Proven with a simulated 2026-October edition
+(`tests/stage_6/test_vintages.py`): a temporary repo differing from the real
+one ONLY in that config entry yields the 15 new IMF_WEO_2026_10 pulls, the
+extended reconciliation vintage list, and a clean detect-vintages diff — on
+the installed, unmodified code (the temp repo contains no src/ at all).
+
+## D-S6-002 — detect-vintages check paths, and rebuild stays an explicit decision (serves §11.7, §8.5, D-S0-007)
+2026-09-03. `ggfiscal detect-vintages` writes `reports/vintage_diff.md`
+from two tiers. Metadata tier (default): IMF.RES catalog diffed against the
+config vintage register (new_vintage / vanished — a vanished edition is
+expected once superseded, its D8 snapshots are the archive); IMF.STA catalog
+against the pinned GFS dataflow versions (structural revisions); Eurostat
+SDMX 2.1 dataflow annotations (UPDATE_DATA, OBS_PERIOD_OVERALL_LATEST); ONS
+dataset-landing releaseDate. Hash tier (`--hash`): every machine-readable
+pull re-downloaded and content-hashed against the latest manifest entry,
+nothing saved; the IMF catalog document is excluded there because its bytes
+embed a per-request timestamp (the WEO check compares it semantically).
+Blocked and PDF-only sources are reported with their OQ-5/OQ-6 reference
+rather than silently skipped. The command detects and names the exact
+config change + rebuild; it does not fetch or rebuild on its own, so
+registering a vintage remains a recorded decision (§16), not a side effect.
+First live run (2026-09-03): no new WEO edition; the register's
+search-derived metadata had drifted from live (Eurostat UPDATE_DATA
+2026-07-21 / nama_10_gdp 2026-09-02 vs the recorded 2026-07-23; ONS T11
+releaseDate 2026-04-22 vs 2026-04-23) — the verification fields in
+sources.yaml were refreshed to the observed values, after which the diff is
+clean: 0 findings need action.
+
+## D-S6-003 — Run-manifest completeness (serves §11.1, §11.6 deliverable 11, §16, D8)
+2026-09-03. `src/ggfiscal/manifest.py`: `ggfiscal build` writes the base
+run manifest pinning every input — per-file sha256 of config/ and
+crosswalks/, the full snapshot set consumed, and the environment (python,
+pandas, package version) — and each later step (`reconcile`, `report`,
+`detect-vintages`, `validate`) re-invokes `update_deliverables()`, so the
+latest run manifest ends with the sha256, byte size and CSV row count of
+every §11.6 deliverable on disk (absent files recorded as absent, not
+omitted). §16's byte-reproducibility claim is thereby checkable from the
+manifest alone: same input hashes → same output hashes.
+
+## D-S6-004 — Generated README and the packaging calls (serves §11.6 deliverables 8 and 10)
+2026-09-03. `ggfiscal report` now regenerates README.md
+(`report/readme.py`) from the deliverables themselves — §11.6 inventory
+with row counts from disk, the 66-line coverage table from
+coverage_matrix.csv, validation counts from exceptions.csv, the
+explained-share headline from weo_explanation.csv, the vintage protocol —
+replacing the hand-written stub; hand-edits do not survive a rebuild by
+design, with a GENERATED marker saying so. `reports/validation_report.html`
+(`report/validation.py`) renders the §10 suite fresh: severity summary,
+per-check outcomes with the §10 descriptions, every ERROR, WARN tiers
+grouped with examples and their by-design explanations, tolerances in
+force. `data/canonical/crosswalks.csv` is the concatenation of
+crosswalks/*.csv (identical §11.5 headers, keyed by file stem), written by
+the build. Parquet twins for the Stage 5 reconciliation tables were NOT
+added: §11.6 lists parquet only for the three long tables and the ledger
+(all have twins); the reconciliation tables stay CSV-only, committed.
+
+## D-S6-005 — Gate 6 record: the reproducibility proof (serves §12 Gate 6, §1)
+2026-09-03. `tests/stage_6/test_gate6.py` proves Gate 6 from the published
+CSVs alone, no pipeline code, no raw data: every stitched or forecast row
+records its per-year growth factor and its anchor (§5), so the test
+reconstructs each value as the neighbouring year's value × the recorded
+growth — backward rows from year+1, forward rows from year−1 — chained down
+to the anchor row, which itself must carry its own anchor_value; >900
+derived observations verified to 1e-9 across both trees and both variants,
+and every derived row is checked to name its growth source, rate and anchor.
+§1 objectives asserted: all 66 series built in both variants, the ledger
+identities (NLB = TR − TE, PB = NLB + NI where complete), and the
+reconciliation tables covering every registered vintage and both variants.
+pytest 90 passed; validate OK=55 WARN=661 (no ERROR, no SKIP) — the WARN
+delta vs Stage 5's 582 is the append-only manifest carrying three sessions
+of snapshot records whose old raw bytes are not in this container
+(S0_SNAPSHOTS, by design D-S0-004) plus data-driven counts on the fresher
+2026-09-03 harvest.

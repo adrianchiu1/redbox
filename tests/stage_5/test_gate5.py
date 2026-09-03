@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from ggfiscal import config
-from ggfiscal.ingest.endpoints import WEO_VINTAGES
+from ggfiscal.ingest.endpoints import weo_vintages
 from ggfiscal.standardise.readers import latest_snapshots
 
 pytestmark = pytest.mark.skipif(not latest_snapshots(),
@@ -80,8 +80,8 @@ def test_gate5_net_interest_check_present_everywhere(explanation, ni):
 
 
 def test_gate5_residual_history_populated(residuals):
-    assert set(residuals.weo_vintage) == set(WEO_VINTAGES)
-    for vintage in WEO_VINTAGES:
+    assert set(residuals.weo_vintage) == set(weo_vintages())
+    for vintage in weo_vintages():
         for iso3 in config.COUNTRIES:
             for variant in VARIANTS:
                 sub = residuals[(residuals.weo_vintage == vintage)

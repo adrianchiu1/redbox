@@ -40,6 +40,13 @@ noted. No committee action needed unless the committee wants pre-2025-04
 vintages sourced from the WEO archive downloads instead (a new decision, not
 the default).
 
+Stage 6 update (2026-09-03): the vintage register now lives in
+`config/sources.yaml` (`IMF_WEO.api.vintages`, D-S6-001) and
+`ggfiscal detect-vintages` diffs the live API against it (D-S6-002) —
+registering a future edition is one config entry plus rebuild. The WEO
+October 2026 edition, expected mid-October, should be registered and
+snapshotted promptly when it appears (the API drops old editions).
+
 ## OQ-5 — Pre-1995 expenditure archives need manual ingestion or committee guidance (NEW; limits Stage 2 depth for GBR/FRA expenditure)
 Raised 2026-08-31. The §12 Stage 2 archive leg (INSEE pre-ESA95 base series;
 GBR PESA "only if reconcilable"; archived ONS T11 vintages all start 1995) has

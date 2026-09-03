@@ -23,11 +23,11 @@ sources:
       filter_hint: "S13, MIO_NAC, all COFOG99, FR+DE"
     landing: https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table?lang=en
     verification:
-      status: confirmed_search
-      checked: 2026-08-31
-      last_update_observed: "2026-07-23"      # per Eurostat metadata via search
+      status: confirmed_live
+      checked: 2026-09-03
+      last_update_observed: "2026-07-21"      # dataflow UPDATE_DATA annotation, detect-vintages 2026-09-03
       last_observation: 2025                   # some countries provisional; t+11m rule
-      note: from 1995 for FRA/DEU as expected; live pull pending (OQ-1)
+      note: from 1995 for FRA/DEU as expected; harvested since session 2 (OQ-1 resolved)
 
   EUROSTAT_GOV10A_MAIN:
     institution: Eurostat
@@ -41,7 +41,9 @@ sources:
       data_path: data/dataflow/ESTAT/gov_10a_main/1.0/
       format: csvdata
     landing: https://ec.europa.eu/eurostat/databrowser/view/gov_10a_main/default/table?lang=en
-    verification: {status: confirmed_search, checked: 2026-08-31, note: live pull pending (OQ-1)}
+    verification: {status: confirmed_live, checked: 2026-09-03,
+                   last_update_observed: "2026-07-21", last_observation: 2025,
+                   note: UPDATE_DATA annotation per detect-vintages 2026-09-03}
 
   EUROSTAT_GOV10A_TAXAG:
     institution: Eurostat
@@ -55,7 +57,9 @@ sources:
       data_path: data/dataflow/ESTAT/gov_10a_taxag/1.0/
       format: csvdata
     landing: https://ec.europa.eu/eurostat/databrowser/view/gov_10a_taxag/default/table?lang=en
-    verification: {status: confirmed_search, checked: 2026-08-31, note: live pull pending (OQ-1)}
+    verification: {status: confirmed_live, checked: 2026-09-03,
+                   last_update_observed: "2026-07-21", last_observation: 2025,
+                   note: UPDATE_DATA annotation per detect-vintages 2026-09-03}
 
   EUROSTAT_NAMA10_GDP:
     institution: Eurostat
@@ -68,7 +72,9 @@ sources:
       base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0
       data_path: data/dataflow/ESTAT/nama_10_gdp/1.0/
       format: csvdata
-    verification: {status: confirmed_search, checked: 2026-08-31}
+    verification: {status: confirmed_live, checked: 2026-09-03,
+                   last_update_observed: "2026-09-02", last_observation: 2025,
+                   note: UPDATE_DATA annotation per detect-vintages 2026-09-03}
 
   ONS_ESA_T11:
     institution: ONS
@@ -81,10 +87,10 @@ sources:
       landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicspending/datasets/esatable11annualexpenditureofgeneralgovernment
       note: versioned xlsx from landing page; archived vintages via "previous versions" for pre-1995
     verification:
-      status: confirmed_search
-      checked: 2026-08-31
-      last_update_observed: "2026-04-23"
-      note: dataset page live and updated April 2026; live pull pending (OQ-1)
+      status: confirmed_live
+      checked: 2026-09-03
+      last_update_observed: "2026-04-22"     # dataset releaseDate per detect-vintages 2026-09-03
+      note: dataset page live and updated April 2026; harvested since session 2 (OQ-1 resolved)
 
   ONS_GG_RECEIPTS:
     institution: ONS
@@ -242,9 +248,17 @@ sources:
       base: https://api.imf.org/external/sdmx/3.0
       agency: IMF.RES
       dataflow: WEO
-      note: "vintages resolved live 2026-08-31 (D-S0-006, Q11): the API exposes exactly 3 —
-            2026-04 = WEO/9.0.0 (publication 2026-04-14), 2025-10 = WEO_2025_OCT_VINTAGE/1.0.0
-            (publication 2025-10-14), 2025-04 = WEO/6.0.0 (publication 2025-04-22).
+      # §11.7 / D-S6-001: THIS mapping is the vintage register the pipeline
+      # runs on (endpoints.weo_vintages() reads it) — latest first. A new WEO
+      # edition is registered by adding an entry here and re-running
+      # fetch/build/reconcile/report: a config change plus rebuild, never a
+      # code change. Snapshot new editions promptly — the API drops old ones
+      # (D-S0-007). `detect-vintages` diffs the live catalog against this map.
+      vintages:
+        "2026-04": {dataflow: WEO, version: "9.0.0", publication: "2026-04-14"}
+        "2025-10": {dataflow: WEO_2025_OCT_VINTAGE, version: "1.0.0", publication: "2025-10-14"}
+        "2025-04": {dataflow: WEO, version: "6.0.0", publication: "2025-04-22"}
+      note: "vintages resolved live 2026-08-31 (D-S0-006, Q11): the API exposes exactly 3.
             One source_id per vintage at ingest: IMF_WEO_2026_04, IMF_WEO_2025_10, IMF_WEO_2025_04."
     landing: https://data.imf.org/en/datasets/IMF.RES:WEO
     verification:
