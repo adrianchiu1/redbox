@@ -1,0 +1,27 @@
+{
+ "data": {
+  "dataflows": [
+   {
+    "id": "WEO_2025_OCT_VINTAGE",
+    "version": "1.0.0",
+    "name": "World Economic Outlook (WEO) 2025 October"
+   },
+   {
+    "id": "WEO",
+    "version": "6.0.0",
+    "name": "World Economic Outlook (WEO)"
+   },
+   {
+    "id": "WEO",
+    "version": "9.0.0",
+    "name": "World Economic Outlook (WEO)"
+   },
+   {
+    "id": "WEO_2026_OCT_VINTAGE",
+    "version": "1.0.0",
+    "name": "World Economic Outlook (WEO) 2026 October"
+   }
+  ]
+ },
+ "_fixture_note": "simulated future IMF.RES catalog: the three real editions of 2026-09-03 plus a SIMULATED 2026 October edition (tests/stage_6, \u00a711.7)"
+}

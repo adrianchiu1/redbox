@@ -121,9 +121,9 @@ def check_s0_bridge() -> list[Finding]:
     """Gate 0: §8.2 bridge computed for all three countries, latest WEO vintage."""
     import csv as _csv
 
-    from ggfiscal.ingest.endpoints import WEO_VINTAGES
+    from ggfiscal.ingest.endpoints import weo_vintages
 
-    latest = next(iter(WEO_VINTAGES))
+    latest = next(iter(weo_vintages()))
     path = config.repo_root() / "data" / "canonical" / "weo_base_bridge.csv"
     if not path.exists():
         return [Finding("S0_BRIDGE", "WARN", "-",

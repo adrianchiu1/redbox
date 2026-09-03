@@ -13,7 +13,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from ggfiscal import config
-from ggfiscal.ingest.endpoints import WEO_VINTAGES
+from ggfiscal.ingest.endpoints import weo_vintages
 
 # residual/denominator components render in greys so the covered-line story
 # stays in colour ("residuals shaded", §10)
@@ -126,7 +126,7 @@ def _residual_history_table() -> str:
 def write(path: Path | None = None) -> Path:
     dest = path or config.repo_root() / "reports" / "reconciliation_report.html"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    latest = next(iter(WEO_VINTAGES))
+    latest = next(iter(weo_vintages()))
     parts = [
         "<html><head><meta charset='utf-8'><title>gg-fiscal reconciliation "
         "report (Stage 5)</title></head><body>",

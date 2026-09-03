@@ -42,6 +42,8 @@ def validate():
         if f.severity in ("ERROR", "WARN"):
             typer.echo(f"{f.severity:5s} {f.check_id:12s} {f.scope}: {f.message}")
     typer.echo(f"\n{' '.join(f'{k}={v}' for k, v in sorted(counts.items()))}  -> {dest}")
+    from ggfiscal import manifest as M
+    M.update_deliverables()
     if counts.get("ERROR"):
         raise typer.Exit(code=1)
 
@@ -117,23 +119,51 @@ def reconcile():
         typer.echo(f"wrote {name}: {p}")
     for p in recon_v0.compute():
         typer.echo(f"wrote {p}")
+    from ggfiscal import manifest as M
+    M.update_deliverables()
 
 
 @app.command()
 def report():
-    """Reports: small multiples (Stage 1) and the reconciliation report
-    with contribution charts (Stage 5, §10)."""
+    """Reports: small multiples (Stage 1), the reconciliation report with
+    contribution charts (Stage 5, §10), and the Stage 6 packaging set —
+    validation_report.html, the regenerated source register, the generated
+    README (§11.6 deliverable 10) and the completed run manifest."""
+    from ggfiscal import manifest as M
+    from ggfiscal.register import build as write_register
+    from ggfiscal.report.readme import write as write_readme
     from ggfiscal.report.reconciliation import write as write_recon
     from ggfiscal.report.small_multiples import write
+    from ggfiscal.report.validation import write as write_validation
 
     typer.echo(f"wrote {write()}")
     typer.echo(f"wrote {write_recon()}")
+    typer.echo(f"wrote {write_validation()}")
+    typer.echo(f"wrote {write_register()}")
+    typer.echo(f"wrote {write_readme()}")
+    typer.echo(f"updated {M.update_deliverables()}")
 
 
 @app.command("detect-vintages")
-def detect_vintages():
-    """Compare live source metadata against the register (§11.7)."""
-    _not_yet(6)
+def detect_vintages(hash: bool = typer.Option(
+        False, "--hash",
+        help="Also re-download every machine-readable pull and compare "
+             "content hashes against the latest snapshots (a full re-harvest "
+             "in bandwidth; nothing is saved)")):
+    """Compare live source metadata against the register (§11.7); write
+    reports/vintage_diff.md. A new vintage is a config change plus rebuild,
+    never a code change."""
+    from ggfiscal.vintages import detect, write_report
+
+    findings = detect(hash_tier=hash)
+    dest = write_report(findings, hash_tier=hash)
+    from ggfiscal import manifest as M
+    M.update_deliverables()
+    for f in findings:
+        if f.status != "unchanged":
+            typer.echo(f"{f.status.upper():13s} {f.source_id}: {f.detail}")
+    n_action = sum(f.status in ("new_vintage", "changed", "error") for f in findings)
+    typer.echo(f"\nwrote {dest}  ({n_action} finding(s) need action)")
 
 
 if __name__ == "__main__":

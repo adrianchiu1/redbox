@@ -1,0 +1,189 @@
+<html><head><meta charset='utf-8'><title>gg-fiscal validation report</title><style>body{font-family:sans-serif;margin:2em;max-width:75em}table{border-collapse:collapse;margin:1em 0}td,th{border:1px solid #ccc;padding:0.3em 0.6em;text-align:left;font-size:0.9em}.ERROR{background:#fdd}.WARN{background:#ffedcc}.OK{background:#e8f5e9}.SKIP{background:#eee}</style></head><body>
+<h1>Validation report — §10 suite</h1>
+<p>Generated 2026-09-03 03:37 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
+<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>661</td><td class='OK'>55</td><td class='SKIP'>0</td></tr></table>
+<p><b>No ERROR findings: the gate holds.</b></p>
+<p>The WARN tiers are intended visibility, not defects: documented concept wedges (V1/V21/V25 crosswalk and perimeter differences), the withheld AMECO→DSM interest join flagged for the committee (V16, OQ-7), blocked register URLs (V18, OQ-6), stitch diagnostics at their measured C/D grades (V5), and raw snapshot bytes of earlier sessions not synced into this container (S0_SNAPSHOTS, by design D-S0-004 — provenance lives in the hash manifest).</p>
+<h2>Per-check outcomes</h2>
+<table><tr><th>check</th><th>test</th><th>worst</th><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr>
+<tr><td>S0_BRIDGE</td><td>Gate 0: §8.2 bridge computed, all countries, latest vintage</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>S0_COVERAGE</td><td>Gate 0: every line has measured coverage from ≥1 source</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>S0_LINES</td><td>structural: the 66-line universe enumerates</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>S0_REGISTER</td><td>structural: register entries carry status + endpoint</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>S0_SNAPSHOTS</td><td>D8: manifest snapshots verify byte-for-byte where present</td><td class='WARN'>WARN</td><td></td><td>327</td><td></td><td></td></tr>
+<tr><td>V1</td><td>anchor years reproduce anchor values; IMF GFS within 0.5%</td><td class='WARN'>WARN</td><td></td><td>80</td><td></td><td></td></tr>
+<tr><td>V10</td><td>no forecast beyond source horizon</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V11</td><td>no superseded source where a newer vintage applies</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V12</td><td>S13 everywhere; non-GG sources carry a perimeter note</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V13</td><td>concept compatibility note per stitch</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V14</td><td>missing stays missing</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V15</td><td>forecast: covered sums ≤ envelope × (1 + tol)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V16</td><td>short/long-term overlap divergence</td><td class='WARN'>WARN</td><td></td><td>2</td><td>2</td><td></td></tr>
+<tr><td>V17</td><td>coverage_share_year on every proxy/composite row</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V18</td><td>register URLs resolve or archived copy present</td><td class='WARN'>WARN</td><td></td><td>11</td><td></td><td></td></tr>
+<tr><td>V19</td><td>GF01_X + GF01_7 = GF01; GF01_X never forecast</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V2</td><td>history: Σ GF01–GF10 = TE (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V20</td><td>interest rows carry concept_flag; strict rows gross</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V21</td><td>Level II GF01.7 vs D.41 payable within 5%</td><td class='WARN'>WARN</td><td></td><td>30</td><td></td><td></td></tr>
+<tr><td>V22</td><td>history: Σ R01–R10 = TR (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V23</td><td>history: TR − TE = anchor B.9 (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V24</td><td>base-year bridge gaps within tolerance; GBR perimeter stable</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V25</td><td>OECD RS reconciliation on tax lines within tolerance</td><td class='WARN'>WARN</td><td></td><td>206</td><td></td><td></td></tr>
+<tr><td>V26</td><td>decomposition additivity exact (history and forecast)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V27</td><td>net-interest cross-check reported everywhere</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V28</td><td>reconciliation tables keyed by both vintages</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V3</td><td>history: shares sum to 100 ± tol</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V4</td><td>values ≥ 0 except legitimately negative lines</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V5</td><td>overlap-growth diagnostic per stitch (bias, RMSE)</td><td class='WARN'>WARN</td><td></td><td>5</td><td>27</td><td></td></tr>
+<tr><td>V6</td><td>boundary growth equals recorded source growth</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V7</td><td>every forecast row has source, release date, URL, snapshot hash</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V8</td><td>interpolated / converted rows labelled</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V9</td><td>observation_type consistent with variant; no C/D in strict</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+</table>
+<h2>WARN findings (examples per check)</h2>
+<h3>S0_SNAPSHOTS — 327 WARNs: D8: manifest snapshots verify byte-for-byte where present</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>EUROSTAT_GOV10A_EXP</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124529Z_f88cbdb3b751.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EUROSTAT_GOV10A_EXP</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124538Z_26601ec18b30.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EUROSTAT_GOV10A_MAIN</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260831T124539Z_aa12ca719566.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EUROSTAT_GOV10A_MAIN</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260831T124541Z_0c27a78923a2.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EUROSTAT_GOV10A_TAXAG</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_TAXAG/20260831T124541Z_4c0b48b8e89b.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EUROSTAT_GOV10A_TAXAG</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_TAXAG/20260831T124543Z_24e0a5bad65d.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EUROSTAT_NAMA10_GDP</td><td>snapshot file missing locally: data/raw/EUROSTAT_NAMA10_GDP/20260831T124543Z_1667cb515560.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EUROSTAT_NAMA10_GDP</td><td>snapshot file missing locally: data/raw/EUROSTAT_NAMA10_GDP/20260831T124544Z_aa6e31798251.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_WEO</td><td>snapshot file missing locally: data/raw/IMF_WEO/20260831T124545Z_49fd9d80003d.json (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_WEO_2026_04</td><td>snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260831T124545Z_62e4a41e559c.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_WEO_2025_10</td><td>snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260831T124546Z_cdeaa91b9bf7.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_WEO_2025_04</td><td>snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260831T124547Z_079bf65db386.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_GFS</td><td>snapshot file missing locally: data/raw/IMF_GFS/20260831T124550Z_9c16ff3b3d0b.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_GFS</td><td>snapshot file missing locally: data/raw/IMF_GFS/20260831T124551Z_405a588b4b4f.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>OECD_RS</td><td>snapshot file missing locally: data/raw/OECD_RS/20260831T124554Z_c70d6b741f11.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>OECD_T11</td><td>snapshot file missing locally: data/raw/OECD_T11/20260831T124558Z_0a41f94feaef.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_GFS</td><td>snapshot file missing locally: data/raw/IMF_GFS/20260831T124600Z_e838ea8ab9f7.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_GFS</td><td>snapshot file missing locally: data/raw/IMF_GFS/20260831T124601Z_643be27710b5.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>OECD_RS</td><td>snapshot file missing locally: data/raw/OECD_RS/20260831T124606Z_769ac24ffe3d.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>OECD_T11</td><td>snapshot file missing locally: data/raw/OECD_T11/20260831T124611Z_762a1e0c51d0.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_GFS</td><td>snapshot file missing locally: data/raw/IMF_GFS/20260831T124613Z_19f9a8081a88.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>IMF_GFS</td><td>snapshot file missing locally: data/raw/IMF_GFS/20260831T124614Z_f1e31d1f1a6b.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>OECD_RS</td><td>snapshot file missing locally: data/raw/OECD_RS/20260831T124617Z_3e19c65717f8.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>OECD_T11</td><td>snapshot file missing locally: data/raw/OECD_T11/20260831T124622Z_fb99d60076d2.csv (raw store not synced)</td></tr>
+<tr class='WARN'><td>EC_AMECO</td><td>snapshot file missing locally: data/raw/EC_AMECO/20260831T124624Z_085e506f0a5a.zip (raw store not synced)</td></tr>
+<tr><td colspan='2'>… 302 more in exceptions.csv</td></tr>
+</table>
+<h3>V1 — 80 WARNs: anchor years reproduce anchor values; IMF GFS within 0.5%</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>FRA/GF01/2001</td><td>IMF GFS diff -1.0426% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01/2002</td><td>IMF GFS diff -0.6244% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01/2004</td><td>IMF GFS diff -0.6974% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01/2008</td><td>IMF GFS diff -0.6675% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01/2023</td><td>IMF GFS diff -0.6048% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/1996</td><td>IMF GFS diff -0.5307% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/1998</td><td>IMF GFS diff -0.6254% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2001</td><td>IMF GFS diff -2.578% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2002</td><td>IMF GFS diff -1.5476% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2003</td><td>IMF GFS diff -0.6666% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2004</td><td>IMF GFS diff -1.785% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2005</td><td>IMF GFS diff -0.8196% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2006</td><td>IMF GFS diff -0.6382% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2007</td><td>IMF GFS diff -0.9751% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2008</td><td>IMF GFS diff -1.674% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2009</td><td>IMF GFS diff -0.8377% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2010</td><td>IMF GFS diff -0.7803% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2011</td><td>IMF GFS diff -0.9739% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2012</td><td>IMF GFS diff -0.574% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2015</td><td>IMF GFS diff -0.6342% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2016</td><td>IMF GFS diff -0.6838% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2017</td><td>IMF GFS diff -0.7059% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2018</td><td>IMF GFS diff -0.7043% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2019</td><td>IMF GFS diff -0.7647% beyond 0.5%</td></tr>
+<tr class='WARN'><td>FRA/GF01_7/2020</td><td>IMF GFS diff -0.6651% beyond 0.5%</td></tr>
+<tr><td colspan='2'>… 55 more in exceptions.csv</td></tr>
+</table>
+<h3>V16 — 2 WARNs: short/long-term overlap divergence</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>FRA/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
+<tr class='WARN'><td>DEU/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
+</table>
+<h3>V18 — 11 WARNs: register URLs resolve or archived copy present</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>register/INSEE_APU</td><td>no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)</td></tr>
+<tr class='WARN'><td>register/DESTATIS_81000</td><td>no archived copy and unresolved URL (status: unverified; Stage 2 concern)</td></tr>
+<tr class='WARN'><td>register/OBR_EFO_LATEST</td><td>no archived copy and unresolved URL (status: blocked; obr.uk serves a Cloudflare JS challenge to every client available in this environment (curl, headless Chromium — no working browser tunnel through the egress proxy — and server-side fetch); OQ-6)</td></tr>
+<tr class='WARN'><td>register/OBR_FRS_2026</td><td>no archived copy and unresolved URL (status: blocked; same obr.uk Cloudflare challenge as OBR_EFO_LATEST (OQ-6); July 2026 edition existence not confirmable from here)</td></tr>
+<tr class='WARN'><td>register/UK_DEFENCE_PLAN</td><td>no URL recorded and no archived copy (status: blocked; §15 Q7 default: strict grade B if GG share &gt;= 90%; gov.uk and assets.publishing.service.gov.uk CONNECT denied by the egress policy (OQ-6))</td></tr>
+<tr class='WARN'><td>register/FRA_LPFP_PSTAB</td><td>no URL recorded and no archived copy (status: not_machine_readable; PDF-only publication; §11.4 second keying unavailable to a single-agent session (OQ-5 precedent)</td></tr>
+<tr class='WARN'><td>register/COR_2026</td><td>no URL recorded and no archived copy (status: not_machine_readable; cor-retraites.fr reachable but the annual report is PDF-only (§11.4 blocked, OQ-5/OQ-6); 2023 reform vs AR2024 assumptions — expect V16 divergence (§14))</td></tr>
+<tr class='WARN'><td>register/FRA_LPM_2030</td><td>no URL recorded and no archived copy (status: not_machine_readable; law text with annual credits table)</td></tr>
+<tr class='WARN'><td>register/FRA_LFSS</td><td>no URL recorded and no archived copy (status: not_machine_readable; annex PDFs only (§11.4 blocked)</td></tr>
+<tr class='WARN'><td>register/DEU_BMAS_RVB</td><td>no URL recorded and no archived copy (status: blocked; bmas.de CONNECT denied by the egress policy (OQ-6))</td></tr>
+<tr class='WARN'><td>register/DEU_BMF_FINPLAN</td><td>no URL recorded and no archived copy (status: not_machine_readable; Finanzplan is PDF-only (§11.4 blocked)</td></tr>
+</table>
+<h3>V21 — 30 WARNs: Level II GF01.7 vs D.41 payable within 5%</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>FRA/1999</td><td>Level II 01.7 vs D.41 payable diff 5.44% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2000</td><td>Level II 01.7 vs D.41 payable diff 5.58% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2010</td><td>Level II 01.7 vs D.41 payable diff 6.77% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2011</td><td>Level II 01.7 vs D.41 payable diff 5.10% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2012</td><td>Level II 01.7 vs D.41 payable diff 5.04% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2013</td><td>Level II 01.7 vs D.41 payable diff 6.34% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2014</td><td>Level II 01.7 vs D.41 payable diff 7.98% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2015</td><td>Level II 01.7 vs D.41 payable diff 8.48% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2016</td><td>Level II 01.7 vs D.41 payable diff 9.22% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2017</td><td>Level II 01.7 vs D.41 payable diff 8.80% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2018</td><td>Level II 01.7 vs D.41 payable diff 7.87% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2019</td><td>Level II 01.7 vs D.41 payable diff 7.89% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2020</td><td>Level II 01.7 vs D.41 payable diff 9.69% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>FRA/2021</td><td>Level II 01.7 vs D.41 payable diff 7.79% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2000</td><td>Level II 01.7 vs D.41 payable diff 5.51% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2001</td><td>Level II 01.7 vs D.41 payable diff 5.69% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2002</td><td>Level II 01.7 vs D.41 payable diff 6.11% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2012</td><td>Level II 01.7 vs D.41 payable diff 5.48% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2013</td><td>Level II 01.7 vs D.41 payable diff 6.16% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2014</td><td>Level II 01.7 vs D.41 payable diff 7.52% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2015</td><td>Level II 01.7 vs D.41 payable diff 7.97% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2016</td><td>Level II 01.7 vs D.41 payable diff 8.07% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2017</td><td>Level II 01.7 vs D.41 payable diff 7.54% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2018</td><td>Level II 01.7 vs D.41 payable diff 7.28% &gt; 5.0%</td></tr>
+<tr class='WARN'><td>DEU/2019</td><td>Level II 01.7 vs D.41 payable diff 8.31% &gt; 5.0%</td></tr>
+<tr><td colspan='2'>… 5 more in exceptions.csv</td></tr>
+</table>
+<h3>V25 — 206 WARNs: OECD RS reconciliation on tax lines within tolerance</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>GBR/R03/1991</td><td>OECD RS diff -6.7448% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/1992</td><td>OECD RS diff -7.6697% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/1993</td><td>OECD RS diff -6.0359% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/1994</td><td>OECD RS diff -4.8914% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/1995</td><td>OECD RS diff -3.8899% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/1996</td><td>OECD RS diff -3.235% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/1997</td><td>OECD RS diff -3.4273% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/2003</td><td>OECD RS diff -3.657% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/2004</td><td>OECD RS diff -3.5613% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/2005</td><td>OECD RS diff -3.3251% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/2006</td><td>OECD RS diff -3.0863% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/2008</td><td>OECD RS diff -3.5005% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/2009</td><td>OECD RS diff -3.7087% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R03/2010</td><td>OECD RS diff -3.6377% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2012</td><td>OECD RS diff -3.0833% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2015</td><td>OECD RS diff -3.2432% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2016</td><td>OECD RS diff -3.3954% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2017</td><td>OECD RS diff -3.626% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2018</td><td>OECD RS diff -4.1765% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2019</td><td>OECD RS diff -4.8398% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2020</td><td>OECD RS diff -4.9139% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2021</td><td>OECD RS diff -4.0985% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R04/2022</td><td>OECD RS diff -3.725% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R06/1990</td><td>OECD RS diff -18.1194% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr class='WARN'><td>GBR/R06/1991</td><td>OECD RS diff -19.0313% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
+<tr><td colspan='2'>… 181 more in exceptions.csv</td></tr>
+</table>
+<h3>V5 — 5 WARNs: overlap-growth diagnostic per stitch (bias, RMSE)</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>GBR/R05/OECD_RS</td><td>overlap growth: bias +0.0071, rmse 0.1477 over 34 year-pairs</td></tr>
+<tr class='WARN'><td>FRA/R04/OECD_RS</td><td>overlap growth: bias -0.0081, rmse 0.0503 over 29 year-pairs</td></tr>
+<tr class='WARN'><td>FRA/R05/OECD_RS</td><td>overlap growth: bias +0.0188, rmse 0.0492 over 29 year-pairs</td></tr>
+<tr class='WARN'><td>DEU/R04/OECD_RS</td><td>overlap growth: bias +0.0314, rmse 0.1493 over 29 year-pairs</td></tr>
+<tr class='WARN'><td>DEU/R05/OECD_RS</td><td>overlap growth: bias -0.0036, rmse 0.0654 over 29 year-pairs</td></tr>
+</table>
+<h2>Tolerances in force (Q4 space)</h2><table><tr><th>key</th><th>value</th></tr>
+<tr><td>base_bridge_pct_of_te</td><td>1.0</td></tr>
+<tr><td>envelope_excess_pct</td><td>1.0</td></tr>
+<tr><td>gbr_perimeter_sigma_pct_te</td><td>0.5</td></tr>
+<tr><td>imf_gfs_reconciliation_pct</td><td>0.5</td></tr>
+<tr><td>level2_vs_d41_pct</td><td>5.0</td></tr>
+<tr><td>oecd_rs_reconciliation_pct</td><td>3.0</td></tr>
+<tr><td>sum_to_total_pct</td><td>0.1</td></tr>
+<tr><td>v16_overlap_divergence</td><td>0.02</td></tr>
+</table></body></html>

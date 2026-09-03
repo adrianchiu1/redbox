@@ -49,7 +49,7 @@ from pathlib import Path
 import pandas as pd
 
 from ggfiscal import config
-from ggfiscal.ingest.endpoints import WEO_VINTAGES
+from ggfiscal.ingest.endpoints import weo_vintages
 from ggfiscal.reconcile import bridge
 from ggfiscal.standardise import readers as R
 
@@ -118,7 +118,7 @@ def compute(vintages: list[str] | None = None
     exp_rows, ni_rows, res_rows = [], [], []
     hashes = {v: source_vintage_set_hash(v) for v in VARIANTS}
     frames = {v: _line_frames(v) for v in VARIANTS}
-    for vintage in (vintages or list(WEO_VINTAGES)):
+    for vintage in (vintages or list(weo_vintages())):
         for iso3 in config.COUNTRIES:
             anchor = bridge.anchor_aggregates(iso3)
             weo = bridge.weo_aggregates(vintage, iso3)
