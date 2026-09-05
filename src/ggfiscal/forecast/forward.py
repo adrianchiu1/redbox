@@ -631,6 +631,10 @@ def extend_forward(iso3: str, classification: str, line_code: str,
     from ggfiscal import config
 
     v16_threshold = config.tolerances().get("v16_overlap_divergence", 0.02)
+    # OQ-7 adjudications (D-S8-001): joins the committee has approved despite
+    # above-threshold divergence — application changes, V16 keeps warning
+    approved_joins = {(a["iso3"], a["line_code"], a["incoming_source"])
+                      for a in config.tolerances().get("v16_approved_joins", [])}
     rows, boundaries = [], []
     if anchor.empty:
         return rows, boundaries
@@ -642,14 +646,23 @@ def extend_forward(iso3: str, classification: str, line_code: str,
     gdp_prev = float(anchor_gdp[T]) if T in anchor_gdp.index else None
     for src in sources:
         grade, share, share_year = _grade(src, anchor, anchor_gdp)
+        scope_prefix = ""
         # D12: a long-term leg whose growth diverges from the short-term
         # source beyond the V16 threshold in their overlap years is NOT
-        # auto-joined — recorded and flagged for committee review (OQ-7)
+        # auto-joined — recorded and flagged for committee review (OQ-7),
+        # unless the committee has approved that exact join in config
         if applied_sources:
             divs = overlap_divergence(iso3, classification, line_code,
                                       [applied_sources[-1], src])
             worst = max((abs(d["divergence"]) for d in divs), default=0.0)
-            if worst > v16_threshold:
+            if worst > v16_threshold \
+                    and (iso3, line_code, src.source_id) in approved_joins:
+                scope_prefix = (f"D12/V16: overlap divergence up to "
+                                f"{worst:+.4f} exceeds the {v16_threshold} "
+                                "threshold; joined under committee approval "
+                                "(OQ-7 resolution, D-S8-001) — V16 keeps "
+                                "warning on the seam; ")
+            elif worst > v16_threshold:
                 boundaries.append({
                     "iso3": iso3, "classification": classification,
                     "line_code": line_code, "boundary_year": frontier,
@@ -730,7 +743,7 @@ def extend_forward(iso3: str, classification: str, line_code: str,
                     "line_code": line_code, "boundary_year": t,
                     "outgoing_source": outgoing, "incoming_source": src.source_id,
                     "anchor_value_lcu_mn": value_prev, "growth_applied": growth,
-                    "scope": src.concept_note, "break_flag": False,
+                    "scope": scope_prefix + src.concept_note, "break_flag": False,
                     "grade": grade, "crosswalk_version": src.crosswalk_version,
                     "coverage_share": share, "coverage_share_year": share_year,
                     "variants": variants_label,

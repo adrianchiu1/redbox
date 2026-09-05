@@ -259,9 +259,12 @@ def write(path: Path | None = None) -> Path:
         "the manual route), an FRS edition with functional long-term "
         "projections would unlock GBR GF07/GF09/GF10 long legs, and the "
         "BMAS Rentenversicherungsbericht is PDF-only (OQ-5 gate).",
-        "- **OQ-7** — D12/V16 withheld joins pending adjudication: "
-        "AMECO→DSM interest (FRA/DEU GF01_7 ends 2027) and now "
-        "AMECO→OBR NICs (GBR R06 ends 2027).",
+        "- **OQ-7 (resolved 2026-09-05, D-S8-001)** — the committee "
+        "approved the above-threshold D12 joins via "
+        "`tolerances.v16_approved_joins`: FRA/DEU GF01_7 runs to 2036 "
+        "(DSM, strict) and GBR R06 to 2030 (OBR NICs, maximum — grade C "
+        "stays out of strict). V16 keeps warning on the seams by design; "
+        "the next DSM/EFO vintages should shrink them.",
         "- **OQ-5** — pre-1995 expenditure archives need §11.4 manual "
         "ingestion (independent second keying) or machine-readable archive "
         "endpoints.",

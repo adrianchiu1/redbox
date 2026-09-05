@@ -236,15 +236,23 @@ def check_v16() -> list[Finding]:
                 continue
             worst = max(recs, key=lambda r: abs(r["divergence"]))
             sev = "WARN" if abs(worst["divergence"]) > threshold else "OK"
+            approved = {(a["iso3"], a["line_code"], a["incoming_source"])
+                        for a in config.tolerances().get("v16_approved_joins", [])}
+            lt_src = next((s.source_id for s in sources[1:]), "")
+            tail = ("D12: the join is committee-approved (OQ-7 resolution, "
+                    "D-S8-001) and APPLIED — the divergence stays flagged as "
+                    "the seam to watch on the next vintage"
+                    if (iso3, line, lt_src) in approved else
+                    "D12: above it the long-term leg is withheld pending "
+                    "committee review, not auto-joined — see "
+                    "forecast_boundaries.csv 'not_applied_v16_divergence' "
+                    "and OQ-7")
             out.append(Finding(
                 "V16", sev, f"{iso3}/{line}",
                 f"{worst['st_source']} vs {worst['lt_source']} growth over "
                 f"{len(recs)} overlap years: max divergence "
                 f"{worst['divergence']:+.4f} in {worst['year']} "
-                f"(threshold {threshold}; D12: above it the long-term leg is "
-                "withheld pending committee review, not auto-joined — see "
-                "forecast_boundaries.csv 'not_applied_v16_divergence' and "
-                "OQ-7)"))
+                f"(threshold {threshold}; {tail})"))
     return out or [Finding("V16", "OK", "-",
                            "no line carries both a short- and long-term source")]
 

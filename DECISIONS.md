@@ -675,3 +675,45 @@ at 2031). Strict horizons: R01-R04 2030, GF02 2028 (grade B, Q7),
 GF01_7/R06 2027 (AMECO; OBR legs withheld per D/V16 — OQ-7). Maximum
 adds R05 to 2030. GBR GF07/GF09/GF10 long-term legs remain the biggest
 open item (OQ-6 asks a/b).
+
+## D-S8-001 — OQ-7 RESOLVED by the committee: above-threshold joins approved and applied (serves D12, §10 V16, §15 Q4 space; resolves OQ-7; supersedes the stops in D-S3-005 and D-S7-003's R06 leg)
+2026-09-05, session 5 (continued). The committee (AC) instructed "do
+OQ-7", read as OQ-7's option (a): approve the withheld joins, accepting
+the vintage seam. Mechanism: a new committee-controlled config list,
+`tolerances.v16_approved_joins` in `config/countries.yaml` — one row per
+(iso3, line_code, incoming_source). The engine applies a listed join
+despite above-threshold overlap divergence, with three invariants kept
+deliberately: (1) grade rules still hold, so an approved C-band leg
+enters maximum_extension only; (2) V16 keeps WARNing on the divergence —
+approval changes application, never visibility — with the message
+switched to "committee-approved and APPLIED, seam flagged"; (3) the
+applied boundary record carries the approval note and the measured
+divergence. D-S3-005 promised config-only approval; the granular per-join
+knob did not exist, so this entry adds the one generic mechanism — any
+future approval is now genuinely one config row plus rebuild.
+Approved and applied:
+  - **FRA GF01_7 ← EC_DSM** and **DEU GF01_7 ← EC_DSM** (grade B):
+    strict AND maximum now run to **2036** (join at 2028; divergence up
+    to −6.5pp/yr FRA, +4.0 DEU in the 2025-27 overlap — the DSM 2025
+    predates the Spring 2026 repricing; re-examine the seam when DSM 2026
+    arrives ~Feb 2027, which is a vintage refresh, not a re-adjudication).
+  - **GBR R06 ← OBR NICs** (grade C): maximum_extension to **2030**
+    (strict correctly still ends at AMECO's 2027 — approval does not
+    launder a C grade into strict).
+NOT approved (not listed): GBR GF01_7 ← OBR CG debt interest — that
+candidate fails on concept (grade D, D-S7-003), which no join approval
+can cure. Also out of scope: the §7.9 GF01-via-GF01_7 maximum proxy
+keeps its 2027 horizon — its source is AMECO UYIG directly, and
+extending it through the DSM leg would be a new join the committee has
+not been asked about.
+Observed effect, rebuilt and tested (90 passed; validate OK=55 WARN=661,
+no ERROR/SKIP): the published GF01_7 series for FRA/DEU now runs to 2036
+in both variants — a deliverable in its own right (§1, and the §8.4
+NI-check numerator) — while the §8.3 explained shares for FRA/DEU are
+UNCHANGED by construction: the decomposition operates on the 20 Level-I
+lines (D-S1-004) and interest sits inside GF01, whose strict series
+still ends at the last actual (§7.9). The GBR R06 maximum leg does move
+its share: maximum explained_share 2028-2030 rises to 0.68/0.71/0.75
+(from 0.65/0.66/0.69). The Gate 3 D12 test now asserts whichever state
+`v16_approved_joins` declares, so removing an approval row restores the
+withheld assertions without a code change.

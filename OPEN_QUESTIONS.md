@@ -124,17 +124,20 @@ gates FRA tax lines and all three GF02 lines. Until then GBR strict
 forecasts are AMECO-only and §15 Q12's OBR-primary envelope runs on the
 AMECO cross-check (levels exist 2026–27 only, OQ-4).
 
-## OQ-7 — D12/V16: withheld long-term joins — committee to adjudicate (blocks the 2028+ legs of GF01_7 FRA/DEU and now R06 GBR)
+## OQ-7 — D12/V16 withheld joins — **RESOLVED 2026-09-05 (option a, D-S8-001)**
 
-Session-5 addition (D-S7-003): the same V16 rule also withheld the
-AMECO-UTSG→OBR-NICs join for GBR R06 (2028-2030 leg; NICs is a C-band
-component of D.61, overlap growth divergence above the 0.02 threshold).
-The GBR CG-debt-interest candidate for GF01_7 failed on concept (grade D,
-share 0.67-1.28) — that one is not a V16 question and should stay out.
-The options below apply to the NICs join as to the DSM join: approve,
-wait for the next vintage, or keep the stop — all config-only.
+The committee approved the withheld joins; both are applied via the new
+`tolerances.v16_approved_joins` config list: FRA/DEU GF01_7 ← DSM (grade
+B, strict to 2036) and GBR R06 ← OBR NICs (grade C, maximum to 2030 —
+grades still route variants). V16 keeps WARNing on the seams by design.
+Standing note for the next vintages: when DSM 2026 (~Feb 2027) and the
+next EFO (~Nov 2026) arrive, the seams should shrink — detect-vintages
+plus a rebuild refreshes them; no re-adjudication needed unless the
+committee wants the approvals revisited (remove the config rows).
+The GBR CG-debt-interest candidate for GF01_7 stays out on concept
+(grade D, D-S7-003) — no join approval can cure that.
 
-Original item:
+Original item (kept for the record):
 D12/V16: AMECO-vs-DSM interest join withheld — committee to adjudicate (blocks the 2028–2036 GF01_7 leg)
 Raised 2026-08-31. The DSM 2025 long-term interest path (to 2036, grade-B
 coverage) diverges from AMECO Spring 2026 growth by up to −6.5pp (FRA) /

@@ -102,23 +102,38 @@ def test_forward_arithmetic_is_growth_never_level():
             prev = r
 
 
-def test_d12_v16_long_term_leg_withheld_above_threshold(boundaries):
+def test_d12_v16_long_term_leg_follows_committee_adjudication(boundaries):
     # FRA/DEU GF01_7: AMECO applies through its 2027 horizon; the DSM leg
-    # diverges beyond the V16 threshold in the overlap, so per D12 it is NOT
-    # auto-joined — recorded as not_applied_v16_divergence for the committee
+    # diverges beyond the V16 threshold in the overlap, so per D12 it is not
+    # auto-joined. Whether it then applies is the committee's call, recorded
+    # in config (tolerances.v16_approved_joins — OQ-7 resolved 2026-09-05,
+    # D-S8-001): this test asserts whichever state the config declares, so
+    # removing the approval row restores the withheld assertions.
+    approved = {(a["iso3"], a["line_code"], a["incoming_source"])
+                for a in config.tolerances().get("v16_approved_joins", [])}
     df = _rows("strict")
     for iso3 in ("FRA", "DEU"):
         g = df[(df.iso3 == iso3) & (df.line_code == "GF01_7")
                & df.growth_source_id.notna() & (df.year > df.anchor_year)]
         ameco_years = set(g[g.growth_source_id == "EC_AMECO"].year)
         assert ameco_years and max(ameco_years) == 2027
-        assert g[g.growth_source_id == "EC_DSM"].empty
+        dsm_years = set(g[g.growth_source_id == "EC_DSM"].year)
         rec = boundaries[(boundaries.iso3 == iso3)
                          & (boundaries.line_code == "GF01_7")
                          & (boundaries.incoming_source == "EC_DSM")]
         assert len(rec) == 1
-        assert rec.variants.iloc[0] == "not_applied_v16_divergence"
-        assert "OQ-7" in rec.scope.iloc[0]
+        if (iso3, "GF01_7", "EC_DSM") in approved:
+            # joined at 2028 under the committee approval, B grade -> strict;
+            # the boundary record names the approval and D12 order holds
+            assert dsm_years and min(dsm_years) == 2028 \
+                and max(dsm_years) == 2036
+            assert rec.variants.iloc[0] == "strict+maximum"
+            assert "committee approval" in rec.scope.iloc[0]
+            assert "OQ-7" in rec.scope.iloc[0]
+        else:
+            assert not dsm_years
+            assert rec.variants.iloc[0] == "not_applied_v16_divergence"
+            assert "OQ-7" in rec.scope.iloc[0]
 
 
 def test_newer_actuals_are_not_forecast_rows():

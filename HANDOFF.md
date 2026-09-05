@@ -52,9 +52,13 @@ unchanged.
   second-keying question now, not network; (d) obr.uk challenge-capable
   access — the next EFO (~Nov 2026) otherwise needs the same
   hand-retrieval route (`ggfiscal ingest-file`).
-- **OQ-7**: two withheld D12/V16 joins await adjudication — AMECO→DSM
-  interest (FRA/DEU GF01_7, 2028-2036) and AMECO→OBR NICs (GBR R06,
-  2028-2030). Config-only either way.
+- **OQ-7 — RESOLVED 2026-09-05 (D-S8-001)**: the committee approved both
+  withheld joins via the new `tolerances.v16_approved_joins` config list.
+  FRA/DEU GF01_7 strict now runs to 2036 (DSM, grade B); GBR R06 maximum
+  to 2030 (OBR NICs, grade C — stays out of strict by grade). V16 keeps
+  WARNing on the seams; the DSM 2026 (~Feb 2027) and next EFO (~Nov 2026)
+  vintages should shrink them — refresh via detect-vintages + rebuild,
+  no re-adjudication needed.
 - **OQ-5**: pre-1995 archives / second keying; insee+destatis+cor now
   reachable, and OBR_HIST_PF is snapshotted as the GBR pre-1987 interest
   candidate — unworked.
