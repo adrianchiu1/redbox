@@ -170,11 +170,19 @@ def check_v13() -> list[Finding]:
 
 
 def _envelopes(iso3: str) -> tuple[pd.Series, pd.Series]:
-    """(TR, TE) envelope levels in LCU mn per year — AMECO URTG/UUTG (D4;
-    Q12's OBR-primary default for GBR is unavailable while obr.uk is blocked,
-    so the AMECO cross-check serves as the envelope — OQ-6, D-S3-001)."""
-    from ggfiscal.standardise.readers import ameco_series
+    """(TR, TE) envelope levels in LCU mn per year (D4). FRA/DEU: AMECO
+    URTG/UUTG. GBR: OBR PS current receipts / TME per §15 Q12's OBR-primary
+    default, exercisable since the OQ-6 partial unblock (D-S7-002) — public
+    sector perimeter (PSCR ≈ 0.97 × GG TR, TME ≈ 0.95 × GG TE, stable), FY
+    converted per §7.10; AMECO remains the cross-check."""
+    from ggfiscal.forecast.forward import fy_to_cy
+    from ggfiscal.standardise.readers import ameco_series, obr_databank
 
+    if iso3 == "GBR":
+        return (fy_to_cy(obr_databank("Aggregates (£bn)",
+                                      "Public sector current receipts")) * 1000.0,
+                fy_to_cy(obr_databank("Aggregates (£bn)",
+                                      "Total managed expenditure")) * 1000.0)
     return (ameco_series(iso3, "URTG", 16) * 1000.0,
             ameco_series(iso3, "UUTG", 16) * 1000.0)
 
@@ -228,15 +236,23 @@ def check_v16() -> list[Finding]:
                 continue
             worst = max(recs, key=lambda r: abs(r["divergence"]))
             sev = "WARN" if abs(worst["divergence"]) > threshold else "OK"
+            approved = {(a["iso3"], a["line_code"], a["incoming_source"])
+                        for a in config.tolerances().get("v16_approved_joins", [])}
+            lt_src = next((s.source_id for s in sources[1:]), "")
+            tail = ("D12: the join is committee-approved (OQ-7 resolution, "
+                    "D-S8-001) and APPLIED — the divergence stays flagged as "
+                    "the seam to watch on the next vintage"
+                    if (iso3, line, lt_src) in approved else
+                    "D12: above it the long-term leg is withheld pending "
+                    "committee review, not auto-joined — see "
+                    "forecast_boundaries.csv 'not_applied_v16_divergence' "
+                    "and OQ-7")
             out.append(Finding(
                 "V16", sev, f"{iso3}/{line}",
                 f"{worst['st_source']} vs {worst['lt_source']} growth over "
                 f"{len(recs)} overlap years: max divergence "
                 f"{worst['divergence']:+.4f} in {worst['year']} "
-                f"(threshold {threshold}; D12: above it the long-term leg is "
-                "withheld pending committee review, not auto-joined — see "
-                "forecast_boundaries.csv 'not_applied_v16_divergence' and "
-                "OQ-7)"))
+                f"(threshold {threshold}; {tail})"))
     return out or [Finding("V16", "OK", "-",
                            "no line carries both a short- and long-term source")]
 

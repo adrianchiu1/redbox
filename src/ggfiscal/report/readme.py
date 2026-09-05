@@ -124,9 +124,10 @@ def _reconciliation_section(root: Path) -> list[str]:
     out += [
         "",
         "Residuals are reported, never allocated or forced (D13, D16, §8.6): "
-        "GBR is nearly unexplained while OBR is unreachable (OQ-6), and the "
-        "projected French consolidation sits entirely in the residuals — the "
-        "covered French forecasts move the other way. Charts and tables: "
+        "the GBR share runs on the hand-retrieved OBR EFO March 2026 "
+        "composites through 2030 (D-S7-003; ~0 beyond the OBR horizon), and "
+        "the projected French consolidation sits entirely in the residuals — "
+        "the covered French forecasts move the other way. Charts and tables: "
         "`reports/reconciliation_report.html`.",
         "",
     ]
@@ -251,13 +252,19 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Known limits awaiting the committee",
         "",
-        "- **OQ-6** — obr.uk (Cloudflare challenge), gov.uk, bmas.de "
-        "(egress policy) are unreachable: every GBR-specific forecast source "
-        "is blocked, so GBR strict forecasts are AMECO-only and the GBR "
-        "explained share is ~0. Unblocking OBR would transform it.",
-        "- **OQ-7** — the AMECO→DSM long-term interest join is withheld "
-        "(V16 overlap divergence above threshold, D12): FRA/DEU GF01_7 "
-        "strict ends 2027 pending adjudication.",
+        "- **OQ-6 (partially resolved 2026-09-05)** — gov.uk and bmas.de "
+        "are allowlisted and OBR files were hand-retrieved (D-S7-001/002), "
+        "so GBR strict now runs on OBR EFO March 2026 + PESA 2026. Still "
+        "open: obr.uk itself remains challenge-blocked (each new EFO needs "
+        "the manual route), an FRS edition with functional long-term "
+        "projections would unlock GBR GF07/GF09/GF10 long legs, and the "
+        "BMAS Rentenversicherungsbericht is PDF-only (OQ-5 gate).",
+        "- **OQ-7 (resolved 2026-09-05, D-S8-001)** — the committee "
+        "approved the above-threshold D12 joins via "
+        "`tolerances.v16_approved_joins`: FRA/DEU GF01_7 runs to 2036 "
+        "(DSM, strict) and GBR R06 to 2030 (OBR NICs, maximum — grade C "
+        "stays out of strict). V16 keeps warning on the seams by design; "
+        "the next DSM/EFO vintages should shrink them.",
         "- **OQ-5** — pre-1995 expenditure archives need §11.4 manual "
         "ingestion (independent second keying) or machine-readable archive "
         "endpoints.",

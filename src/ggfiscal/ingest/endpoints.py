@@ -169,6 +169,13 @@ STEUERSCHAETZUNG_2026_05_URL = (
     "2026-05-07-ergebnisse-170-steuerschaetzung-dl-xlsx.xlsx?__blob=publicationFile")
 
 
+# PESA 2026 (July 2026, HMT): departmental DEL history + SR plans — resolved
+# via the gov.uk content API after the egress allowlisting of 2026-09-03
+# (OQ-6 partial unblock, D-S7-002). Table 1.9 Defence = MoD RDEL+CDEL, £mn.
+PESA_2026_CH1_URL = ("https://assets.publishing.service.gov.uk/media/"
+                     "6a57728b822fbe6b8245c9a1/PESA_2026_CP_Chapter_1_tables.xlsx")
+
+
 def all_stage3_pulls() -> list[Pull]:
     """Stage 3 forecast-source pulls (machine-readable, reachable hosts only)."""
     return [
@@ -179,6 +186,8 @@ def all_stage3_pulls() -> list[Pull]:
         Pull("EC_DSM", "country_fiches_2025", DSM_2025_FICHES_URL,
              headers=BROWSER_HEADERS),
         Pull("DEU_STEUERSCHAETZUNG", "2026_05", STEUERSCHAETZUNG_2026_05_URL,
+             headers=BROWSER_HEADERS),
+        Pull("HMT_PESA", "chapter-1", PESA_2026_CH1_URL,
              headers=BROWSER_HEADERS),
     ]
 

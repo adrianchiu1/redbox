@@ -1,15 +1,13 @@
 # vintage_diff.md — §11.7 vintage detection
 
-Checked 2026-09-03 03:37 UTC (`ggfiscal detect-vintages`). Live source metadata vs the register (`config/sources.yaml`). A new vintage is a **config change plus rebuild, never a methodology change** (§11.7); WEO editions vanish from the IMF API, so new editions must be snapshotted promptly (D-S0-007).
+Checked 2026-09-05 01:24 UTC (`ggfiscal detect-vintages`). Live source metadata vs the register (`config/sources.yaml`). A new vintage is a **config change plus rebuild, never a methodology change** (§11.7); WEO editions vanish from the IMF API, so new editions must be snapshotted promptly (D-S0-007).
 
-**No new vintages; nothing to re-run.**
+**Action needed on 1 finding(s).**
 
 | source | status | detail | action |
 |---|---|---|---|
+| EUROSTAT_NAMA10_GDP | changed | live UPDATE_DATA 2026-09-03 (latest observation 2025) vs register 2026-09-02 (2025) | update the register's verification fields in config/sources.yaml to the observed values, then re-run `ggfiscal fetch --all` and the build so the new release is snapshotted (D8) |
 | DEU_BMAS_RVB | unreachable | publisher or egress policy blocks every available client (OQ-6); no vintage check possible until access exists | — |
-| OBR_EFO_LATEST | unreachable | publisher or egress policy blocks every available client (OQ-6); no vintage check possible until access exists | — |
-| OBR_FRS_2026 | unreachable | publisher or egress policy blocks every available client (OQ-6); no vintage check possible until access exists | — |
-| UK_DEFENCE_PLAN | unreachable | publisher or egress policy blocks every available client (OQ-6); no vintage check possible until access exists | — |
 | COR_2026 | no_check_path | PDF-only or unexercised source (§11.4 / OQ-5); vintage detection needs a machine-readable endpoint | — |
 | DESTATIS_81000 | no_check_path | PDF-only or unexercised source (§11.4 / OQ-5); vintage detection needs a machine-readable endpoint | — |
 | DEU_BMF_FINPLAN | no_check_path | PDF-only or unexercised source (§11.4 / OQ-5); vintage detection needs a machine-readable endpoint | — |
@@ -27,7 +25,6 @@ Checked 2026-09-03 03:37 UTC (`ggfiscal detect-vintages`). Live source metadata 
 | EUROSTAT_GOV10A_EXP | unchanged | UPDATE_DATA 2026-07-21, latest observation 2025 | — |
 | EUROSTAT_GOV10A_MAIN | unchanged | UPDATE_DATA 2026-07-21, latest observation 2025 | — |
 | EUROSTAT_GOV10A_TAXAG | unchanged | UPDATE_DATA 2026-07-21, latest observation 2025 | — |
-| EUROSTAT_NAMA10_GDP | unchanged | UPDATE_DATA 2026-09-02, latest observation 2025 | — |
 | IMF_GFS | unchanged | GFS_COFOG: pinned 11.0.0 is the latest exposed | — |
 | IMF_GFS | unchanged | GFS_SOO: pinned 12.0.0 is the latest exposed | — |
 | IMF_WEO | unchanged | live catalog exposes exactly the 3 registered editions: 2025-04, 2025-10, 2026-04 | — |

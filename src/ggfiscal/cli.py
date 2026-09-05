@@ -28,6 +28,23 @@ def fetch(all: bool = typer.Option(False, "--all", help="Pull every Stage 0 prob
         raise typer.Exit(code=1)
 
 
+@app.command("ingest-file")
+def ingest_file(path: str,
+                source_id: str = typer.Option(..., "--source-id"),
+                part: str = typer.Option(..., "--part"),
+                url: str = typer.Option(..., "--url",
+                                        help="Publication landing URL"),
+                note: str = typer.Option("", "--note")):
+    """Store a hand-retrieved file as a D8 snapshot (for publishers no
+    client here can reach — obr.uk, OQ-6). Committed to git, unlike
+    refetchable snapshots (D-S7-001)."""
+    from ggfiscal.ingest.fetch import ingest_local
+
+    rec = ingest_local(path, source_id, part, url, note)
+    typer.echo(f"OK    {rec['source_id']}/{rec['part']}  "
+               f"sha256={rec['sha256'][:12]}  {rec['size']} bytes  -> {rec['path']}")
+
+
 @app.command()
 def validate():
     """Run the validation suite; exit 1 on any ERROR (§10)."""

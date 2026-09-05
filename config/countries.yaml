@@ -50,6 +50,14 @@ tolerances:
   v16_overlap_divergence: 0.02         # V16/D12 (D-S3-005): above this, the
                                        # long-term leg is NOT auto-joined —
                                        # flagged for committee review (OQ-7)
+  v16_approved_joins:                  # OQ-7 RESOLVED by the committee
+    # 2026-09-05 (D-S8-001): these above-threshold joins are approved and
+    # applied. Grade rules still hold (a C-band leg stays maximum-only) and
+    # V16 keeps WARNing on the divergence — approval changes application,
+    # never visibility. Approving a future join = one row here + rebuild.
+    - {iso3: FRA, line_code: GF01_7, incoming_source: EC_DSM}
+    - {iso3: DEU, line_code: GF01_7, incoming_source: EC_DSM}
+    - {iso3: GBR, line_code: R06, incoming_source: OBR_EFO_LATEST}
   gbr_perimeter_sigma_pct_te: 0.5      # V24 (D-S5-002): GBR NLB-gap stability —
                                        # sigma of gap/TE across overlap years;
                                        # D-S0-009 measured 0.36-0.42

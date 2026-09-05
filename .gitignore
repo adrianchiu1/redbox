@@ -18,3 +18,11 @@ data/canonical/*
 # parquet twins stay local; everything regenerates via `ggfiscal build`,
 # `reconcile`, `validate` from the hash-recorded snapshots):
 !data/canonical/*.csv
+
+# Hand-retrieved snapshots (D-S7-001): no machine fetch path exists (obr.uk
+# Cloudflare challenge, OQ-6), so unlike refetchable pulls the raw bytes ARE
+# committed — the §11.4 store-the-PDF-in-raw rule extended to xlsx.
+!data/raw/OBR_EFO_LATEST/
+!data/raw/OBR_FRS/
+!data/raw/OBR_PSF_DATABANK/
+!data/raw/OBR_HIST_PF/

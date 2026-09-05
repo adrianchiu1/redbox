@@ -73,7 +73,31 @@ D-S0-004 keeps raw bytes out of git and provenance in the manifest. If the
 committee wants a durable shared archive (LFS, object store), name it and
 `ingest/store.py` will grow a sync target. Not blocking.
 
-## OQ-6 — Stage 3 forecast hosts partially blocked; every GBR-specific source unreachable (NEW; predicted by OQ-1's closing note)
+## OQ-6 — forecast hosts: PARTIALLY RESOLVED 2026-09-05 (session 5); remaining asks below
+
+Resolved in session 5, 2026-09-05 (D-S7-001/002/003): the committee allowlisted
+gov.uk / assets.publishing.service.gov.uk / bmas.de (+ insee.fr,
+www-genesis.destatis.de, cor-retraites.fr) and hand-retrieved the OBR
+files (obr.uk itself remains Cloudflare-blocked to every client here).
+Result: GBR strict forecasts now run on OBR EFO March 2026 + PESA 2026
+(R01-R04 to 2030, GF02 to 2028; R05 maximum to 2030; Q12's OBR envelope
+exercised). **Remaining asks:**
+- (a) an FRS edition WITH functional long-term projections — the 2024
+  edition ("Fiscal sustainability" long-term projections data), or the
+  2026 edition if one was published in July 2026 — would give GBR
+  GF07/GF09/GF10 long-term legs; hand-retrieve as before (D-S7-001).
+- (b) a PSF-databank-style welfare-spending FY history (or any OBR file
+  carrying welfare outturns before 2024-25) would make the EFO welfare
+  series measurable for GF10 (D-S7-003).
+- (c) the BMAS Rentenversicherungsbericht is reachable now but PDF-only:
+  its ingestion is an OQ-5 second-keying question, not a network one.
+- (d) obr.uk challenge-capable access would let `ggfiscal fetch` and
+  `detect-vintages` cover OBR without hand-retrieval — worth keeping on
+  the list for each new EFO round (the next EFO lands ~November 2026 and
+  will need the same manual route otherwise).
+
+Original record (kept):
+Stage 3 forecast hosts partially blocked; every GBR-specific source unreachable (predicted by OQ-1's closing note)
 Raised 2026-08-31 (session 3). Probed live:
 
 - **Reachable + harvested**: economy-finance.ec.europa.eu (AR 2024 annexes,
@@ -100,7 +124,21 @@ gates FRA tax lines and all three GF02 lines. Until then GBR strict
 forecasts are AMECO-only and §15 Q12's OBR-primary envelope runs on the
 AMECO cross-check (levels exist 2026–27 only, OQ-4).
 
-## OQ-7 — D12/V16: AMECO-vs-DSM interest join withheld — committee to adjudicate (NEW; blocks the 2028–2036 GF01_7 leg)
+## OQ-7 — D12/V16 withheld joins — **RESOLVED 2026-09-05 (option a, D-S8-001)**
+
+The committee approved the withheld joins; both are applied via the new
+`tolerances.v16_approved_joins` config list: FRA/DEU GF01_7 ← DSM (grade
+B, strict to 2036) and GBR R06 ← OBR NICs (grade C, maximum to 2030 —
+grades still route variants). V16 keeps WARNing on the seams by design.
+Standing note for the next vintages: when DSM 2026 (~Feb 2027) and the
+next EFO (~Nov 2026) arrive, the seams should shrink — detect-vintages
+plus a rebuild refreshes them; no re-adjudication needed unless the
+committee wants the approvals revisited (remove the config rows).
+The GBR CG-debt-interest candidate for GF01_7 stays out on concept
+(grade D, D-S7-003) — no join approval can cure that.
+
+Original item (kept for the record):
+D12/V16: AMECO-vs-DSM interest join withheld — committee to adjudicate (blocks the 2028–2036 GF01_7 leg)
 Raised 2026-08-31. The DSM 2025 long-term interest path (to 2036, grade-B
 coverage) diverges from AMECO Spring 2026 growth by up to −6.5pp (FRA) /
 +4.0pp (DEU) per year in the 2025–27 overlap — the DSM predates the Spring

@@ -1,6 +1,6 @@
 check_id,severity,scope,message
 S0_LINES,OK,-,66 line series enumerated (3 countries x 22)
-S0_REGISTER,OK,-,29 register entries structurally complete
+S0_REGISTER,OK,-,31 register entries structurally complete
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124529Z_f88cbdb3b751.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124538Z_26601ec18b30.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_MAIN,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260831T124539Z_aa12ca719566.csv (raw store not synced)
@@ -454,17 +454,17 @@ V11,OK,-,every forecast source is the latest registered vintage
 V12,OK,-,all sources S13; no unnoted perimeter
 V13,OK,-,every stitched and forecast row carries a concept note and crosswalk
 V14,OK,-,no filled values; year sets match the anchors
-V15,OK,-,"covered sums within the envelope in all 26 checked (country, variant, year, side) cells"
-V16,WARN,FRA/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V15,OK,-,"covered sums within the envelope in all 36 checked (country, variant, year, side) cells"
+V16,WARN,GBR/GF01_7,"EC_AMECO vs OBR_EFO_LATEST growth over 8 overlap years: max divergence +0.3424 in 2022 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,GBR/R06,"EC_AMECO vs OBR_EFO_LATEST growth over 8 overlap years: max divergence -0.0325 in 2024 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
+V16,WARN,GBR/GF10,"EC_AMECO vs OBR_EFO_LATEST growth over 2 overlap years: max divergence +0.0294 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,FRA/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,OK,FRA/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0164 in 2024 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
-V16,WARN,DEU/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,DEU/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,OK,DEU/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0141 in 2024 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
 V17,OK,-,"every proxy/composite row carries coverage share, year and residual_method; no proxy in strict"
 V18,WARN,register/INSEE_APU,no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)
 V18,WARN,register/DESTATIS_81000,no archived copy and unresolved URL (status: unverified; Stage 2 concern)
-V18,WARN,register/OBR_EFO_LATEST,"no archived copy and unresolved URL (status: blocked; obr.uk serves a Cloudflare JS challenge to every client available in this environment (curl, headless Chromium — no working browser tunnel through the egress proxy — and server-side fetch); OQ-6)"
-V18,WARN,register/OBR_FRS_2026,no archived copy and unresolved URL (status: blocked; same obr.uk Cloudflare challenge as OBR_EFO_LATEST (OQ-6); July 2026 edition existence not confirmable from here)
-V18,WARN,register/UK_DEFENCE_PLAN,no URL recorded and no archived copy (status: blocked; §15 Q7 default: strict grade B if GG share >= 90%; gov.uk and assets.publishing.service.gov.uk CONNECT denied by the egress policy (OQ-6))
 V18,WARN,register/FRA_LPFP_PSTAB,no URL recorded and no archived copy (status: not_machine_readable; PDF-only publication; §11.4 second keying unavailable to a single-agent session (OQ-5 precedent)
 V18,WARN,register/COR_2026,"no URL recorded and no archived copy (status: not_machine_readable; cor-retraites.fr reachable but the annual report is PDF-only (§11.4 blocked, OQ-5/OQ-6); 2023 reform vs AR2024 assumptions — expect V16 divergence (§14))"
 V18,WARN,register/FRA_LPM_2030,no URL recorded and no archived copy (status: not_machine_readable; law text with annual credits table)

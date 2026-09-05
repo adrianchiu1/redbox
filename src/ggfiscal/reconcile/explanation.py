@@ -99,7 +99,20 @@ def _line_frames(variant: str) -> pd.DataFrame:
 
 
 def _official_totals(iso3: str) -> dict[str, pd.Series]:
-    """Independent official totals and their own GDP path, LCU mn (§8.1)."""
+    """Independent official totals and their own GDP path, LCU mn (§8.1).
+    FRA/DEU: AMECO URTG/UUTG/UVGD. GBR: the §15 Q12 OBR-primary default,
+    exercisable since the OQ-6 partial unblock (D-S7-002) — OBR PS current
+    receipts / TME with the OBR nominal GDP path, FY converted per §7.10;
+    public sector perimeter (stable ~0.95-0.97 ratio to the GG totals), so
+    the level wedge largely cancels in the §8.3 changes-from-base and the
+    remainder is visible in resid_disagreement, never absorbed."""
+    if iso3 == "GBR":
+        from ggfiscal.forecast.forward import fy_to_cy
+
+        ag = lambda label: R.obr_databank("Aggregates (£bn)", label)  # noqa: E731
+        return {"TR": fy_to_cy(ag("Public sector current receipts")) * 1000.0,
+                "TE": fy_to_cy(ag("Total managed expenditure")) * 1000.0,
+                "GDP": fy_to_cy(ag("Nominal GDP (£ billion)")) * 1000.0}
     return {"TR": R.ameco_series(iso3, "URTG", 16) * 1000.0,
             "TE": R.ameco_series(iso3, "UUTG", 16) * 1000.0,
             "GDP": R.ameco_series(iso3, "UVGD", 6) * 1000.0}

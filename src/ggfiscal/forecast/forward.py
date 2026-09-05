@@ -41,6 +41,8 @@ AMECO_COFOG_XWALK = "EC_AMECO_to_COFOG:1.0"
 DSM_XWALK = "EC_DSM_to_INTEREST:1.0"
 AR_XWALK = "EC_AGEING_to_COFOG:1.0"
 STSCH_XWALK = "DEU_STEUERSCHAETZUNG_to_ESA_REV:1.0"
+OBR_REV_XWALK = "OBR_to_ESA_REV:1.0"
+OBR_COFOG_XWALK = "OBR_PESA_to_COFOG:1.0"
 
 CONSTRUCTED_NOTE = "constructed, not an official forecast"  # §7.8
 
@@ -88,8 +90,8 @@ def fy_to_cy(fy: pd.Series) -> pd.Series:
     """§7.10 (GBR forecast sources only): CY_t = 0.25 × FY_{t-1/t} + 0.75 ×
     FY_{t/t+1}, with FY series indexed by the calendar year the fiscal year
     starts in (FY 2026-27 -> index 2026). Conversion consumes one horizon year.
-    No reachable GBR forecast source exists this session (OQ-6), so this is
-    exercised by tests only; it runs unchanged once OBR access is granted."""
+    Exercised by the OBR/PESA sources since the OQ-6 partial unblock
+    (D-S7-001/002)."""
     out = {}
     for t in fy.index:
         if (t - 1) in fy.index:
@@ -225,6 +227,59 @@ _SOLI_R03 = [("Tab 8.2", "- Lohnsteuer"), ("Tab 8.2", "- veranl. Einkommensteuer
              ("Tab 8.2", "- nicht veranl. Steuern v. Ertrag")]
 
 
+# ---------- OBR (GBR — hand-retrieved EFO March 2026 + PSF databank, D-S7-001;
+# ---------- PESA 2026 via the allowlisted gov.uk, D-S7-002; OQ-6 partial unblock) ----------
+
+OBR_NOTE = ("OBR EFO March 2026 vintage via the PSF aggregates databank "
+            "(August 2026 file, 'forecast as of March 2026'): per-tax series, "
+            "National Accounts basis, accrued, fiscal years converted per "
+            "§7.10; public sector receipts perimeter — individual taxes are "
+            "GG in substance, coverage measured on the GG anchor (§7.11, "
+            "§14); cash-timing and holding-gains wedges carried by the "
+            "crosswalk (D17)")
+PESA_NOTE = ("HMT PESA 2026 table 1.9: MoD total DEL (RDEL+CDEL), budgeting "
+             "basis, cash-ish, central government — vs COFOG GF02 GG accrual "
+             "(delivery-timing wedge, §7.13); outturns 2021-22..2025-26 + "
+             "SR25 plans to 2028-29; FY converted per §7.10; §15 Q7: "
+             "legislated defence plans strict at grade B where the measured "
+             "share is >= 90%")
+
+
+def _obr_gdp_levels() -> pd.Series:
+    """OBR's own nominal GDP path (databank, FY -> CY per §7.10), £mn."""
+    return fy_to_cy(R.obr_databank("Aggregates (£bn)",
+                                   "Nominal GDP (£ billion)")) * 1000.0
+
+
+def _obr_receipts(labels: list[str], note_extra: str, *,
+                  extra_fy: pd.Series | None = None,
+                  residual: str | None = None) -> FcSource:
+    """Composite of OBR databank per-tax series (£bn FY), converted per
+    §7.10. `extra_fy` adds a component available only in the EFO annex
+    tables (business rates)."""
+    fy = None
+    for label in labels:
+        s = R.obr_databank("Receipts (£bn)", label)
+        fy = s if fy is None else fy + s
+    if extra_fy is not None:
+        fy = fy + extra_fy
+    composite = len(labels) + (extra_fy is not None) > 1
+    return FcSource(
+        source_id="OBR_EFO_LATEST", series=fy_to_cy(fy.dropna()) * 1000.0,
+        # horizon: FY 2030-31 touches calendar 2031; V10 nets the §7.10
+        # conversion loss, and the CY series itself ends at 2030
+        kind="level", horizon_year=2031, last_actual_year=2024,
+        concept_note=f"{OBR_NOTE}; components: {', '.join(labels)}"
+                     + (f"; {note_extra}" if note_extra else "")
+                     + (f"; {CONSTRUCTED_NOTE}" if composite else ""),
+        crosswalk_version=OBR_REV_XWALK,
+        gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+        concept_flag="public_sector_perimeter",
+        period_conversion_method="fy_weighted_quarters",
+        observation_type="composite_forecast" if composite else "direct_forecast",
+        residual_method=residual)
+
+
 def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
     """Ordered (short-term first, D12) forecast sources per (classification,
     line_code) — §12 Stage 3 priority (interest, defence, big revenue lines,
@@ -301,6 +356,102 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         r04.residual_method = config.residual_method(iso3, "R04")
         out[("ESA_REV", "R03")] = [r03]
         out[("ESA_REV", "R04")] = [r04]
+    if iso3 == "GBR":
+        # OQ-6 partial unblock (D-S7-001/002): OBR EFO March 2026 receipts
+        # composites (membership per the ONS national tax list evidence,
+        # validated by measured §9.2 coverage) and the PESA MoD DEL plan.
+        out[("ESA_REV", "R01")] = [_obr_receipts(
+            ["VAT (net of VAT refunds)", "VAT refunds"],
+            "D.211 = VAT plus VAT refunds (the anchor's accrued D.211 "
+            "includes refunded VAT; measured 0.99 on the GG anchor)",
+            residual=config.residual_method(iso3, "R01"))]
+        out[("ESA_REV", "R02")] = [_obr_receipts(
+            ["Fuel duties", "Stamp duty land tax", "Stamp taxes on shares",
+             "Tobacco duties", "Alcohol duties", "Vehicle excise duties",
+             "Air passenger duty", "Insurance premium tax",
+             "Climate change levy and carbon price floor",
+             "Environmental levies", "Emissions trading scheme", "Bank levy"],
+            "D.2 minus D.211: production/product taxes per the national tax "
+            "list; business rates come from EFO annex table A.5 (not in the "
+            "databank), so the composite starts at FY 2024-25",
+            extra_fy=R.obr_fy("annex-tables", "TA.5", "Business rates"),
+            residual=config.residual_method(iso3, "R02"))]
+        out[("ESA_REV", "R03")] = [_obr_receipts(
+            ["Pay as your earn (PAYE) income tax",
+             "Self assessed (SA) income tax", "Other income tax",
+             "Capital gains tax"],
+            "D.51 households incl. holding gains (D51M): income tax streams "
+            "plus CGT per the national tax list",
+            residual=config.residual_method(iso3, "R03"))]
+        out[("ESA_REV", "R04")] = [_obr_receipts(
+            ["Onshore corporation tax", "Offshore corporation tax",
+             "Petroleum revenue tax", "Energy profits levy",
+             "Diverted profits tax"],
+            "D.51 corporations (D51O): CT onshore (incl. bank surcharge and "
+            "EGL per the databank definition) + offshore + PRT + EPL + DPT",
+            residual=config.residual_method(iso3, "R04"))]
+        out[("ESA_REV", "R05")] = [_obr_receipts(
+            ["Council tax", "Inheritance tax", "Licence fee receipts"],
+            "partial composite for D.5-other + D.59 + D.91: council tax and "
+            "licence fee (D.59) plus inheritance tax (D.91); no forecast "
+            "exists for the remaining small D.59/D.91 items — coverage "
+            "measured (C band, maximum_extension only)",
+            residual=config.residual_method(iso3, "R05"))]
+        # D12 chains: AMECO (later vintage) through 2027, OBR beyond
+        out[("ESA_REV", "R06")].append(_obr_receipts(
+            ["National insurance contributions (NICs)"],
+            "NICs only — the anchor's D.61 additionally includes imputed "
+            "(unfunded public service) and voluntary contributions, so the "
+            "measured share sits in the C band; long-term leg beyond the "
+            "AMECO D.61 horizon per D12"))
+        # candidates recorded even where the concept mismatch is expected to
+        # fail the bands: the non-application boundary is the documentation
+        cg_di = R.obr_databank("Aggregates (£bn)",
+                               "Central government debt interest")
+        out[("COFOG", "GF01_7")].append(FcSource(
+            source_id="OBR_EFO_LATEST", series=fy_to_cy(cg_di) * 1000.0,
+            kind="level", horizon_year=2031, last_actual_year=2024,
+            concept_note="OBR central government debt interest, net of APF "
+                         "(PSF basis): differs from GG gross accrued D.41 by "
+                         "the APF netting, LG interest and PSF/ESA recording "
+                         "— measured share drifts 0.67-1.28 across the "
+                         "overlap, outside every band",
+            crosswalk_version=OBR_COFOG_XWALK,
+            gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+            concept_flag="public_sector_perimeter",
+            period_conversion_method="fy_weighted_quarters"))
+        out[("ESA_REV", "R07")] = [_obr_receipts(
+            ["Public sector interest and dividend receipts"],
+            "PS interest AND dividends receivable vs the anchor's GG D.41 "
+            "resources — dividends and the PS perimeter push the share "
+            "outside the bands; recorded, not applied")]
+        welfare = R.obr_fy("annex-tables", "TA.7", "Welfare spending")
+        gf10_obr = FcSource(
+            source_id="OBR_EFO_LATEST", series=fy_to_cy(welfare) * 1000.0,
+            kind="level", horizon_year=2031, last_actual_year=2024,
+            concept_note="EFO welfare spending (AME): dominant cash-benefit "
+                         "component of GF10, but the EFO table starts at FY "
+                         "2024-25 so the converted series has no year in "
+                         "common with the GG anchor — coverage not "
+                         "measurable (§9.2), not applied; a welfare series "
+                         "in the PSF databank would fix this",
+            crosswalk_version=OBR_COFOG_XWALK,
+            gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+            concept_flag="public_sector_perimeter",
+            period_conversion_method="fy_weighted_quarters",
+            observation_type="proxy_forecast", max_only=True,
+            residual_method=config.residual_method(iso3, "GF10"))
+        out[("COFOG", "GF10")] = [gf10, gf10_obr]
+        out[("COFOG", "GF02")] = [FcSource(
+            source_id="HMT_PESA",
+            series=fy_to_cy(R.obr_fy("chapter-1", "Table_1_9", "Defence",
+                                     source_id="HMT_PESA")),
+            # FY 2028-29 touches calendar 2029; V10 nets the conversion loss
+            kind="level", horizon_year=2029, last_actual_year=2025,
+            concept_note=PESA_NOTE, crosswalk_version=OBR_COFOG_XWALK,
+            gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+            concept_flag="public_sector_perimeter",
+            period_conversion_method="fy_weighted_quarters")]
     return out
 
 
@@ -309,12 +460,6 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
 _D7_NOTE = ("D7: no official forecast identified anywhere (seed register and "
             "Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, "
             "Steuerschätzung); strict and maximum end at the last actual")
-_OBR_BLOCKED = ("identified source OBR ({obj}) unreachable this session: "
-                "obr.uk serves a Cloudflare JS challenge to every available "
-                "client (curl, headless browser, server-side fetch) — OQ-6; "
-                "strict ends at the last actual")
-_GOV_BLOCKED = ("identified source {src} blocked by the egress policy "
-                "({host} CONNECT denied) — OQ-6; strict ends at the last actual")
 _PDF_BLOCKED = ("identified source {src} is PDF-only; §11.4 manual ingestion "
                 "requires an independent second keying unavailable to a "
                 "single-agent session (OQ-5 precedent) — OQ-6; strict ends at "
@@ -342,37 +487,50 @@ def declarations_for(iso3: str) -> list[Declaration]:
         d("ESA_REV", "TR", "not_extended",
           "totals are envelopes (§6.1, D4): used in V15 only"),
         d("ESA_REV", "R07", "no_machine_readable_source",
-          "no reachable machine-readable GG interest-receivable forecast: "
-          "AMECO has no D.41 resources series (UYVG is subsidies); DSM "
-          "publishes payable interest only; OBR receipts detail is behind "
-          "the obr.uk challenge (OQ-6); NI/PB forecast ledger therefore "
-          "stays empty (§4.3)"),
+          "no usable GG interest-receivable forecast: AMECO has no D.41 "
+          "resources series (UYVG is subsidies); DSM publishes payable "
+          "interest only; the OBR 'PS interest and dividend receipts' "
+          "candidate (D-S7-003) mixes dividends and the PS perimeter into "
+          "the line and measures outside every band — recorded, not "
+          "applied; NI/PB forecast ledger therefore stays empty (§4.3)"),
         d("ESA_REV", "R08", "no_official_forecast", _D7_NOTE),
         d("ESA_REV", "R10", "no_official_forecast", _D7_NOTE),
     ]
     for line in ("GF03", "GF04", "GF05", "GF06", "GF08"):
         out.append(d("COFOG", line, "no_official_forecast", _D7_NOTE))
     if iso3 == "GBR":
+        # OQ-6 partially unblocked 2026-09-03 (D-S7-001/002): the OBR EFO
+        # March 2026 receipts composites and the PESA MoD DEL now carry
+        # R01-R04 and GF02 in strict; what remains declared is below.
         out += [
-            d("COFOG", "GF02", "source_blocked",
-              _GOV_BLOCKED.format(src="UK_DEFENCE_PLAN (Spending Review "
-                                  "tables)", host="gov.uk / assets.publishing.service.gov.uk")),
-            d("COFOG", "GF07", "source_blocked", _OBR_BLOCKED.format(obj="FRS July 2026")),
-            d("COFOG", "GF09", "source_blocked", _OBR_BLOCKED.format(obj="FRS July 2026")),
-            d("COFOG", "GF10", "source_blocked",
-              _OBR_BLOCKED.format(obj="EFO welfare tables")
-              + "; maximum_extension carries the AMECO D.62 dominant-component "
-                "proxy to 2027 (grade C, §7.8)"),
-            d("ESA_REV", "R01", "source_blocked", _OBR_BLOCKED.format(obj="EFO receipts")),
-            d("ESA_REV", "R02", "source_blocked", _OBR_BLOCKED.format(obj="EFO receipts")),
-            d("ESA_REV", "R03", "source_blocked", _OBR_BLOCKED.format(obj="EFO receipts")),
-            d("ESA_REV", "R04", "source_blocked", _OBR_BLOCKED.format(obj="EFO receipts")),
+            d("COFOG", "GF07", "source_blocked",
+              "FRS July 2025 (hand-retrieved, D-S7-001) is thematic — "
+              "pensions, balance sheet, climate — and carries no long-term "
+              "health projection; the FRS edition with functional long-term "
+              "projections (2024, or 2026 if published) is not in hand and "
+              "obr.uk remains challenge-blocked (OQ-6); strict ends at the "
+              "last actual"),
+            d("COFOG", "GF09", "source_blocked",
+              "as GF07: no education long-term projection in the FRS July "
+              "2025 edition in hand (OQ-6); strict ends at the last actual"),
+            d("COFOG", "GF10", "grade_below_strict",
+              "maximum_extension carries the AMECO D.62 dominant-component "
+              "proxy to 2027 (grade C, §7.8); the EFO welfare-spending "
+              "series was measured as a longer C-band candidate but its "
+              "table starts at FY 2024-25, leaving no year in common with "
+              "the GG anchor to measure §9.2 coverage on — recorded, not "
+              "applied (D-S7-003)"),
             d("ESA_REV", "R05", "grade_below_strict",
-              "AMECO UTKG covers 11% of the line (D, not applied); OBR "
-              "receipts blocked (OQ-6); D7 lists R05 as partial"),
+              "OBR council tax + inheritance tax + licence fee composite "
+              "measured at 79% of the line (C) — applied in "
+              "maximum_extension to 2030; the remaining D.59/D.91 items "
+              "have no forecast anywhere (D7 lists R05 as partial); AMECO "
+              "UTKG (11%, D) recorded, not applied"),
             d("ESA_REV", "R09", "no_machine_readable_source",
-              "AMECO publishes no UK UTOG/UROG history (OQ-4 pattern) so the "
-              "sales composite is unmeasurable; OBR blocked (OQ-6)"),
+              "AMECO publishes no UK UTOG/UROG history (OQ-4 pattern) and "
+              "the EFO receipts tables do not separate P.11+P.12+P.131 "
+              "sales (GOS and 'other receipts' are different concepts) — "
+              "no measurable composite"),
         ]
     if iso3 == "FRA":
         out += [
@@ -473,6 +631,10 @@ def extend_forward(iso3: str, classification: str, line_code: str,
     from ggfiscal import config
 
     v16_threshold = config.tolerances().get("v16_overlap_divergence", 0.02)
+    # OQ-7 adjudications (D-S8-001): joins the committee has approved despite
+    # above-threshold divergence — application changes, V16 keeps warning
+    approved_joins = {(a["iso3"], a["line_code"], a["incoming_source"])
+                      for a in config.tolerances().get("v16_approved_joins", [])}
     rows, boundaries = [], []
     if anchor.empty:
         return rows, boundaries
@@ -484,14 +646,23 @@ def extend_forward(iso3: str, classification: str, line_code: str,
     gdp_prev = float(anchor_gdp[T]) if T in anchor_gdp.index else None
     for src in sources:
         grade, share, share_year = _grade(src, anchor, anchor_gdp)
+        scope_prefix = ""
         # D12: a long-term leg whose growth diverges from the short-term
         # source beyond the V16 threshold in their overlap years is NOT
-        # auto-joined — recorded and flagged for committee review (OQ-7)
+        # auto-joined — recorded and flagged for committee review (OQ-7),
+        # unless the committee has approved that exact join in config
         if applied_sources:
             divs = overlap_divergence(iso3, classification, line_code,
                                       [applied_sources[-1], src])
             worst = max((abs(d["divergence"]) for d in divs), default=0.0)
-            if worst > v16_threshold:
+            if worst > v16_threshold \
+                    and (iso3, line_code, src.source_id) in approved_joins:
+                scope_prefix = (f"D12/V16: overlap divergence up to "
+                                f"{worst:+.4f} exceeds the {v16_threshold} "
+                                "threshold; joined under committee approval "
+                                "(OQ-7 resolution, D-S8-001) — V16 keeps "
+                                "warning on the seam; ")
+            elif worst > v16_threshold:
                 boundaries.append({
                     "iso3": iso3, "classification": classification,
                     "line_code": line_code, "boundary_year": frontier,
@@ -572,7 +743,7 @@ def extend_forward(iso3: str, classification: str, line_code: str,
                     "line_code": line_code, "boundary_year": t,
                     "outgoing_source": outgoing, "incoming_source": src.source_id,
                     "anchor_value_lcu_mn": value_prev, "growth_applied": growth,
-                    "scope": src.concept_note, "break_flag": False,
+                    "scope": scope_prefix + src.concept_note, "break_flag": False,
                     "grade": grade, "crosswalk_version": src.crosswalk_version,
                     "coverage_share": share, "coverage_share_year": share_year,
                     "variants": variants_label,
