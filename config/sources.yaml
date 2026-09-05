@@ -73,7 +73,7 @@ sources:
       data_path: data/dataflow/ESTAT/nama_10_gdp/1.0/
       format: csvdata
     verification: {status: confirmed_live, checked: 2026-09-03,
-                   last_update_observed: "2026-09-02", last_observation: 2025,
+                   last_update_observed: "2026-09-03", last_observation: 2025,
                    note: UPDATE_DATA annotation per detect-vintages 2026-09-03}
 
   ONS_ESA_T11:
@@ -291,38 +291,79 @@ sources:
 
   OBR_EFO_LATEST:
     institution: OBR
-    object: Economic and Fiscal Outlook + supplementary tables
+    object: Economic and Fiscal Outlook March 2026 — annex tables A.1-A.12 + detailed forecast tables (receipts, expenditure, aggregates incl. 6.3 GG transactions, debt interest, economy, long-term determinants)
     countries: [GBR]
-    lines: [R01, R02, R03, R04, R05, R06, GF01_7, GF10_components, envelope]
+    lines: [R01, R02, R03, R04, R05, R06, GF01_7, GF02, GF10_components, envelope]
     horizon_claimed: 5
-    concept_note: Public sector, FY (Apr-Mar), accrued incl. index-linked uplift; convert per §7.10; coverage_share on GG anchor (§7.11)
-    api: {kind: xlsx_download, landing: https://obr.uk/efo/}
-    verification: {status: blocked, checked: 2026-08-31,
-                   note: "obr.uk serves a Cloudflare JS challenge to every client
-                   available in this environment (curl, headless Chromium — no
-                   working browser tunnel through the egress proxy — and
-                   server-side fetch); OQ-6"}
+    concept_note: Public sector, FY (Apr-Mar), accrued incl. index-linked uplift; convert per §7.10; coverage_share on GG anchor (§7.11); table 6.3 is GG perimeter (forecast years only)
+    api: {kind: xlsx_download, landing: https://obr.uk/efo/economic-and-fiscal-outlook-march-2026/}
+    verification:
+      status: resolved_manual
+      checked: 2026-09-05
+      last_update_observed: "2026-03-24"   # EFO March 2026 publication
+      latest_vintage: "2026-03"
+      forecast_horizon: "2030-31"
+      note: "obr.uk Cloudflare challenge unchanged (OQ-6); hand-retrieved by AC
+             2026-09-03 and ingested via `ggfiscal ingest-file` (D-S7-001);
+             raw bytes committed to git since no machine fetch path exists"
 
-  OBR_FRS_2026:
+  OBR_FRS:
     institution: OBR
-    object: Fiscal Risks and Sustainability, July 2026 (% GDP, 50 yrs)
+    object: Fiscal Risks and Sustainability, July 2025 — chapter charts and tables (% GDP long-term projections)
     countries: [GBR]
     lines: [GF07, GF09, GF10_components, GF01_7, major_receipts]
-    concept_note: Public sector perimeter
-    api: {kind: xlsx_download, landing: https://obr.uk/frs/}
-    verification: {status: blocked, checked: 2026-08-31,
-                   note: "same obr.uk Cloudflare challenge as OBR_EFO_LATEST (OQ-6);
-                   July 2026 edition existence not confirmable from here"}
+    concept_note: Public sector perimeter; % GDP
+    api: {kind: xlsx_download, landing: https://obr.uk/frs/fiscal-risks-and-sustainability-july-2025/}
+    verification:
+      status: resolved_manual
+      checked: 2026-09-05
+      last_update_observed: "2025-07-08"
+      latest_vintage: "2025-07"
+      note: "supersedes the §13 seed id OBR_FRS_2026: the July 2025 edition is what
+             the committee hand-retrieved (D-S7-001); whether a July 2026 edition
+             exists could not be confirmed from this environment (obr.uk blocked,
+             OQ-6) — re-check when access exists"
 
-  UK_DEFENCE_PLAN:
-    institution: HMT / MoD
-    object: Spending Review / defence investment plan (cash plans)
+  OBR_PSF_DATABANK:
+    institution: OBR
+    object: Public sector finances aggregates databank (August 2026) — long FY history of PS aggregates incl. welfare spending, debt interest, receipts
+    countries: [GBR]
+    lines: [history_complement]
+    role: history_complement
+    concept_note: Public sector, FY, National Accounts basis; used for FY history where EFO tables lack outturn years (§7.10 conversion needs FY t-1)
+    api: {kind: xlsx_download, landing: https://obr.uk/data/}
+    verification: {status: resolved_manual, checked: 2026-09-05,
+                   last_update_observed: "2026-08-04",
+                   note: "hand-retrieved by AC 2026-09-05 (D-S7-001)"}
+
+  OBR_HIST_PF:
+    institution: OBR
+    object: Historical public finances database — long-run UK fiscal history (candidate for the OQ-5 pre-1987 interest quick win; not yet used)
+    countries: [GBR]
+    lines: [history_candidate]
+    role: history_complement
+    api: {kind: xlsx_download, landing: https://obr.uk/data/}
+    verification: {status: resolved_manual, checked: 2026-09-05,
+                   note: "hand-retrieved by AC 2026-09-05 (D-S7-001); snapshotted for
+                   future backward-extension work, no rows built from it yet"}
+
+  HMT_PESA:
+    institution: HMT
+    object: "PESA 2026 (July 2026), chapter 1: departmental budgets — MoD RDEL+CDEL outturns 2021-22..2025-26 + SR plans to 2028-29 (table 1.9, £mn)"
     countries: [GBR]
     lines: [GF02]
-    verification: {status: blocked, checked: 2026-08-31,
-                   note: "§15 Q7 default: strict grade B if GG share >= 90%;
-                   gov.uk and assets.publishing.service.gov.uk CONNECT denied by
-                   the egress policy (OQ-6)"}
+    concept_note: Departmental Expenditure Limits, budgeting basis, FY; central government (MoD) vs COFOG GF02 GG — coverage measured; §15 Q7 (defence plans strict B if share >= 90%)
+    api:
+      kind: xlsx_download
+      landing: https://www.gov.uk/government/statistics/public-expenditure-statistical-analyses-2026
+      file: https://assets.publishing.service.gov.uk/media/6a57728b822fbe6b8245c9a1/PESA_2026_CP_Chapter_1_tables.xlsx
+    verification:
+      status: confirmed_live
+      checked: 2026-09-05
+      last_update_observed: "2026-07-16"
+      note: "supersedes the §13 seed UK_DEFENCE_PLAN entry: gov.uk/assets.publishing
+             allowlisted 2026-09-05 (OQ-6 partial unblock, D-S7-002); PESA carries the
+             SR25 defence settlement the seed pointed at, machine-readable"
 
   EC_AGEING_2024:
     institution: European Commission

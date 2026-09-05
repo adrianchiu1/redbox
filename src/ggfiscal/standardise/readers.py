@@ -535,3 +535,129 @@ def ameco_series(iso3: str, variable: str, chapter: int) -> pd.Series:
         return pd.Series(dtype=float)
     sel = df[df["code"] == f"{iso3}.1.0.0.0.{variable}"]
     return _year_series(zip(sel["year"], sel["value"]))
+
+
+# ---------- OBR (hand-retrieved snapshots, D-S7-001; OQ-6 partial unblock) ----------
+# EFO March 2026 annex/detailed tables and the PSF aggregates databank
+# (August 2026, "forecast as of March 2026" — the same OBR vintage). All OBR
+# tables are fiscal-year (April-March), £ billion; series here are indexed by
+# the FY START year (FY 2026-27 -> 2026) and converted to calendar years at
+# the forecast layer per §7.10.
+
+_OBR_FY_RE = re.compile(r"^(19|20)\d{2}-\d{2}$")
+
+
+def _obr_fy_start(label: str) -> int:
+    return int(str(label)[:4])
+
+
+@lru_cache(maxsize=None)
+def _obr_frame(source_id: str, part: str, sheet: str) -> pd.DataFrame:
+    path = _snap_path(source_id, part)
+    if path is None:
+        return pd.DataFrame()
+    try:
+        return pd.read_excel(path, sheet_name=sheet, engine="openpyxl", header=None)
+    except ValueError:
+        return pd.DataFrame()
+
+
+@lru_cache(maxsize=None)
+def _obr_fy_table(source_id: str, part: str, sheet: str) -> dict:
+    """label -> FY Series for an OBR year-columns table (TA.x, 4.x, 6.x).
+
+    The header row maps columns to fiscal years (first occurrence wins — the
+    'real annual growth' blocks of 4.7/4.8 repeat the FY labels). Row labels
+    sit left of the first year column ('of which' children in the next text
+    column); rows with a label but no numbers open a block, and their
+    children are additionally keyed as '<block>: <label>' (6.17's repeated
+    'Debt interest' rows). Trailing footnote digits are stripped."""
+    df = _obr_frame(source_id, part, sheet)
+    if df.empty:
+        return {}
+    year_cols: dict[int, int] = {}
+    header_i = None
+    for i in range(len(df)):
+        row = df.iloc[i]
+        cand = {}
+        for j, v in row.items():
+            if isinstance(v, str) and _OBR_FY_RE.match(v.strip()):
+                y = _obr_fy_start(v.strip())
+                cand.setdefault(y, j)
+        if len(cand) >= 3:
+            year_cols = {j: y for y, j in cand.items()}
+            header_i = i
+            break
+    if header_i is None:
+        return {}
+    first_year_col = min(year_cols)
+    out: dict[str, pd.Series] = {}
+    block = None
+    for i in range(header_i + 1, len(df)):
+        row = df.iloc[i]
+        texts = [str(v).strip() for j, v in row.items()
+                 if j < first_year_col and isinstance(v, str) and str(v).strip()]
+        texts = [t for t in texts if t.lower() not in ("of which:", "of which",
+                                                       "back to contents")]
+        if not texts:
+            continue
+        label = re.sub(r"\d+$", "", texts[-1]).strip()
+        vals = {}
+        for j, y in year_cols.items():
+            v = row.get(j)
+            if isinstance(v, (int, float)) and not pd.isna(v):
+                vals[y] = float(v)
+        if not vals:
+            block = label
+            continue
+        series = _year_series(vals.items())
+        for key in ([label] if block is None else [label, f"{block}: {label}"]):
+            out.setdefault(key, series)
+    return out
+
+
+def obr_fy(part: str, sheet: str, label: str,
+           source_id: str = "OBR_EFO_LATEST") -> pd.Series:
+    """One row of an OBR EFO table as an FY-start-year Series (£bn)."""
+    return _obr_fy_table(source_id, part, sheet).get(label, pd.Series(dtype=float))
+
+
+@lru_cache(maxsize=None)
+def _obr_databank_sheet(sheet: str) -> pd.DataFrame:
+    path = _snap_path("OBR_PSF_DATABANK", "databank")
+    if path is None:
+        return pd.DataFrame()
+    return pd.read_excel(path, sheet_name=sheet, engine="openpyxl", header=None)
+
+
+def obr_databank(sheet: str, label_prefix: str) -> pd.Series:
+    """PSF aggregates databank column as an FY Series (£bn): column headers
+    on the first row with several long labels, fiscal years in column B."""
+    df = _obr_databank_sheet(sheet)
+    if df.empty:
+        return pd.Series(dtype=float)
+    header_i = col = None
+    for i in range(min(8, len(df))):
+        row = df.iloc[i]
+        matches = [j for j, v in row.items()
+                   if isinstance(v, str) and v.strip().lower().startswith(
+                       label_prefix.lower())]
+        if matches:
+            header_i, col = i, matches[0]
+            break
+    if col is None:
+        return pd.Series(dtype=float)
+    vals = {}
+    for i in range(header_i + 1, len(df)):
+        y = df.iloc[i, 1]
+        if isinstance(y, str) and _OBR_FY_RE.match(y.strip()):
+            v = df.iloc[i][col]
+            if isinstance(v, (int, float)) and not pd.isna(v):
+                vals[_obr_fy_start(y.strip())] = float(v)
+    return _year_series(vals.items())
+
+
+def obr_fy_with_history(history: pd.Series, forecast: pd.Series) -> pd.Series:
+    """Concatenate databank FY history with an EFO table's FY values — the
+    same OBR vintage published in two files; the EFO value wins on overlap."""
+    return pd.Series({**history.to_dict(), **forecast.to_dict()}).sort_index()

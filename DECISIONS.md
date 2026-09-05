@@ -579,3 +579,99 @@ delta vs Stage 5's 582 is the append-only manifest carrying three sessions
 of snapshot records whose old raw bytes are not in this container
 (S0_SNAPSHOTS, by design D-S0-004) plus data-driven counts on the fresher
 2026-09-03 harvest.
+
+## D-S7-001 — Hand-retrieved OBR snapshots: ingest-file path, raw bytes committed (serves D8, §11.1, §11.4; narrows D-S0-004; session 5, OQ-6 partial unblock)
+2026-09-05, session 5. obr.uk remains behind a Cloudflare challenge no
+client here can pass, so the committee hand-retrieved the OBR files in a
+browser and they entered the store via the new `ggfiscal ingest-file`
+command: content-hashed immutable snapshots like any pull, with the
+publication landing URL, original filename and a provenance note recorded
+in the manifest. Unlike ordinary snapshots these bytes cannot be
+re-fetched by a fresh container, so — extending §11.4's
+store-the-PDF-in-raw rule to hand-retrieved xlsx — `data/raw/OBR_*` IS
+committed to git (~15 MB: EFO March 2026 annex + detailed tables and
+long-term determinants, FRS July 2025 chapter files, PSF aggregates
+databank August 2026, historical public finances database). D-S0-004
+stands for everything refetchable. Register: OBR_EFO_LATEST resolved to
+the March 2026 edition; OBR_FRS supersedes the §13 seed id OBR_FRS_2026
+(the edition in hand is July 2025; whether a July 2026 edition exists is
+uncheckable from here); OBR_PSF_DATABANK and OBR_HIST_PF added
+(history-complement roles; OBR_HIST_PF snapshotted for the OQ-5 pre-1987
+interest quick win, no rows built from it yet).
+
+## D-S7-002 — Egress allowlist expanded; PESA 2026 registered; what each unblocked host yields (serves §12 Stage 3, §13, §15 Q7/Q12; updates OQ-6)
+2026-09-05. The committee allowlisted www.gov.uk,
+assets.publishing.service.gov.uk, www.bmas.de (and the OQ-5-adjacent
+www.insee.fr, www-genesis.destatis.de, www.cor-retraites.fr) — all now
+reachable; obr.uk stays publisher-blocked (D-S7-001 covers it). Yields:
+  - **gov.uk**: PESA 2026 (July 2026) resolved via the content API and
+    pulled live (`HMT_PESA`, chapter 1 tables). Table 1.9 Defence = MoD
+    total DEL (RDEL+CDEL, £mn): outturns 2021-22..2025-26 + SR25 plans to
+    2028-29 — the machine-readable successor to the §13 UK_DEFENCE_PLAN
+    seed entry, which it supersedes in the register.
+  - **bmas.de**: reachable, but the Rentenversicherungsbericht is a PDF
+    publication — ingestion stays gated by §11.4's independent second
+    keying (OQ-5), not by the network. DEU GF10/R06 unchanged.
+  - **insee/destatis/cor**: reachable; OQ-5 archive work not attempted
+    this session (recorded for a future session).
+
+## D-S7-003 — GBR forecast map from OBR/PESA: composites, measured grades, and the non-applications (serves §12 Stage 3 order, §7.8, §7.10-7.11, §9, §11.5, §14, D12, D17, §15 Q7)
+2026-09-05. All composites assembled per the ONS national tax list
+evidence and validated by measured §9.2 coverage on the GG anchor;
+fiscal years converted per §7.10 (first real exercise of `fy_to_cy`);
+per-tax series from the PSF databank (August 2026 file, "forecast as of
+March 2026" — the EFO vintage), which carries history to 1999 so coverage
+is measured on a real overlap. Applied (shares in
+forecast_boundaries.csv; crosswalks OBR_to_ESA_REV.csv v1.0,
+OBR_PESA_to_COFOG.csv v1.0):
+  - **R01 ← VAT + VAT refunds** (0.991, B; the anchor's accrued D.211
+    includes refunds — without them the share is ~0.85): strict to 2030.
+  - **R02 ← 12 databank duties/levies + EFO A.5 business rates** (0.923
+    at CY2025, the single overlap year — business rates exist only in the
+    annex table; without them 0.70-0.73): strict to 2030.
+  - **R03 ← PAYE + SA + other income tax + CGT** (1.032, B) and
+    **R04 ← CT onshore (incl. bank surcharge/EGL) + offshore + PRT + EPL
+    + DPT** (0.988, B): strict to 2030.
+  - **R05 ← council tax + IHT + licence fee** (0.787, C):
+    maximum_extension to 2030 — GBR R05's first forecast of any kind.
+  - **GF02 ← PESA 1.9 MoD DEL** (0.9005 at CY2024 — §15 Q7's ≥90% strict
+    condition met, just): strict to 2028, grade B; CY2025 lands as a
+    stitched newer actual (both underlying FYs are PESA outturns).
+Measured and NOT applied (boundary records carry the shares):
+  - **R07 ← PS interest and dividend receipts** (2.63: dividends + PS
+    perimeter inside a D.41-resources line — D).
+  - **GF01_7 ← CG debt interest net of APF** (share drifts 0.67→1.28
+    across the overlap: PSF vs ESA recording — D; AMECO UYIG stays the
+    strict source, still ending 2027, OQ-7 unchanged).
+  - **GF10 ← EFO welfare spending**: the table starts FY 2024-25, so the
+    converted series shares no year with the GG anchor — §9.2 coverage
+    unmeasurable; the AMECO D.62 proxy (C, 2027) remains.
+  - **R06 ← NICs** (0.756, C): the D12 chain beyond AMECO's 2027 was
+    withheld by the V16 overlap-divergence rule — same rule, same outcome
+    class as OQ-7's DSM join; committee can approve either via config.
+FRS July 2025 (in hand) is thematic — pensions/balance-sheet/climate —
+and carries NO functional long-term projections, so GBR GF07/GF09 stay
+declared; the FRS edition with them (2024, or 2026 if it exists) is a
+named ask in OQ-6. §15 Q12 is now exercised as written: the GBR V15
+envelope and §8.3 independent totals are OBR PS current receipts / TME
+with the OBR GDP path (stable 0.95-0.97 perimeter ratio to the GG totals,
+documented; AMECO remains the cross-check).
+
+## D-S7-004 — Session 5 gate record: what the OQ-6 unblock changed (serves §8.3, §12, D-S5-004 lineage)
+2026-09-05. Full rebuild green: pytest 90 passed; validate OK=55 WARN=661,
+no ERROR, no SKIP. Two defects the suite caught on the first rebuild and
+their fixes, for the record: V10 flagged the FcSource horizon convention
+(now stated as the last calendar year the source's native FY periods
+touch, with V10 netting the §7.10 conversion loss), and V17 flagged the
+R01 composite's missing D2 residual_method (added). GBR explained share
+(WEO 2026-04, from weo_explanation.csv): **strict 0.55-0.67 and maximum
+0.60-0.76 across 2026-2030**, up from 0.04-0.06 — the D-S5-004 headline
+that "the WEO's projected UK consolidation is essentially unexplained" is
+superseded for horizons through 2030; 2031 stays ~0 (beyond the OBR
+horizon). GBR also gains the full §8.3 coverage/disagreement residual
+split through 2030 (previously resid_total everywhere per D-S5-002 —
+that reading is superseded by Q12's OBR totals; resid_total remains only
+at 2031). Strict horizons: R01-R04 2030, GF02 2028 (grade B, Q7),
+GF01_7/R06 2027 (AMECO; OBR legs withheld per D/V16 — OQ-7). Maximum
+adds R05 to 2030. GBR GF07/GF09/GF10 long-term legs remain the biggest
+open item (OQ-6 asks a/b).

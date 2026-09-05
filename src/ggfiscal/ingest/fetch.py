@@ -83,6 +83,29 @@ def fetch_one(source_id: str, url: str, store: SnapshotStore | None = None) -> d
     return fetch_pull(endpoints.Pull(source_id, "", url), store)
 
 
+def ingest_local(path, source_id: str, part: str, url: str, note: str = "",
+                 store: SnapshotStore | None = None) -> dict:
+    """Store a hand-retrieved file as a D8 snapshot (D-S7-001).
+
+    For publishers no available client can reach (obr.uk's bot challenge,
+    OQ-6), the committee downloads the file in a browser and it enters the
+    store here: content-hashed and immutable like any pull, with the
+    publication's landing URL and a provenance note recorded in the manifest.
+    Unlike ordinary snapshots these bytes cannot be re-fetched by a fresh
+    container, so they are committed to git (the §11.4 PDF-in-raw/ rule
+    extended to hand-retrieved machine-readable files)."""
+    from pathlib import Path
+
+    p = Path(path)
+    store = store or SnapshotStore()
+    snap = store.save(source_id, p.read_bytes(), url=url,
+                      ext=p.suffix.lstrip("."),
+                      extra={"part": part, "ingest": "manual_upload",
+                             "original_filename": p.name, "note": note})
+    return {"source_id": source_id, "part": part, "sha256": snap.sha256,
+            "path": str(snap.path), "size": snap.size}
+
+
 def fetch_all(store: SnapshotStore | None = None) -> tuple[list[dict], list[dict]]:
     """Run every Stage 0 pull. Returns (successes, failures); failures carry
     the reason so source_verification.md can name blocked hosts."""
