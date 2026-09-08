@@ -20,9 +20,9 @@
  },
  "deliverables": {
   "README.md": {
-   "bytes": 15107,
+   "bytes": 15390,
    "present": true,
-   "sha256": "34ae6169afff392fdadd2edb2cf80c079d76b5b99ce4238de6fd030e892e2ee0"
+   "sha256": "1cd035219f8b96a50eb0a02343e49048cd1585c5842bfb3917a6ec97e94f0a39"
   },
   "data/canonical/balance_ledger.csv": {
    "bytes": 23884,
@@ -148,7 +148,7 @@
   "reports/reconciliation_report.html": {
    "bytes": 160513,
    "present": true,
-   "sha256": "c07bdaf59662735a0d569265ed3e8a6e357e1e8471979cc48f075195f4b44903"
+   "sha256": "997149d140ccee8f9cda5fb65ba792853798f3afb07f1212da33b0c846436118"
   },
   "reports/source_register.csv": {
    "bytes": 11326,
@@ -159,7 +159,7 @@
   "reports/validation_report.html": {
    "bytes": 23758,
    "present": true,
-   "sha256": "6aca47e997a42ef6f7f35920e0d1c17c28004c498998c47f619a5ff4e355be1a"
+   "sha256": "3f9099a3dc6ad34720c5a4591ebf48e7ae438877c3581993ba8f45a54890d00b"
   },
   "reports/vintage_diff.md": {
    "bytes": 4144,
@@ -167,7 +167,7 @@
    "sha256": "fc6d69b00e77b6300488c62fb8372037c6b42d802390aa94b29b9f147186eb67"
   }
  },
- "deliverables_updated_at": "2026-09-08T10:57:18+00:00",
+ "deliverables_updated_at": "2026-09-08T14:46:09+00:00",
  "environment": {
   "ggfiscal": "0.0.1",
   "pandas": "3.0.5",
@@ -222,7 +222,7 @@
    "sha256": "98390f2314ce9a2563e0ecc41d7bda337ecb36e6545c4953b4ddc4f7d68cdd2f"
   }
  },
- "flat_files_updated_at": "2026-09-08T14:02:03+00:00",
+ "flat_files_updated_at": "2026-09-08T14:46:11+00:00",
  "run_id": "20260908T093901Z",
  "snapshots": {
   "DEU_STEUERSCHAETZUNG/2026_05": "7b6e755b7c42e3d1525258eed1bfd06edb4d540f056abd891e4c7e7f1ea00a12",

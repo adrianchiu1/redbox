@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-08 10:55 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-08 14:46 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -16,7 +16,7 @@ The end product is the flat files and the two notebooks that explain and display
 2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — how each series was derived, series by series, executed against those files with its outputs committed.
 3. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — the same series plotted, one chart each, country by category by series, with seams and projection years marked, plus our totals against the IMF WEO. For eyeballing construction quality.
 
-Both notebooks need only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/*.ipynb`.
+Both notebooks need only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/*.ipynb`. GitHub renders them in the browser and gives up on large ones (the chartbook is kept under a megabyte for exactly that reason); if a notebook ever shows *Loading* forever, [nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) renders it regardless of size.
 
 Everything below is how they are produced.
 

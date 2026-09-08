@@ -117,6 +117,19 @@ their committed outputs match the bundle.
 - A pytest run against a canonical layer built from OLDER snapshots fails
   Stage 0's V14 (`canonical anchor-era years != anchor years`). That is the
   vintage-drift signal, not a code defect: rebuild, then re-run.
+- **Notebook size is a hard constraint** (D-S9-004): GitHub's renderer is
+  client-side and gives up on large `.ipynb`, showing "Loading" forever —
+  the chartbook did this at 3.28 MB. It is now 0.88 MB and must stay under
+  a megabyte: small figures, and PNGs quantised onto the FIXED palette in
+  the setup cell. Do not switch that to an adaptive palette — adaptive
+  allocates slots by pixel count and crushes the dashed orange series to a
+  muddy brown. The threshold cannot be measured from a session here
+  (fetching a blob page returns "Loading" at any size); nbviewer is the
+  documented fallback, and splitting per country is the next step if 0.88
+  MB still fails.
+- Capping a chart's x-axis does NOT cap its y-axis: matplotlib autoscales
+  over all plotted data, so the window must be applied to the DATA, not
+  just to `set_xlim`, or a 2070 value flattens the visible history.
 - `ggfiscal flatten` is deterministic given the canonical layer (D-S9-003):
   no wall clock in any generated header. Keep it that way — the
   `tests/deliverables` fixture re-renders the bundle on every pytest run,
