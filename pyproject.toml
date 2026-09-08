@@ -2,7 +2,7 @@
 name = "ggfiscal"
 version = "0.0.1"
 description = "gg-fiscal: long-horizon general-government expenditure by COFOG function, revenue by ESA type, and WEO reconciliation (GBR, FRA, DEU)"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "pandas>=2.1",
     "pyarrow>=14",
