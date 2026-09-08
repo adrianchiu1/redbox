@@ -1,0 +1,147 @@
+file,column,description
+expenditure_cofog.csv,iso3,"Country (GBR, FRA, DEU)."
+expenditure_cofog.csv,country,"Country name, for readability."
+expenditure_cofog.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
+expenditure_cofog.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+expenditure_cofog.csv,line_label,Human-readable name of the line.
+expenditure_cofog.csv,line_level,1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = identity; total = TE or TR.
+expenditure_cofog.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+expenditure_cofog.csv,basis,actual = outturn (or an outturn-based backward stitch); forecast = projection.
+expenditure_cofog.csv,value_lcu_mn,"Value in millions of national currency, current prices, general government, consolidated."
+expenditure_cofog.csv,currency,"GBP for GBR, EUR for FRA and DEU."
+expenditure_cofog.csv,pct_gdp,value_lcu_mn as a percentage of that country-year's GDP (gdp_lcu_mn).
+expenditure_cofog.csv,pct_total,"value_lcu_mn as a percentage of the same year's total (TE for COFOG lines, TR for revenue lines)."
+expenditure_cofog.csv,gdp_lcu_mn,"GDP at current market prices, same currency and year, from the country's registered GDP source."
+expenditure_cofog.csv,observation_type,anchor_actual | derived_actual | level2_proxy_actual | stitched_actual | direct_forecast | proxy_forecast | composite_forecast.
+expenditure_cofog.csv,quality_grade,A = the anchor's own published value; B = a conceptually equivalent official series; C = an official series covering only part of the line; D = a proxy with a declared residual assumption.
+expenditure_cofog.csv,source_id,Publisher of the value (or of the growth applied).
+expenditure_cofog.csv,anchor_source,Publisher of the anchor the chain runs from.
+expenditure_cofog.csv,anchor_year,Year of that anchor.
+expenditure_cofog.csv,anchor_value,"Value of that anchor, in value_lcu_mn units. It is itself a row of this file."
+expenditure_cofog.csv,growth_source_id,Publisher of the growth factor applied (blank on anchor rows).
+expenditure_cofog.csv,growth_rate,"Growth factor applied at this year. Reproduce the value as value(year) = value(neighbour) * growth_rate, where neighbour is year+1 when year < anchor_year and year-1 otherwise."
+expenditure_cofog.csv,residual_method,Declared treatment of the part of the line the growth source does not cover (maximum_extension only).
+expenditure_cofog.csv,coverage_share,"Measured share of the line the growth source covers, at coverage_share_year, on overlapping data. This is measured, not assumed."
+expenditure_cofog.csv,crosswalk_version,Version of the source-to-line mapping used (files in crosswalks/).
+expenditure_cofog.csv,derivation,Plain-language statement of the exact arithmetic behind the row.
+expenditure_cofog.csv,notes,The concept caveat recorded with the observation at build time.
+revenue_esa.csv,iso3,"Country (GBR, FRA, DEU)."
+revenue_esa.csv,country,"Country name, for readability."
+revenue_esa.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
+revenue_esa.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+revenue_esa.csv,line_label,Human-readable name of the line.
+revenue_esa.csv,line_level,1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = identity; total = TE or TR.
+revenue_esa.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+revenue_esa.csv,basis,actual = outturn (or an outturn-based backward stitch); forecast = projection.
+revenue_esa.csv,value_lcu_mn,"Value in millions of national currency, current prices, general government, consolidated."
+revenue_esa.csv,currency,"GBP for GBR, EUR for FRA and DEU."
+revenue_esa.csv,pct_gdp,value_lcu_mn as a percentage of that country-year's GDP (gdp_lcu_mn).
+revenue_esa.csv,pct_total,"value_lcu_mn as a percentage of the same year's total (TE for COFOG lines, TR for revenue lines)."
+revenue_esa.csv,gdp_lcu_mn,"GDP at current market prices, same currency and year, from the country's registered GDP source."
+revenue_esa.csv,observation_type,anchor_actual | derived_actual | level2_proxy_actual | stitched_actual | direct_forecast | proxy_forecast | composite_forecast.
+revenue_esa.csv,quality_grade,A = the anchor's own published value; B = a conceptually equivalent official series; C = an official series covering only part of the line; D = a proxy with a declared residual assumption.
+revenue_esa.csv,source_id,Publisher of the value (or of the growth applied).
+revenue_esa.csv,anchor_source,Publisher of the anchor the chain runs from.
+revenue_esa.csv,anchor_year,Year of that anchor.
+revenue_esa.csv,anchor_value,"Value of that anchor, in value_lcu_mn units. It is itself a row of this file."
+revenue_esa.csv,growth_source_id,Publisher of the growth factor applied (blank on anchor rows).
+revenue_esa.csv,growth_rate,"Growth factor applied at this year. Reproduce the value as value(year) = value(neighbour) * growth_rate, where neighbour is year+1 when year < anchor_year and year-1 otherwise."
+revenue_esa.csv,residual_method,Declared treatment of the part of the line the growth source does not cover (maximum_extension only).
+revenue_esa.csv,coverage_share,"Measured share of the line the growth source covers, at coverage_share_year, on overlapping data. This is measured, not assumed."
+revenue_esa.csv,crosswalk_version,Version of the source-to-line mapping used (files in crosswalks/).
+revenue_esa.csv,derivation,Plain-language statement of the exact arithmetic behind the row.
+revenue_esa.csv,notes,The concept caveat recorded with the observation at build time.
+balance_ledger.csv,iso3,"Country (GBR, FRA, DEU)."
+balance_ledger.csv,country,"Country name, for readability."
+balance_ledger.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
+balance_ledger.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+balance_ledger.csv,basis,actual = outturn (or an outturn-based backward stitch); forecast = projection.
+balance_ledger.csv,currency,"GBP for GBR, EUR for FRA and DEU."
+balance_ledger.csv,tr_lcu_mn,"Total revenue, as published by the balance anchor."
+balance_ledger.csv,te_lcu_mn,"Total expenditure, as published by the balance anchor."
+balance_ledger.csv,nlb_lcu_mn,Net lending (+) / net borrowing (-) = TR - TE (ESA B.9).
+balance_ledger.csv,ni_lcu_mn,"Net interest = GF01_7 (interest payable) - R07 (interest receivable), from the two trees."
+balance_ledger.csv,pb_lcu_mn,Primary balance = NLB + NI.
+balance_ledger.csv,b9_anchor_lcu_mn,"The anchor's own published B.9, for cross-check against nlb_lcu_mn."
+balance_ledger.csv,gdp_lcu_mn,GDP at current market prices.
+balance_ledger.csv,tr_pct_gdp,TR as a percentage of GDP.
+balance_ledger.csv,te_pct_gdp,TE as a percentage of GDP.
+balance_ledger.csv,nlb_pct_gdp,NLB as a percentage of GDP.
+balance_ledger.csv,ni_pct_gdp,NI as a percentage of GDP.
+balance_ledger.csv,pb_pct_gdp,PB as a percentage of GDP.
+balance_ledger.csv,identity_check_lcu_mn,TR - TE - NLB. Zero by construction; published so the identity is checkable.
+balance_ledger.csv,complete_both_sides,"True when both interest legs exist, so NI and PB are defined."
+balance_ledger.csv,source_id,"Publisher of TR, TE and B.9."
+balance_ledger.csv,derivation,Plain-language statement of the exact arithmetic behind the row.
+weo_levels_bridge.csv,iso3,"Country (GBR, FRA, DEU)."
+weo_levels_bridge.csv,country,"Country name, for readability."
+weo_levels_bridge.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+weo_levels_bridge.csv,block,"history = overlap years, our ledger vs the WEO aggregates (§8.2); forecast_horizon = the net-interest cross-check at projection horizons (§8.4)."
+weo_levels_bridge.csv,variant,both on history rows (the ledger is variant-independent over history); strict / maximum_extension on forecast rows.
+weo_levels_bridge.csv,weo_vintage,WEO edition the comparison uses (e.g. 2026-04).
+weo_levels_bridge.csv,base_year,Last year the WEO reports as an outturn for that country and vintage — the year the forecast decomposition starts from.
+weo_levels_bridge.csv,is_base_year,True on that base year.
+weo_levels_bridge.csv,tr_ours_mn,Our total revenue.
+weo_levels_bridge.csv,tr_weo_mn,"WEO general-government revenue, GGR."
+weo_levels_bridge.csv,gap_tr_mn,tr_ours_mn - tr_weo_mn.
+weo_levels_bridge.csv,te_ours_mn,Our total expenditure.
+weo_levels_bridge.csv,te_weo_mn,"WEO general-government expenditure, GGX."
+weo_levels_bridge.csv,gap_te_mn,te_ours_mn - te_weo_mn.
+weo_levels_bridge.csv,nlb_ours_mn,Our net lending/borrowing.
+weo_levels_bridge.csv,nlb_weo_mn,"WEO net lending/borrowing, GGXCNL."
+weo_levels_bridge.csv,gap_nlb_mn,nlb_ours_mn - nlb_weo_mn.
+weo_levels_bridge.csv,ni_ours_mn,Our net interest (GF01_7 - R07); blank where a leg has no value at that horizon.
+weo_levels_bridge.csv,ni_weo_mn,"WEO net interest, GGXCNL - GGXONLB."
+weo_levels_bridge.csv,gap_ni_mn,ni_ours_mn - ni_weo_mn.
+weo_levels_bridge.csv,gdp_ours_mn,GDP from the country's registered source.
+weo_levels_bridge.csv,gdp_weo_mn,"WEO nominal GDP, NGDP."
+weo_levels_bridge.csv,gap_gdp_mn,gdp_ours_mn - gdp_weo_mn.
+weo_levels_bridge.csv,gap_tr_pct_te,gap_tr_mn as a percentage of our TE.
+weo_levels_bridge.csv,gap_te_pct_te,gap_te_mn as a percentage of our TE.
+weo_levels_bridge.csv,gap_nlb_pct_te,gap_nlb_mn as a percentage of our TE.
+weo_levels_bridge.csv,gap_gdp_pct_gdp,gap_gdp_mn as a percentage of our GDP.
+weo_levels_bridge.csv,gf01_7_mn,Interest payable behind ni_ours_mn (forecast rows).
+weo_levels_bridge.csv,r07_mn,Interest receivable behind ni_ours_mn (forecast rows).
+weo_levels_bridge.csv,gap_classification,"perimeter = a stable definitional difference; revision = a vintage difference; unexplained = neither, and flagged for review."
+weo_levels_bridge.csv,derivation,Plain-language statement of the exact arithmetic behind the row.
+weo_levels_bridge.csv,notes,The concept caveat recorded with the observation at build time.
+weo_reconciliation.csv,iso3,"Country (GBR, FRA, DEU)."
+weo_reconciliation.csv,country,"Country name, for readability."
+weo_reconciliation.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
+weo_reconciliation.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+weo_reconciliation.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+weo_reconciliation.csv,notes,The concept caveat recorded with the observation at build time.
+weo_reconciliation.csv,block,history = year-on-year decomposition of our own realised change in NLB/GDP; forecast = decomposition of the WEO's projected change from base_year to year.
+weo_reconciliation.csv,weo_vintage,WEO edition (forecast rows only).
+weo_reconciliation.csv,base_year,Year the change is measured from (previous year on history rows; the WEO base year on forecast rows).
+weo_reconciliation.csv,side,revenue | expenditure | balance | total | memo.
+weo_reconciliation.csv,component,"What the row is: covered_line for a published line, or one of the reconciliation components named in component_meaning."
+weo_reconciliation.csv,contribution_pp,"Contribution in percentage points of GDP, signed so that contributions sum to the change in NLB/GDP. Units differ for explained_share and the growth components — see measure."
+weo_reconciliation.csv,measure,Unit of contribution_pp on that row.
+weo_reconciliation.csv,component_meaning,Plain-language meaning of component.
+series_catalogue.csv,iso3,"Country (GBR, FRA, DEU)."
+series_catalogue.csv,country,"Country name, for readability."
+series_catalogue.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+series_catalogue.csv,line_label,Human-readable name of the line.
+series_catalogue.csv,line_level,1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = identity; total = TE or TR.
+series_catalogue.csv,currency,"GBP for GBR, EUR for FRA and DEU."
+series_catalogue.csv,classification,COFOG or ESA_REV.
+series_catalogue.csv,first_year,First year published for the series.
+series_catalogue.csv,final_actual_year,Last outturn year.
+series_catalogue.csv,final_strict_year,Last year of the strict variant.
+series_catalogue.csv,final_maximum_year,Last year of the maximum_extension variant.
+series_catalogue.csv,n_observations_strict,Row count of the strict variant.
+series_catalogue.csv,n_observations_maximum,Row count of the maximum_extension variant.
+series_catalogue.csv,grades,Distinct quality grades appearing in the series.
+series_catalogue.csv,sources,Every source_id appearing in the series.
+series_catalogue.csv,recipe_strict,"Ordered construction segments of the strict variant: year span, how the segment was made, source, grade."
+series_catalogue.csv,recipe_maximum_extension,The same for maximum_extension.
+series_catalogue.csv,stitch_count,Number of stitch boundaries in the series.
+series_catalogue.csv,principal_sources,Sources named in the coverage matrix.
+series_catalogue.csv,residual_method,Residual assumption where the series carries one.
+series_catalogue.csv,reason_series_ends,Why the series stops where it does.
+series_catalogue.csv,forecast_status,Recorded status when no strict forecast exists.
+series_catalogue.csv,forecast_note,"Why, in words."
+data_dictionary.csv,file,Flat file the column belongs to.
+data_dictionary.csv,column,"Name of the column, as it appears in that file's header."
+data_dictionary.csv,description,What the column holds.

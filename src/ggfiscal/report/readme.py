@@ -169,6 +169,26 @@ def write(path: Path | None = None) -> Path:
         "[`DECISIONS.md`](DECISIONS.md); committee items in "
         "[`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).",
         "",
+        "## Start here",
+        "",
+        "The end product is two things, and neither needs the pipeline to "
+        "read:",
+        "",
+        "1. **[`deliverables/`](deliverables/)** — the whole project as flat "
+        "CSVs. Expenditure by COFOG function, revenue by ESA type, the "
+        "balance ledger, the WEO levels bridge and the WEO dynamics "
+        "reconciliation, plus a per-series catalogue and a data dictionary "
+        "covering every column of every file. Each observation carries the "
+        "derivation behind it, so any stitched or forecast value can be "
+        "reproduced from the flat file alone.",
+        "2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — "
+        "how each series was derived, series by series, executed against "
+        "those files with its outputs committed. It needs only `pandas` and "
+        "`matplotlib` to re-run: `pip install -e .[notebook] && jupyter "
+        "nbconvert --execute --inplace notebooks/derivation.ipynb`.",
+        "",
+        "Everything below is how they are produced.",
+        "",
         "## Setup and pipeline",
         "",
         "```",
@@ -178,6 +198,7 @@ def write(path: Path | None = None) -> Path:
         "ggfiscal reconcile          # §8.2-8.5: bridge, decomposition, residual history",
         "ggfiscal report             # small multiples, reconciliation + validation reports, README",
         "ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)",
+        "ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)",
         "ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md",
         "pytest                      # per-stage gate tests",
         "```",
@@ -193,8 +214,10 @@ def write(path: Path | None = None) -> Path:
         "config/          countries.yaml, lines.yaml, sources.yaml (incl. the WEO vintage register), residual.yaml",
         "crosswalks/      versioned source-to-target mappings (§11.5)",
         "data/            raw -> manual -> standard -> canonical -> manifest (§11.1)",
-        "src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report",
-        "tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6)",
+        "src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report | publish",
+        "deliverables/    the flat-file bundle: every series as plain CSV, plus a data dictionary",
+        "notebooks/       derivation.ipynb — how each series was derived, executed against the bundle",
+        "tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6) + tests/deliverables",
         "reports/         verification, validation, reconciliation, vintage diff",
         "```",
         "",
@@ -219,6 +242,28 @@ def write(path: Path | None = None) -> Path:
         rows = entry.get("rows")
         lines.append(f"| `{rel}` | {rows if rows is not None else '—'} "
                      f"| {_describe(rel)} |")
+    lines += [
+        "",
+        "## The flat-file bundle (`deliverables/`)",
+        "",
+        "The same numbers as above, rendered flat by `ggfiscal flatten` — no "
+        "value is recomputed, so the bundle cannot drift from the gated "
+        "canonical layer. `tests/deliverables` re-proves the copy, the "
+        "reproducibility of every chained value from the flat file alone, "
+        "and that the data dictionary covers every column.",
+        "",
+        "| file | rows | contents |",
+        "|---|---|---|",
+    ]
+    from ggfiscal.publish.flatten import DESCRIPTIONS as _FLAT
+    for rel, entry in M.flat_file_entries().items():
+        name = rel.split("/")[-1]
+        if not entry.get("present"):
+            lines.append(f"| `{rel}` | — | MISSING — run `ggfiscal flatten` |")
+            continue
+        rows = entry.get("rows")
+        lines.append(f"| `{rel}` | {rows if rows is not None else '—'} | "
+                     f"{_FLAT.get(name, 'guide to the bundle')} |")
     lines += [
         "",
         "## Coverage (66 line series)",

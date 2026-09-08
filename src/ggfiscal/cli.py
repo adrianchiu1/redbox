@@ -1,5 +1,5 @@
 """ggfiscal CLI (§11.2): fetch | standardise | build | reconcile | validate |
-report | detect-vintages, plus register/coverage helpers."""
+report | flatten | detect-vintages, plus register/coverage helpers."""
 
 from __future__ import annotations
 
@@ -159,6 +159,23 @@ def report():
     typer.echo(f"wrote {write_register()}")
     typer.echo(f"wrote {write_readme()}")
     typer.echo(f"updated {M.update_deliverables()}")
+    # The flat-file bundle is packaging too: rendering it here keeps
+    # deliverables/ in lockstep with every reported run.
+    from ggfiscal.publish.flatten import write as write_flat
+    for name, path in write_flat().items():
+        typer.echo(f"wrote deliverables/{name}: {path}")
+
+
+@app.command()
+def flatten():
+    """Render the plain flat-file bundle in `deliverables/` from the gated
+    canonical layer: the COFOG and ESA trees, the balance ledger, the WEO
+    levels bridge and dynamics reconciliation, a per-series catalogue and a
+    data dictionary — every row carrying the derivation behind its value."""
+    from ggfiscal.publish.flatten import write
+
+    for name, path in write().items():
+        typer.echo(f"wrote {name}: {path}")
 
 
 @app.command("detect-vintages")

@@ -717,3 +717,55 @@ its share: maximum explained_share 2028-2030 rises to 0.68/0.71/0.75
 (from 0.65/0.66/0.69). The Gate 3 D12 test now asserts whichever state
 `v16_approved_joins` declares, so removing an approval row restores the
 withheld assertions without a code change.
+
+## D-S9-001 — The end product is a flat-file bundle plus a derivation notebook; `deliverables/` and `notebooks/derivation.ipynb` (serves §1, §11.6; extends D-S6-003)
+2026-09-08, session 6. The committee (AC) asked for the end product to be
+"extremely simple: flat files with all the series ... and a python notebook
+explaining how each series was derived". The canonical layer already holds
+every number, but at 47 columns across four variant files and six
+reconciliation tables at three grains it is a pipeline artefact, not a
+readable product. Two additions, no methodology change:
+  - **`deliverables/`**, written by the new `ggfiscal flatten` (module
+    `src/ggfiscal/publish/flatten.py`, also run as the last step of
+    `ggfiscal report` so the bundle cannot fall behind a reported run):
+    `expenditure_cofog.csv`, `revenue_esa.csv`, `balance_ledger.csv`,
+    `weo_levels_bridge.csv`, `weo_reconciliation.csv`,
+    `series_catalogue.csv`, `data_dictionary.csv` and a README. Both
+    variants live in one file behind a `variant` column; the two WEO files
+    unify tables the pipeline keeps apart (base bridge + net-interest check;
+    history decomposition + forecast decomposition) behind a `block` column,
+    with the differing bases spelled out per row rather than blended.
+  - **`notebooks/derivation.ipynb`** — executed, outputs committed, reading
+    only the flat files (never `data/canonical/` or `data/raw/`), so it is
+    readable on its own and re-runnable with pandas + matplotlib. It prints
+    the derivation of all 72 published series from `series_catalogue.csv`
+    and re-proves the chain arithmetic in-place.
+Three invariants make the bundle safe to trust as much as the canonical
+layer, and `tests/deliverables` enforces all three: (1) **no value is
+recomputed** — every number is copied, and the canonical CSVs are read with
+`float_precision="round_trip"` so the published decimal text is the
+canonical decimal text, bit for bit (the default parser loses an ULP per
+round trip, which would compound on every republication); (2) **every row
+carries its own derivation** in the Gate 6 form
+`value(t) = value(t±1) × growth`, so the flat file alone reproduces every
+stitched and forecast value; (3) **the data dictionary covers every column
+of every file**, tested by set equality against the headers on disk.
+The bundle is tracked in the run manifest under a new `flat_files` key
+rather than inside `DELIVERABLES`, so a run that legitimately stops at
+`reconcile` is still a complete §11.6 run.
+Two documentation errors this work exposed and corrects: the variants do
+**not** differ only forward — `maximum_extension` also carries longer
+*backward* legs where the backward source grades C (GBR R02 to 1965,
+FRA R04/R06 to 1965, DEU R04/R06 to 1991) — and `ANCHOR_B9_DELTA` in
+`deficit_dynamics.csv` is the anchor-minus-sum *wedge*, not the anchor's own
+change; a third history memo, `WEO_GGXCNL_DELTA`, carries the WEO's own
+year-on-year change and is the history-side leg of the WEO reconciliation.
+All three are now stated in the dictionary and the notebook.
+Also fixed while making the bundle reproducible from a clean clone:
+`openpyxl` and `xlrd` moved from "install them yourself" (session-5 HANDOFF)
+into `pyproject` dependencies — the committed OBR snapshots cannot be read
+without them — and a `notebook` extra added for re-executing the notebook.
+Rebuild green on the 2026-09-08 harvest: **pytest 109 passed** (90 + 19 new),
+`validate` **OK=55 WARN=820, no ERROR, no SKIP** (WARN up from 661 on
+vintage drift alone — V25/V1 concept wedges on refreshed Eurostat/OECD
+pulls; no new check and no new tier).

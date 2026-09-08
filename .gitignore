@@ -26,3 +26,6 @@ data/canonical/*
 !data/raw/OBR_FRS/
 !data/raw/OBR_PSF_DATABANK/
 !data/raw/OBR_HIST_PF/
+
+# Jupyter
+.ipynb_checkpoints/

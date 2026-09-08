@@ -55,6 +55,20 @@ DELIVERABLES = [
     "README.md",
 ]
 
+# The plain flat-file bundle (`ggfiscal flatten`). Tracked separately from
+# DELIVERABLES because it is rendered from the canonical layer AFTER the
+# §11.6 gate, so a run that stops at `reconcile` is still a complete run.
+FLAT_FILES = [
+    "deliverables/expenditure_cofog.csv",
+    "deliverables/revenue_esa.csv",
+    "deliverables/balance_ledger.csv",
+    "deliverables/weo_levels_bridge.csv",
+    "deliverables/weo_reconciliation.csv",
+    "deliverables/series_catalogue.csv",
+    "deliverables/data_dictionary.csv",
+    "deliverables/README.md",
+]
+
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -77,10 +91,10 @@ def _rows(path: Path) -> int | None:
         return sum(1 for _ in csv.reader(f)) - 1
 
 
-def deliverable_entries() -> dict[str, dict]:
+def _entries(paths: list[str]) -> dict[str, dict]:
     root = config.repo_root()
     out: dict[str, dict] = {}
-    for rel in DELIVERABLES:
+    for rel in paths:
         p = root / rel
         if not p.exists():
             out[rel] = {"present": False}
@@ -91,6 +105,14 @@ def deliverable_entries() -> dict[str, dict]:
         if rows is not None:
             out[rel]["rows"] = rows
     return out
+
+
+def deliverable_entries() -> dict[str, dict]:
+    return _entries(DELIVERABLES)
+
+
+def flat_file_entries() -> dict[str, dict]:
+    return _entries(FLAT_FILES)
 
 
 def manifest_dir() -> Path:
@@ -139,6 +161,21 @@ def update_deliverables(path: Path | None = None) -> Path | None:
     doc = json.loads(dest.read_text(encoding="utf-8"))
     doc["deliverables"] = deliverable_entries()
     doc["deliverables_updated_at"] = dt.datetime.now(
+        dt.timezone.utc).isoformat(timespec="seconds")
+    dest.write_text(json.dumps(doc, indent=1, sort_keys=True))
+    return dest
+
+
+def update_flat_files(path: Path | None = None) -> Path | None:
+    """Called at the end of `ggfiscal flatten`: record the sha256, size and
+    row count of the flat-file bundle on the same run manifest, so the
+    published CSVs are pinned to the run that produced them."""
+    dest = path or latest_run_path()
+    if dest is None:
+        return None
+    doc = json.loads(dest.read_text(encoding="utf-8"))
+    doc["flat_files"] = flat_file_entries()
+    doc["flat_files_updated_at"] = dt.datetime.now(
         dt.timezone.utc).isoformat(timespec="seconds")
     dest.write_text(json.dumps(doc, indent=1, sort_keys=True))
     return dest
