@@ -1,12 +1,21 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-05 02:21 UTC, run 20260905T021528Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-08 10:03 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
 Governing principles: **maximise length subject to transparency and conceptual integrity**, and **decompose, never force** — no line is ever scaled or adjusted to hit a WEO aggregate (D13, D16).
 
 **The specification is [`COFOG_KICKOFF.md`](COFOG_KICKOFF.md) (v2.2). It governs.** Working state lives in [`HANDOFF.md`](HANDOFF.md); the append-only decision log in [`DECISIONS.md`](DECISIONS.md); committee items in [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).
+
+## Start here
+
+The end product is two things, and neither needs the pipeline to read:
+
+1. **[`deliverables/`](deliverables/)** — the whole project as flat CSVs. Expenditure by COFOG function, revenue by ESA type, the balance ledger, the WEO levels bridge and the WEO dynamics reconciliation, plus a per-series catalogue and a data dictionary covering every column of every file. Each observation carries the derivation behind it, so any stitched or forecast value can be reproduced from the flat file alone.
+2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — how each series was derived, series by series, executed against those files with its outputs committed. It needs only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/derivation.ipynb`.
+
+Everything below is how they are produced.
 
 ## Setup and pipeline
 
@@ -17,6 +26,7 @@ ggfiscal build              # standard layer -> canonical trees, ledger, stitche
 ggfiscal reconcile          # §8.2-8.5: bridge, decomposition, residual history
 ggfiscal report             # small multiples, reconciliation + validation reports, README
 ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)
+ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)
 ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md
 pytest                      # per-stage gate tests
 ```
@@ -29,8 +39,10 @@ Raw snapshots are content-addressed and **not committed** (D-S0-004): a fresh cl
 config/          countries.yaml, lines.yaml, sources.yaml (incl. the WEO vintage register), residual.yaml
 crosswalks/      versioned source-to-target mappings (§11.5)
 data/            raw -> manual -> standard -> canonical -> manifest (§11.1)
-src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report
-tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6)
+src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report | publish
+deliverables/    the flat-file bundle: every series as plain CSV, plus a data dictionary
+notebooks/       derivation.ipynb — how each series was derived, executed against the bundle
+tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6) + tests/deliverables
 reports/         verification, validation, reconciliation, vintage diff
 ```
 
@@ -59,7 +71,7 @@ Stages 0–6 complete, all hard gates passed (§12): harvest and source verifica
 | `data/canonical/net_interest_check.csv` | 112 | §8.4 net-interest cross-check per (country, vintage, horizon) |
 | `data/canonical/coverage_matrix.csv` | 66 | §11.6(9): span, grades, sources, why each of the 66 series ends |
 | `data/canonical/crosswalks.csv` | 48 | §11.5 crosswalks concatenated (one row per mapping, keyed by file) |
-| `data/canonical/exceptions.csv` | 716 | §10 validation findings (all rows, all severities) |
+| `data/canonical/exceptions.csv` | 875 | §10 validation findings (all rows, all severities) |
 | `data/canonical/stitch_boundaries.csv` | 32 | §7.4 backward-stitch boundary records incl. non-applications |
 | `data/canonical/forecast_boundaries.csv` | 38 | §7.4 forward boundary records incl. withheld joins (V16) |
 | `data/canonical/forecast_declarations.csv` | 52 | D7/Gate 3: why each line carries no strict forecast |
@@ -68,6 +80,21 @@ Stages 0–6 complete, all hard gates passed (§12): harvest and source verifica
 | `reports/reconciliation_report.html` | — | §10/Gate 5 contribution charts + explained shares |
 | `reports/vintage_diff.md` | — | §11.7 live-metadata diff against the register |
 | `README.md` | — | this file (generated) |
+
+## The flat-file bundle (`deliverables/`)
+
+The same numbers as above, rendered flat by `ggfiscal flatten` — no value is recomputed, so the bundle cannot drift from the gated canonical layer. `tests/deliverables` re-proves the copy, the reproducibility of every chained value from the flat file alone, and that the data dictionary covers every column.
+
+| file | rows | contents |
+|---|---|---|
+| `deliverables/expenditure_cofog.csv` | 3020 | COFOG expenditure: 12 lines + TE per country, both variants, one row per country-variant-line-year |
+| `deliverables/revenue_esa.csv` | 2660 | ESA revenue: 10 lines + TR per country, both variants, same shape |
+| `deliverables/balance_ledger.csv` | 196 | TR, TE, NLB, NI, PB per country-year in levels and % of GDP |
+| `deliverables/weo_levels_bridge.csv` | 398 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
+| `deliverables/weo_reconciliation.csv` | 5995 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
+| `deliverables/series_catalogue.csv` | 72 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
+| `deliverables/data_dictionary.csv` | 146 | every column of every file above, described |
+| `deliverables/README.md` | — | guide to the bundle |
 
 ## Coverage (66 line series)
 
@@ -156,7 +183,7 @@ Spans per line and variant, from `coverage_matrix.csv` (which adds stitch counts
 
 ## Validation
 
-Last `ggfiscal validate`: **ERROR=0, WARN=661, OK=55, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
+Last `ggfiscal validate`: **ERROR=0, WARN=820, OK=55, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
 
 ## WEO reconciliation headline
 
