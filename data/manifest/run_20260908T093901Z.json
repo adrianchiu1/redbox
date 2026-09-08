@@ -175,9 +175,9 @@
  },
  "flat_files": {
   "deliverables/README.md": {
-   "bytes": 3344,
+   "bytes": 3324,
    "present": true,
-   "sha256": "5f3afc7a5daf21f315e55ffe7018232bbbc562f9b55c64aca39ece4ba66c1294"
+   "sha256": "9fb29c377c2128c4b844fd3ee5446c6c66f2b009d15543f5446e786c2e32307b"
   },
   "deliverables/balance_ledger.csv": {
    "bytes": 100129,
@@ -222,7 +222,7 @@
    "sha256": "98390f2314ce9a2563e0ecc41d7bda337ecb36e6545c4953b4ddc4f7d68cdd2f"
   }
  },
- "flat_files_updated_at": "2026-09-08T10:55:30+00:00",
+ "flat_files_updated_at": "2026-09-08T14:02:03+00:00",
  "run_id": "20260908T093901Z",
  "snapshots": {
   "DEU_STEUERSCHAETZUNG/2026_05": "7b6e755b7c42e3d1525258eed1bfd06edb4d540f056abd891e4c7e7f1ea00a12",

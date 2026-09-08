@@ -324,3 +324,63 @@ def test_chartbook_charts_every_published_series():
     for topic in ("GF01_X", "outturn-only", "two different TE numbers",
                   "explained_share", "seam"):
         assert topic in markdown, topic
+
+
+def test_chartbook_shares_one_x_axis_per_country_and_shades_every_chart():
+    """The projection region is drawn whether or not the series reaches into
+    it, on a per-country axis, so charts can be read side by side."""
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    setup = next(c for c in code if "XLIM" in "".join(c["source"]))
+    body = "".join(setup["source"])
+    # one span per country, covering the trees and the ledger
+    assert "XLIM[_iso] = (" in body and "LEDGER.query" in body
+    # shading is unconditional: no guard between computing the span and using it
+    assert body.count("ax.axvspan(actual, hi") == 2      # chart + ledger_chart
+    assert "if mx.year.max() > actual" not in body, "shading is still conditional"
+    for iso3 in ("GBR", "FRA", "DEU"):
+        assert f'ax.set_xlim(lo, hi)' in body
+    assert "shared across every chart in a country" in markdown
+
+
+def test_chartbook_says_why_each_series_without_a_projection_has_none():
+    """Every series that stops at its last outturn must say so in its own
+    caption, and none that projects may claim it does not."""
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
+
+    checked = 0
+    for cell in code:
+        call = "".join(cell["source"]).strip()
+        if not call.startswith("chart(") or not call.endswith(")"):
+            continue
+        iso3, line = [p.strip().strip('"') for p in
+                      call[len("chart("):-1].split(",")]
+        text = "".join("".join(o["text"]) for o in cell["outputs"]
+                       if o["output_type"] == "stream")
+        row = cat.loc[(iso3, line)]
+        # one caption line per variant, each saying NO PROJECTION exactly when
+        # that variant stops at the last outturn — the eight lines that project
+        # only in maximum_extension say it on the strict line alone
+        for variant, final in (("strict", row.final_strict_year),
+                               ("maximum", row.final_maximum_year)):
+            said = next(ln for ln in text.splitlines()
+                        if ln.startswith(f"{variant}:"))
+            projects = final > row.final_actual_year
+            assert ("NO PROJECTION" in said) != bool(projects), (iso3, line,
+                                                                variant)
+            if projects:
+                assert str(int(final)) in said, (iso3, line, variant)
+        if row.final_maximum_year <= row.final_actual_year:
+            # the reason is given, not just the absence
+            assert row.forecast_status in (
+                "no_official_forecast", "source_blocked", "grade_below_strict",
+                "no_machine_readable_source", "not_extended"), (iso3, line)
+            assert len(text.split("NO PROJECTION —")[1].strip()) > 40
+        checked += 1
+    assert checked == len(cat)
+
+    # the taxonomy is spelled out once, up front
+    for status in ("no_official_forecast", "source_blocked",
+                   "grade_below_strict", "no_machine_readable_source",
+                   "not_extended"):
+        assert status in markdown, status
