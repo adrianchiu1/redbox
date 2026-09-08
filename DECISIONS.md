@@ -817,3 +817,50 @@ the 72 catalogued series plus all 15 ledger and 9 WEO comparisons — a
 series that gained a chart nowhere would otherwise be invisible.
 pytest 112 passed; validate unchanged (OK=55 WARN=820, no ERROR, no SKIP);
 no data file changed.
+
+## D-S9-003 — Chartbook revisions: one x-axis per country, projection shading on every chart, and the reason a series has no forecast stated on it (serves D-S9-002)
+2026-09-08, session 6 (continued). Three committee asks on
+`notebooks/chartbook.ipynb`, all delivered:
+  - **One x-axis per country** across sections 1-3 (every series chart and
+    every ledger chart), spanning every year that country publishes on any
+    series or in its ledger: **GBR 1965-2030, FRA 1965-2070, DEU
+    1991-2070**. Charts can now be laid beside each other and read against
+    the same calendar. The cost is stated rather than hidden: France's
+    axis runs to 2070 because 4 of its 24 series do, so a 1995-2024 series
+    occupies under a third of the width. Two escape hatches, both in the
+    setup cell — `xlim=` on any single chart, and two commented lines that
+    put all three countries on one shared calendar. Sections 4 (WEO) and 5
+    (the two TE totals) deliberately keep their own spans: they compare
+    two lines *inside* one chart, and stretching them to 2070 would
+    squeeze the gap panel — the part carrying the answer — into a quarter
+    of the width.
+  - **Projection shading on every chart**, whether or not the series
+    reaches into it. Previously it was drawn only where a forecast
+    existed, which made "no forecast" look like "chart ends here". Now the
+    band starts at that series' own last outturn and runs to the axis
+    edge, and a series with nothing to put in it is tagged `no projection
+    published` on the plot. Sections 4 and 5 are outturn-only comparisons
+    with no projection region at all, and say so.
+  - **Every series states why it has no forecast.** The caption under each
+    chart now gives one line per variant — `strict:` and `maximum:` —
+    saying either "projects to YYYY — <why it stops>" or "NO PROJECTION —
+    <plain-language reason>. <the pipeline's own note>". A new section
+    before the charts gives the taxonomy and the full table: **44 of 72
+    series carry no projection at all** and 8 more project only in
+    `maximum_extension`, across five recorded statuses —
+    `no_official_forecast` (24), `source_blocked` (8), `not_extended` (6,
+    the TE/TR envelopes), `no_machine_readable_source` (5),
+    `grade_below_strict` (1). This is a statement about what official
+    bodies publish, not a gap in the work (D13/D16).
+Also, `deliverables/README.md` loses the wall clock from its generated
+header, keeping the run id: re-rendering an unchanged bundle was producing
+a one-line diff every time, including on every `pytest` run through the
+`tests/deliverables` fixture. `ggfiscal flatten` is now deterministic given
+the canonical layer, as §16 requires of the rest of the pipeline.
+Two new tests lock the behaviour in: the shading is unconditional and the
+axis is per-country (asserted against the setup cell, including that the
+old `if mx.year.max() > actual` guard is gone), and — the substantive one —
+every `chart()` cell's committed output says NO PROJECTION on exactly the
+variants that stop at the last outturn, checked per variant against the
+catalogue for all 72 series, with a recorded status behind each. pytest 114
+passed; no data file changed.

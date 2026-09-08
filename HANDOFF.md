@@ -36,8 +36,13 @@ derived".** Nothing in the engine changed; no number moved that the
   projection years shaded, so construction quality can be eyeballed; §6
   tabulates every seam with the change across it, sorted, as a triage list.
   Its opening section lists the ten things that do not fit a flat
-  country/category/series layout — read that before the charts.
-- **`tests/deliverables/test_flat_files.py`** (22 tests) enforces the three
+  country/category/series layout — read that before the charts. Revised
+  per D-S9-003: one x-axis per country (GBR 1965-2030, FRA 1965-2070, DEU
+  1991-2070) so charts read side by side; projection shading on every
+  chart, not only those with a forecast; and a per-variant caption saying
+  how far each projects or why it does not — 44 of 72 series carry no
+  projection at all, across five recorded statuses, tabulated up front.
+- **`tests/deliverables/test_flat_files.py`** (24 tests) enforces the three
   invariants: nothing recomputed (bit-exact copy, `float_precision=
   "round_trip"`), every chained value reproducible from the flat file alone,
   and the data dictionary covering every column of every file by set
@@ -49,7 +54,7 @@ derived".** Nothing in the engine changed; no number moved that the
 
 ## Headline result
 
-`pytest`: **112 passed** (90 + 22 new). `validate`: **OK=55 WARN=820, no
+`pytest`: **114 passed** (90 + 24 new). `validate`: **OK=55 WARN=820, no
 ERROR, no SKIP**. The WARN count is up from 661 on source-vintage drift
 alone (V25/V1 concept wedges against refreshed Eurostat/OECD/AMECO pulls of
 2026-09-08); no new check, no new tier, no ERROR.
@@ -93,7 +98,7 @@ use `python3 -m pytest`), `ggfiscal fetch --all`, then
 `build`, `reconcile`, `report` (which now also writes `deliverables/`),
 `validate`. The OBR raw bytes come with the clone (D-S7-001) — do NOT expect
 `fetch` to produce them. Expected green baseline on the 2026-09-08 harvest:
-112 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
+114 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
 notebooks** (`jupyter nbconvert --execute --inplace notebooks/*.ipynb`) so
 their committed outputs match the bundle.
 
@@ -112,6 +117,10 @@ their committed outputs match the bundle.
 - A pytest run against a canonical layer built from OLDER snapshots fails
   Stage 0's V14 (`canonical anchor-era years != anchor years`). That is the
   vintage-drift signal, not a code defect: rebuild, then re-run.
+- `ggfiscal flatten` is deterministic given the canonical layer (D-S9-003):
+  no wall clock in any generated header. Keep it that way — the
+  `tests/deliverables` fixture re-renders the bundle on every pytest run,
+  so a timestamp there dirties the tree every time the suite is run.
 - The tree TE/TR lines and the balance ledger use DIFFERENT anchors for GBR
   (ONS_ESA_T11 vs ONS_GG_RECEIPTS), so their final actual years differ
   (2024 vs 2025). Expected; documented in the notebook.
