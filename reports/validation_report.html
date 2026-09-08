@@ -1,7 +1,7 @@
 <html><head><meta charset='utf-8'><title>gg-fiscal validation report</title><style>body{font-family:sans-serif;margin:2em;max-width:75em}table{border-collapse:collapse;margin:1em 0}td,th{border:1px solid #ccc;padding:0.3em 0.6em;text-align:left;font-size:0.9em}.ERROR{background:#fdd}.WARN{background:#ffedcc}.OK{background:#e8f5e9}.SKIP{background:#eee}</style></head><body>
 <h1>Validation report — §10 suite</h1>
-<p>Generated 2026-09-05 02:16 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
-<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>661</td><td class='OK'>55</td><td class='SKIP'>0</td></tr></table>
+<p>Generated 2026-09-08 10:03 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
+<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>820</td><td class='OK'>55</td><td class='SKIP'>0</td></tr></table>
 <p><b>No ERROR findings: the gate holds.</b></p>
 <p>The WARN tiers are intended visibility, not defects: documented concept wedges (V1/V21/V25 crosswalk and perimeter differences), the withheld AMECO→DSM interest join flagged for the committee (V16, OQ-7), blocked register URLs (V18, OQ-6), stitch diagnostics at their measured C/D grades (V5), and raw snapshot bytes of earlier sessions not synced into this container (S0_SNAPSHOTS, by design D-S0-004 — provenance lives in the hash manifest).</p>
 <h2>Per-check outcomes</h2>
@@ -10,7 +10,7 @@
 <tr><td>S0_COVERAGE</td><td>Gate 0: every line has measured coverage from ≥1 source</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>S0_LINES</td><td>structural: the 66-line universe enumerates</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>S0_REGISTER</td><td>structural: register entries carry status + endpoint</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>S0_SNAPSHOTS</td><td>D8: manifest snapshots verify byte-for-byte where present</td><td class='WARN'>WARN</td><td></td><td>327</td><td></td><td></td></tr>
+<tr><td>S0_SNAPSHOTS</td><td>D8: manifest snapshots verify byte-for-byte where present</td><td class='WARN'>WARN</td><td></td><td>486</td><td></td><td></td></tr>
 <tr><td>V1</td><td>anchor years reproduce anchor values; IMF GFS within 0.5%</td><td class='WARN'>WARN</td><td></td><td>80</td><td></td><td></td></tr>
 <tr><td>V10</td><td>no forecast beyond source horizon</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V11</td><td>no superseded source where a newer vintage applies</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
@@ -41,7 +41,7 @@
 <tr><td>V9</td><td>observation_type consistent with variant; no C/D in strict</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 </table>
 <h2>WARN findings (examples per check)</h2>
-<h3>S0_SNAPSHOTS — 327 WARNs: D8: manifest snapshots verify byte-for-byte where present</h3><table><tr><th>scope</th><th>message</th></tr>
+<h3>S0_SNAPSHOTS — 486 WARNs: D8: manifest snapshots verify byte-for-byte where present</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>EUROSTAT_GOV10A_EXP</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124529Z_f88cbdb3b751.csv (raw store not synced)</td></tr>
 <tr class='WARN'><td>EUROSTAT_GOV10A_EXP</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124538Z_26601ec18b30.csv (raw store not synced)</td></tr>
 <tr class='WARN'><td>EUROSTAT_GOV10A_MAIN</td><td>snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260831T124539Z_aa12ca719566.csv (raw store not synced)</td></tr>
@@ -67,7 +67,7 @@
 <tr class='WARN'><td>OECD_RS</td><td>snapshot file missing locally: data/raw/OECD_RS/20260831T124617Z_3e19c65717f8.csv (raw store not synced)</td></tr>
 <tr class='WARN'><td>OECD_T11</td><td>snapshot file missing locally: data/raw/OECD_T11/20260831T124622Z_fb99d60076d2.csv (raw store not synced)</td></tr>
 <tr class='WARN'><td>EC_AMECO</td><td>snapshot file missing locally: data/raw/EC_AMECO/20260831T124624Z_085e506f0a5a.zip (raw store not synced)</td></tr>
-<tr><td colspan='2'>… 302 more in exceptions.csv</td></tr>
+<tr><td colspan='2'>… 461 more in exceptions.csv</td></tr>
 </table>
 <h3>V1 — 80 WARNs: anchor years reproduce anchor values; IMF GFS within 0.5%</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>FRA/GF01/2001</td><td>IMF GFS diff -1.0426% beyond 0.5%</td></tr>
