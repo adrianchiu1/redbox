@@ -769,3 +769,51 @@ Rebuild green on the 2026-09-08 harvest: **pytest 109 passed** (90 + 19 new),
 `validate` **OK=55 WARN=820, no ERROR, no SKIP** (WARN up from 661 on
 vintage drift alone — V25/V1 concept wedges on refreshed Eurostat/OECD
 pulls; no new check and no new tier).
+
+## D-S9-002 — A second notebook: `chartbook.ipynb`, one chart per series (serves §1, extends D-S9-001)
+2026-09-08, session 6 (continued). The committee asked for "a very chart
+heavy notebook ... so that I can eyeball work quality", laid out country →
+category → series, with the WEO reconciliation shown separately as our
+series against the WEO's on shared axes, for revenue, expenditure and NLB
+per country. Delivered as `notebooks/chartbook.ipynb`: 102 figures, 101
+code cells, reading the flat bundle and nothing else (the D-S9-001
+invariant), executed with outputs committed.
+Design choices that carry information rather than decoration:
+  - **Seams are drawn.** Each series chart marks with a dotted rule every
+    year where `observation_type` or `source_id` changes — the exact
+    points where a stitch could show a step. A seam with no visible kink
+    is the pass condition; §6 tabulates all of them with the year-on-year
+    change across each, sorted by size, as a triage list.
+  - **Projection years are shaded**, so a chart that is two thirds
+    projection (FRA/DEU GF07/GF09/GF10 to 2070) cannot be misread as data.
+  - **Both variants on one chart**, orange drawn only where
+    maximum_extension goes beyond strict — so the reader sees at a glance
+    which part of a series is officially sourced.
+  - **The WEO charts are two-panel**: levels above, gap as % of TE below.
+    The gap panel is where the answer is: flat means a definitional
+    perimeter wedge, drift means a vintage difference. Two panels, never
+    two y-axes.
+  - Palette: categorical slots 1-3 of the validated default (blue #2a78d6
+    = our strict series, orange #eb6834 = maximum_extension, aqua #1baf7a
+    = the IMF WEO), assigned by entity and never reused, with line style
+    repeating the distinction so identity never rests on colour alone.
+    Validated all-pairs; the aqua step's sub-3:1 contrast is relieved by
+    direct end-of-line labels on the charts that use it.
+Ten things do not fit a flat country → category → series layout, and are
+listed in the notebook's own §"Series that do not fit this schema" rather
+than left for a reader to trip over: the two-variant duplication; GF01_X as
+an identity with no forecast leg by construction; TE/TR as envelopes rather
+than members of the 66; the ledger as outturn-only with anchor totals
+rather than line sums; the two GBR TE numbers (charted in §5 — under 0.02%
+apart until 2023, 0.51% in 2024; FRA ≤0.055%, DEU 0); the WEO level
+comparison existing only over the overlap years; `weo_reconciliation.csv`
+being contributions rather than a time series, so only `explained_share` is
+chartable; the 1991/1995→2070 horizon asymmetry; interior gaps in NI/PB (16
+ledger rows); and `pct_gdp` not spanning what levels span (60 rows, FRA
+pre-1975, where Eurostat GDP starts after the OECD tax series).
+`tests/deliverables` gains three tests: both notebooks are executed,
+error-free and read only the bundle; and the chartbook charts every one of
+the 72 catalogued series plus all 15 ledger and 9 WEO comparisons — a
+series that gained a chart nowhere would otherwise be invisible.
+pytest 112 passed; validate unchanged (OK=55 WARN=820, no ERROR, no SKIP);
+no data file changed.

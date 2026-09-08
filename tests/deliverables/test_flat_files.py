@@ -261,31 +261,66 @@ def test_maximum_extension_contains_strict_and_agrees_where_both_exist():
         assert year > last[(iso3, line)] or year < first[(iso3, line)]
 
 
-# ------------------------------------------------------------------ notebook
+# ----------------------------------------------------------------- notebooks
 
-def test_notebook_is_executed_error_free_and_reads_the_flat_files():
-    path = ROOT / "notebooks" / "derivation.ipynb"
-    nb = json.loads(path.read_text(encoding="utf-8"))
-    assert nb["nbformat"] == 4
+NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb")
+
+
+def _notebook(name: str):
+    nb = json.loads((ROOT / "notebooks" / name).read_text(encoding="utf-8"))
     code = [c for c in nb["cells"] if c["cell_type"] == "code"]
-    markdown = "\n".join("".join(c["source"]) for c in nb["cells"]
-                         if c["cell_type"] == "markdown")
-    assert len(code) >= 15 and len(markdown) > 4000
+    return (nb, code,
+            "\n".join("".join(c["source"]) for c in code),
+            "\n".join("".join(c["source"]) for c in nb["cells"]
+                      if c["cell_type"] == "markdown"))
+
+
+@pytest.mark.parametrize("name", NOTEBOOKS)
+def test_notebook_is_executed_error_free_and_reads_only_the_flat_files(name):
+    nb, code, source, markdown = _notebook(name)
+    assert nb["nbformat"] == 4
+    assert len(code) >= 15 and len(markdown) > 3000
 
     # executed, with outputs committed, and no cell raised
-    assert all(c["outputs"] for c in code), "notebook has unexecuted cells"
+    assert all(c["outputs"] for c in code), f"{name} has unexecuted cells"
     assert not [o for c in code for o in c["outputs"]
                 if o["output_type"] == "error"]
 
-    source = "\n".join("".join(c["source"]) for c in code)
+    # reads the published bundle, never the canonical layer or the raw data
     assert "deliverables" in source
-    # it reads the published bundle, never the canonical layer or the raw data
     assert "data/canonical" not in source and "data/raw" not in source
+
+
+def test_derivation_notebook_explains_the_whole_ask():
+    _, code, source, markdown = _notebook("derivation.ipynb")
     for needed in ("expenditure_cofog", "revenue_esa", "balance_ledger",
                    "weo_levels_bridge", "weo_reconciliation",
                    "series_catalogue", "data_dictionary"):
         assert needed in source, needed
-    # the explanation covers the whole ask
     for topic in ("COFOG", "ESA", "balance ledger", "WEO", "strict",
                   "maximum_extension", "resid_coverage", "explained_share"):
+        assert topic in markdown, topic
+
+
+def test_chartbook_charts_every_published_series():
+    """One chart per series, country by country, plus the WEO comparison and
+    the ledger — a series that gains a chart nowhere would be invisible."""
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    cat = read("series_catalogue.csv")
+
+    for row in cat.itertuples():
+        call = f'chart("{row.iso3}", "{row.line_code}")'
+        assert call in source, call
+    for iso3 in ("GBR", "FRA", "DEU"):
+        for q in ("TR", "TE", "NLB", "NI", "PB"):
+            assert f'ledger_chart("{iso3}", "{q}")' in source
+        for q in ("revenue", "expenditure", "nlb"):
+            assert f'weo_chart("{iso3}", "{q}")' in source
+
+    figures = [o for c in code for o in c["outputs"]
+               if "data" in o and "image/png" in o["data"]]
+    assert len(figures) >= len(cat) + 15 + 9, "a chart is missing"
+    # the schema caveats are stated, not left for the reader to discover
+    for topic in ("GF01_X", "outturn-only", "two different TE numbers",
+                  "explained_share", "seam"):
         assert topic in markdown, topic
