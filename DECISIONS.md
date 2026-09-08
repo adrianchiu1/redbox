@@ -864,3 +864,51 @@ every `chart()` cell's committed output says NO PROJECTION on exactly the
 variants that stop at the last outturn, checked per variant against the
 catalogue for all 72 series, with a recorded status behind each. pytest 114
 passed; no data file changed.
+
+## D-S9-004 — Chartbook: axis capped at 2031, and made small enough for GitHub to render (serves D-S9-002/003)
+2026-09-08, session 6 (continued). Two committee reports, both real.
+**(1) The 2070 axis was wrong.** D-S9-003 aligned each country's charts on
+its full span, which meant 1965-2070 for France because four of its 24
+series carry Ageing-Report legs to 2070. The committee asked for
+**start date until 2031** on every chart. Applied everywhere — sections
+1-3, the WEO comparison in §4 and the TE diagnostic in §5 all now run
+from the country's first published year to 2031 (GBR/FRA 1965, DEU 1991);
+the only exception is §4.4, whose data exists only for the 2026-2031
+horizons. The four long-horizon series per country leave the right edge
+with a `continues to 2070 →` marker and their true final year in the
+caption; the values are unchanged in the flat files.
+  Capping the axis exposed a defect the previous version had hidden:
+matplotlib autoscales y over ALL plotted data, so clipping x to 2031 left
+FRA GF10's y-axis running to 3,000,000 — the 2070 value — flattening the
+1995-2025 history into the bottom fifth of the chart. Fixed by plotting
+only the data inside the window plus one point past the edge, so the
+y-axis follows what is actually visible.
+**(2) The notebook could not be rendered on github.com.** At 3.28 MB
+(94% of it embedded PNGs) GitHub's client-side notebook renderer shows
+"Loading" forever. Confirmed it is size, not structure: both notebooks
+pass `nbformat.validate`, carry no error outputs and no unexecuted cells.
+Reduced to **0.88 MB** — a 3.7x cut — by three measures, none of which
+touches what the charts say: figures at 497x194 px (from 648x261),
+palette-quantised PNGs, and a caption that says a variant's horizon once
+rather than twice when both variants agree.
+  The quantisation needed care. An *adaptive* palette allocates slots by
+pixel count, and a dashed line has few pixels: at 32 colours it crushed
+the orange series to #927670, a muddy brown 108 units off the validated
+hue — the palette discipline of D-S9-002 silently broken. So the notebook
+quantises onto a **fixed** palette built from the chart colours
+themselves (each mark colour exactly, plus its blends toward the two
+backgrounds for antialiasing). Verified numerically: every brand hue is
+present at distance 0.0 in the figures that use it.
+  GitHub's threshold could not be verified from this environment —
+notebook rendering is client-side, so fetching the blob page returns
+"Loading" for any size, including the 0.22 MB derivation notebook that
+renders fine in a browser. 0.88 MB is therefore a judged margin, not a
+measured one. The generated README now names nbviewer as the fallback for
+any notebook GitHub declines, and if the chartbook still fails the next
+step is splitting it one notebook per country (~250 KB each).
+Two tests updated and strengthened: the axis assertions now pin
+`XMAX = 2031` and that every chart family still shades; the projection
+test handles the collapsed `both:` caption line. That test also had a bug
+of its own — `next(gen, next(gen2))` evaluates the fallback eagerly, so it
+raised StopIteration on any series that did have a `strict:` line. pytest
+114 passed; no data file changed.

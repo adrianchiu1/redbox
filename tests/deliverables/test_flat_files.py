@@ -332,14 +332,18 @@ def test_chartbook_shares_one_x_axis_per_country_and_shades_every_chart():
     _, code, source, markdown = _notebook("chartbook.ipynb")
     setup = next(c for c in code if "XLIM" in "".join(c["source"]))
     body = "".join(setup["source"])
-    # one span per country, covering the trees and the ledger
+    # one span per country, from its first published year to a common 2031
+    assert "XMAX = 2031" in body
     assert "XLIM[_iso] = (" in body and "LEDGER.query" in body
-    # shading is unconditional: no guard between computing the span and using it
-    assert body.count("ax.axvspan(actual, hi") == 2      # chart + ledger_chart
+    assert body.count("XMAX + _pad") == 1
+    # shading is unconditional — every chart-drawing helper draws the band,
+    # and the old "only if a forecast exists" guard is gone
+    assert body.count("axvspan(") == 3, "a chart family stopped shading"
+    te = next(c for c in code if "def te_compare" in "".join(c["source"]))
+    assert "axvspan(" in "".join(te["source"])
     assert "if mx.year.max() > actual" not in body, "shading is still conditional"
-    for iso3 in ("GBR", "FRA", "DEU"):
-        assert f'ax.set_xlim(lo, hi)' in body
-    assert "shared across every chart in a country" in markdown
+    assert "ax.set_xlim(lo, hi)" in body and "ax.set_xlim(*XLIM[iso3])" in body
+    assert "to 2031" in markdown
 
 
 def test_chartbook_says_why_each_series_without_a_projection_has_none():
@@ -357,14 +361,20 @@ def test_chartbook_says_why_each_series_without_a_projection_has_none():
                       call[len("chart("):-1].split(",")]
         text = "".join("".join(o["text"]) for o in cell["outputs"]
                        if o["output_type"] == "stream")
+        assert text.strip(), f"{iso3} {line} printed no caption"
         row = cat.loc[(iso3, line)]
         # one caption line per variant, each saying NO PROJECTION exactly when
         # that variant stops at the last outturn — the eight lines that project
         # only in maximum_extension say it on the strict line alone
         for variant, final in (("strict", row.final_strict_year),
                                ("maximum", row.final_maximum_year)):
-            said = next(ln for ln in text.splitlines()
-                        if ln.startswith(f"{variant}:"))
+            # the caption collapses to one "both:" line when the two variants
+            # say the same thing, which is the common case
+            lines = text.splitlines()
+            said = next((ln for ln in lines
+                         if ln.startswith(f"{variant}:")), None)
+            if said is None:                    # collapsed to one "both:" line
+                said = next(ln for ln in lines if ln.startswith("both:"))
             projects = final > row.final_actual_year
             assert ("NO PROJECTION" in said) != bool(projects), (iso3, line,
                                                                 variant)

@@ -191,7 +191,12 @@ def write(path: Path | None = None) -> Path:
         "",
         "Both notebooks need only `pandas` and `matplotlib` to re-run: "
         "`pip install -e .[notebook] && jupyter nbconvert --execute "
-        "--inplace notebooks/*.ipynb`.",
+        "--inplace notebooks/*.ipynb`. GitHub renders them in the browser "
+        "and gives up on large ones (the chartbook is kept under a "
+        "megabyte for exactly that reason); if a notebook ever shows "
+        "*Loading* forever, "
+        "[nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) "
+        "renders it regardless of size.",
         "",
         "Everything below is how they are produced.",
         "",
