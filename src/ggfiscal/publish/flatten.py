@@ -596,9 +596,13 @@ dynamics to the IMF WEO** general-government aggregates.
 
 Start with `data_dictionary.csv` (every column of every file) and
 `series_catalogue.csv` (one row per published series: span, grades,
-sources, and the ordered recipe that built it). The notebook
+sources, and the ordered recipe that built it). Two notebooks read this
+bundle and nothing else:
 [`notebooks/derivation.ipynb`](../notebooks/derivation.ipynb) walks
-through how each series was derived and reproduces the arithmetic.
+through how each series was derived and reproduces the arithmetic, and
+[`notebooks/chartbook.ipynb`](../notebooks/chartbook.ipynb) plots every
+series one chart at a time — seams and projection years marked — plus
+our totals against the IMF WEO.
 
 ## Reading the files
 

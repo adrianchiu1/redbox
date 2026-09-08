@@ -171,8 +171,8 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Start here",
         "",
-        "The end product is two things, and neither needs the pipeline to "
-        "read:",
+        "The end product is the flat files and the two notebooks that "
+        "explain and display them. None of it needs the pipeline to read:",
         "",
         "1. **[`deliverables/`](deliverables/)** — the whole project as flat "
         "CSVs. Expenditure by COFOG function, revenue by ESA type, the "
@@ -183,9 +183,15 @@ def write(path: Path | None = None) -> Path:
         "reproduced from the flat file alone.",
         "2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — "
         "how each series was derived, series by series, executed against "
-        "those files with its outputs committed. It needs only `pandas` and "
-        "`matplotlib` to re-run: `pip install -e .[notebook] && jupyter "
-        "nbconvert --execute --inplace notebooks/derivation.ipynb`.",
+        "those files with its outputs committed.",
+        "3. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
+        "the same series plotted, one chart each, country by category by "
+        "series, with seams and projection years marked, plus our totals "
+        "against the IMF WEO. For eyeballing construction quality.",
+        "",
+        "Both notebooks need only `pandas` and `matplotlib` to re-run: "
+        "`pip install -e .[notebook] && jupyter nbconvert --execute "
+        "--inplace notebooks/*.ipynb`.",
         "",
         "Everything below is how they are produced.",
         "",
@@ -216,7 +222,7 @@ def write(path: Path | None = None) -> Path:
         "data/            raw -> manual -> standard -> canonical -> manifest (§11.1)",
         "src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report | publish",
         "deliverables/    the flat-file bundle: every series as plain CSV, plus a data dictionary",
-        "notebooks/       derivation.ipynb — how each series was derived, executed against the bundle",
+        "notebooks/       derivation.ipynb (how each series was derived) + chartbook.ipynb (every series plotted)",
         "tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6) + tests/deliverables",
         "reports/         verification, validation, reconciliation, vintage diff",
         "```",

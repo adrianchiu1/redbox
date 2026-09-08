@@ -28,19 +28,28 @@ derived".** Nothing in the engine changed; no number moved that the
   arithmetic, checks the ledger identities, and walks the §8.2/§8.3
   reconciliation. Re-run it with
   `pip install -e .[notebook] && jupyter nbconvert --execute --inplace
-  notebooks/derivation.ipynb`.
-- **`tests/deliverables/test_flat_files.py`** (19 tests) enforces the three
+  notebooks/*.ipynb`.
+- **`notebooks/chartbook.ipynb`** (D-S9-002) — 102 figures, one per series,
+  laid out country → category → series, plus the WEO comparison (levels
+  above, gap as % of TE below) for revenue, expenditure and NLB per
+  country. Seams (source or method changes) are drawn as dotted rules and
+  projection years shaded, so construction quality can be eyeballed; §6
+  tabulates every seam with the change across it, sorted, as a triage list.
+  Its opening section lists the ten things that do not fit a flat
+  country/category/series layout — read that before the charts.
+- **`tests/deliverables/test_flat_files.py`** (22 tests) enforces the three
   invariants: nothing recomputed (bit-exact copy, `float_precision=
   "round_trip"`), every chained value reproducible from the flat file alone,
   and the data dictionary covering every column of every file by set
-  equality.
+  equality. Both notebooks are checked for committed, error-free outputs,
+  and the chartbook for charting every catalogued series.
 - **Packaging fixes**: `openpyxl` and `xlrd` are now real dependencies (the
   committed OBR snapshots are unreadable without them — session 5 left them
   as a manual install step), plus a `notebook` extra.
 
 ## Headline result
 
-`pytest`: **109 passed** (90 + 19 new). `validate`: **OK=55 WARN=820, no
+`pytest`: **112 passed** (90 + 22 new). `validate`: **OK=55 WARN=820, no
 ERROR, no SKIP**. The WARN count is up from 661 on source-vintage drift
 alone (V25/V1 concept wedges against refreshed Eurostat/OECD/AMECO pulls of
 2026-09-08); no new check, no new tier, no ERROR.
@@ -84,8 +93,9 @@ use `python3 -m pytest`), `ggfiscal fetch --all`, then
 `build`, `reconcile`, `report` (which now also writes `deliverables/`),
 `validate`. The OBR raw bytes come with the clone (D-S7-001) — do NOT expect
 `fetch` to produce them. Expected green baseline on the 2026-09-08 harvest:
-109 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute the
-notebook** so its committed outputs match the bundle.
+112 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
+notebooks** (`jupyter nbconvert --execute --inplace notebooks/*.ipynb`) so
+their committed outputs match the bundle.
 
 ## Data facts future sessions must not rediscover
 

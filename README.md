@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-08 10:03 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-08 10:55 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -10,10 +10,13 @@ Governing principles: **maximise length subject to transparency and conceptual i
 
 ## Start here
 
-The end product is two things, and neither needs the pipeline to read:
+The end product is the flat files and the two notebooks that explain and display them. None of it needs the pipeline to read:
 
 1. **[`deliverables/`](deliverables/)** — the whole project as flat CSVs. Expenditure by COFOG function, revenue by ESA type, the balance ledger, the WEO levels bridge and the WEO dynamics reconciliation, plus a per-series catalogue and a data dictionary covering every column of every file. Each observation carries the derivation behind it, so any stitched or forecast value can be reproduced from the flat file alone.
-2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — how each series was derived, series by series, executed against those files with its outputs committed. It needs only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/derivation.ipynb`.
+2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — how each series was derived, series by series, executed against those files with its outputs committed.
+3. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — the same series plotted, one chart each, country by category by series, with seams and projection years marked, plus our totals against the IMF WEO. For eyeballing construction quality.
+
+Both notebooks need only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/*.ipynb`.
 
 Everything below is how they are produced.
 
@@ -41,7 +44,7 @@ crosswalks/      versioned source-to-target mappings (§11.5)
 data/            raw -> manual -> standard -> canonical -> manifest (§11.1)
 src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report | publish
 deliverables/    the flat-file bundle: every series as plain CSV, plus a data dictionary
-notebooks/       derivation.ipynb — how each series was derived, executed against the bundle
+notebooks/       derivation.ipynb (how each series was derived) + chartbook.ipynb (every series plotted)
 tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6) + tests/deliverables
 reports/         verification, validation, reconciliation, vintage diff
 ```
