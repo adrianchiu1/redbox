@@ -239,6 +239,46 @@ _ITEM_RE = re.compile(r"^(\d+(?:\.\d+)*)\s+(.*)$")
 #: A group heading in annex 4.10 ("1 Einnahmen"): a top-level item number with
 #: no value columns of its own.
 _GROUP_RE = re.compile(r"^(\d+)\s+(\S.*)$")
+#: A footnote-reference asterisk sitting as its own token between two amounts
+#: on an annex-4.10 running-subtotal line (2022: "... -354.118.912,65 * ...").
+#: Only a *standalone* "*" is stripped -- one glued onto a word ("Ausgaben*")
+#: stays, since it is part of that label/total, not a stray marker breaking a
+#: number sequence.
+_STRAY_ASTERISK_RE = re.compile(r"(?<=\s)\*(?=\s|$)")
+#: An item number embedded *after* some leading text in an already-joined
+#: label -- the annex 4.10 continuation page of one edition (2019) wraps rows
+#: the opposite way round from every other edition: the amounts sit on the
+#: row's first physical line and the label *continues below them*, so the
+#: leftover words end up glued onto the front of whatever line closes next.
+_EMBEDDED_ITEM_RE = re.compile(r"(?:^|\s)(\d+\.\d+(?:\.\d+)?)\s+(\S.*)$", re.S)
+#: Ditto for the annex's own un-numbered totals ("Einnahmen", "Ausgaben*",
+#: "Nettokreditaufnahme", or their older "Summe ..." spelling), which always
+#: end the label with nothing following.
+_EMBEDDED_TOTAL_RE = re.compile(
+    r"(?:^|\s)((?:Summe\s+)?(?:Einnahmen|Ausgaben\*?|Nettokreditaufnahme))\s*$")
+
+
+def _split_row_start(full_label: str) -> tuple[str, str, str]:
+    """Split a joined annex-4.10 label into (leftover_prefix, item, text).
+
+    ``leftover_prefix`` is non-empty only when ``full_label`` does not itself
+    start with a valid item number or total keyword: on the one edition whose
+    continuation page wraps rows label-after-amounts (see
+    :data:`_EMBEDDED_ITEM_RE`), the tail of the *previous* row's label arrives
+    glued onto the front of the next row's joined text. The caller reattaches
+    it to the previous record instead of keeping it as part of this row's
+    label -- never inventing or dropping a figure, only relocating text.
+    """
+    m = _ITEM_RE.match(full_label)
+    if m:
+        return "", m.group(1), m.group(2)
+    m = _EMBEDDED_ITEM_RE.search(full_label)
+    if m:
+        return full_label[:m.start(1)].strip(), m.group(1), m.group(2)
+    m = _EMBEDDED_TOTAL_RE.search(full_label)
+    if m:
+        return full_label[:m.start(1)].strip(), "", m.group(1)
+    return "", "", full_label
 
 
 def _join_label(parts: list[str]) -> str:

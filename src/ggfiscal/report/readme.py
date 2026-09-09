@@ -63,6 +63,55 @@ def _fmt_int(v) -> str:
         return "—"
 
 
+def _debt_section(root: Path) -> list[str]:
+    """DEBT_KICKOFF.md: the debt-in-issue extension, present once
+    `ggfiscal debt build` has run."""
+    import pandas as pd
+    p = root / "data" / "canonical" / "debt_interest_reconciliation.csv"
+    if not p.exists():
+        return []
+    chains = {c: pd.read_csv(root / "data" / "canonical" / f"debt_{c}_reconciliation.csv")
+              for c in ("interest", "financing")}
+    agg = pd.read_csv(root / "data" / "canonical" / "debt_class_aggregates.csv")
+    rows = []
+    for iso3 in ("GBR", "FRA", "DEU"):
+        cells = [iso3]
+        for c in ("interest", "financing"):
+            df = chains[c]
+            for step in sorted(df["step"].unique(), key=lambda s: ["register", "A", "B", "C"].index(s[0]) if s[0] in "ABC" else 0):
+                if step == "register":
+                    continue
+                r = df[(df["iso3"] == iso3) & (df["step"] == step) & (df["item"] == "residual")].dropna(subset=["value_lcu_mn"])
+                cells.append(f"{int(r['year'].min())}–{int(r['year'].max())}" if len(r) else "—")
+        a = agg[(agg["iso3"] == iso3) & agg["in_register"]]
+        cells.append(f"{int(a['year'].min())}–{int(a['year'].max())}" if len(a) else "—")
+        rows.append("| " + " | ".join(cells) + " |")
+    return [
+        "## Debt in issue (DEBT_KICKOFF.md)",
+        "",
+        "The debt extension adds the central-government debt-securities "
+        "register and two reconciliation chains — **interest**: Σ register by "
+        "instrument class → finance-ministry interest → S.1311 D.41 → "
+        "`GF01_7`; **financing**: Σ net issuance → CG net cash requirement → "
+        "S.1311 net borrowing → `NLB` — each step carrying its official "
+        "bridge items and a published residual (never allocated), plus the "
+        "reference series (RPI, CPI/HICP ex-tobacco, SONIA, Bank Rate, money-"
+        "market rates, BoE curves). While the debt-office hosts are blocked "
+        "(OQ-8) the register step is the ministries' own instrument-class "
+        "aggregates (DD8); the per-security engine, schemas and tests are in "
+        "place for when they open. Files: `deliverables/debt_*.csv`; notebook: "
+        "[`notebooks/debtbook.ipynb`](notebooks/debtbook.ipynb).",
+        "",
+        "Years with a published residual per step (interest A/B/C, financing "
+        "A/B/C) and the aggregate layer's span:",
+        "",
+        "| country | int A | int B | int C | fin A | fin B | fin C | aggregates |",
+        "|---|---|---|---|---|---|---|---|",
+        *rows,
+        "",
+    ]
+
+
 def _coverage_section(root: Path) -> list[str]:
     cm = pd.read_csv(root / "data" / "canonical" / "coverage_matrix.csv")
     out = []
@@ -284,6 +333,7 @@ def write(path: Path | None = None) -> Path:
                      f"{_FLAT.get(name, 'guide to the bundle')} |")
     lines += [
         "",
+        *_debt_section(root),
         "## Coverage (66 line series)",
         "",
         "Spans per line and variant, from `coverage_matrix.csv` (which adds "

@@ -238,5 +238,30 @@ def debt_build(no_curves: bool = typer.Option(False, "--no-curves",
         typer.echo(f"wrote {name}: {p}")
 
 
+@debt_app.command("validate")
+def debt_validate():
+    """V29-V40 on the built debt tables -> data/canonical/debt_exceptions.csv (SKIP where the register is pending)."""
+    import csv
+    from ggfiscal import config as C
+    from ggfiscal.debt.validate import run_all as debt_run_all
+
+    findings = debt_run_all()
+    dest = C.repo_root() / "data" / "canonical" / "debt_exceptions.csv"
+    with open(dest, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["check_id", "severity", "scope", "message"])
+        for x in findings:
+            w.writerow([x.check_id, x.severity, x.scope, x.message])
+    counts: dict[str, int] = {}
+    for x in findings:
+        counts[x.severity] = counts.get(x.severity, 0) + 1
+    for x in findings:
+        if x.severity in ("ERROR", "WARN"):
+            typer.echo(f"{x.severity:5s} {x.check_id:5s} {x.scope}: {x.message}")
+    typer.echo(f"\n{' '.join(f'{k}={v}' for k, v in sorted(counts.items()))}  -> {dest}")
+    if counts.get("ERROR"):
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()
