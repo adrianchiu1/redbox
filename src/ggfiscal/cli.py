@@ -263,5 +263,35 @@ def debt_validate():
         raise typer.Exit(code=1)
 
 
+@debt_app.command("ingest-incoming")
+def debt_ingest_incoming(folder: str = typer.Option("data/incoming", "--folder")):
+    """Store hand-downloaded debt-office files as D8 snapshots (D-S7-001 route).
+    Layout: {folder}/{SOURCE_ID}/{part}.{ext}; the part must match a pull
+    definition in families/debt_offices.py (or a documented part name) so the
+    publication URL is recorded from it."""
+    from pathlib import Path
+    from ggfiscal import config as C
+    from ggfiscal.debt.families import debt_offices as DO
+    from ggfiscal.ingest.fetch import ingest_local
+
+    known = {(p.source_id, p.part): p.url for p in DO.pulls()}
+    known.update({(p.source_id, p.part): p.url for p in DO.cob_pulls()})
+    known.update({(sid, part): url for (sid, part, url) in DO.HAND_PARTS})
+    root = C.repo_root() / folder
+    n = 0
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.name.startswith("."):
+            continue
+        sid, part = path.parent.name, path.stem
+        url = known.get((sid, part))
+        if url is None:
+            typer.echo(f"SKIP  {sid}/{part}: unknown part name (see families/debt_offices.py)")
+            continue
+        rec = ingest_local(path, sid, part, url, note="hand-downloaded by the committee (OQ-8, bot-challenged host)")
+        typer.echo(f"OK    {rec['source_id']}/{rec['part']}  sha256={rec['sha256'][:12]}  {rec['size']} bytes")
+        n += 1
+    typer.echo(f"\n{n} file(s) ingested from {root}")
+
+
 if __name__ == "__main__":
     app()

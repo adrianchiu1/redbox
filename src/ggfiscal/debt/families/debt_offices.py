@@ -91,6 +91,27 @@ def get(pull: Pull):
     return resp.content, ctype, resp.status_code
 
 
+# Parts that are hand-downloaded from links the pages carry (versioned file
+# names): (source_id, part, landing URL the file was taken from).
+HAND_PARTS = [
+    ("FRA_AFT_ENCOURS", "oat_xlsx", f"{AFT}/fr/encours-detaille-oat"),
+    ("FRA_AFT_ENCOURS", "btf_xlsx", f"{AFT}/fr/encours-detaille-btf"),
+    ("FRA_AFT_ENCOURS", "oatei_xlsx", f"{AFT}/en/encours-detaille-oatei"),
+    ("FRA_AFT_ADJUDICATIONS", "hist_oat", f"{AFT}/fr/dernieres-adjudications"),
+    ("FRA_AFT_ADJUDICATIONS", "hist_btf", f"{AFT}/fr/dernieres-adjudications"),
+    ("FRA_AFT_ADJUDICATIONS", "archives_oat", f"{AFT}/fr/dernieres-adjudications-archives"),
+    ("FRA_AFT_ADJUDICATIONS", "archives_btf", f"{AFT}/fr/dernieres-adjudications-archives"),
+    ("FRA_AFT_INDEXATION", "oati_current", f"{AFT}/fr/oati-principaux-chiffres"),
+    ("FRA_AFT_INDEXATION", "oati_hist_1998", f"{AFT}/fr/oati-principaux-chiffres"),
+    ("FRA_AFT_INDEXATION", "oatei_current", f"{AFT}/en/oateuroi-key-figures"),
+    ("FRA_AFT_INDEXATION", "oatei_hist_2005", f"{AFT}/en/oateuroi-key-figures"),
+    ("FRA_AFT_FINANCEMENT", "rapport_2024", f"{AFT}/fr/rapports-activite"),
+    ("FRA_AFT_FINANCEMENT", "rapport_2023", f"{AFT}/fr/rapports-activite"),
+    ("UK_DMO_GILTS", "gross_net_issuance_annual", f"{DMO}/data/gilt-market/gross-and-net-issuance-data/"),
+    ("UK_DMO_GILTS", "cash_sales_by_type_and_maturity", f"{DMO}/data/gilt-market/gross-and-net-issuance-data/"),
+]
+
+
 def pulls() -> list[Pull]:
     out: list[Pull] = []
     for code in DMO_GILT_REPORTS:
