@@ -29,6 +29,15 @@ needs_kab_2025 = pytest.mark.skipif(
     reason="no Kreditaufnahmebericht 2025 snapshot")
 
 
+def _kab_years() -> list[int]:
+    return sorted(int(part) for (sid, part) in SNAPS
+                  if sid == "BMF_KREDITAUFNAHMEBERICHT" and part.isdigit())
+
+
+needs_kab_any = pytest.mark.skipif(
+    not _kab_years(), reason="no Kreditaufnahmebericht snapshots")
+
+
 # ---------------------------------------------------------------------- pulls
 
 def test_pulls_cover_every_registered_part():
@@ -191,3 +200,100 @@ def test_annex_410_2025_parses_the_financing_plan():
     brutto = df[df["item"] == "3.1"].iloc[0]
     tilgung = df[df["item"] == "3.3"].iloc[0]
     assert brutto["ist_eur"] > 0 > tilgung["ist_eur"]
+
+
+def _top_level_sum_and_nka(df):
+    """Annex-4.10 helper: (sum of the top-level 3.x 'Herleitung' items,
+    Nettokreditaufnahme Ist) in EUR — the invariant checked below."""
+    herleitung = df[df["group"].str.contains("Herleitung", na=False)]
+    top = herleitung[(herleitung["item"].str.count(r"\.") == 1)
+                     & (~herleitung["label"].str.lower().str.startswith("nettokredit"))]
+    nka = herleitung[herleitung["label"].str.lower().str.startswith("nettokredit")]
+    return float(top["ist_eur"].sum()), float(nka["ist_eur"].iloc[0])
+
+
+@needs_kab_any
+@pytest.mark.parametrize("year", _kab_years())
+def test_annex_410_top_level_items_close_to_nka_for_every_parsing_edition(year):
+    """DEBT_KICKOFF.md §14 DD-style closure: in every edition whose annex
+    4.10 parses at all, the top-level items 3.1 ... 3.n of 'Herleitung der
+    Nettokreditaufnahme' (including 3.1 gross, 3.3 redemptions negative, the
+    Sondervermögen and Rücklage lines) must sum to the Nettokreditaufnahme
+    Ist line to the euro -- this is what the 2023 correction-booking fix
+    (wrapped labels, a 2-cell row for the blank-Soll 'Rückabwicklung' lines,
+    and the label-after-figures reattachment) restores."""
+    df = readers.kreditaufnahmebericht_annex(year, "4.10")
+    if df.empty:
+        pytest.skip(f"annex 4.10 does not parse for the {year} edition "
+                    f"(see reports/debt_sources/bmf.md)")
+    top_sum, nka = _top_level_sum_and_nka(df)
+    assert abs(top_sum - nka) < 1.0, (
+        f"{year}: top-level 3.x sum {top_sum/1e6:,.3f} EUR mn "
+        f"!= Nettokreditaufnahme Ist {nka/1e6:,.3f} EUR mn")
+
+
+@needs_kab_any
+def test_annex_410_2023_closes_after_the_correction_booking_fix():
+    """The 2023 edition introduced a "Rückabwicklung von Zuführungen an
+    Sondervermögen" correction-booking row under several Sondervermögen items
+    (following the Bundesverfassungsgericht ruling of 15 November 2023) that
+    prints only Ist and Abweichung, leaving Soll blank rather than "0,00".
+    Before the fix this 2-cell row was buffered rather than closed, which
+    glued its text (and the *next* item's own label and figures) onto
+    whatever line closed next -- e.g. the Ist of the real item 3.9 got
+    attributed to a bogus "3.8.3" record, so item 3.9 never appeared and the
+    top-level sum came out 40,600 EUR mn too high (67,777 vs the true 27,177)."""
+    if not _have("BMF_KREDITAUFNAHMEBERICHT", "2023"):
+        pytest.skip("no Kreditaufnahmebericht 2023 snapshot")
+    df = readers.kreditaufnahmebericht_annex(2023, "4.10")
+    assert not df.empty
+    # every top-level item 3.1 ... 3.16 must be present exactly once, in
+    # particular the three that used to be swallowed by the row before them
+    top_items = set(df.loc[df["item"].str.count(r"\.") == 1, "item"])
+    for item in ("3.9", "3.11", "3.13"):
+        assert item in top_items, f"item {item} missing (swallowed by a neighbour)"
+    top_sum, nka = _top_level_sum_and_nka(df)
+    assert abs(nka / 1e6 - 27_176.573) < 0.001
+    assert abs(top_sum - nka) < 1.0
+
+
+@needs_kab_any
+def test_bund_net_borrowing_annual_covers_2020_through_2025_and_earlier_years():
+    s = readers.bund_net_borrowing_annual()
+    have_2020_2025 = {y for y in range(2020, 2026) if _have("BMF_KREDITAUFNAHMEBERICHT", str(y))}
+    assert have_2020_2025 <= set(s.index), (
+        f"missing years: {have_2020_2025 - set(s.index)}")
+    for year in have_2020_2025:
+        assert s[year] > 0
+
+    # every earlier edition in the store adds its own (narrower, coarser)
+    # narrative-table Nettokreditaufnahme where no annex exists (2013-2019
+    # have no chapter-4 annex before the 2019 typo fix / it not existing at
+    # all before 2019; the note says which years and from which source)
+    earlier_editions = [y for y in _kab_years() if y < 2020]
+    if earlier_editions:
+        assert s.index.min() <= min(earlier_editions)
+        assert "note" in s.attrs and s.attrs["note"]
+
+
+@needs_kab_any
+def test_bund_interest_annual_agrees_across_editions_for_overlapping_years():
+    """DEBT_KICKOFF.md §6.3/§14: annex 4.5 'Insgesamt' (Verzinsung) for a
+    given year must be the same figure regardless of which later edition's
+    annex it is read from -- it is settled history, not a revised estimate."""
+    years = [y for y in (2023, 2024, 2025) if _have("BMF_KREDITAUFNAHMEBERICHT", str(y))]
+    if len(years) < 2:
+        pytest.skip("need at least two of the 2023/2024/2025 editions")
+    series = {}
+    for y in years:
+        a = readers.kreditaufnahmebericht_annex(y, "4.5")
+        tot = a[(a["table"] == "verzinsung") & (a["series_label"] == "Insgesamt")]
+        series[y] = tot.set_index("year")["value_eur_mn"]
+    base_year = years[0]
+    for other in years[1:]:
+        common = series[base_year].index.intersection(series[other].index)
+        assert len(common) > 10
+        diff = (series[base_year].reindex(common) - series[other].reindex(common)).abs()
+        assert diff.max() == 0, (
+            f"editions {base_year} and {other} disagree on years "
+            f"{list(diff[diff > 0].index)}")
