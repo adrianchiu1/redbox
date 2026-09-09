@@ -48,10 +48,26 @@ def build(run_id: str | None = None, include_curves: bool = True) -> dict[str, P
     out["debt_official_totals"] = _write("debt_official_totals", totals)
     agg = class_aggregates(run_id)
     out["debt_class_aggregates"] = _write("debt_class_aggregates", agg)
+    # Stage D2–D4: the per-security register where a country's office is
+    # harvested (register_{iso3}.py present); computed sums take the chains'
+    # register step for those country-years.
+    from ggfiscal.debt import register as R
+    reg = R.collect(run_id)
+    sums = None
+    if len(reg["debt_securities"]):
+        for name in R.REGISTER_TABLES:
+            out[name] = _write(name, reg[name])
+        reference = pd.read_csv(out["debt_reference_series"], parse_dates=["date"])
+        interest = R.build_interest_by_security(reg, reference, run_id)
+        out["debt_interest_by_security"] = _write("debt_interest_by_security", interest)
+        profile, issuance = R.build_maturity_tables(reg, run_id)
+        out["debt_maturity_profile"] = _write("debt_maturity_profile", profile)
+        out["debt_issuance_by_bucket"] = _write("debt_issuance_by_bucket", issuance)
+        sums = R.register_sums(reg, interest)
     out["debt_interest_reconciliation"] = _write("debt_interest_reconciliation",
-                                                 build_chain("interest", agg, totals, run_id))
+                                                 build_chain("interest", agg, totals, run_id, sums))
     out["debt_financing_reconciliation"] = _write("debt_financing_reconciliation",
-                                                  build_chain("financing", agg, totals, run_id))
+                                                  build_chain("financing", agg, totals, run_id, sums))
     return out
 
 

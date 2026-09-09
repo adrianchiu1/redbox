@@ -111,21 +111,34 @@ def _register_rows(iso3: str, measure: str, in_reg: pd.DataFrame) -> pd.DataFram
 
 
 def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
-                run_id: str) -> pd.DataFrame:
+                run_id: str, register_sums: pd.DataFrame | None = None) -> pd.DataFrame:
+    """`register_sums` (from register.register_sums) carries the computed
+    per-security sums by class; where a (country, year) has them they take
+    the register step (item_type computed, grade A) and the DD8 aggregate
+    rows step aside into the V31/V39 cross-checks."""
     measure = MEASURE[chain]
     agg = aggregates[aggregates["measure"] == measure]
     tot = totals[totals["chain"] == chain]
+    rs = (register_sums[register_sums["chain"] == chain] if register_sums is not None
+          else pd.DataFrame(columns=["iso3", "year", "instrument_class", "value_lcu_mn", "basis"]))
     frames = []
     for iso3 in config.COUNTRIES:
         t_iso = tot[tot["iso3"] == iso3]
         a_iso = agg[agg["iso3"] == iso3]
-        years = sorted(set(t_iso["year"]) | set(a_iso["year"]))
+        r_iso = rs[rs["iso3"] == iso3]
+        years = sorted(set(t_iso["year"]) | set(a_iso["year"]) | set(r_iso["year"]))
         for year in years:
             items: list[ChainItem] = []
             a_y = a_iso[a_iso["year"] == year]
-            for klass, g in _register_rows(iso3, measure, a_y[a_y["in_register"]]).groupby("instrument_class"):
-                items.append(ChainItem("register", f"sum_{klass}", float(g["value_lcu_mn"].sum()),
-                                       "official", str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
+            r_y = r_iso[r_iso["year"] == year]
+            if len(r_y):
+                for _, r in r_y.iterrows():
+                    items.append(ChainItem("register", f"sum_{r['instrument_class']}", float(r["value_lcu_mn"]),
+                                           "computed", "ggfiscal.debt.register", str(r["basis"])))
+            else:
+                for klass, g in _register_rows(iso3, measure, a_y[a_y["in_register"]]).groupby("instrument_class"):
+                    items.append(ChainItem("register", f"sum_{klass}", float(g["value_lcu_mn"].sum()),
+                                           "official", str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
             for sub, g in a_y[~a_y["in_register"]].groupby("sub_type"):
                 v = float(g["value_lcu_mn"].sum())
                 if sub.startswith("sondervermoegen_"):
@@ -172,6 +185,11 @@ def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
     out["snapshot_sha256"] = None
     out["quality_grade"] = out["item_type"].map({"official": "A", "computed": "B", "declared": "C", "residual": "B"})
     out["notes"] = None
-    out.loc[out["step"] == "register", "quality_grade"] = "B"
-    out.loc[out["step"] == "register", "notes"] = "aggregate class-level layer (DD8) pending the per-security register (OQ-8)"
+    reg = out["step"] == "register"
+    computed = reg & (out["item_source_id"] == "ggfiscal.debt.register")
+    out.loc[reg & ~computed, "quality_grade"] = "B"
+    out.loc[reg & ~computed & (out["item"] != "official_total"), "notes"] = \
+        "aggregate class-level layer (DD8) pending the per-security register (OQ-8)"
+    out.loc[computed, "quality_grade"] = "A"
+    out.loc[computed, "notes"] = "computed from the per-security register (debt_interest_by_security / debt_flows)"
     return out
