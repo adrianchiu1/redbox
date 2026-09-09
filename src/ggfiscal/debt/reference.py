@@ -62,7 +62,7 @@ def build_reference_series(run_id: str, include_curves: bool = True) -> pd.DataF
     frames.append(_rows("UK_BANK_RATE", B.iadb_series("IUDBEDR"), "pct_pa", "BOE_IADB", _sha("BOE_IADB", "IUDBEDR"), None, "daily"))
     for tenor, sid in (("3M", "EA_MM_3M"), ("6M", "EA_MM_6M")):
         frames.append(_rows(sid, E.ea_money_market(tenor), "pct_pa", "EUROSTAT_IRT",
-                            _sha("EUROSTAT_IRT", f"irt_st_m_EA_{tenor}"), None,
+                            _sha("EUROSTAT_IRT", f"irt_st_m_IRT_{tenor}"), None,
                             "monthly average; EA aggregate retropolated before 1999"))
     for iso3, sid in (("FRA", "FR_IR3"), ("DEU", "DE_IR3"), ("GBR", "GB_IR3")):
         frames.append(_rows(sid, E.oecd_rate(iso3, "IR3TIB"), "pct_pa", "OECD_FINMARK",

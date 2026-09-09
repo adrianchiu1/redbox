@@ -47,7 +47,7 @@ V35,OK,FRA/C_s13_nlb,step C equals the package's series on 31 years
 V35,OK,DEU/C_s13_gf01_7,step C equals the package's series on 35 years
 V35,OK,DEU/C_s13_nlb,step C equals the package's series on 31 years
 V37,WARN,debt_reference_series,0 rows without a source; 832 official rows without a snapshot hash
-V37,WARN,debt_official_totals,0 rows without a source; 124 official rows without a snapshot hash
+V37,OK,debt_official_totals,0 rows without a source; 0 official rows without a snapshot hash
 V37,OK,debt_class_aggregates,0 rows without a source; 0 official rows without a snapshot hash
 V38,SKIP,-,"maturity profile not built (register pending, OQ-8)"
 V39,OK,-,"class-level interest is the ministry's own instrument split (DEU BMF, GBR NLF); per-security comparison awaits the register"

@@ -152,7 +152,7 @@ def _eurostat_rows(iso3: str, years, chain: str, step: str, item: str) -> list[d
     from ggfiscal.debt.readers import eurostat_insee_oecd as E
     s = E.d41pay(iso3, "S1311") if item == "D41PAY" else E.b9(iso3, "S1311")
     geo = {"FRA": "FR", "DEU": "DE"}[iso3]
-    sha = _sha("EUROSTAT_GOV10A_MAIN_S1311", f"gov_10a_main_S1311_{item}_{geo}") or _sha("EUROSTAT_GOV10A_MAIN_S1311", f"gov_10a_main_{geo}")
+    sha = _sha("EUROSTAT_GOV10A_MAIN_S1311", f"gov_10a_main_{item}_{geo}")
     return [_row(iso3, y, chain, step, s.get(y), "EUROSTAT_GOV10A_MAIN_S1311", "accrued", sha=sha,
                  notes=f"gov_10a_main S1311 {item}") for y in years]
 

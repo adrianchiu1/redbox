@@ -234,7 +234,8 @@ _NUM = r"-?\d{1,3}(?:\.\d{3})*(?:,\d+)?"
 _CELL_RE = re.compile(rf"(?:(?<=\s)|^)(?:{_NUM}|-)(?=\s|$)")
 _YEAR_ROW_RE = re.compile(r"^(?:(?:19|20)\d{2}\s+){1,}(?:19|20)\d{2}$")
 _RUNNING_HEAD_RE = re.compile(r"^(Bericht des Bundesministeriums|Berichtsperiode|"
-                              r"in Mio\.|in €|Bezeichnung|Noch\s|\*|Soll\s|\d{1,3}$)")
+                              r"in Mio\.|in €|Bezeichnung|Noch\s|\*|Soll\s|Abweichung\s|"
+                              r"Ist\s*\./\.\s*Soll|\d{1,3}$)")
 _ITEM_RE = re.compile(r"^(\d+(?:\.\d+)*)\s+(.*)$")
 #: A group heading in annex 4.10 ("1 Einnahmen"): a top-level item number with
 #: no value columns of its own.
@@ -466,11 +467,36 @@ def _parse_410(year: int) -> pd.DataFrame:
     items 3.2/3.3 and 3.3/3.4) carry no label in the text layer and are
     dropped; every labelled line, including the "Einnahmen", "Ausgaben" and
     "Nettokreditaufnahme" totals, is kept.
+
+    Three layout wrinkles, all fixed generally rather than per edition:
+
+    * **A 2-cell row.** From 2023 on, the "Rückabwicklung von Zuführungen an
+      Sondervermögen" correction-booking rows the Bundesverfassungsgericht
+      ruling introduced print only Ist and Abweichung -- Soll is left blank
+      rather than "0,00" -- which is exactly the pair the Ist./.Soll identity
+      predicts (Soll = 0 => Abweichung = Ist), and confirmed by the two
+      printed numbers always being equal. Closing the row here (instead of
+      buffering it, which used to glue its text *and* the next item's own
+      figures onto whatever line closed next -- corrupting both) is what
+      2023 needs to close to the euro.
+    * **A stray footnote asterisk between two amounts** (2022, a running
+      subtotal): stripped before the trailing-cell scan so it cannot swallow
+      a real cell (see :data:`_STRAY_ASTERISK_RE`).
+    * **A label that continues after its own figures, onto the next row's
+      line** (2019's continuation page only): reattached to the row it
+      belongs to via :func:`_split_row_start` instead of prefixing the next
+      item's label and erasing that item's own number.
+
+    Parsing stops at the first "Nettokreditaufnahme" row (annex 4.10's last
+    labelled line in every edition): trailing footnote paragraphs use the
+    same "<digit> <text>" shape as a group heading ("1 Einnahmen") and would
+    otherwise be mistaken for one.
     """
     records: list[dict] = []
     group = ""          # carried across pages: a continuation page repeats no heading
     for page in _annex_pages(year, "4.10"):
         buffer: list[str] = []
+        done = False
         for raw in page.splitlines():
             line = raw.strip()
             if not line:
@@ -478,8 +504,9 @@ def _parse_410(year: int) -> pd.DataFrame:
             if _RUNNING_HEAD_RE.match(line) and not _ITEM_RE.match(line):
                 buffer = []
                 continue
+            line = _STRAY_ASTERISK_RE.sub("", line).strip()
             label, cells = _trailing_cells(line)
-            if len(cells) != 3:
+            if len(cells) not in (2, 3):
                 m = _GROUP_RE.match(line)
                 if m:                      # "1 Einnahmen": a heading, not a label
                     group, buffer = m.group(2).strip(), []
@@ -488,14 +515,24 @@ def _parse_410(year: int) -> pd.DataFrame:
                 continue
             full_label = _join_label([*buffer, label])
             buffer = []
-            m = _ITEM_RE.match(full_label)
-            item, text = (m.group(1), m.group(2)) if m else ("", full_label)
+            prefix, item, text = _split_row_start(full_label)
+            if prefix and records:
+                records[-1]["label"] = _join_label([records[-1]["label"], prefix])
             if not text:
                 continue
-            soll, ist, abw = (_to_float(c) for c in cells)
+            if len(cells) == 3:
+                soll, ist, abw = (_to_float(c) for c in cells)
+            else:               # Soll blank on the printed page => Soll = 0
+                soll = 0.0
+                ist, abw = (_to_float(c) for c in cells)
             records.append({"annex": "4.10", "item": item, "group": group,
                             "label": text, "soll_eur": soll, "ist_eur": ist,
                             "abweichung_eur": abw})
+            if text.strip().lower().startswith("nettokreditaufnahme"):
+                done = True
+                break
+        if done:
+            break
     return pd.DataFrame.from_records(records)
 
 
