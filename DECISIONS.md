@@ -997,3 +997,46 @@ aggregate class-level layer (ministry instrument-type totals, grade B/C)
 feeding the register step of both chains, so the reconciliations can be
 published for every year the aggregates cover and replaced security by
 security as the offices become reachable.
+
+## D-S10-003 — Both reconciliation chains published on the aggregate class layer; what closes, what remains, and the DEU perimeter choice (serves DEBT_KICKOFF.md §8, §12 D2–D5, DD4/DD5/DD8; depends on OQ-8)
+2026-09-09. With the debt offices still denied (OQ-8), the register step of
+both chains is the ministries' own instrument-class aggregates (DD8; config
+`register_selection` names the one consistent row set per country so a
+source's total is never added to its components). Results, residual by step:
+  - **DEU interest**: step A closes to zero 1996–2025 (BMF instrument
+    leaves + the Mitfinanzierung item = Kreditaufnahmebericht annex 4.5);
+    step B is the cash-vs-accrual wedge (agio/disagio at value date until
+    2024; Eurostat's ORD41A_ADJ item is applied where published); step C
+    carries Länder, local and social-security D.41 and leaves the
+    consolidation/COFOG-vs-D.41 wedge (≈ 2–4 EUR bn).
+  - **DEU financing**: step A closes to zero 2019–2025 (special funds
+    subtracted, annex 4.10 derivation items applied; the 2023 edition's
+    correction-booking rows and 2019's reversed wrapping are parsed);
+    2009–2018 use the narrative-table NKA (narrower concept, whole EUR mn)
+    with the derivation items unavailable, residual published. Step B adds
+    the special funds back (they are S.1311) and the Eurostat EDP
+    stock-flow items 2022–; what remains is the S.1311 perimeter beyond the
+    Bund and its funds (FMS-Wertmanagement and other federal units) and is
+    left as residual, not allocated. Step C closes exactly.
+  - **GBR interest**: step A is the NLF finance costs (FY→CY per §7.10)
+    with NS&I and other costs as items, closing by construction 2009–2024;
+    step B (NLF → ONS NMFX) has no published bridge and swings ±£10 bn with
+    the index-linked uplift; step C carries local-government D.41 (PSA6J)
+    and leaves the COFOG-vs-D.41 wedge (≈ £0.1–0.2 bn).
+  - **GBR financing**: step A closes to zero 1997–2025 (ONS Appendix S is
+    an identity); step B closes to £2 mn (REC2 columns + PSA7C coverage
+    items); step C closes to ≤ £13 mn (PSA2 local-government net borrowing).
+  - **FRA**: no step A on either chain (programme 117, AFT blocked);
+    interest step B has no carried value and step C closes to the
+    consolidation/COFOG wedge (≈ 1.5–4 EUR bn); financing register = Δ
+    year-end stock (INSEE/AFT, Eurostat), step B via Eurostat EDP items
+    2021– leaves −0.6 to −4 EUR bn (buy-backs and ODAC perimeter), step C
+    closes exactly.
+Decision on the DEU step-A concept: the core-budget Nettokreditaufnahme is
+kept as the step-A total (it is the published, audited figure) and the
+special funds are re-added at step B, rather than inventing an S.1311-wide
+cash measure. All residuals are published per (country, year, step); V32
+additivity is exact; `ggfiscal debt validate` reports 19 OK, 25 WARN (V31
+Bund-vs-S.1311 perimeter, ≤ 8% narrowing to 1%), 8 SKIP (register checks).
+Deliverables: `deliverables/debt_*.csv` (five files, in the dictionary and
+README) and `notebooks/debtbook.ipynb`.

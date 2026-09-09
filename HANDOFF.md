@@ -1,13 +1,13 @@
 # HANDOFF.md
 
-Rewritten 2026-09-08, end of session 6 (the flat-file bundle and the
-derivation notebook, on `claude/gbr-fra-deu-govt-expenditure-0lc1w1`
-branched from the merged `main` at 7cf4a83).
+Rewritten 2026-09-09, end of session 7 (the debt-in-issue extension, on
+`claude/stoic-dijkstra-bc42s1` branched from the merged `main` at 6441366).
 
 ## Current stage
 
-**Debt extension (DEBT_KICKOFF.md v1.0): Stages D0 and D1 complete
-(D-S10-002); D2 blocked on the debt-office hosts (OQ-8).** The parent
+**Debt extension (DEBT_KICKOFF.md v1.0): D0, D1 and the DD8 aggregate
+version of D2–D5 complete (D-S10-002/003); the per-security register
+itself is blocked on the debt-office hosts (OQ-8).** The parent
 package is untouched except: `config.sources()` now merges
 `config/debt_sources.yaml`; the snapshot store names pdf/html extensions;
 pypdf and cffi are dependencies. Parent baseline still 120 passed (the
@@ -24,9 +24,16 @@ rerun alone).
 - Engines (pure, unit-tested): §7 interest (both bases, uplift, bills,
   floaters, premium/discount), DD7 maturity buckets and issuance-by-
   residual-maturity, §8 chain assembler with V32 additivity.
-- `debt build` → `data/canonical/debt_reference_series.csv` (350 series)
-  and `debt_official_totals.csv` (steps A/B/C per country-year).
-- Tests: `tests/debt` 70 passed.
+- `debt build` → `data/canonical/debt_reference_series.csv` (350 series),
+  `debt_official_totals.csv`, `debt_class_aggregates.csv` (DEU 1995–,
+  GBR 1975/1997–, FRA 2000–), `debt_interest_reconciliation.csv`,
+  `debt_financing_reconciliation.csv`; `debt validate` → V29–V40;
+  `flatten` copies the five tables into `deliverables/` with dictionary
+  rows; `notebooks/debtbook.ipynb` (45 cells, 330 KB) walks the chains.
+- Bridge items (`debt/bridges.py`): ONS REC2/PSA7C/PSA6J/PSA2, Eurostat
+  EDP stock-flow items, BMF annex 4.10 derivation; see D-S10-003 for what
+  closes and what remains residual.
+- Tests: `tests/debt` 152 passed, 6 skipped; parent suite unchanged.
 
 ## Blocked on whom
 
@@ -45,14 +52,33 @@ ggfiscal debt build            # reference series + official totals
 python3 -m pytest tests/debt -q
 ```
 
-Next build step (no committee input needed): the aggregate class-level
-layer (DD8) from BMF instrument-type totals, ONS gilt/bill stocks and
-flows, INSEE/Eurostat FRA aggregates, feeding the register step of both
-chains so `debt_interest_reconciliation` and `debt_financing_reconciliation`
-publish for every year; then flatten + notebook (D5) on that basis, and
-swap in per-security rows as the offices open.
+Next build steps, in order, once OQ-8 is resolved or files arrive via
+`ggfiscal ingest-file`: (1) DEU first — the Finanzagentur's per-ISIN annual
+list since 1995 + Emissionshistorie → `debt_securities/positions/flows`,
+`interest.py` per security, V29–V31/V33/V34 wired in `debt/validate.py`,
+register items in `chains.py` switched from aggregates to computed sums
+(the aggregate rows become V31/V39); (2) GBR from D1A/D1C/D2.1E/D5I with
+the COBDate month-end loop (`families/debt_offices.cob_pulls`); (3) FRA
+from the AFT Excel files; (4) the maturity profile and issuance-by-bucket
+tables (`maturity.py` is ready) and the flatten/notebook additions. Without
+OQ-8, the remaining reachable improvements are small: DEU S.1311 perimeter
+items at financing step B (FMS-Wertmanagement), a GBR interest step-B
+bridge if the OBR debt-interest split becomes reachable.
 
 ## Data facts future sessions must not rediscover (debt)
+
+- The financing chain runs in NET-BORROWING sign: steps B and C carry
+  −B.9 / −NLB (basis says so). Register selection per country lives in
+  `config/debt.yaml`; DEU special funds are subtracted at step A and
+  added back at step B; the Mitfinanzierung item is interest-only.
+- Kreditaufnahmebericht annex 4.10: 2019–2025 parse and close to the
+  euro; 2013–2018 have no annex (narrative-table NKA, narrower concept);
+  rows may carry 2 cells (Soll blank) and labels wrap both ways.
+- ONS REC2's RUUX is CGNCR incl. NRAM/B&B/Network Rail; PSA7C (M98W,
+  MUI2, ABEC, ABEI) bridges it to M98R. PSA2 −NMOE is LG net borrowing;
+  PSA6J NUGW is LG interest. No intra-GG consolidation line is published.
+- Eurostat EDP identity: GD_CH = B9_T3 + F_ASS + ORADJ + YA3 (KX and K61
+  are inside ORADJ); edpt3 starts FR 2021 / DE 2022.
 
 - BMF Datenportal flow sheets are cumulative year-to-date (December = full
   year); Tilgungen/Zinsen are negative; values in whole euro. Indent-0
