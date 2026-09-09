@@ -189,29 +189,63 @@ def pulls() -> list[Pull]:
 
 # ------------------------------------------------------------------- HTTP client
 
+CHUNK = 1 << 16
+
+
 class _Denied(Exception):
     """One attempt ended in a proxy CONNECT denial."""
 
 
-def _attempt(url: str) -> requests.Response:
-    """One attempt: fresh session, manual same-host redirect following."""
+class _Partial(Exception):
+    """The body was cut off mid-transfer; `data` is what arrived (empty when
+    the response cannot be resumed with a Range request)."""
+
+    def __init__(self, data: bytes, detail: str):
+        super().__init__(detail)
+        self.data = data
+
+
+def _attempt(url: str, resume_from: int = 0) -> tuple[bytes, str, int]:
+    """One attempt: fresh session, manual same-host redirect following.
+
+    `resume_from` > 0 asks the server to continue a body an earlier attempt lost
+    (the 18 MB Haushaltsrechnung Band 2 is chunked and is sometimes cut short);
+    the identity encoding is demanded with it so that byte offsets are the
+    offsets of the bytes we already hold.
+    """
+    headers = dict(BMF_HEADERS)
+    if resume_from:
+        headers["Range"] = f"bytes={resume_from}-"
+        headers["Accept-Encoding"] = "identity"
     session = requests.Session()
     try:
         current = url
         for _ in range(MAX_REDIRECTS):
-            resp = session.get(current, headers=BMF_HEADERS, timeout=TIMEOUT,
-                               allow_redirects=False)
+            resp = session.get(current, headers=headers, timeout=TIMEOUT,
+                               allow_redirects=False, stream=True)
             if resp.status_code in (301, 302, 303, 307, 308):
                 target = urljoin(current, resp.headers.get("location", ""))
+                resp.close()
                 if urlsplit(target).netloc != urlsplit(current).netloc:
                     # The bot manager's validate.perfdrive.com interstitial:
                     # the proxy refuses it, so drop the session and start over.
                     raise FetchError(f"bot-manager redirect to {target}")
                 current = target
                 continue
-            if resp.status_code == 200:
-                return resp
-            raise FetchError(f"HTTP {resp.status_code} for {current}")
+            if resp.status_code not in (200, 206):
+                resp.close()
+                raise FetchError(f"HTTP {resp.status_code} for {current}")
+            resumable = (resp.headers.get("accept-ranges", "").lower() == "bytes"
+                         and not resp.headers.get("content-encoding"))
+            buf = bytearray()
+            try:
+                for chunk in resp.iter_content(CHUNK):
+                    buf += chunk
+            except requests.exceptions.RequestException as exc:
+                raise _Partial(bytes(buf) if resumable else b"",
+                               f"{type(exc).__name__} after {len(buf)} bytes: {exc}") from exc
+            return (bytes(buf), resp.headers.get("content-type", ""),
+                    resp.status_code)
         raise FetchError(f"redirect loop for {url}")
     except requests.exceptions.ProxyError as exc:
         raise _Denied(str(exc)) from exc
@@ -221,18 +255,31 @@ def _attempt(url: str) -> requests.Response:
         session.close()
 
 
-def _fetch(url: str, attempts: int = ATTEMPTS) -> requests.Response:
-    """Retry :func:`_attempt`; classify a run of pure CONNECT denials as blocked."""
+def _fetch(url: str, attempts: int = ATTEMPTS) -> tuple[bytes, str, int]:
+    """Retry :func:`_attempt`; classify a run of pure CONNECT denials as blocked.
+
+    Returns (body, content-type, status). A resumed transfer is reported as 200:
+    the 206 is an artefact of our retry, not of the pull.
+    """
     errors: list[str] = []
     denials = 0
+    prefix = b""
     for i in range(attempts):
         try:
-            return _attempt(url)
+            body, ctype, status = _attempt(url, len(prefix))
         except _Denied as exc:
             denials += 1
             errors.append(f"proxy CONNECT denied: {exc}")
+        except _Partial as exc:
+            errors.append(str(exc))
+            prefix = prefix + exc.data if exc.data else b""
         except FetchError as exc:
             errors.append(str(exc))
+            prefix = b""
+        else:
+            if status == 206:
+                return prefix + body, ctype, 200
+            return body, ctype, status  # server ignored the Range: full body
         if i + 1 < attempts:
             time.sleep(random.uniform(1.0, 3.0))
     detail = f"{url} after {attempts} attempts: " + "; ".join(errors[-4:])
@@ -241,13 +288,18 @@ def _fetch(url: str, attempts: int = ATTEMPTS) -> requests.Response:
     raise FetchError(f"failed {detail}")
 
 
+def _fetch_text(url: str) -> str:
+    """A BMF page as text (the site serves UTF-8 and declares it)."""
+    return _fetch(url)[0].decode("utf-8", errors="replace")
+
+
 _HREF = re.compile(r'href="([^"]+?)"', re.I)
 
 
 def _resolve(landing_url: str, pattern: str) -> str | None:
     """Scrape a landing page for the first href matching `pattern` (regex)."""
     try:
-        html = _fetch(landing_url).text
+        html = _fetch_text(landing_url)
     except (FetchBlocked, FetchError):
         return None
     rx = re.compile(pattern, re.I)
@@ -280,7 +332,7 @@ def get(pull: Pull) -> tuple[bytes, str, int]:
     landing page is scraped for the current link and the pull retried once.
     """
     try:
-        resp = _fetch(pull.url)
+        return _fetch(pull.url)
     except FetchError as exc:
         if "HTTP 404" not in str(exc):
             raise
@@ -288,5 +340,4 @@ def get(pull: Pull) -> tuple[bytes, str, int]:
         resolved = _resolve(*fallback) if fallback else None
         if not resolved or resolved == pull.url:
             raise
-        resp = _fetch(resolved)
-    return resp.content, resp.headers.get("content-type", ""), resp.status_code
+        return _fetch(resolved)
