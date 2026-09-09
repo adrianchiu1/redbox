@@ -75,6 +75,22 @@ def cob_pulls(start: dt.date = dt.date(1998, 4, 30),
                  headers=BROWSER_HEADERS) for d in month_ends(start, end)]
 
 
+CHALLENGE_MARKERS = ("ShieldSquare Captcha", "Just a moment...", "perfdrive.com/aperture", "cf-chl")
+
+
+def get(pull: Pull):
+    """Plain GET, but a bot-challenge page (DMO: Radware ShieldSquare; AFT:
+    Cloudflare) is raised as FetchError instead of being stored as data."""
+    from ggfiscal.ingest.fetch import FetchError, _get
+    resp = _get(pull.url, pull.accept, pull.headers)
+    ctype = resp.headers.get("content-type", "")
+    if "text/html" in ctype:
+        head = resp.content[:20000].decode("utf-8", "ignore")
+        if any(m in head for m in CHALLENGE_MARKERS):
+            raise FetchError(f"bot challenge page for {pull.url} (JS challenge; needs a browser client)")
+    return resp.content, ctype, resp.status_code
+
+
 def pulls() -> list[Pull]:
     out: list[Pull] = []
     for code in DMO_GILT_REPORTS:
@@ -99,18 +115,30 @@ def pulls() -> list[Pull]:
     # The xlsx links behind the AFT pages are versioned; they are resolved
     # from the page HTML by the reader once the pages are in the store.
 
+    fa_files = {
+        # resolved live 2026-09-09 from /downloadcenter and the ILB / Umlauf / Emissionen pages
+        "einzelaufstellung_seit_1995": "berichtswesen/einzelaufstellung_jahre_dt.xlsx",
+        "umlaufende_monatsultimo": "berichtswesen/einzelaufstellung_dt.xlsx",
+        "schuldenbericht": "berichtswesen/schuldenbericht_dt.xlsx",
+        "emissionshistorie": "auktionen/emissionshistorie_dt.xlsx",
+        "emissionsergebnisse_aktuell": "auktionen/emissionsergebnisse_aktuell_dt.xlsx",
+        "index_ratios_2005": "indexverhaeltnis/archiv_referenzindex_bj2005_dt.xlsx",
+        "index_ratios_2015": "indexverhaeltnis/archiv_referenzindex_bj2015_dt.xlsx",
+        "index_ratios_2025": "indexverhaeltnis/archiv_referenzindex_bj2025_dt.xlsx",
+    }
+    for part, rel in fa_files.items():
+        out.append(Pull("DEU_FINANZAGENTUR", part,
+                        f"{FA}/fileadmin/user_upload/Institutionelle-investoren/{rel}", headers=BROWSER_HEADERS))
+    for year in range(2004, 2013):      # editions before the BMF-hosted 2013- set
+        out.append(Pull("DEU_FINANZAGENTUR", f"kreditaufnahmebericht_{year}",
+                        f"{FA}/fileadmin/user_upload/Finanzagentur/pdf/kreditaufnahmeberichte/Kreditaufnahmebericht_{year}.pdf",
+                        headers=BROWSER_HEADERS))
     out += [
         Pull("DEU_FINANZAGENTUR", "downloadcenter", f"{FA}/downloadcenter", headers=BROWSER_HEADERS),
         Pull("DEU_FINANZAGENTUR", "umlaufende_page",
              f"{FA}/bundeswertpapiere/handel/umlaufende-bundeswertpapiere", headers=BROWSER_HEADERS),
         Pull("DEU_FINANZAGENTUR", "ilb_page",
              f"{FA}/bundeswertpapiere/bundeswertpapierarten/inflationsindexierte-bundeswertpapiere",
-             headers=BROWSER_HEADERS),
-        Pull("DEU_FINANZAGENTUR", "emissionshistorie",
-             f"{FA}/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionshistorie_dt.xlsx",
-             headers=BROWSER_HEADERS),
-        Pull("DEU_FINANZAGENTUR", "emissionsergebnisse_aktuell",
-             f"{FA}/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionsergebnisse_aktuell_dt.pdf",
              headers=BROWSER_HEADERS),
     ]
     return out
