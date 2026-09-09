@@ -29,8 +29,10 @@ UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
       "Chrome/126.0.0.0 Safari/537.36")
 CHALLENGE_MARKERS = ("ShieldSquare Captcha", "Just a moment...", "perfdrive.com/aperture", "cf-chl",
                      "challenge-platform")
-LANDING = {"www.dmo.gov.uk": "https://www.dmo.gov.uk/data/",
-           "www.aft.gouv.fr": "https://www.aft.gouv.fr/fr"}
+# The page that is opened to clear the challenge: verified live 2026-09-09
+# (the DMO's /data/ landing never clears it; the report URL itself does).
+LANDING = {"www.dmo.gov.uk": "https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D1A",
+           "www.aft.gouv.fr": "https://www.aft.gouv.fr/fr/encours-detaille-oat"}
 MIN_INTERVAL_S = 1.5
 
 
@@ -80,7 +82,7 @@ class BrowserSession:
         page = self._ctx.new_page()
         try:
             page.goto(url, wait_until="domcontentloaded", timeout=90000)
-            deadline = time.time() + 45
+            deadline = time.time() + 60
             while time.time() < deadline:
                 page.wait_for_timeout(2000)
                 if not is_challenge(page.content()):
@@ -95,24 +97,68 @@ class BrowserSession:
     # ---------------------------------------------------------------- fetch
 
     def fetch(self, url: str, referer: str | None = None, retries: int = 2) -> tuple[bytes, str, int]:
+        """Navigate a page to the URL (the challenge cookie alone does not
+        satisfy the DMO's request-level checks; a real navigation does). A
+        response that is a document comes back as its raw body; a response
+        the browser treats as a download is read from the download file."""
         host = urlsplit(url).netloc
         self.solve(host)
         for attempt in range(retries + 1):
             wait = MIN_INTERVAL_S - (time.time() - self._last.get(host, 0.0))
             if wait > 0:
                 time.sleep(wait)
-            headers = {"Referer": referer or LANDING.get(host, f"https://{host}/")}
-            resp = self._ctx.request.get(url, headers=headers, timeout=120000, max_redirects=5)
+            page = self._ctx.new_page()
+            body, ctype, status = b"", "", 0
+            try:
+                try:
+                    with page.expect_download(timeout=120000) as dl_info:
+                        try:
+                            resp = page.goto(url, wait_until="domcontentloaded", timeout=120000, referer=referer)
+                        except Exception as e:      # "Download is starting" aborts the navigation
+                            if "Download is starting" not in str(e) and "net::ERR_ABORTED" not in str(e):
+                                raise
+                            resp = None
+                        if resp is not None:
+                            body, ctype, status = resp.body(), resp.headers.get("content-type", ""), resp.status
+                            if "text/html" in ctype and is_challenge(body):
+                                page.wait_for_timeout(8000)
+                                body = page.content().encode("utf-8")
+                            raise _Done()
+                    dl = dl_info.value
+                    body = open(dl.path(), "rb").read()
+                    ctype = _guess_type(dl.suggested_filename, body)
+                    status = 200
+                except _Done:
+                    pass
+            finally:
+                page.close()
             self._last[host] = time.time()
-            body = resp.body()
-            ctype = resp.headers.get("content-type", "")
             if "text/html" in ctype and is_challenge(body):
                 print(f"[browser] challenge page on {url}; re-solving ({attempt + 1}/{retries + 1})", file=sys.stderr)
                 self.solve(host, force=True)
                 continue
-            print(f"[browser] {resp.status} {len(body):>9} B  {ctype.split(';')[0]:<40} {url}", file=sys.stderr)
-            return body, ctype, resp.status
+            print(f"[browser] {status} {len(body):>9} B  {ctype.split(';')[0]:<40} {url}", file=sys.stderr)
+            return body, ctype, status
         raise RuntimeError(f"still a challenge page after {retries + 1} attempts: {url}")
+
+
+class _Done(Exception):
+    pass
+
+
+def _guess_type(name: str, body: bytes) -> str:
+    n = (name or "").lower()
+    if body[:2] == b"PK" or n.endswith(".xlsx"):
+        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    if body[:8] == bytes.fromhex("d0cf11e0a1b11ae1") or n.endswith(".xls"):
+        return "application/vnd.ms-excel"
+    if body[:5] == b"%PDF-" or n.endswith(".pdf"):
+        return "application/pdf"
+    if body.lstrip()[:5] == b"<?xml" or n.endswith(".xml"):
+        return "application/xml"
+    if n.endswith(".csv"):
+        return "text/csv"
+    return "text/html" if body.lstrip()[:1] == b"<" else "application/octet-stream"
 
 
 def fetch(url: str, referer: str | None = None) -> tuple[bytes, str, int]:
