@@ -967,3 +967,33 @@ proceeds in the same package as `ggfiscal.debt` with register entries in
 register and vintage detection cover the extension without a second
 mechanism. The access question is OQ-8; harvest of reachable sources
 (Stage D0) does not wait for it.
+
+## D-S10-002 — Stages D0 and D1 complete on the reachable sources; the debt-office hosts remain the D2 blocker (serves DEBT_KICKOFF.md §12 D0–D1, §13; depends on OQ-8)
+2026-09-09. Four source families harvested into the D8 store with readers
+and tests: BoE (18 pulls: APF operations per ISIN 2009–, yield curves
+1979–, SONIA, Bank Rate), ONS/HMT (41: PSF Appendix A and S, PUSF and RPI
+series, Debt Management Reports, National Loans Fund accounts 2005-06–),
+BMF (20: Datenportal monthly Bund debt/issuance/redemptions/interest by
+instrument 1996–, Kreditaufnahmeberichte 2013–2025, Monatsbericht,
+Haushaltsrechnung), Eurostat/INSEE/OECD (59: D.41 and B.9 by subsector,
+debt by instrument/holder/maturity, quarterly debt, HICP and CPI
+ex-tobacco, money-market and long rates, OECD quarterly public-sector
+debt). The debt-office family carries complete pull definitions (incl.
+the month-end D1A COBDate loop) that fail on the egress denial and are
+reported, not skipped. `ggfiscal debt build` writes two schema-checked
+canonical tables: `debt_reference_series` (350 series incl. the BoE
+curves) and `debt_official_totals` — the step A/B/C intermediates of both
+chains per country-year. Findings that shape D2–D4: (i) the two GBR
+step-A/B measures (NLF finance costs, ONS NMFX) agree within 10% and the
+package's GF01_7 sits 1–2% above NMFX; (ii) DEU step A is cash-like
+(disagio at value date until 2024) and swings against S.1311 D.41 by up
+to 15 EUR bn in 2023, exactly the bridge item the chain must carry;
+(iii) FRA has no reachable step A; (iv) Eurostat's remaining-maturity
+table starts 2020 for FRA and carries four of seven bands for DEU, so
+the maturity cross-check is thin outside the register; (v) BMF HTML
+carries per-request bot-manager tokens, so hash-based vintage detection
+must normalise it. Per DD8 the next step while OQ-8 is open is an
+aggregate class-level layer (ministry instrument-type totals, grade B/C)
+feeding the register step of both chains, so the reconciliations can be
+published for every year the aggregates cover and replaced security by
+security as the offices become reachable.

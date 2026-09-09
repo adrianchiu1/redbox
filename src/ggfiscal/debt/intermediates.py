@@ -111,13 +111,15 @@ def _gbr_interest(years) -> list[dict]:
         else:
             rows.append(_row("GBR", y, "interest", "A_cg_cash", None, "HMT_NLF", "accrued_nlf_finance_costs",
                              "FY", None, None, grade="D", notes="no NLF edition pair for this year"))
-    # step B: ONS PSA6B_2 CG interest payable (NMFX), calendar-year block
-    ci = O.cg_interest()
-    nmfx = ci[(ci["cdid"] == "NMFX") & (ci["period_type"] == "CY")].set_index(ci[(ci["cdid"] == "NMFX") & (ci["period_type"] == "CY")]["period_start"].dt.year)["value"]
+    # step B: ONS NMFX — central government interest payable (D.41), the
+    # PUSF annual (calendar-year) series from 1946; PSA6B_2 carries the
+    # same CDID from 1998 and is the cross-check.
+    ts = O.ons_timeseries("NMFX", "pusf")
+    ann = ts[ts["period_type"] == "A"].set_index(ts[ts["period_type"] == "A"]["period_start"].dt.year)["value"]
     for y in years:
-        rows.append(_row("GBR", y, "interest", "B_s1311_d41", nmfx.get(y), "ONS_PSF_APPENDIX_A", "accrued",
-                         sha=_sha("ONS_PSF_APPENDIX_A", "appendix_a"),
-                         notes="PSA6B_2 central government interest payable (D.41), calendar year"))
+        rows.append(_row("GBR", y, "interest", "B_s1311_d41", ann.get(y), "ONS_PSF_TIMESERIES", "accrued",
+                         sha=_sha("ONS_PSF_TIMESERIES", "NMFX"),
+                         notes="NMFX central government interest payable (D.41), calendar year, PUSF"))
     return rows
 
 
@@ -175,12 +177,15 @@ def _deu_step_a(years, chain: str) -> list[dict]:
 
 # ---------------------------------------------------------------- public
 
-def official_totals(run_id: str, first_year: int = 1990) -> pd.DataFrame:
+def official_totals(run_id: str, first_year: int | None = None) -> pd.DataFrame:
+    """One row per (country, year, chain, step) from the first year the
+    package carries either GF01_7 or NLB (or `first_year`) to the last."""
     rows: list[dict] = []
     for iso3 in config.COUNTRIES:
         g = package_gf01_7(iso3)
         n = package_nlb(iso3)
-        years = list(range(first_year, int(max(g.index.max(), n.index.max())) + 1))
+        start = first_year or int(min(g.index.min(), n.index.min()))
+        years = list(range(start, int(max(g.index.max(), n.index.max())) + 1))
         # step C: the package
         rows += [_row(iso3, y, "interest", "C_s13_gf01_7", g.get(y), "package_GF01_7", "accrued",
                       notes="expenditure_long_strict GF01_7, actuals only") for y in years]

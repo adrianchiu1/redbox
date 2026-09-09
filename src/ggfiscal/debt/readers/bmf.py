@@ -463,3 +463,53 @@ def kreditaufnahmebericht_annex(year: int, annex: str) -> pd.DataFrame:
     if annex not in ANNEX_PARSERS:
         raise KeyError(f"no parser for annex {annex!r}; have {tuple(ANNEX_PARSERS)}")
     return ANNEX_PARSERS[annex](year)
+
+
+# ------------------------------------------------ annual totals for the chains
+
+def bund_interest_annual(edition: int = 2025) -> pd.Series:
+    """Step-A interest total for DEU (DEBT_KICKOFF.md §6.3): the
+    Kreditaufnahmebericht annex 4.5 'Insgesamt' row — Verzinsung des Bundes
+    (net of interest income; excludes swaps and cash management, §14 DEU),
+    1996 onward in the 2025 edition. Sign flipped to positive expenditure.
+    Cross-checked in the notes against the Datenportal Zinsen sheet's
+    December (year-to-date) total."""
+    a = kreditaufnahmebericht_annex(edition, "4.5")
+    tot = a[(a["series_label"] == "Insgesamt") & (a["table"] == "verzinsung")]
+    s = (-tot.set_index("year")["value_eur_mn"]).sort_index().astype(float)
+    try:
+        z = datenportal("rpgZinsen Gesamt")
+        z = z[(z["level"] == 0) & (z["period"].dt.month == 12)]
+        z = z[z["series_path"].str.contains("Finanzierung Bundeshaushalt")]
+        dp = (-z.set_index(z["period"].dt.year)["value_eur_mn"]).astype(float)
+        diff = (s.reindex(dp.index) - dp).abs().max()
+        s.attrs["note"] = (f"Kreditaufnahmebericht {edition} annex 4.5 Insgesamt (Verzinsung, net of interest "
+                           f"income; excl. swaps); max |diff| vs Datenportal Zinsen Dec YTD = {diff:,.1f} EUR mn")
+    except Exception as e:      # cross-check is informative only
+        s.attrs["note"] = f"Kreditaufnahmebericht {edition} annex 4.5 Insgesamt; Datenportal cross-check failed: {e}"
+    return s
+
+
+def bund_net_borrowing_annual() -> pd.Series:
+    """Step-A financing total for DEU: Nettokreditaufnahme (Ist) from each
+    edition's annex 4.10 'Abrechnung des Kreditfinanzierungsplans', in EUR
+    mn, for every edition whose annex parses (2020 onward; earlier
+    editions' annexes are not machine-readable in the text layer)."""
+    from ggfiscal.standardise.readers import latest_snapshots
+    out = {}
+    for (sid, part) in latest_snapshots():
+        if sid != "BMF_KREDITAUFNAHMEBERICHT" or not part.isdigit():
+            continue
+        try:
+            t = kreditaufnahmebericht_annex(int(part), "4.10")
+        except Exception:
+            continue
+        if t.empty:
+            continue
+        r = t[t["label"].str.strip().str.lower().str.startswith("nettokreditaufnahme")]
+        if r.empty:
+            continue
+        out[int(part)] = float(r["ist_eur"].iloc[0]) / 1e6
+    s = pd.Series(out, dtype=float).sort_index()
+    s.attrs["note"] = "Kreditaufnahmebericht annex 4.10 Nettokreditaufnahme (Ist), edition = year"
+    return s
