@@ -78,17 +78,34 @@ def cob_pulls(start: dt.date = dt.date(1998, 4, 30),
 CHALLENGE_MARKERS = ("ShieldSquare Captcha", "Just a moment...", "perfdrive.com/aperture", "cf-chl")
 
 
+BROWSER_HOSTS = ("www.dmo.gov.uk", "www.aft.gouv.fr")
+
+
 def get(pull: Pull):
-    """Plain GET, but a bot-challenge page (DMO: Radware ShieldSquare; AFT:
-    Cloudflare) is raised as FetchError instead of being stored as data."""
+    """Plain GET first; the two bot-challenged hosts (DMO: Radware
+    ShieldSquare; AFT: Cloudflare) go through the committee-authorised
+    browser session (debt/browser.py) when the plain path returns a
+    challenge page or a 403. A challenge page is never stored as data."""
+    from urllib.parse import urlsplit
+
     from ggfiscal.ingest.fetch import FetchError, _get
-    resp = _get(pull.url, pull.accept, pull.headers)
-    ctype = resp.headers.get("content-type", "")
-    if "text/html" in ctype:
-        head = resp.content[:20000].decode("utf-8", "ignore")
-        if any(m in head for m in CHALLENGE_MARKERS):
-            raise FetchError(f"bot challenge page for {pull.url} (JS challenge; needs a browser client)")
-    return resp.content, ctype, resp.status_code
+    host = urlsplit(pull.url).netloc
+    if host not in BROWSER_HOSTS:
+        resp = _get(pull.url, pull.accept, pull.headers)
+        return resp.content, resp.headers.get("content-type", ""), resp.status_code
+    try:
+        resp = _get(pull.url, pull.accept, pull.headers)
+        ctype = resp.headers.get("content-type", "")
+        if not ("text/html" in ctype and any(m in resp.content[:20000].decode("utf-8", "ignore")
+                                            for m in CHALLENGE_MARKERS)):
+            return resp.content, ctype, resp.status_code
+    except FetchError:
+        pass
+    from ggfiscal.debt import browser
+    body, ctype, status = browser.fetch(pull.url)
+    if status >= 400:
+        raise FetchError(f"HTTP {status} via browser for {pull.url}")
+    return body, ctype, status
 
 
 # Parts that are hand-downloaded from links the pages carry (versioned file

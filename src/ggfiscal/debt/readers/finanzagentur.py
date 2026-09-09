@@ -69,12 +69,14 @@ DEM_PER_EUR = 1.95583
 DATE_RE = re.compile(r"^(\d{2})\.(\d{2})\.(\d{4})$")
 
 
+@lru_cache(maxsize=None)
 def sha(part: str) -> str | None:
     """sha256 of the latest snapshot of one Finanzagentur part."""
     e = latest_snapshots().get((SOURCE_ID, part))
     return e["sha256"] if e else None
 
 
+@lru_cache(maxsize=None)
 def have(part: str) -> bool:
     return (SOURCE_ID, part) in latest_snapshots()
 
@@ -375,8 +377,35 @@ def index_ratios() -> tuple[pd.DataFrame, pd.DataFrame]:
         tfs.append(t)
     if not rfs:
         raise FileNotFoundError("no Finanzagentur index-ratio snapshot")
-    ratios = pd.concat(rfs, ignore_index=True).sort_values(["isin", "date"]).reset_index(drop=True)
+    ratios = pd.concat(rfs, ignore_index=True)
+    # The files share exactly their rebasing day (2016-03-01 and 2026-03-01),
+    # where both carry the same ratio on different reference-index bases; keep
+    # the newer file's row so `reference_index` is on the current base.
+    ratios = (ratios.drop_duplicates(["isin", "date"], keep="last")
+              .sort_values(["isin", "date"]).reset_index(drop=True))
     return ratios, pd.concat(tfs, ignore_index=True)
+
+
+@lru_cache(maxsize=None)
+def index_ratio_seams() -> pd.DataFrame:
+    """The rows the base-year files share, side by side: one row per (isin, date)
+    on a rebasing day with the two files' ratio and reference index, and the
+    relative difference of the ratios (expected 0 — only the index rebases)."""
+    parts = [p for p in RATIO_PARTS if have(p)]
+    out = []
+    for older, newer in zip(parts, parts[1:]):
+        a, _ = index_ratios_part(older)
+        b, _ = index_ratios_part(newer)
+        j = a.merge(b, on=["isin", "date"], suffixes=("_old", "_new"))
+        if j.empty:
+            continue
+        j["ratio_rel_diff"] = (j["index_ratio_new"] / j["index_ratio_old"] - 1.0)
+        j["index_rebase_factor"] = j["reference_index_old"] / j["reference_index_new"]
+        out.append(j.assign(file_old=older, file_new=newer))
+    cols = ["isin", "date", "file_old", "file_new", "index_ratio_old", "index_ratio_new",
+            "ratio_rel_diff", "reference_index_old", "reference_index_new", "index_rebase_factor"]
+    return (pd.concat(out, ignore_index=True)[cols] if out
+            else pd.DataFrame(columns=cols))
 
 
 # -------------------------------------------------- Umlaufvolumen / Eigenbestand
