@@ -56,6 +56,11 @@ reference_series:                # §4.2 — series_id -> where it comes from
   UK_GLC_NOMINAL: {statistical: BOE_YIELD_CURVES, part: nominal}
   UK_GLC_REAL:   {statistical: BOE_YIELD_CURVES, part: real}
   UK_OIS:        {statistical: BOE_YIELD_CURVES, part: ois}
+  EA_ESTR:       {statistical: ECB_EMMI_RATES, part: estr}
+  EA_EURIBOR_3M: {statistical: ECB_EMMI_RATES, part: euribor_3m}
+  EA_EURIBOR_6M: {statistical: ECB_EMMI_RATES, part: euribor_6m}
+  EA_EONIA:      {statistical: ECB_EMMI_RATES, part: eonia, status: "discontinued 2022-01"}
+  DE_BUND_YIELD_10Y: {statistical: BBK_KAPITALMARKT, part: bund_yield_10y}
 
 reconciliation:                  # §8 — official intermediate per step (DD4, DD5)
   interest:

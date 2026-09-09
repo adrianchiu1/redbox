@@ -250,12 +250,12 @@ sources:
     verification: {status: confirmed_live, checked: 2026-09-09}
   ECB_EMMI_RATES:
     institution: ECB / EMMI
-    object: "€STR, Euribor fixings (contractual references for euro floaters)"
+    object: "€STR (EST/B.EU000A2X2A25.WT, daily, 2019-10-), EONIA (FM/M.U2.EUR.4F.MM.EONIA.HSTA, monthly only, 1994-01 to 2021-12 discontinued), Euribor 3M/6M (FM/M.U2.EUR.RT.MM.EURIBOR{3,6}MD_.HSTA, monthly only, 1994-01-), deposit facility rate (FM/D.U2.EUR.4F.KR.DFR.LEV, daily), HICP ex-tobacco cross-check (ICP/M.U2.N.X02200.4.INX) — contractual references for euro floaters"
     trees: [debt]
     countries: [FRA, DEU]
     role: reference_series
-    api: {kind: sdmx, base: https://data-api.ecb.europa.eu/service/data/FM/}
-    verification: {status: blocked, checked: 2026-09-09}
+    api: {kind: sdmx, base: https://data-api.ecb.europa.eu/service/data/}
+    verification: {status: confirmed_live, checked: 2026-09-09, note: "EONIA and Euribor are monthly-only in this dataflow (no daily key found); HICP ex-tobacco item code is X02200, not a TOB000-shaped guess — see reports/debt_sources/ecb_bbk.md"}
   BDF_WEBSTAT:
     institution: Banque de France
     object: "Webstat SC1 État securities stock and net issuance (S1311 F.33); TEC10; daily bond indices"
@@ -266,9 +266,9 @@ sources:
     verification: {status: blocked, checked: 2026-09-09}
   BBK_KAPITALMARKT:
     institution: Deutsche Bundesbank
-    object: "Kapitalmarktstatistik (PDF per issue), Umlauf von Schuldverschreibungen (Nr. 03), Svensson curve, yields by residual maturity"
+    object: "10y Bund yield, Svensson term-structure estimate, daily (BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A via the SDW REST API, 1997-08-); Kapitalmarktstatistik (PDF per issue), Umlauf von Schuldverschreibungen (Nr. 03), full Svensson beta/tau parameters, yields by other residual maturities"
     trees: [debt]
     countries: [DEU]
     role: reconciliation_intermediate
-    api: {kind: html_download, landing: https://www.bundesbank.de/de/statistiken/geld-und-kapitalmaerkte/wertpapieremissionen}
-    verification: {status: blocked, checked: 2026-09-09}
+    api: {kind: sdmx_like_rest, base: https://api.statistiken.bundesbank.de/rest/data/, landing: https://www.bundesbank.de/de/statistiken/geld-und-kapitalmaerkte/wertpapieremissionen}
+    verification: {status: confirmed_live, checked: 2026-09-09, note: "10y yield key (BBSIS, R10XX) confirmed live; the beta/tau Svensson parameters and the Umlauf von Bundeswertpapieren stock series were not found within the discovery budget — no public metadata-search endpoint under /rest/metadata/ was found, only guessed data keys (404) — see reports/debt_sources/ecb_bbk.md"}

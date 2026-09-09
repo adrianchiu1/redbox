@@ -10,6 +10,8 @@ the family readers.
 
 from __future__ import annotations
 
+import warnings
+
 import pandas as pd
 
 from ggfiscal.standardise.readers import latest_snapshots
@@ -35,6 +37,7 @@ def _rows(series_id: str, s: pd.Series, unit: str, source_id: str, sha: str | No
 
 def build_reference_series(run_id: str, include_curves: bool = True) -> pd.DataFrame:
     from ggfiscal.debt.readers import boe as B
+    from ggfiscal.debt.readers import ecb_bbk as X
     from ggfiscal.debt.readers import eurostat_insee_oecd as E
     from ggfiscal.debt.readers import ons_hmt as O
 
@@ -72,6 +75,29 @@ def build_reference_series(run_id: str, include_curves: bool = True) -> pd.DataF
     for geo, sid in (("FR", "FR_MCBY"), ("DE", "DE_MCBY"), ("EA", "EA_MCBY")):
         frames.append(_rows(sid, E.long_term_yield(geo), "pct_pa", "EUROSTAT_IRT",
                             _sha("EUROSTAT_IRT", f"irt_lt_mcby_m_{geo}"), None, "EMU convergence-criterion 10y yield"))
+
+    # --- ecb_bbk reference rates (§13) -------------------------------------
+    # Each entry may be missing if `ggfiscal debt fetch --family ecb_bbk`
+    # has not run in this environment; skip with a warning rather than
+    # failing the whole build (family readers raise FileNotFoundError via
+    # `snap_path` when the snapshot is absent).
+    for sid, reader, source_id, part, note in (
+        ("EA_ESTR", X.ecb_series, "ECB_EMMI_RATES", "estr",
+         "euro short-term rate, daily, volume-weighted trimmed mean, from 2019-10-01"),
+        ("EA_EURIBOR_3M", X.ecb_series, "ECB_EMMI_RATES", "euribor_3m",
+         "Euribor 3-month, historical close, monthly average, from 1994-01 (no daily key found — see report)"),
+        ("EA_EURIBOR_6M", X.ecb_series, "ECB_EMMI_RATES", "euribor_6m",
+         "Euribor 6-month, historical close, monthly average, from 1994-01 (no daily key found — see report)"),
+        ("EA_EONIA", X.ecb_series, "ECB_EMMI_RATES", "eonia",
+         "Eonia rate, historical close, monthly average, 1994-01 to 2021-12 "
+         "(discontinued 2022-01; monthly only — the daily key 404s, see report)"),
+        ("DE_BUND_YIELD_10Y", X.bbk_series, "BBK_KAPITALMARKT", "bund_yield_10y",
+         "Svensson-method term structure, listed federal securities, 10.0y residual maturity, daily"),
+    ):
+        try:
+            frames.append(_rows(sid, reader(part), "pct_pa", source_id, _sha(source_id, part), None, note))
+        except FileNotFoundError as e:
+            warnings.warn(f"reference series {sid} skipped: {e}")
 
     # --- BoE curves (Q-D10: stored now) -----------------------------------
     if include_curves:

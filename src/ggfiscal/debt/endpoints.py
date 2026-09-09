@@ -23,6 +23,7 @@ FAMILIES = (
     "bmf",                   # Datenportal xlsx/csv, Kreditaufnahmebericht, Monatsbericht
     "eurostat_insee_oecd",   # gov_10dd_*, gov_10a_main S1311, prc_hicp, irt_*, INSEE ajax, OECD T7PSD/FINMARK
     "debt_offices",          # DMO, AFT, Finanzagentur — blocked (OQ-8); definitions only
+    "ecb_bbk",               # ECB Data Portal (€STR, EONIA, Euribor 3M/6M, DFR, HICP-XT), Bundesbank 10y Bund yield
 )
 
 
