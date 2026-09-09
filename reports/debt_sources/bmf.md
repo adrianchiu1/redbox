@@ -456,3 +456,223 @@ within 1 %. Everything snapshot-dependent skips when the D8 store is empty.
    Tagesanleihe) and the assumed special-fund paper (Treuhandanstalt MTNs,
    Entschädigungsfonds ISVs, Fundierungsschuldverschreibung) sit — DD1 excludes
    the retail lines from the register and carries them as bridge items.
+
+---
+
+## 10. Annex 4.10 closure fix (2023), coverage back to 2019 (typo), and 2013-2018
+   via the narrative table (2026-09-09)
+
+Code: `_parse_410`, `_annex_pages`, `_split_row_start`, `_narrative_nka_by_year`
+in `src/ggfiscal/debt/readers/bmf.py`; tests added to `tests/debt/test_bmf.py`.
+Nothing below is hand-keyed: every figure comes from parsing the text layer
+programmatically, and the fixes are general (regex/line-shape based), not
+per-edition patches.
+
+### 10.1 The 2023 closure bug and its fix
+
+Property checked: in every edition's annex 4.10, the top-level items 3.1 ...
+3.n of the "Herleitung der Nettokreditaufnahme" group (3.1 gross, 3.2, 3.3
+redemptions negative, 3.4 ... 3.n) must sum to the Nettokreditaufnahme *Ist*
+line to the euro. Before this fix 2020-2022, 2024 and 2025 already closed;
+**2023 came out 67,777 EUR mn against a true 27,177 EUR mn (a 40,600 EUR mn
+excess)**.
+
+Root cause: the 2023 edition is the first to carry a "Rückabwicklung von
+Zuführungen an Sondervermögen in Folge des Urteils des Bundesverfassungsgerichts"
+correction-booking row under several Sondervermögen items (following the
+15 November 2023 ruling), and it is typeset with **only two trailing figures**
+— Ist and Abweichung — leaving Soll blank rather than printing "0,00", e.g.
+(`kreditaufnahmebericht_text(2023)`, page containing "Noch 4.10"):
+
+```
+3.8.3 Rückabwicklung von Zuführungen an Sondervermögen in
+Folge des Urteils des Bundesverfassungsgerichts1
+-990.283.299,85 -990.283.299,85
+3.9 Sondervermögen „Aufbauhilfe“ (2013) -161.899.000,00 -160.916.042,48 982.957,52
+```
+
+The old parser required exactly 3 trailing cells to close a row, so the
+2-cell line above was buffered as plain text instead. The buffered text (the
+row's own label *and* its two figures, still unclosed) then got glued onto
+the front of the **next** line that did have 3 cells — item 3.9's own line —
+producing one garbled record labelled "3.8.3" that actually carried **3.9's**
+Soll/Ist/Abweichung, while the true item 3.9 never appeared at all. The same
+thing happened at 3.10.3→3.11, 3.12.3→3.13 and 3.13.3→3.14, so three real
+top-level items (3.9, 3.11, 3.13) were silently dropped from the sum while
+their neighbours' figures were duplicated onto 2-dot rows that the top-level
+filter (`item.count(".") == 1`) happens not to count — hence the sum came out
+too high rather than too low.
+
+Fix, in `_parse_410`:
+
+* **A row now closes on 2 or 3 trailing cells**, not only 3. When there are
+  only 2, Soll is blank on the page and the Ist./.Soll identity fixes it:
+  Soll = 0 ⇒ Abweichung = Ist, which is exactly the pair of equal numbers
+  printed (verified on every such row in 2023-2025).
+* **A stray footnote asterisk between two amounts** (found separately in the
+  2022 edition, `... -354.118.912,65 * 225.881.087,35`, which used to leave
+  item 3.7.2 with only 1 recognised cell and drop the row) is stripped before
+  the trailing-cell scan (`_STRAY_ASTERISK_RE`).
+* **A label that continues *after* its own figures, spilling onto the next
+  row's line** — the shape of the 2019 edition's second annex page, see
+  §10.2 — is reattached to the row it belongs to via `_split_row_start`
+  instead of prefixing (and breaking) whatever row follows it.
+* Parsing now stops at the first "Nettokreditaufnahme" row (the annex's last
+  labelled line in every edition), so trailing footnote paragraphs — which
+  share the "<digit> <text>" shape of a group heading ("1 Einnahmen") — can no
+  longer be mistaken for one.
+
+Result: **2023 now closes to 27,176.573 EUR mn against the published
+27,176.573 EUR mn, and items 3.9, 3.11 and 3.13 all appear as their own
+records** with correct values; 2020-2022, 2024 and 2025 are unaffected
+(re-verified after the fix, diffs all < 1 EUR-cent, i.e. floating-point
+noise).
+
+### 10.2 2019 now parses too (a spelling typo, not a missing table)
+
+Contrary to the earlier finding in §5 ("2019 annex 4.16 ... has no
+extractable text"), **the 2019 table page does have a text layer** — the
+annex simply was not being found, because that one page misspells the title
+`"4.16 Abrechnung des Kreditfnanzierungsplans 2019"` (missing the "i" in
+"Kreditfinanzierungsplan"; the correctly-spelled occurrences are all
+table-of-contents entries with no "in €" unit line, so the old exact-spelling
+requirement excluded the ToC correctly but excluded the real table with it).
+`_ANNEX_SPECS["4.10"]`'s title regex now makes that "i" optional
+(`Kreditfi?nanzierungsplan`), which is enough — combined with the existing
+"in €" unit-line requirement — to find the real table and nothing else.
+
+2019's second annex page also turned out to wrap rows the opposite way round
+from every later edition: the figures sit on the row's first physical line
+and the **label continues below them** (rather than the figures arriving
+after a fully-wrapped label), e.g.:
+
+```
+3.7.1 Nicht kassenwirksame, NKA-erhöhende 0,00 299.917.404,46 299.917.404,46
+Haushaltsausgaben zur Finanzierung der
+Zuführung zum Sondervermögen
+3.7.2 Kassenwirksame, nicht NKA-relevante 0,00 -298.491.335,44 -298.491.335,44
+```
+
+Naively, the "Haushaltsausgaben zur Finanzierung der Zuführung zum
+Sondervermögen" continuation glues onto the *front* of the 3.7.2 line, and
+then 3.7.2's own leftover continuation glues onto the front of whatever comes
+after it — including, further down the page, the top-level item **3.8**,
+whose item number was then unrecoverable (`_ITEM_RE` requires the line to
+*start* with a number). `_split_row_start` fixes this generally: when a
+joined label does not start with a valid item number, it searches for one
+embedded further in (or one of the un-numbered "Einnahmen" / "Ausgaben*" /
+"Nettokreditaufnahme" totals) and reattaches everything before that match to
+the **previous** record's label instead of keeping it as a prefix of the
+current one. Verified: all of 2019's top-level items 3.1-3.14 and the final
+Nettokreditaufnahme row (0 EUR — matching the edition's own prose, "eine
+Nettokreditaufnahme des Bundeshaushaltes 2014 von null" for the neighbouring
+year and an analogous statement for 2019) now parse with the correct item
+number and value; the invariant of §10 closes to within 1.2e-5 EUR (float
+noise).
+
+### 10.3 2013-2018: no annex 4.10, but a narrative Nettokreditaufnahme
+
+Confirmed (unchanged from §5): editions 2013-2018 carry **no** chapter-4
+"Abrechnung des Kreditfinanzierungsplans" annex at all — chapter 4 there is
+"Rechtsgrundlagen für das Kreditmanagement" and the string "Kredit[fi]?nanzierungsplan"
+does not occur anywhere in those six editions' text layers.
+
+They do, however, each carry a body-text (chapter 2) narrative table with a
+labelled "Nettokreditaufnahme" row over the edition's own 5-year window:
+
+| editions | table title | unit | shape |
+|---|---|---|---|
+| 2013-2014 | "Tabelle N: Kreditaufnahme und Schuldentilgung des Bundes (ohne Sondervermögen)" | Mrd. Euro, 1 decimal | bare row label, no item number |
+| 2015-2018 | "Tabelle N: Nettokreditaufnahme, Umbuchungen und Veränderungen des Schuldenstandes des Bundeshaushalts" | Mio. €/Euro, whole numbers | numbered "6. Nettokreditaufnahme" |
+
+New `_narrative_nka_by_year(year)` extracts this row generically (find a
+consecutive-years header line via the existing `_YEAR_ROW_RE`, match trailing
+cells to that year count, match the label against
+`^(?:\d+\.?\s+)?Nettokreditaufnahme\s*$`, scale by the "in Mrd./Mio.
+€/Euro" caption found on the same page) and returns `{year: value_eur_mn}`
+for every year the table covers — not just the edition's own year, since one
+edition's own last column is sometimes provisional (2014's own 2014 figure
+is printed as "–", unrecognised by the old cell regex, which only recognised
+the ASCII "-" as a missing-value marker — `_CELL_RE` now also accepts "–", an
+en dash, matching what `_to_float` already anticipated). `bund_net_borrowing_annual()`
+folds editions in ascending order so a later edition's revision of an earlier
+year overwrites an earlier, possibly-provisional one; the annex (2019+),
+where it exists, always wins.
+
+**This is a different, narrower concept from the 2019+ annex figure**: "des
+Bundeshaushalts (ohne Sondervermögen)" rather than Bundeshaushalt +
+Sondervermögen combined, and rounded to whole EUR mn (2013-2014: EUR 100mn)
+rather than exact to the cent. The gap is large in years where the annex
+concept would differ materially from the narrower one (e.g. the 2019+ figures
+absorb Sondervermögen borrowing that this narrower concept nets away
+entirely) — it is **not comparable on trend** to the 2019+ series and must
+not be merged as if it were. `bund_net_borrowing_annual()`'s returned
+`Series.attrs["note"]` names exactly which years come from which source and,
+for the narrative years, which edition of the report each figure was read
+from.
+
+### 10.4 `bund_net_borrowing_annual()` — full output (2026-09-09 snapshots)
+
+| year | value (EUR mn) | source |
+|---|---:|---|
+| 2009 | 34,100.000 | narrative table, 2013 edition |
+| 2010 | 44,000.000 | narrative table, 2014 edition |
+| 2011 | 17,343.000 | narrative table, 2015 edition |
+| 2012 | 22,481.000 | narrative table, 2016 edition |
+| 2013 | 22,072.000 | narrative table, 2017 edition |
+| 2014 | 0.000 | narrative table, 2018 edition (2018's own restatement; 2014's own edition leaves this cell "–") |
+| 2015 | 0.000 | narrative table, 2018 edition |
+| 2016 | 0.000 | narrative table, 2018 edition |
+| 2017 | 0.000 | narrative table, 2018 edition |
+| 2018 | 0.000 | narrative table, 2018 edition |
+| 2019 | 0.000 | annex 4.10, 2019 edition |
+| 2020 | 130,464.483 | annex 4.10, 2020 edition |
+| 2021 | 215,378.834 | annex 4.10, 2021 edition |
+| 2022 | 115,441.648 | annex 4.10, 2022 edition |
+| 2023 | 27,176.573 | annex 4.10, 2023 edition |
+| 2024 | 33,320.160 | annex 4.10, 2024 edition |
+| 2025 | 66,892.541 | annex 4.10, 2025 edition |
+
+Note the 2018→2019 jump is a **definition change, not a data error**: 2018
+and earlier are the narrower "Bundeshaushalt ohne Sondervermögen" concept
+(§10.3), 2019 on is the annex's Bundeshaushalt + Sondervermögen concept.
+
+### 10.5 Task C — annex 4.5 "Insgesamt" cross-edition check
+
+`bund_interest_annual()` reads annex 4.5's "Insgesamt" (table `verzinsung`)
+row from the **2025** edition. Cross-checked against the same row read from
+the 2024 and 2023 editions' own annex 4.5, for every year in the three
+editions' overlap (1996-2023):
+
+* 2025 vs 2024 (overlap 1996-2024): **max |diff| = 0 EUR mn** (exact) over
+  all 29 overlapping years.
+* 2025 vs 2023 and 2024 vs 2023 (overlap 1996-2023): **max |diff| = 0 EUR mn**
+  (exact) over all 28 overlapping years, including the years right next to
+  each report's own cutoff (2022: −15,894; 2023: −39,858 in all three
+  editions that carry it).
+
+No discrepancy: this line is settled history in the source, never revised
+between editions, so reading it from the newest edition (as
+`bund_interest_annual()` already does) loses nothing relative to reading it
+from an older one.
+
+### 10.6 Tests added
+
+`tests/debt/test_bmf.py` gained (all green, `python3 -m pytest
+tests/debt/test_bmf.py tests/debt/test_stage_d2_aggregate.py -q` → 29 passed,
+6 skipped; full `tests/debt` → 152 passed, 6 skipped):
+
+* `test_annex_410_top_level_items_close_to_nka_for_every_parsing_edition`
+  (parametrised over every Kreditaufnahmebericht edition in the store):
+  Σ top-level 3.x Ist == Nettokreditaufnahme Ist within 1 EUR wherever the
+  annex parses at all (2019-2025 pass; 2013-2018 skip, documented as having
+  no such annex);
+* `test_annex_410_2023_closes_after_the_correction_booking_fix`: items 3.9,
+  3.11, 3.13 are present exactly once, and the edition closes to
+  27,176.573 EUR mn;
+* `test_bund_net_borrowing_annual_covers_2020_through_2025_and_earlier_years`:
+  every 2020-2025 edition in the store is covered with a positive value, and
+  earlier editions extend the series with a documented note;
+* `test_bund_interest_annual_agrees_across_editions_for_overlapping_years`:
+  annex 4.5 "Insgesamt" agrees exactly across whichever of 2023/2024/2025 are
+  in the store, for every overlapping year.

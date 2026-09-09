@@ -83,6 +83,15 @@ def _deu_nka_items(year: int) -> list[ChainItem]:
     return items
 
 
+def _bridge_items(iso3: str, chain: str, year: int) -> list[ChainItem]:
+    """Official step-B (and GBR step-C) items from ggfiscal.debt.bridges."""
+    try:
+        from ggfiscal.debt.bridges import bridge_items
+    except ImportError:
+        return []
+    return bridge_items(iso3, chain, year)
+
+
 def _short(label: str) -> str:
     from ggfiscal.debt.aggregates import _slug
     return _slug(label)[:40]
@@ -146,6 +155,16 @@ def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
                 items.append(ChainItem(r["step"], "official_total", v, "official",
                                        r["item_source_id"], basis))
             items += _subsector_items(iso3, chain, year)
+            items += _bridge_items(iso3, chain, int(year))
+            if chain == "financing" and iso3 == "DEU":
+                # the core-budget NKA at step A excludes the special funds
+                # that ARE inside S.1311 debt: add their net borrowing back
+                # on the way to step B (same rows, opposite sign)
+                sv = sum(-it.value for it in items
+                         if it.step == STEP_A[chain] and it.item.startswith("less_sondervermoegen_")
+                         and it.value is not None)
+                items.append(ChainItem("B_s1311_b9", "special_funds_net_borrowing_added_back", sv,
+                                       "official", "BMF_DATENPORTAL", "cash"))
             frames.append(assemble(iso3, int(year), STEPS[chain], items))
     out = pd.concat(frames, ignore_index=True)
     out["run_id"] = run_id
