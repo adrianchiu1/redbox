@@ -912,3 +912,35 @@ test handles the collapsed `both:` caption line. That test also had a bug
 of its own — `next(gen, next(gen2))` evaluates the fallback eagerly, so it
 raised StopIteration on any series that did have a `strict:` line. pytest
 114 passed; no data file changed.
+
+## D-S9-005 — Three per-country strict matrices: `deliverables/strict_{GBR,FRA,DEU}.csv` (serves §1, D-S9-001)
+2026-09-09, session 6 (continued). The committee asked for one file per
+country holding every series the chartbook plots, **strict variant only —
+no maximum_extension**. Added to `ggfiscal flatten`, so they are part of
+the bundle and regenerate with it.
+Shape: one row per year, one column per series, column names the
+concatenation of `line_code` and `line_label` as requested (`GF01_7 -
+Public debt transactions (interest)`). Columns in chart order: GDP, the
+12 COFOG lines + TE, the 10 ESA lines + TR, then the ledger. Levels in
+millions of national currency; GDP is carried so ratios are one division
+away.
+Two design points worth the record:
+  - **The ledger's TR and TE are prefixed `LEDGER_`.** They are the
+    balance anchor's own totals, not the trees' TE and TR, and for GBR
+    they come from a different ONS table and differ by up to 0.5%
+    (D-S9-002 §5). Merging them into one column would have silently
+    picked a winner; both are published side by side instead.
+  - **Rows run to the last year any strict series reaches**, not to the
+    chartbook's 2031 display cap: GBR 1965-2030, FRA 1965-2070, DEU
+    1991-2070. FRA/DEU carry only GF07 and GF09 after 2036 — the Ageing
+    Report legs, which are strict (grade B). Truncating real data because
+    a chart axis was truncated would be the wrong trade.
+The ragged right-hand edge is the point, not a defect: a column stops
+where its official forecast stops, which is why 44 of 72 series end at
+their last outturn (D-S9-003).
+Verified cell for cell before shipping: all 2,724 strict values reproduce
+exactly, no year/series present that the strict variant does not publish,
+and none of the maximum-only legs — forward or backward — leaks in. Five
+new tests hold it, including an explicit assertion that the maximum-only
+legs are absent and a guard that fails if the fixture ever stops having
+any. pytest 120 passed; no data file changed.

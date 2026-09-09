@@ -261,6 +261,70 @@ def test_maximum_extension_contains_strict_and_agrees_where_both_exist():
         assert year > last[(iso3, line)] or year < first[(iso3, line)]
 
 
+# --------------------------------------------------- per-country strict files
+
+@pytest.mark.parametrize("iso3", ["GBR", "FRA", "DEU"])
+def test_country_file_is_strict_only_and_carries_every_series(iso3):
+    """One file per country, strict variant only. Every strict value lands in
+    it unchanged, and — the point of the file — no maximum_extension value
+    reaches it: the legs that exist only in that variant must be absent."""
+    wide = read(f"strict_{iso3}.csv").set_index("year")
+    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    strict = tree.query("iso3 == @iso3 and variant == 'strict'")
+    maximum = tree.query("iso3 == @iso3 and variant == 'maximum_extension'")
+
+    # columns are "<line_code> - <line_label>", plus year, GDP and the ledger
+    column = {c.split(" - ")[0]: c for c in wide.columns}
+    for c in wide.columns:
+        assert " - " in c, c
+    assert set(column) == set(strict.line_code) | {
+        "GDP", "LEDGER_TR", "LEDGER_TE", "NLB", "NI", "PB"}
+
+    # every strict value, cell for cell
+    checked = 0
+    for row in strict.itertuples():
+        assert wide.at[row.year, column[row.line_code]] == row.value_lcu_mn, (
+            iso3, row.line_code, row.year)
+        checked += 1
+    assert checked > 800
+
+    # and nothing the strict variant does not publish
+    for line in strict.line_code.unique():
+        present = set(wide[column[line]].dropna().index)
+        published = set(strict[strict.line_code == line].year)
+        assert present == published, (iso3, line, present ^ published)
+
+    # the maximum-only legs — forward AND backward — are absent
+    only_max = maximum.merge(strict[["line_code", "year"]],
+                             on=["line_code", "year"], how="left",
+                             indicator=True).query("_merge == 'left_only'")
+    assert len(only_max) > 0, "no maximum-only legs to exclude — check fixture"
+    for row in only_max.itertuples():
+        if row.year in wide.index:
+            assert pd.isna(wide.at[row.year, column[row.line_code]]), (
+                iso3, row.line_code, row.year, "maximum_extension leaked")
+
+
+@pytest.mark.parametrize("iso3", ["GBR", "FRA", "DEU"])
+def test_country_file_ledger_columns_match_the_ledger(iso3):
+    """The ledger's TR/TE are the balance anchor's own totals, so they are
+    prefixed rather than merged into the trees' TE/TR columns."""
+    wide = read(f"strict_{iso3}.csv").set_index("year")
+    column = {c.split(" - ")[0]: c for c in wide.columns}
+    led = read("balance_ledger.csv").query(
+        "iso3 == @iso3 and variant == 'strict'").set_index("year")
+    for code, source in (("LEDGER_TR", "tr_lcu_mn"), ("LEDGER_TE", "te_lcu_mn"),
+                         ("NLB", "nlb_lcu_mn"), ("NI", "ni_lcu_mn"),
+                         ("PB", "pb_lcu_mn")):
+        got = wide[column[code]].reindex(led.index)
+        pd.testing.assert_series_equal(got, led[source], check_names=False)
+    # the two TE series are genuinely different for GBR, so both are kept
+    both = wide[[column["TE"], column["LEDGER_TE"]]].dropna()
+    assert len(both) > 20
+    if iso3 == "GBR":
+        assert (both.iloc[:, 0] != both.iloc[:, 1]).any()
+
+
 # ----------------------------------------------------------------- notebooks
 
 NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb")

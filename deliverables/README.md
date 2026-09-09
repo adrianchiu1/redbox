@@ -17,7 +17,10 @@ dynamics to the IMF WEO** general-government aggregates.
 | `weo_levels_bridge.csv` | 398 | 32 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
 | `weo_reconciliation.csv` | 5,995 | 14 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
 | `series_catalogue.csv` | 72 | 23 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
-| `data_dictionary.csv` | 146 | 3 | every column of every file above, described |
+| `strict_GBR.csv` | 66 | 31 | United Kingdom, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
+| `strict_FRA.csv` | 106 | 31 | France, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
+| `strict_DEU.csv` | 80 | 31 | Germany, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
+| `data_dictionary.csv` | 239 | 3 | every column of every file above, described |
 
 Start with `data_dictionary.csv` (every column of every file) and
 `series_catalogue.csv` (one row per published series: span, grades,
@@ -54,6 +57,13 @@ Three things to know before using the numbers:
    WEO aggregate. Where official forecasts do not cover a line, the gap
    appears as a residual in `weo_reconciliation.csv` rather than being
    filled in.
+
+The three `strict_*.csv` files are the modelling shape: one country per
+file, one column per series, one row per year, and **nothing but the
+strict variant** — no proxy, composite or partial-coverage leg, so every
+number in them comes from an official published source. Where a series has
+no official forecast the column simply stops; the ragged right-hand edge
+is the coverage, not a gap in the file.
 
 Regenerate with `ggfiscal flatten` after any `build` / `reconcile`; the
 bundle copies the gated canonical layer and never recomputes a value.

@@ -66,6 +66,9 @@ FLAT_FILES = [
     "deliverables/weo_reconciliation.csv",
     "deliverables/series_catalogue.csv",
     "deliverables/data_dictionary.csv",
+    "deliverables/strict_GBR.csv",
+    "deliverables/strict_FRA.csv",
+    "deliverables/strict_DEU.csv",
     "deliverables/README.md",
 ]
 

@@ -29,6 +29,13 @@ derived".** Nothing in the engine changed; no number moved that the
   reconciliation. Re-run it with
   `pip install -e .[notebook] && jupyter nbconvert --execute --inplace
   notebooks/*.ipynb`.
+- **`deliverables/strict_{GBR,FRA,DEU}.csv`** (D-S9-005) — one file per
+  country, every charted series as a column, every year as a row, STRICT
+  ONLY. Column names are `line_code - line_label`. The ledger's TR/TE are
+  prefixed `LEDGER_` because they are the balance anchor's own totals, not
+  the trees' TE/TR (they differ by up to 0.5% for GBR). Rows run to the
+  last year any strict series reaches (GBR 2030, FRA/DEU 2070), not the
+  chartbook's 2031 display cap.
 - **`notebooks/chartbook.ipynb`** (D-S9-002) — 102 figures, one per series,
   laid out country → category → series, plus the WEO comparison (levels
   above, gap as % of TE below) for revenue, expenditure and NLB per
@@ -42,7 +49,7 @@ derived".** Nothing in the engine changed; no number moved that the
   chart, not only those with a forecast; and a per-variant caption saying
   how far each projects or why it does not — 44 of 72 series carry no
   projection at all, across five recorded statuses, tabulated up front.
-- **`tests/deliverables/test_flat_files.py`** (24 tests) enforces the three
+- **`tests/deliverables/test_flat_files.py`** (30 tests) enforces the three
   invariants: nothing recomputed (bit-exact copy, `float_precision=
   "round_trip"`), every chained value reproducible from the flat file alone,
   and the data dictionary covering every column of every file by set
@@ -54,7 +61,7 @@ derived".** Nothing in the engine changed; no number moved that the
 
 ## Headline result
 
-`pytest`: **114 passed** (90 + 24 new). `validate`: **OK=55 WARN=820, no
+`pytest`: **120 passed** (90 + 30 new). `validate`: **OK=55 WARN=820, no
 ERROR, no SKIP**. The WARN count is up from 661 on source-vintage drift
 alone (V25/V1 concept wedges against refreshed Eurostat/OECD/AMECO pulls of
 2026-09-08); no new check, no new tier, no ERROR.
@@ -98,7 +105,7 @@ use `python3 -m pytest`), `ggfiscal fetch --all`, then
 `build`, `reconcile`, `report` (which now also writes `deliverables/`),
 `validate`. The OBR raw bytes come with the clone (D-S7-001) — do NOT expect
 `fetch` to produce them. Expected green baseline on the 2026-09-08 harvest:
-114 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
+120 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
 notebooks** (`jupyter nbconvert --execute --inplace notebooks/*.ipynb`) so
 their committed outputs match the bundle.
 
