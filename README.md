@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-08 14:46 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-09 15:13 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -10,11 +10,12 @@ Governing principles: **maximise length subject to transparency and conceptual i
 
 ## Start here
 
-The end product is the flat files and the two notebooks that explain and display them. None of it needs the pipeline to read:
+The end product is the flat files, plus two notebooks that explain and display them. None of it needs the pipeline to read:
 
-1. **[`deliverables/`](deliverables/)** — the whole project as flat CSVs. Expenditure by COFOG function, revenue by ESA type, the balance ledger, the WEO levels bridge and the WEO dynamics reconciliation, plus a per-series catalogue and a data dictionary covering every column of every file. Each observation carries the derivation behind it, so any stitched or forecast value can be reproduced from the flat file alone.
-2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — how each series was derived, series by series, executed against those files with its outputs committed.
-3. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — the same series plotted, one chart each, country by category by series, with seams and projection years marked, plus our totals against the IMF WEO. For eyeballing construction quality.
+1. **[`deliverables/strict_GBR.csv`](deliverables/strict_GBR.csv), [`strict_FRA.csv`](deliverables/strict_FRA.csv), [`strict_DEU.csv`](deliverables/strict_DEU.csv)** — one file per country, every series a column, every year a row, and **strict variant only**: no proxy, composite or partial-coverage leg, so every number comes from an official published source. The modelling shape, and the place to start.
+2. **[`deliverables/`](deliverables/)** — the same numbers in full, with their provenance: expenditure by COFOG function, revenue by ESA type, the balance ledger, the WEO levels bridge and the WEO dynamics reconciliation, plus a per-series catalogue and a data dictionary covering every column of every file. Each observation carries the derivation behind it, so any stitched or forecast value can be reproduced from the flat file alone.
+3. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — how each series was derived, series by series, executed against those files with its outputs committed.
+4. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — the same series plotted, one chart each, country by category by series, with seams and projection years marked, plus our totals against the IMF WEO. For eyeballing construction quality.
 
 Both notebooks need only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/*.ipynb`. GitHub renders them in the browser and gives up on large ones (the chartbook is kept under a megabyte for exactly that reason); if a notebook ever shows *Loading* forever, [nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) renders it regardless of size.
 
@@ -96,7 +97,10 @@ The same numbers as above, rendered flat by `ggfiscal flatten` — no value is r
 | `deliverables/weo_levels_bridge.csv` | 398 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
 | `deliverables/weo_reconciliation.csv` | 5995 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
 | `deliverables/series_catalogue.csv` | 72 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
-| `deliverables/data_dictionary.csv` | 146 | every column of every file above, described |
+| `deliverables/data_dictionary.csv` | 239 | every column of every file above, described |
+| `deliverables/strict_GBR.csv` | 66 | United Kingdom, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
+| `deliverables/strict_FRA.csv` | 106 | France, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
+| `deliverables/strict_DEU.csv` | 80 | Germany, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/README.md` | — | guide to the bundle |
 
 ## Coverage (66 line series)

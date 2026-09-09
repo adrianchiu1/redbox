@@ -4,8 +4,8 @@ The canonical layer (`data/canonical/`) is complete but wide — 47 columns
 per observation, split across strict/maximum variants and a dozen
 reconciliation tables at three different grains. This module renders the
 same numbers, with nothing dropped that a reader needs and nothing added
-that the pipeline did not measure, as seven flat files a person can open
-in a spreadsheet:
+that the pipeline did not measure, as flat files a person can open in a
+spreadsheet:
 
     deliverables/expenditure_cofog.csv    12 COFOG lines + TE per country
     deliverables/revenue_esa.csv          10 ESA lines + TR per country
@@ -14,6 +14,9 @@ in a spreadsheet:
     deliverables/weo_reconciliation.csv   history + forecast dynamics vs WEO
     deliverables/series_catalogue.csv     one row per published series
     deliverables/data_dictionary.csv      every column of every file above
+    deliverables/strict_{GBR,FRA,DEU}.csv every series for one country,
+                                          strict only, years down and series
+                                          across
 
 Two properties are deliberate. (1) No new numbers: every value is copied
 from `data/canonical/`, never recomputed, so the bundle cannot drift from
@@ -373,6 +376,67 @@ def _flat_catalogue(exp: pd.DataFrame, rev: pd.DataFrame) -> pd.DataFrame:
                            kind="stable").reset_index(drop=True)
 
 
+# ------------------------------------------------- per-country strict matrix
+
+# The balance ledger's TR and TE are the balance anchor's own totals, not the
+# COFOG/ESA trees' TE and TR — for GBR they come from a different ONS table
+# and differ by up to 0.5%. Prefixed so one wide file can carry both without
+# the collision passing unnoticed.
+LEDGER_COLUMNS = [
+    ("LEDGER_TR", "tr_lcu_mn", "Total revenue (balance anchor)"),
+    ("LEDGER_TE", "te_lcu_mn", "Total expenditure (balance anchor)"),
+    ("NLB", "nlb_lcu_mn", "Net lending (+) / net borrowing (-)"),
+    ("NI", "ni_lcu_mn", "Net interest (GF01_7 - R07)"),
+    ("PB", "pb_lcu_mn", "Primary balance (NLB + NI)"),
+]
+GDP_COLUMN = ("GDP", "Gross domestic product at current market prices")
+
+
+def _column_name(code: str, label: str) -> str:
+    return f"{code} - {label}"
+
+
+def _country_columns(exp: pd.DataFrame, rev: pd.DataFrame,
+                     iso3: str) -> list[tuple[str, str]]:
+    """(code, label) for every series the chartbook plots, in chart order."""
+    out = [GDP_COLUMN]
+    for tree in (exp, rev):
+        g = tree[(tree.iso3 == iso3) & (tree.variant == "strict")]
+        seen = g[["line_code", "line_label"]].drop_duplicates()
+        out += [(r.line_code, r.line_label) for r in seen.itertuples()]
+    out += [(code, label) for code, _, label in LEDGER_COLUMNS]
+    return out
+
+
+def _country_strict(exp: pd.DataFrame, rev: pd.DataFrame,
+                    ledger: pd.DataFrame, iso3: str) -> pd.DataFrame:
+    """One country, strict variant only, one column per series and one row
+    per year — the shape you model with rather than the shape the pipeline
+    stores. maximum_extension is excluded entirely: every value here comes
+    from an official published source (§7, D13).
+    """
+    frames = {}
+    for tree in (exp, rev):
+        g = tree[(tree.iso3 == iso3) & (tree.variant == "strict")]
+        for code, sub in g.groupby("line_code", sort=False):
+            label = sub.line_label.iloc[0]
+            frames[_column_name(code, label)] = sub.set_index("year").value_lcu_mn
+        if "GDP" not in frames:
+            gdp = g.dropna(subset=["gdp_lcu_mn"]).drop_duplicates("year")
+            frames[_column_name(*GDP_COLUMN)] = gdp.set_index("year").gdp_lcu_mn
+
+    led = ledger[(ledger.iso3 == iso3) & (ledger.variant == "strict")]
+    for code, source, label in LEDGER_COLUMNS:
+        frames[_column_name(code, label)] = led.set_index("year")[source]
+
+    wide = pd.DataFrame(frames)
+    order = [_column_name(c, l) for c, l in _country_columns(exp, rev, iso3)]
+    wide = wide.reindex(columns=order)
+    wide = wide.reindex(range(int(wide.index.min()), int(wide.index.max()) + 1))
+    wide.index.name = "year"
+    return wide.reset_index()
+
+
 # ---------------------------------------------------------------- dictionary
 
 _SHARED = {
@@ -403,6 +467,28 @@ _SHARED = {
     "source_id": "Publisher of the value (or of the growth applied).",
 }
 
+# Columns of the per-country files that need saying more than their label.
+_COUNTRY_COLUMN_NOTE = {
+    "GDP": "Gross domestic product at current market prices, from the "
+           "country's registered GDP source. Divide by it for ratios.",
+    "GF01_X": "General public services excluding interest (GF01_X): the "
+              "identity GF01 - GF01_7, never forecast (D10).",
+    "TE": "Total expenditure (TE) from the COFOG tree's expenditure anchor. "
+          "Not the same series as LEDGER_TE — see that column.",
+    "TR": "Total revenue (TR) from the ESA tree's revenue anchor. Not the "
+          "same series as LEDGER_TR — see that column.",
+    "LEDGER_TR": "Total revenue as published by the balance anchor. For GBR "
+                 "this is a different ONS table from the TR column and the "
+                 "two differ by up to ~0.5%; for FRA/DEU they agree to "
+                 "rounding. Outturn years only.",
+    "LEDGER_TE": "Total expenditure as published by the balance anchor. Same "
+                 "caveat as LEDGER_TR against the TE column.",
+    "NLB": "Net lending (+) / net borrowing (-) = LEDGER_TR - LEDGER_TE "
+           "(ESA B.9). Outturn years only.",
+    "NI": "Net interest = GF01_7 - R07. Blank where one leg has no value.",
+    "PB": "Primary balance = NLB + NI. Outturn years only.",
+}
+
 DICTIONARY: list[tuple[str, str, str]] = []
 
 
@@ -411,7 +497,8 @@ def _dict_rows(fname: str, pairs: dict[str, str]) -> None:
         DICTIONARY.append((fname, col, desc))
 
 
-def _build_dictionary() -> pd.DataFrame:
+def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
+                      ) -> pd.DataFrame:
     DICTIONARY.clear()
     tree_cols = {
         **{k: _SHARED[k] for k in ("iso3", "country", "variant", "line_code",
@@ -565,9 +652,19 @@ def _build_dictionary() -> pd.DataFrame:
     })
     _dict_rows("data_dictionary.csv", {
         "file": "Flat file the column belongs to.",
-        "column": "Name of the column, as it appears in that file\u0027s header.",
+        "column": "Name of the column, as it appears in that file's header.",
         "description": "What the column holds.",
     })
+    for name, columns in country_columns.items():
+        _dict_rows(name, {
+            "year": "Calendar year. One row per year from the country's "
+                    "first published year to the last year any strict "
+                    "series reaches.",
+            **{_column_name(code, label): _COUNTRY_COLUMN_NOTE.get(
+                code, f"{label} ({code}), strict variant, millions of "
+                      "national currency.")
+               for code, label in columns},
+        })
     return pd.DataFrame(DICTIONARY, columns=["file", "column", "description"])
 
 
@@ -631,6 +728,13 @@ Three things to know before using the numbers:
    appears as a residual in `weo_reconciliation.csv` rather than being
    filled in.
 
+The three `strict_*.csv` files are the modelling shape: one country per
+file, one column per series, one row per year, and **nothing but the
+strict variant** — no proxy, composite or partial-coverage leg, so every
+number in them comes from an official published source. Where a series has
+no official forecast the column simply stops; the ragged right-hand edge
+is the coverage, not a gap in the file.
+
 Regenerate with `ggfiscal flatten` after any `build` / `reconcile`; the
 bundle copies the gated canonical layer and never recomputes a value.
 """
@@ -655,6 +759,11 @@ DESCRIPTIONS = {
         "built it, and why it ends",
     "data_dictionary.csv":
         "every column of every file above, described",
+    **{f"strict_{iso3}.csv":
+       f"{name}, strict variant only: one column per series, one row per "
+       "year — the same series the chartbook plots, in the shape you model "
+       "with"
+       for iso3, name in COUNTRY_NAME.items()},
 }
 
 
@@ -670,14 +779,20 @@ def write() -> dict[str, Path]:
     exp = _flat_tree("expenditure_long")
     rev = _flat_tree("revenue_long")
     gdp = _gdp_lookup([exp, rev])
+    ledger = _flat_ledger(gdp, currency)
+    countries = {f"strict_{iso3}.csv": _country_strict(exp, rev, ledger, iso3)
+                 for iso3 in COUNTRY_NAME}
+    country_columns = {f"strict_{iso3}.csv": _country_columns(exp, rev, iso3)
+                       for iso3 in COUNTRY_NAME}
     files = {
         "expenditure_cofog.csv": exp,
         "revenue_esa.csv": rev,
-        "balance_ledger.csv": _flat_ledger(gdp, currency),
+        "balance_ledger.csv": ledger,
         "weo_levels_bridge.csv": _flat_levels_bridge(),
         "weo_reconciliation.csv": _flat_reconciliation(),
         "series_catalogue.csv": _flat_catalogue(exp, rev),
-        "data_dictionary.csv": _build_dictionary(),
+        **countries,
+        "data_dictionary.csv": _build_dictionary(country_columns),
     }
     written: dict[str, Path] = {}
     for name, df in files.items():

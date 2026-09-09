@@ -171,20 +171,27 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Start here",
         "",
-        "The end product is the flat files and the two notebooks that "
+        "The end product is the flat files, plus two notebooks that "
         "explain and display them. None of it needs the pipeline to read:",
         "",
-        "1. **[`deliverables/`](deliverables/)** — the whole project as flat "
-        "CSVs. Expenditure by COFOG function, revenue by ESA type, the "
-        "balance ledger, the WEO levels bridge and the WEO dynamics "
-        "reconciliation, plus a per-series catalogue and a data dictionary "
-        "covering every column of every file. Each observation carries the "
-        "derivation behind it, so any stitched or forecast value can be "
-        "reproduced from the flat file alone.",
-        "2. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — "
+        "1. **[`deliverables/strict_GBR.csv`](deliverables/strict_GBR.csv), "
+        "[`strict_FRA.csv`](deliverables/strict_FRA.csv), "
+        "[`strict_DEU.csv`](deliverables/strict_DEU.csv)** — one file per "
+        "country, every series a column, every year a row, and **strict "
+        "variant only**: no proxy, composite or partial-coverage leg, so "
+        "every number comes from an official published source. The "
+        "modelling shape, and the place to start.",
+        "2. **[`deliverables/`](deliverables/)** — the same numbers in full, "
+        "with their provenance: expenditure by COFOG function, revenue by "
+        "ESA type, the balance ledger, the WEO levels bridge and the WEO "
+        "dynamics reconciliation, plus a per-series catalogue and a data "
+        "dictionary covering every column of every file. Each observation "
+        "carries the derivation behind it, so any stitched or forecast "
+        "value can be reproduced from the flat file alone.",
+        "3. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — "
         "how each series was derived, series by series, executed against "
         "those files with its outputs committed.",
-        "3. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
+        "4. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
         "the same series plotted, one chart each, country by category by "
         "series, with seams and projection years marked, plus our totals "
         "against the IMF WEO. For eyeballing construction quality.",

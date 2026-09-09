@@ -145,3 +145,96 @@ series_catalogue.csv,forecast_note,"Why, in words."
 data_dictionary.csv,file,Flat file the column belongs to.
 data_dictionary.csv,column,"Name of the column, as it appears in that file's header."
 data_dictionary.csv,description,What the column holds.
+strict_GBR.csv,year,Calendar year. One row per year from the country's first published year to the last year any strict series reaches.
+strict_GBR.csv,GDP - Gross domestic product at current market prices,"Gross domestic product at current market prices, from the country's registered GDP source. Divide by it for ratios."
+strict_GBR.csv,GF01 - General public services,"General public services (GF01), strict variant, millions of national currency."
+strict_GBR.csv,GF01_7 - Public debt transactions (interest),"Public debt transactions (interest) (GF01_7), strict variant, millions of national currency."
+strict_GBR.csv,GF01_X - General public services excluding interest,"General public services excluding interest (GF01_X): the identity GF01 - GF01_7, never forecast (D10)."
+strict_GBR.csv,GF02 - Defence,"Defence (GF02), strict variant, millions of national currency."
+strict_GBR.csv,GF03 - Public order and safety,"Public order and safety (GF03), strict variant, millions of national currency."
+strict_GBR.csv,GF04 - Economic affairs,"Economic affairs (GF04), strict variant, millions of national currency."
+strict_GBR.csv,GF05 - Environmental protection,"Environmental protection (GF05), strict variant, millions of national currency."
+strict_GBR.csv,GF06 - Housing and community amenities,"Housing and community amenities (GF06), strict variant, millions of national currency."
+strict_GBR.csv,GF07 - Health,"Health (GF07), strict variant, millions of national currency."
+strict_GBR.csv,GF08 - Recreation culture and religion,"Recreation culture and religion (GF08), strict variant, millions of national currency."
+strict_GBR.csv,GF09 - Education,"Education (GF09), strict variant, millions of national currency."
+strict_GBR.csv,GF10 - Social protection,"Social protection (GF10), strict variant, millions of national currency."
+strict_GBR.csv,TE - Total expenditure,Total expenditure (TE) from the COFOG tree's expenditure anchor. Not the same series as LEDGER_TE — see that column.
+strict_GBR.csv,R01 - Value added tax,"Value added tax (R01), strict variant, millions of national currency."
+strict_GBR.csv,R02 - Other taxes on production and imports,"Other taxes on production and imports (R02), strict variant, millions of national currency."
+strict_GBR.csv,R03 - Taxes on household income,"Taxes on household income (R03), strict variant, millions of national currency."
+strict_GBR.csv,R04 - Taxes on corporate income,"Taxes on corporate income (R04), strict variant, millions of national currency."
+strict_GBR.csv,R05 - Other current taxes and capital taxes,"Other current taxes and capital taxes (R05), strict variant, millions of national currency."
+strict_GBR.csv,R06 - Net social contributions,"Net social contributions (R06), strict variant, millions of national currency."
+strict_GBR.csv,R07 - Interest receivable,"Interest receivable (R07), strict variant, millions of national currency."
+strict_GBR.csv,R08 - Other property income,"Other property income (R08), strict variant, millions of national currency."
+strict_GBR.csv,R09 - Sales of goods and services,"Sales of goods and services (R09), strict variant, millions of national currency."
+strict_GBR.csv,R10 - Other current and capital transfers receivable,"Other current and capital transfers receivable (R10), strict variant, millions of national currency."
+strict_GBR.csv,TR - Total revenue,Total revenue (TR) from the ESA tree's revenue anchor. Not the same series as LEDGER_TR — see that column.
+strict_GBR.csv,LEDGER_TR - Total revenue (balance anchor),Total revenue as published by the balance anchor. For GBR this is a different ONS table from the TR column and the two differ by up to ~0.5%; for FRA/DEU they agree to rounding. Outturn years only.
+strict_GBR.csv,LEDGER_TE - Total expenditure (balance anchor),Total expenditure as published by the balance anchor. Same caveat as LEDGER_TR against the TE column.
+strict_GBR.csv,NLB - Net lending (+) / net borrowing (-),Net lending (+) / net borrowing (-) = LEDGER_TR - LEDGER_TE (ESA B.9). Outturn years only.
+strict_GBR.csv,NI - Net interest (GF01_7 - R07),Net interest = GF01_7 - R07. Blank where one leg has no value.
+strict_GBR.csv,PB - Primary balance (NLB + NI),Primary balance = NLB + NI. Outturn years only.
+strict_FRA.csv,year,Calendar year. One row per year from the country's first published year to the last year any strict series reaches.
+strict_FRA.csv,GDP - Gross domestic product at current market prices,"Gross domestic product at current market prices, from the country's registered GDP source. Divide by it for ratios."
+strict_FRA.csv,GF01 - General public services,"General public services (GF01), strict variant, millions of national currency."
+strict_FRA.csv,GF01_7 - Public debt transactions (interest),"Public debt transactions (interest) (GF01_7), strict variant, millions of national currency."
+strict_FRA.csv,GF01_X - General public services excluding interest,"General public services excluding interest (GF01_X): the identity GF01 - GF01_7, never forecast (D10)."
+strict_FRA.csv,GF02 - Defence,"Defence (GF02), strict variant, millions of national currency."
+strict_FRA.csv,GF03 - Public order and safety,"Public order and safety (GF03), strict variant, millions of national currency."
+strict_FRA.csv,GF04 - Economic affairs,"Economic affairs (GF04), strict variant, millions of national currency."
+strict_FRA.csv,GF05 - Environmental protection,"Environmental protection (GF05), strict variant, millions of national currency."
+strict_FRA.csv,GF06 - Housing and community amenities,"Housing and community amenities (GF06), strict variant, millions of national currency."
+strict_FRA.csv,GF07 - Health,"Health (GF07), strict variant, millions of national currency."
+strict_FRA.csv,GF08 - Recreation culture and religion,"Recreation culture and religion (GF08), strict variant, millions of national currency."
+strict_FRA.csv,GF09 - Education,"Education (GF09), strict variant, millions of national currency."
+strict_FRA.csv,GF10 - Social protection,"Social protection (GF10), strict variant, millions of national currency."
+strict_FRA.csv,TE - Total expenditure,Total expenditure (TE) from the COFOG tree's expenditure anchor. Not the same series as LEDGER_TE — see that column.
+strict_FRA.csv,R01 - Value added tax,"Value added tax (R01), strict variant, millions of national currency."
+strict_FRA.csv,R02 - Other taxes on production and imports,"Other taxes on production and imports (R02), strict variant, millions of national currency."
+strict_FRA.csv,R03 - Taxes on household income,"Taxes on household income (R03), strict variant, millions of national currency."
+strict_FRA.csv,R04 - Taxes on corporate income,"Taxes on corporate income (R04), strict variant, millions of national currency."
+strict_FRA.csv,R05 - Other current taxes and capital taxes,"Other current taxes and capital taxes (R05), strict variant, millions of national currency."
+strict_FRA.csv,R06 - Net social contributions,"Net social contributions (R06), strict variant, millions of national currency."
+strict_FRA.csv,R07 - Interest receivable,"Interest receivable (R07), strict variant, millions of national currency."
+strict_FRA.csv,R08 - Other property income,"Other property income (R08), strict variant, millions of national currency."
+strict_FRA.csv,R09 - Sales of goods and services,"Sales of goods and services (R09), strict variant, millions of national currency."
+strict_FRA.csv,R10 - Other current and capital transfers receivable,"Other current and capital transfers receivable (R10), strict variant, millions of national currency."
+strict_FRA.csv,TR - Total revenue,Total revenue (TR) from the ESA tree's revenue anchor. Not the same series as LEDGER_TR — see that column.
+strict_FRA.csv,LEDGER_TR - Total revenue (balance anchor),Total revenue as published by the balance anchor. For GBR this is a different ONS table from the TR column and the two differ by up to ~0.5%; for FRA/DEU they agree to rounding. Outturn years only.
+strict_FRA.csv,LEDGER_TE - Total expenditure (balance anchor),Total expenditure as published by the balance anchor. Same caveat as LEDGER_TR against the TE column.
+strict_FRA.csv,NLB - Net lending (+) / net borrowing (-),Net lending (+) / net borrowing (-) = LEDGER_TR - LEDGER_TE (ESA B.9). Outturn years only.
+strict_FRA.csv,NI - Net interest (GF01_7 - R07),Net interest = GF01_7 - R07. Blank where one leg has no value.
+strict_FRA.csv,PB - Primary balance (NLB + NI),Primary balance = NLB + NI. Outturn years only.
+strict_DEU.csv,year,Calendar year. One row per year from the country's first published year to the last year any strict series reaches.
+strict_DEU.csv,GDP - Gross domestic product at current market prices,"Gross domestic product at current market prices, from the country's registered GDP source. Divide by it for ratios."
+strict_DEU.csv,GF01 - General public services,"General public services (GF01), strict variant, millions of national currency."
+strict_DEU.csv,GF01_7 - Public debt transactions (interest),"Public debt transactions (interest) (GF01_7), strict variant, millions of national currency."
+strict_DEU.csv,GF01_X - General public services excluding interest,"General public services excluding interest (GF01_X): the identity GF01 - GF01_7, never forecast (D10)."
+strict_DEU.csv,GF02 - Defence,"Defence (GF02), strict variant, millions of national currency."
+strict_DEU.csv,GF03 - Public order and safety,"Public order and safety (GF03), strict variant, millions of national currency."
+strict_DEU.csv,GF04 - Economic affairs,"Economic affairs (GF04), strict variant, millions of national currency."
+strict_DEU.csv,GF05 - Environmental protection,"Environmental protection (GF05), strict variant, millions of national currency."
+strict_DEU.csv,GF06 - Housing and community amenities,"Housing and community amenities (GF06), strict variant, millions of national currency."
+strict_DEU.csv,GF07 - Health,"Health (GF07), strict variant, millions of national currency."
+strict_DEU.csv,GF08 - Recreation culture and religion,"Recreation culture and religion (GF08), strict variant, millions of national currency."
+strict_DEU.csv,GF09 - Education,"Education (GF09), strict variant, millions of national currency."
+strict_DEU.csv,GF10 - Social protection,"Social protection (GF10), strict variant, millions of national currency."
+strict_DEU.csv,TE - Total expenditure,Total expenditure (TE) from the COFOG tree's expenditure anchor. Not the same series as LEDGER_TE — see that column.
+strict_DEU.csv,R01 - Value added tax,"Value added tax (R01), strict variant, millions of national currency."
+strict_DEU.csv,R02 - Other taxes on production and imports,"Other taxes on production and imports (R02), strict variant, millions of national currency."
+strict_DEU.csv,R03 - Taxes on household income,"Taxes on household income (R03), strict variant, millions of national currency."
+strict_DEU.csv,R04 - Taxes on corporate income,"Taxes on corporate income (R04), strict variant, millions of national currency."
+strict_DEU.csv,R05 - Other current taxes and capital taxes,"Other current taxes and capital taxes (R05), strict variant, millions of national currency."
+strict_DEU.csv,R06 - Net social contributions,"Net social contributions (R06), strict variant, millions of national currency."
+strict_DEU.csv,R07 - Interest receivable,"Interest receivable (R07), strict variant, millions of national currency."
+strict_DEU.csv,R08 - Other property income,"Other property income (R08), strict variant, millions of national currency."
+strict_DEU.csv,R09 - Sales of goods and services,"Sales of goods and services (R09), strict variant, millions of national currency."
+strict_DEU.csv,R10 - Other current and capital transfers receivable,"Other current and capital transfers receivable (R10), strict variant, millions of national currency."
+strict_DEU.csv,TR - Total revenue,Total revenue (TR) from the ESA tree's revenue anchor. Not the same series as LEDGER_TR — see that column.
+strict_DEU.csv,LEDGER_TR - Total revenue (balance anchor),Total revenue as published by the balance anchor. For GBR this is a different ONS table from the TR column and the two differ by up to ~0.5%; for FRA/DEU they agree to rounding. Outturn years only.
+strict_DEU.csv,LEDGER_TE - Total expenditure (balance anchor),Total expenditure as published by the balance anchor. Same caveat as LEDGER_TR against the TE column.
+strict_DEU.csv,NLB - Net lending (+) / net borrowing (-),Net lending (+) / net borrowing (-) = LEDGER_TR - LEDGER_TE (ESA B.9). Outturn years only.
+strict_DEU.csv,NI - Net interest (GF01_7 - R07),Net interest = GF01_7 - R07. Blank where one leg has no value.
+strict_DEU.csv,PB - Primary balance (NLB + NI),Primary balance = NLB + NI. Outturn years only.
