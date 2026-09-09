@@ -32,11 +32,94 @@ def _load(name: str) -> pd.DataFrame | None:
 
 def check_register_stage() -> list[Finding]:
     secs = _load("debt_securities")
-    if secs is None:
+    if secs is None or secs.empty:
         return [Finding(v, "SKIP", "-", f"{what}: per-security register not built (OQ-8)")
                 for v, what in REGISTER_CHECKS.items()]
-    return [Finding(v, "ERROR", "-", f"{what}: implemented at Stage D2, register present but check not wired")
-            for v, what in REGISTER_CHECKS.items()]
+    pos = _load("debt_positions")
+    flows = _load("debt_flows")
+    ratios = _load("debt_index_ratios")
+    interest = _load("debt_interest_by_security")
+    profile = _load("debt_maturity_profile")
+    out: list[Finding] = []
+    keys = set(zip(secs["iso3"], secs["security_id"]))
+    # V29
+    bad_p = [k for k in set(zip(pos["iso3"], pos["security_id"])) if k not in keys] if pos is not None else []
+    bad_f = [k for k in set(zip(flows["iso3"], flows["security_id"])) if k not in keys] if flows is not None else []
+    orphan = [k for k in keys if pos is None or k not in set(zip(pos["iso3"], pos["security_id"]))]
+    out.append(Finding("V29", "ERROR" if (bad_p or bad_f) else ("WARN" if orphan else "OK"), "-",
+                       f"{len(bad_p)} positions and {len(bad_f)} flows reference unknown securities; "
+                       f"{len(orphan)} securities without a position"))
+    # V30 recurrence: year-end snapshot(t) vs snapshot(t-1) + Σ flows
+    tol_abs = config.debt()["tolerances"]["v30_recurrence_abs_mn"]
+    tol_pct = config.debt()["tolerances"]["v30_recurrence_pct"] / 100
+    if pos is not None and flows is not None:
+        pos = pos.copy(); pos["as_of"] = pd.to_datetime(pos["as_of"])
+        flows = flows.copy(); flows["settlement_date"] = pd.to_datetime(flows["settlement_date"])
+        sign = {"auction": 1, "syndication": 1, "tap": 1, "tender": 1, "conversion_in": 1, "switch_in": 1,
+                "redemption": -1, "buyback": -1, "conversion_out": -1, "switch_out": -1, "implied": 1}
+        flows["_v"] = flows["nominal_lcu_mn"] * flows["flow_type"].map(sign).fillna(0)
+        n_ok = n_bad = 0
+        worst = []
+        ye = pos[(pos["as_of"].dt.month == 12) & (pos["as_of"].dt.day == 31)]
+        for (iso3, sid), g in ye.groupby(["iso3", "security_id"]):
+            g = g.sort_values("as_of")
+            f = flows[(flows["iso3"] == iso3) & (flows["security_id"] == sid)]
+            prev = None
+            for _, r in g.iterrows():
+                if prev is not None and (r["as_of"] - prev["as_of"]).days in (365, 366):
+                    fsum = f[(f["settlement_date"] > prev["as_of"]) & (f["settlement_date"] <= r["as_of"])]["_v"].sum()
+                    gap = r["nominal_lcu_mn"] - (prev["nominal_lcu_mn"] + fsum)
+                    if abs(gap) <= max(tol_abs, tol_pct * abs(r["nominal_lcu_mn"])):
+                        n_ok += 1
+                    else:
+                        n_bad += 1
+                        worst.append((abs(gap), iso3, sid, r["as_of"].year, gap))
+                prev = r
+        worst.sort(reverse=True)
+        out.append(Finding("V30", "WARN" if n_bad else "OK", "-",
+                           f"{n_ok} security-years reproduce snapshot(t) = snapshot(t−1) + Σ flows; {n_bad} do not"
+                           + (f"; worst: {[(w[1], w[2], w[3], round(w[4], 1)) for w in worst[:5]]}" if worst else "")))
+    # V33 bucket sums equal class totals at each year-end
+    if profile is not None and pos is not None and secs is not None:
+        prof = profile.copy(); prof["as_of"] = pd.to_datetime(prof["as_of"])
+        cls = secs.set_index(["iso3", "security_id"])["instrument_class"]
+        p2 = pos.copy(); p2["cls"] = [cls.get((a, b)) for a, b in zip(p2["iso3"], p2["security_id"])]
+        p2 = p2[(p2["as_of"].dt.month == 12) & (p2["as_of"].dt.day == 31)]
+        # securities matured on the as_of date are excluded from the profile (residual ≤ 0)
+        mat = secs.set_index(["iso3", "security_id"])["maturity_date"]
+        p2["mat"] = pd.to_datetime([mat.get((a, b)) for a, b in zip(p2["iso3"], p2["security_id"])])
+        p2 = p2[p2["mat"].isna() | (p2["mat"] > p2["as_of"])]
+        lhs = prof.groupby(["iso3", "as_of", "instrument_class"])["nominal_lcu_mn"].sum()
+        rhs = p2.groupby(["iso3", "as_of", "cls"])["nominal_lcu_mn"].sum()
+        rhs.index.names = lhs.index.names
+        diff = (lhs - rhs.reindex(lhs.index)).abs()
+        bad = diff[diff > 0.5]
+        out.append(Finding("V33", "ERROR" if len(bad) else "OK", "-",
+                           f"bucket sums equal class totals on {len(diff) - len(bad)} (country, year-end, class) cells"
+                           + (f"; {len(bad)} differ, e.g. {bad.head(3).to_dict()}" if len(bad) else "")))
+    # V34 recomputed vs office ratios (only when both present)
+    if ratios is not None and {"office", "recomputed"} <= set(ratios["ratio_source"]):
+        piv = ratios.pivot_table(index=["iso3", "security_id", "date"], columns="ratio_source", values="index_ratio")
+        both = piv.dropna()
+        tol = config.debt()["tolerances"]["v34_index_ratio_pct"] / 100
+        bad = ((both["office"] - both["recomputed"]).abs() / both["office"] > tol).sum()
+        out.append(Finding("V34", "WARN" if bad else "OK", "-", f"{len(both)} ratio dates compared; {bad} beyond {tol:.2%}"))
+    else:
+        out.append(Finding("V34", "SKIP", "-", "office ratios only (no recomputed ratios yet)"))
+    # V36
+    if interest is not None:
+        nc = interest[interest["computability"] == "not_computable"]
+        n_sec = nc["security_id"].nunique()
+        notional = None
+        out.append(Finding("V36", "WARN" if n_sec else "OK", "-",
+                           f"{n_sec} securities with not_computable interest (DD10); declared in notes" if n_sec
+                           else "every security-year computed"))
+    # V40
+    if pos is not None:
+        mh = pos.dropna(subset=["market_hands_lcu_mn"])
+        bad = (mh["market_hands_lcu_mn"] > mh["nominal_lcu_mn"] + 1e-6).sum()
+        out.append(Finding("V40", "ERROR" if bad else "OK", "-", f"{bad} positions with market-hands above nominal"))
+    return out
 
 
 def check_v31_stock_vs_official() -> list[Finding]:
