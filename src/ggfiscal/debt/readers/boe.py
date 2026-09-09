@@ -304,9 +304,12 @@ def bank_rate_history() -> pd.DataFrame:
     body = raw.iloc[7:, :4].copy()
     body.columns = ["year", "day", "month", "rate_pct"]
     body["year"] = body["year"].ffill()
+    # Blank rows separate one year's entries from the next in the source
+    # sheet — expected formatting, not a data-quality drop, so removed
+    # before the unparseable-row count below is taken.
+    body = body.dropna(subset=["month", "rate_pct"])
 
     n_before = len(body)
-    body = body.dropna(subset=["month", "rate_pct"])  # blank separator rows between years
     body["day"] = body["day"].fillna(1).astype(int)
     body["rate_pct"] = pd.to_numeric(body["rate_pct"], errors="coerce")
     body["date_changed"] = pd.to_datetime(
