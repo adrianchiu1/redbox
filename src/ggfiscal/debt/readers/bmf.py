@@ -231,7 +231,12 @@ def datenportal_csv(part: str) -> pd.DataFrame:
 #: A German thousands-grouped amount, with or without decimals.
 _NUM = r"-?\d{1,3}(?:\.\d{3})*(?:,\d+)?"
 #: One table cell: an amount, or "-" for "no value in this period".
-_CELL_RE = re.compile(rf"(?:(?<=\s)|^)(?:{_NUM}|-)(?=\s|$)")
+#: "-" (ASCII hyphen) is the usual "no value in this period" marker; some
+#: editions (e.g. 2014's narrative table, see :func:`_narrative_nka_by_year`)
+#: typeset it as "–" (en dash) instead -- ``_to_float`` already treats both as
+#: missing, so the cell scanner must recognise both too, or the token is left
+#: dangling off the end of the line and the whole trailing-cells match fails.
+_CELL_RE = re.compile(rf"(?:(?<=\s)|^)(?:{_NUM}|[-–])(?=\s|$)")
 _YEAR_ROW_RE = re.compile(r"^(?:(?:19|20)\d{2}\s+){1,}(?:19|20)\d{2}$")
 _RUNNING_HEAD_RE = re.compile(r"^(Bericht des Bundesministeriums|Berichtsperiode|"
                               r"in Mio\.|in €|Bezeichnung|Noch\s|\*|Soll\s|Abweichung\s|"
@@ -534,6 +539,66 @@ def _parse_410(year: int) -> pd.DataFrame:
         if done:
             break
     return pd.DataFrame.from_records(records)
+
+
+#: A "Nettokreditaufnahme" row in one of the pre-2019 narrative tables
+#: (:func:`_narrative_nka_by_year`): either bare ("Nettokreditaufnahme
+#: 34,1 44,0 ...", 2013-2014) or item-numbered ("6. Nettokreditaufnahme
+#: 22.481 22.072 ...", 2015-2018).
+_NARRATIVE_NKA_LABEL_RE = re.compile(r"^(?:\d+\.?\s+)?Nettokreditaufnahme\s*$")
+_NARRATIVE_UNIT_RE = re.compile(r"in\s+(Mrd|Mio)\.?\s*(?:€|Euro)")
+
+
+def _narrative_nka_by_year(year: int) -> dict[int, float]:
+    """The Nettokreditaufnahme row of the pre-2019 editions' body-text table
+    ("Tabelle N: Nettokreditaufnahme, Umbuchungen und Veränderungen des
+    Schuldenstandes des Bundeshaushalts", 2015-2018; "Tabelle N:
+    Kreditaufnahme und Schuldentilgung des Bundes (ohne Sondervermögen)",
+    2013-2014) -> {year: value_eur_mn}, for every year that table's own
+    5-year window covers.
+
+    Editions 2013-2018 carry no chapter-4 "Abrechnung des
+    Kreditfinanzierungsplans" annex at all (chapter 4 there is
+    "Rechtsgrundlagen für das Kreditmanagement"; see
+    ``reports/debt_sources/bmf.md``), so :func:`_parse_410` returns nothing
+    for them. This is the only other place in the same editions that states a
+    machine-readable Nettokreditaufnahme, and it is a genuinely different,
+    narrower figure than the 2019+ annex: "ohne Sondervermögen" / "des
+    Bundeshaushalts" only (the special funds are consolidated in and out
+    year by year, so their net effect on the wider, annex-4.10 concept can be
+    large -- e.g. 2020's COVID borrowing), and it is rounded (whole EUR mn,
+    or in 2013-2014 to EUR 100mn) rather than exact to the cent. Never merged
+    silently with the annex figures; the caller records which is which.
+    """
+    out: dict[int, float] = {}
+    for page in kreditaufnahmebericht_pages(year):
+        if "Nettokreditaufnahme" not in page:
+            continue
+        years: list[int] = []
+        unit: str | None = None
+        for raw in page.splitlines():
+            line = raw.strip()
+            if not line:
+                continue
+            um = _NARRATIVE_UNIT_RE.search(line)
+            if um:
+                unit = um.group(1)
+            if _YEAR_ROW_RE.match(line):
+                years = [int(t) for t in line.split()]
+                continue
+            if not years:
+                continue
+            label, cells = _trailing_cells(line)
+            if len(cells) != len(years) or unit is None:
+                continue
+            if not _NARRATIVE_NKA_LABEL_RE.match(label):
+                continue
+            scale = 1000.0 if unit == "Mrd" else 1.0
+            for y, cell in zip(years, cells):
+                v = _to_float(cell)
+                if v is not None:
+                    out[y] = v * scale
+    return out
 
 
 ANNEX_PARSERS = {"4.5": _parse_45, "4.10": _parse_410}
