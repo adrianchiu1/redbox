@@ -584,13 +584,15 @@ def nlf_interest_summary(edition: str) -> pd.DataFrame:
 
     `item` is the normalised bucket (gilts, treasury_bills, national_savings,
     other, total) where the line names one, else ''. Editions differ: 2005-06
-    to 2008-09 split gilts into 'Marketable'/'Non marketable' with a 'Total'
-    line (which is classified as gilts by the section it sits in) and only
-    2008-09 onward carries a Treasury bills line. The Statement of Cash Flows
-    'Interest paid' line is appended as source 'cash_flow'.
+    to 2010-11 split gilts into 'Marketable'/'Non-marketable' with a 'Total'
+    line (classified as gilts by the section it sits in), only 2008-09 onward
+    carries a Treasury bills line, and 2008-09/2009-10 print no sub-total under
+    'Other finance costs' so its components stay unclassified. The Statement of
+    Cash Flows 'Interest paid' line is appended as source 'cash_flow'.
 
     An edition whose PDF yields no usable text returns an empty frame with
-    these columns — no number here is ever hand-keyed.
+    these columns — 2006-07 and 2007-08 are typeset with no usable ToUnicode
+    map and extract as mojibake. No number here is ever hand-keyed.
     """
     cols = ["edition", "source", "label", "item", "value"]
     try:

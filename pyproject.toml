@@ -14,6 +14,8 @@ dependencies = [
     "plotly>=5.18",
     "openpyxl>=3.1",
     "xlrd>=2.0",
+    "pypdf>=4.0",       # debt extension: NLF accounts, Kreditaufnahmebericht annexes
+    "cffi>=1.16",       # pypdf's cryptography backend needs it on this image
 ]
 
 [project.optional-dependencies]
