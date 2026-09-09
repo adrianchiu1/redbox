@@ -238,3 +238,66 @@ strict_DEU.csv,LEDGER_TE - Total expenditure (balance anchor),Total expenditure 
 strict_DEU.csv,NLB - Net lending (+) / net borrowing (-),Net lending (+) / net borrowing (-) = LEDGER_TR - LEDGER_TE (ESA B.9). Outturn years only.
 strict_DEU.csv,NI - Net interest (GF01_7 - R07),Net interest = GF01_7 - R07. Blank where one leg has no value.
 strict_DEU.csv,PB - Primary balance (NLB + NI),Primary balance = NLB + NI. Outturn years only.
+debt_reference_series.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_reference_series.csv,series_id,"Reference series id (DEBT_KICKOFF.md §4.2), e.g. UK_RPI, FR_CPI_XT, EA_HICP_XT, UK_SONIA, EA_MM_3M, UK_GLC_NOMINAL_10Y."
+debt_reference_series.csv,date,Observation date (month start for monthly indices; the fixing date for daily rates; month-end for curves).
+debt_reference_series.csv,value,Observation in `unit`.
+debt_reference_series.csv,unit,index | pct_pa.
+debt_reference_series.csv,base_period,"Index base (e.g. 1987-01=100, 2025=100); empty for rates."
+debt_reference_series.csv,vintage_note,"How the series was built (splice, chaining factor, geography)."
+debt_reference_series.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_reference_series.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_reference_series.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_reference_series.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_official_totals.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_official_totals.csv,iso3,"Country: GBR, FRA, DEU."
+debt_official_totals.csv,year,Calendar year (DD6).
+debt_official_totals.csv,chain,interest | financing.
+debt_official_totals.csv,step,A_cg_cash / B_s1311_d41 / C_s13_gf01_7 (interest); A_cg_cash_requirement / B_s1311_b9 / C_s13_nlb (financing).
+debt_official_totals.csv,value_lcu_mn,"The official total, millions of national currency; null where the source is unreachable (OQ-8) or the year is not covered."
+debt_official_totals.csv,item_source_id,"Source of the total (register id, or package_GF01_7 / package_NLB for step C)."
+debt_official_totals.csv,basis,"Accounting basis of the total as published: cash, accrued, accrued_nlf_finance_costs, cash_budgetaire."
+debt_official_totals.csv,period_basis,"CY, FY or M: the source's native period before conversion."
+debt_official_totals.csv,period_conversion_method,"How a non-calendar-year source was converted (§7.10 formula, or 'sum of 12 calendar months'); empty when none."
+debt_official_totals.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_official_totals.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_official_totals.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_class_aggregates.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_class_aggregates.csv,iso3,"Country: GBR, FRA, DEU."
+debt_class_aggregates.csv,year,Calendar year (DD6).
+debt_class_aggregates.csv,instrument_class,"DD2 class (fixed_bullet, floating, inflation_linked, bill, other), or mixed where the source does not split, or out_of_register for the source's rows outside DD1 (loans, retail, special funds)."
+debt_class_aggregates.csv,sub_type,"The source's own instrument or fund label, slugged."
+debt_class_aggregates.csv,measure,stock_year_end | stock_gross_umlauf | own_holdings | gross_issuance | redemptions | net_issuance | interest | uplift_accrued.
+debt_class_aggregates.csv,value_lcu_mn,"Value, millions of national currency; interest and redemptions positive."
+debt_class_aggregates.csv,basis,"nominal, cash, accrued, nominal_change, … as the source publishes it."
+debt_class_aggregates.csv,in_register,True when the row is inside the DD1 perimeter and enters the register step of the chains.
+debt_class_aggregates.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_class_aggregates.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_class_aggregates.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_class_aggregates.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_interest_reconciliation.csv,iso3,"Country: GBR, FRA, DEU."
+debt_interest_reconciliation.csv,year,Calendar year (DD6).
+debt_interest_reconciliation.csv,step,register → A_cg_cash → B_s1311_d41 → C_s13_gf01_7.
+debt_interest_reconciliation.csv,item,sum_{class} at the register step; carried_from_previous_step; the named bridge items; official_total; residual.
+debt_interest_reconciliation.csv,value_lcu_mn,Millions of national currency; null where the total is unknown (blocked source or no register).
+debt_interest_reconciliation.csv,item_type,computed | official | declared | residual.
+debt_interest_reconciliation.csv,item_source_id,Where the item comes from.
+debt_interest_reconciliation.csv,basis,Accounting basis of the item.
+debt_interest_reconciliation.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_interest_reconciliation.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_interest_reconciliation.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_interest_reconciliation.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_interest_reconciliation.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_financing_reconciliation.csv,iso3,"Country: GBR, FRA, DEU."
+debt_financing_reconciliation.csv,year,Calendar year (DD6).
+debt_financing_reconciliation.csv,step,register → A_cg_cash_requirement → B_s1311_b9 → C_s13_nlb.
+debt_financing_reconciliation.csv,item,"sum_{class} net issuance at the register step; carried_from_previous_step; the named bridge items (out-of-register instruments, less_special_fund…, nka_3_x… from the Kreditaufnahmebericht, subsector B.9); official_total; residual."
+debt_financing_reconciliation.csv,value_lcu_mn,Millions of national currency; null where the total is unknown (blocked source or no register).
+debt_financing_reconciliation.csv,item_type,computed | official | declared | residual.
+debt_financing_reconciliation.csv,item_source_id,Where the item comes from.
+debt_financing_reconciliation.csv,basis,Accounting basis of the item.
+debt_financing_reconciliation.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_financing_reconciliation.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_financing_reconciliation.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_financing_reconciliation.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_financing_reconciliation.csv,notes,"Free-text provenance: table, row, conversion, caveat."

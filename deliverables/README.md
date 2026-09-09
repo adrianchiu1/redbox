@@ -20,7 +20,12 @@ dynamics to the IMF WEO** general-government aggregates.
 | `strict_GBR.csv` | 66 | 31 | United Kingdom, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `strict_FRA.csv` | 106 | 31 | France, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `strict_DEU.csv` | 80 | 31 | Germany, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
-| `data_dictionary.csv` | 239 | 3 | every column of every file above, described |
+| `debt_reference_series.csv` | 126,888 | 11 | reference series behind the register: RPI (Jan 1987=100, 1947-), French CPI ex-tobacco (base 2025, 1990-), euro-area/FR/DE HICP ex-tobacco, SONIA, Bank Rate, euro money-market and national 3m and long rates, and the BoE nominal/real/inflation/OIS month-end curves by maturity — one row per series-date |
+| `debt_official_totals.csv` | 732 | 13 | the official intermediate totals of the two reconciliation chains per country-year: finance-ministry central-government interest / net cash requirement (step A), S.1311 D.41 / B.9 (step B), the package's GF01_7 / NLB (step C); null where the source is blocked (OQ-8) |
+| `debt_class_aggregates.csv` | 5,045 | 13 | the ministries' and statistical offices' own instrument-class totals per country-year (stock at 31 Dec, gross issuance, redemptions, net issuance, interest, own holdings) — the DD8 aggregate layer standing in for the per-security register |
+| `debt_interest_reconciliation.csv` | 1,674 | 13 | interest chain: Σ register by class → CG interest (ministry) → S.1311 D.41 → GF01_7, with every bridge item and the residual per step, per country-year (V32: official_total = carried + Σ items + residual) |
+| `debt_financing_reconciliation.csv` | 2,651 | 13 | financing chain: Σ net issuance by class → CG net cash requirement / Nettokreditaufnahme → S.1311 B.9 → NLB, same shape |
+| `data_dictionary.csv` | 302 | 3 | every column of every file above, described |
 
 Start with `data_dictionary.csv` (every column of every file) and
 `series_catalogue.csv` (one row per published series: span, grades,
