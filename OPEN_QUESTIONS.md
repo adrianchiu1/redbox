@@ -149,3 +149,27 @@ as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
 (b) wait for DSM 2026 (expected ~Feb 2027) and re-run, or (c) keep the 2027
 stop. The V5-style diagnostics and both sources' snapshots are in place; no
 code change needed for any option.
+
+## OQ-8 — Debt-office and central-bank hosts denied by the egress policy (NEW, 2026-09-09; blocks Stages D2–D4 for the bond-level register)
+Raised 2026-09-09 (D-S10-001). Every bond-level source for the debt
+extension is unreachable from this environment; the agent cannot change
+the allowlist — it is an environment network setting the committee
+controls (the route used for OQ-1 and OQ-6). Tested denied: `www.dmo.gov.uk`
+(and `pwlb.gov.uk`, `crnd.gov.uk`, `data.gov.uk`), `www.aft.gouv.fr` (and
+every `*.data.gouv.fr`, `webstat.banque-france.fr`, `www.budget.gouv.fr`,
+`www.performance-publique.budget.gouv.fr`, `bdm.insee.fr`, `api.insee.fr`),
+`www.deutsche-finanzagentur.de` (and `www.bundesbank.de`,
+`api.statistiken.bundesbank.de`, `genesis.destatis.de`, `www.bundeshaushalt.de`),
+`data-api.ecb.europa.eu`, `www.ecb.europa.eu`, `www.emmi-benchmarks.eu`,
+`web.archive.org`. **Ask:** allowlist, in priority order:
+1. `www.dmo.gov.uk`, `www.aft.gouv.fr`, `www.deutsche-finanzagentur.de`
+   (the registers);
+2. `www.bundesbank.de`, `api.statistiken.bundesbank.de`,
+   `webstat.banque-france.fr`, `data-api.ecb.europa.eu` (yields, TEC10,
+   €STR/Euribor, pre-1995 German issuance statistics);
+3. `www.budget.gouv.fr`, `www.performance-publique.budget.gouv.fr`
+   (programme 117 interest tables), `bdm.insee.fr`.
+Fallback per D-S7-001: hand-download the file lists in `DEBT_SCOPING.md`
+§6 and ingest with `ggfiscal ingest-file`. Until either happens the
+extension builds the reference series, the official intermediates and the
+DEU aggregate layer (all reachable), and the per-security register waits.

@@ -944,3 +944,26 @@ and none of the maximum-only legs — forward or backward — leaks in. Five
 new tests hold it, including an explicit assertion that the maximum-only
 legs are absent and a guard that fails if the fixture ever stops having
 any. pytest 120 passed; no data file changed.
+
+## D-S10-001 — Debt-in-issue extension scoped; committee accepted the defaults; `DEBT_KICKOFF.md` v1.0 governs the debt side (serves §1 extension, §16; new decisions DD1–DD13)
+2026-09-09. The committee asked for the register of central-government
+marketable debt securities per country, with per-security interest,
+issuance/redemption/buy-back flows and a residual-maturity profile, each
+reconciled to the package's `GF01_7` and `NLB`. A research pass (four
+source catalogues, condensed in `DEBT_SCOPING.md`) established that every
+bond-level publisher (DMO, AFT, Finanzagentur) and every central-bank data
+host is denied by the egress policy, while the statistical and
+finance-ministry sources around them are reachable and verified. The
+committee accepted all eleven scoping defaults (Q-D1–Q-D11), recorded as
+DD1–DD13 in `DEBT_KICKOFF.md` v1.0: central-government marketable
+securities incl. bills; accrued and cash interest both computed, uplift as
+interest; three-step reconciliation chains with official intermediates and
+published residuals (never allocated); calendar year with GBR financial-
+year memoranda; residual-maturity bucketing at settlement for issuance;
+machine-readable sources only in this phase; BoE APF overlay and BoE yield
+curves stored now; reference-rate gaps declared `not_computable`. Build
+proceeds in the same package as `ggfiscal.debt` with register entries in
+`config/debt_sources.yaml` merged into `config.sources()`, so the source
+register and vintage detection cover the extension without a second
+mechanism. The access question is OQ-8; harvest of reachable sources
+(Stage D0) does not wait for it.

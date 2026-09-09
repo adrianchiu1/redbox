@@ -1,0 +1,274 @@
+# Debt-extension source register (DEBT_KICKOFF.md §13). Merged into
+# config.sources() so source_register.csv and detect-vintages cover it.
+# verification.status: confirmed_live | confirmed_search | blocked | unverified
+sources:
+
+  # ---------- GBR ----------
+  UK_DMO_GILTS:
+    institution: UK Debt Management Office
+    object: "Gilt data reports: D1A gilts in issue (XML/xls, by COBDate), D1C redeemed gilts since 1981, D1D index-linked, D2.1E issuance history per gilt, D2.1A auctions since 1998, D2.1PROF7 other operations (switches, conversions, reverse auctions), D10A syndications, D2.1PROF9 tenders, D4L government holdings, D8B future redemptions, D5I index-linked cash flows, D10C index ratios, D9C; gross/net issuance page incl. cash sales by type and maturity since 1960-61; yldeqns.pdf, igcalc.pdf"
+    trees: [debt]
+    countries: [GBR]
+    role: debt_register
+    api: {kind: umbraco_report, base: "https://www.dmo.gov.uk/data/", export: "https://www.dmo.gov.uk/data/ExportReport?reportCode={code}", xml: "https://www.dmo.gov.uk/data/XmlDataReport?reportCode={code}",
+          cob: "https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode={code}&exportFormatValue=xls&parameters=&COBDate={dd}%2F{mm}%2F{yyyy}"}
+    verification: {status: blocked, checked: 2026-09-09, note: "egress proxy denies www.dmo.gov.uk, pwlb.gov.uk, crnd.gov.uk, data.gov.uk and web.archive.org (OQ-8); report codes verified by search; D1A XML schema verified from a cached payload"}
+  UK_DMO_BILLS:
+    institution: UK Debt Management Office
+    object: "Treasury bill tender results and stock: D2.2A, D2.2D, D2.2E, D2.2G"
+    trees: [debt]
+    countries: [GBR]
+    role: debt_register
+    api: {kind: umbraco_report, base: "https://www.dmo.gov.uk/data/"}
+    verification: {status: blocked, checked: 2026-09-09}
+  BOE_APF:
+    institution: Bank of England
+    object: "Asset Purchase Facility gilt operations per ISIN: purchases (2009-03-), sales (2022-11-), financial-stability purchases and sales (2022), maturity profile by gilt"
+    trees: [debt]
+    countries: [GBR]
+    role: holdings_overlay
+    api: {kind: xlsx_download, landing: https://www.bankofengland.co.uk/markets/bank-of-england-market-operations-guide/results-and-usage-data}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  BOE_YIELD_CURVES:
+    institution: Bank of England
+    object: "Government liability curves: nominal (1979-), real (1985-), inflation, OIS (2009-), daily and month-end archives"
+    trees: [debt]
+    countries: [GBR]
+    role: reference_series
+    api: {kind: zip_download, landing: https://www.bankofengland.co.uk/statistics/yield-curves}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  BOE_IADB:
+    institution: Bank of England
+    object: "Statistical Interactive Database: IUDSOIA SONIA (1997-), IUDBEDR Bank Rate (1975-), gilt holdings by sector; baserate.xls (1694-)"
+    trees: [debt]
+    countries: [GBR]
+    role: reference_series
+    api: {kind: iadb_html, base: "https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp", note: "CSVF=TT now returns an HTML table (id stats-table); parse in reader"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  ONS_PSF_APPENDIX_A:
+    institution: ONS
+    object: "Public sector finances Appendix A tables PSA1-PSA10, REC1-3, PSNFL: CG gross debt by instrument (PSA8A_1), CG interest (PSA6B_2), CGNCR reconciliations (REC2, REC3), APF (PSA9A/B); FY from 1998, monthly"
+    trees: [debt]
+    countries: [GBR]
+    role: reconciliation_intermediate
+    api: {kind: xlsx_download, landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/datasets/publicsectorfinancesappendixatables110, file: publicsectorfinancessummarytablesappendixafinal.xlsx}
+    verification: {status: confirmed_live, checked: 2026-09-09, last_update_observed: "2026-08-21"}
+  ONS_PSF_APPENDIX_S:
+    institution: ONS
+    object: "Appendix S table 1.2A: financing of the CG net cash requirement by instrument with ESA codes (gilts ANTA, T-bills NAVG, NS&I, loans, deposits), FY 1997-98-, monthly"
+    trees: [debt]
+    countries: [GBR]
+    role: reconciliation_intermediate
+    api: {kind: xls_download, landing: https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/datasets/financialstatisticsforpublicsector, file: publicsectornetcashrequirementappendixsfinal.xls}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  ONS_PSF_TIMESERIES:
+    institution: ONS
+    object: "PUSF single series: BKPM gilts stock (1975-), BKPJ bills, NMFX CG net interest (1946-), MW7L IL uplift (1981-), M98R CGNCR (1984-), ANTA, AACE, L6BD, ANSK, ANLO"
+    trees: [debt]
+    countries: [GBR]
+    role: reconciliation_intermediate
+    api: {kind: timeseries_json, base: "https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/{cdid}/pusf/data"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  ONS_RPI:
+    institution: ONS
+    object: "RPI all items: CHAW (Jan 1987=100, 1987-), CDKO long run (Jan 1974=100, 1947-), CZBH"
+    trees: [debt]
+    countries: [GBR]
+    role: reference_series
+    api: {kind: timeseries_json, base: "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/{cdid}/mm23/data"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  HMT_DMR:
+    institution: HM Treasury / DMO
+    object: "Debt Management Report: financing arithmetic (3.A), issuance plan by type and method (3.B), CGNCR/redemptions/gross gilt sales 2008-09- (A.2), debt composition (A.1); editions 2023-24 to 2026-27"
+    trees: [debt]
+    countries: [GBR]
+    role: reconciliation_intermediate
+    api: {kind: govuk_content, landing: https://www.gov.uk/government/publications/debt-management-report-2026-27}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  HMT_NLF:
+    institution: HM Treasury
+    object: "National Loans Fund Account (cash interest on the national debt): 2005-06 to 2024-25; combined Consolidated Fund and NLF accounts 1996-97-"
+    trees: [debt]
+    countries: [GBR]
+    role: reconciliation_intermediate
+    api: {kind: govuk_content, landing: https://www.gov.uk/government/collections/hmt-central-funds}
+    verification: {status: confirmed_live, checked: 2026-09-09, note: "PDF; table extraction to be assessed (§11.4 applies to hand-keying, not machine extraction of a machine-generated PDF — committee to confirm under Q-D7)"}
+
+  # ---------- FRA ----------
+  FRA_AFT_ENCOURS:
+    institution: Agence France Trésor
+    object: "Encours détaillé OAT / BTF / OAT€i-OATi: ISIN, libellé, encours, coefficient d'indexation, valeur nominale, part démembrée, échéance (xlsx behind the pages); per-ISIN pages /fr/titre/{isin}"
+    trees: [debt]
+    countries: [FRA]
+    role: debt_register
+    api: {kind: html_download, landing: https://www.aft.gouv.fr/fr/encours-detaille-oat}
+    verification: {status: blocked, checked: 2026-09-09, note: "aft.gouv.fr, data.gouv.fr (all subdomains), webstat.banque-france.fr, budget.gouv.fr blocked (OQ-8); historical month-by-month register exists only as the Bulletin mensuel PDF archive (~1990-, inferred from numbering)"}
+  FRA_AFT_ADJUDICATIONS:
+    institution: Agence France Trésor
+    object: "Auction history workbooks (BTF: files/medias-aft/3_Dette/3.4_BTF/{YYYY-MM}_hist_btf.xlsx; OAT counterpart), pre-2018 archive page, monthly operations recaps (PDF) carrying buy-backs"
+    trees: [debt]
+    countries: [FRA]
+    role: debt_register
+    api: {kind: html_download, landing: https://www.aft.gouv.fr/fr/dernieres-adjudications}
+    verification: {status: blocked, checked: 2026-09-09}
+  FRA_AFT_INDEXATION:
+    institution: Agence France Trésor
+    object: "Coefficients d'indexation and daily reference indices: OATi (1998-07-25-, base 1998 historical file to 2016-03-01), OAT€i (2001-07-25-, base 2005 historical); base 2025 from 2026-03-02"
+    trees: [debt]
+    countries: [FRA]
+    role: reference_series
+    api: {kind: xls_download, landing: https://www.aft.gouv.fr/fr/oati-principaux-chiffres}
+    verification: {status: blocked, checked: 2026-09-09}
+  FRA_AFT_FINANCEMENT:
+    institution: Agence France Trésor
+    object: "Tableau de financement de l'État (per PLF, /fr/plf-{year}), rapport d'activité (charge de la dette, rachats)"
+    trees: [debt]
+    countries: [FRA]
+    role: reconciliation_intermediate
+    api: {kind: html_download, landing: https://www.aft.gouv.fr/fr/rapports-activite}
+    verification: {status: blocked, checked: 2026-09-09}
+  FRA_PLF_P117:
+    institution: Direction du Budget
+    object: "Programme 117 Charge de la dette et trésorerie de l'État — RAP/PAP justification au premier euro: interest by OAT/BTAN/BTF, charge d'indexation, swaps"
+    trees: [debt]
+    countries: [FRA]
+    role: reconciliation_intermediate
+    api: {kind: html_download, landing: https://www.budget.gouv.fr/documentation/engagements-financiers-letat/117-charge-dette-tresorerie-10}
+    verification: {status: blocked, checked: 2026-09-09}
+  INSEE_IPC:
+    institution: INSEE
+    object: "IPC ensemble des ménages, France entière, hors tabac: idbank 001763852 (base 2015, 1990-01 to 2025-12), 011814056 (base 2025, 1996-01-)"
+    trees: [debt]
+    countries: [FRA]
+    role: reference_series
+    api: {kind: insee_ajax, base: "https://www.insee.fr/fr/statistiques/serie/ajax/{idbank}", note: "JSON with the full history as an HTML table in the html field; csv endpoint returns 500; bdm.insee.fr and api.insee.fr blocked"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  INSEE_AFT_AGG:
+    institution: INSEE (source AFT)
+    object: "Dette négociable de l'État, monthly 2009-01-: total/CT/MLT in euro (001711531-3) and devises (001719708-10); taux fixe 001738853; indexée 001738854; YTD variations 001738855-62"
+    trees: [debt]
+    countries: [FRA]
+    role: reconciliation_intermediate
+    api: {kind: insee_ajax, base: "https://www.insee.fr/fr/statistiques/serie/ajax/{idbank}"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+
+  # ---------- DEU ----------
+  DEU_FINANZAGENTUR:
+    institution: Bundesrepublik Deutschland Finanzagentur
+    object: "Downloadcenter: Jährliche Einzelaufstellung aller Bundeswertpapiere seit 1995 (xlsx, per ISIN per year-end); Umlaufende Bundeswertpapiere zum Monatsultimo (xlsx, incl. Eigenbestand); Emissionshistorie (xlsx, per auction/ISIN, allotted and retained); Emissionskalender; inflation-linked daily reference index and index ratios (base 2015 and base 2025 files); per-ISIN factsheets"
+    trees: [debt]
+    countries: [DEU]
+    role: debt_register
+    api: {kind: html_download, landing: https://www.deutsche-finanzagentur.de/downloadcenter,
+          candidates: ["https://www.deutsche-finanzagentur.de/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionshistorie_dt.xlsx",
+                       "https://www.deutsche-finanzagentur.de/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionsergebnisse_aktuell_dt.pdf"]}
+    verification: {status: blocked, checked: 2026-09-09, note: "deutsche-finanzagentur.de, bundesbank.de, genesis.destatis.de blocked (OQ-8)"}
+  BMF_DATENPORTAL:
+    institution: Bundesministerium der Finanzen (Datenportal)
+    object: "Kreditbestand, Bruttokreditaufnahme, Tilgungen und Zinsen des Bundes: monthly 1996-01- (stocks from 1995-12), by Verwendung and Instrumentenart incl. Umlaufvolumen tree, Eigenbestände brutto/netto, Restlaufzeit bands, currency; whole euro. Sibling CSV series (UTF-16LE, tab)"
+    trees: [debt]
+    countries: [DEU]
+    role: reconciliation_intermediate
+    api: {kind: xlsx_download, landing: https://www.bundesfinanzministerium.de/Datenportal/Daten/offene-daten/haushalt-oeffentliche-finanzen/Zeitreihe-Kredit-Bruttokredit-Tilgung-Zinsen/Kreditbestand-Bruttokredit-Tilgung-Zinsen.html,
+          file: "https://www.bundesfinanzministerium.de/Datenportal/Daten/offene-daten/haushalt-oeffentliche-finanzen/Zeitreihe-Kredit-Bruttokredit-Tilgung-Zinsen/datensaetze/xlsx-Kreditbestand-Bruttokredit-Tilgung-Zinsen.xlsx?__blob=publicationFile&v=36",
+          note: "Radware bot manager: fresh cookie jar, browser UA, Accept-Language de-DE, Referer, --compressed, retry up to 6"}
+    verification: {status: confirmed_live, checked: 2026-09-09, last_update_observed: "2026-08-21", note: "from 2025 agio/disagio spread over life: stock(t) != stock(t-1)+gross-redemptions (DD, §14)"}
+  BMF_KREDITAUFNAHMEBERICHT:
+    institution: Bundesministerium der Finanzen
+    object: "Kreditaufnahmebericht des Bundes (annual PDF): annex 4.1 stock 1990-94, 4.2 stock by instrument 1995-, 4.3/4.4 gross issuance and redemptions 1996-, 4.5 interest incl. Kap. 3205, 4.6 residual maturity, 4.10 Abrechnung des Kreditfinanzierungsplans (NKA derivation incl. Eigenbestand)"
+    trees: [debt]
+    countries: [DEU]
+    role: reconciliation_intermediate
+    api: {kind: pdf_download, landing: https://www.bundesfinanzministerium.de/Content/DE/Downloads/Broschueren_Bestellservice/kreditaufnahmebericht-2025.html,
+          file: "https://www.bundesfinanzministerium.de/Content/DE/Downloads/Broschueren_Bestellservice/kreditaufnahmebericht-2025.pdf?__blob=publicationFile&v=2"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  BMF_MONATSBERICHT:
+    institution: Bundesministerium der Finanzen
+    object: "Monatsbericht, Kreditaufnahme des Bundes und seiner Sondervermögen: monthly stock/issuance/redemptions/interest by instrument; Umlaufvolumen und Eigenbestände with flow decomposition"
+    trees: [debt]
+    countries: [DEU]
+    role: reconciliation_intermediate
+    api: {kind: html_download, landing: https://www.bundesfinanzministerium.de/Monatsberichte/Ausgabe/2025/11/Inhalte/Kapitel-3-Wirtschafts-und-Finanzlage/3-5-kreditaufnahme-des-bundes.html, note: "section numbering moves between years; crawl the issue index"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  BMF_HAUSHALTSRECHNUNG:
+    institution: Bundesministerium der Finanzen
+    object: "Haushaltsrechnung des Bundes, Band 2 (Epl. 32 / Kap. 3205 outturn), 1998-"
+    trees: [debt]
+    countries: [DEU]
+    role: reconciliation_intermediate
+    api: {kind: pdf_download, landing: https://www.bundesfinanzministerium.de/Web/DE/Themen/Oeffentliche_Finanzen/Bundeshaushalt/Haushalts_und_Vermoegensrechnungen_des_Bundes/haushalts_vermoegensrechnungen_des_bundes.html}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+
+  # ---------- Cross-country ----------
+  EUROSTAT_GOV10A_MAIN_S1311:
+    institution: Eurostat
+    object: "gov_10a_main by subsector: D41PAY and B9 for S1311, S1312, S1313, S1314, S13 (FR, DE), 1995-"
+    trees: [debt]
+    countries: [FRA, DEU]
+    role: reconciliation_intermediate
+    api: {kind: sdmx, base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0, data_path: data/dataflow/ESTAT/gov_10a_main/1.0/, format: csvdata}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  EUROSTAT_GOV10DD:
+    institution: Eurostat
+    object: "gov_10dd_ggd (debt by instrument x holder x maturity, S1311/S13), gov_10dd_rmd (remaining maturity, GD_VAR, YR), gov_10dd_edpt1/2/3 (EDP incl. SFA), gov_10dd_dcur, gov_10q_ggdebt (quarterly incl. S13111), 1995-"
+    trees: [debt]
+    countries: [FRA, DEU]
+    role: reconciliation_intermediate
+    api: {kind: sdmx, base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0, format: csvdata}
+    verification: {status: confirmed_live, checked: 2026-09-09, note: "UK absent from all Eurostat government-finance flows"}
+  EUROSTAT_PRC_HICP:
+    institution: Eurostat
+    object: "prc_hicp_minr M.I25.TOT_X_TBC.{EA,FR,DE} (1999-12-); prc_hicp_midx M.I15.TOT_X_TBC archive (FR/DE 1996-01-, EA 2000-12-)"
+    trees: [debt]
+    countries: [FRA, DEU]
+    role: reference_series
+    api: {kind: sdmx, base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0, format: csvdata}
+    verification: {status: confirmed_live, checked: 2026-09-09, note: "coicop code TOT_X_TBC; EA is changing composition"}
+  EUROSTAT_IRT:
+    institution: Eurostat
+    object: "irt_st_m M.IRT_M3.EA (1990-), M.IRT_M6.EA (1994-); irt_lt_mcby_m M.MCBY.{FR,DE,EA} (1980-)"
+    trees: [debt]
+    countries: [FRA, DEU]
+    role: reference_series
+    api: {kind: sdmx, base: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0, format: csvdata}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  OECD_T7PSD:
+    institution: OECD
+    object: "Quarterly public sector debt, consolidated (DSD_NASEC20@DF_T7PSD_Q): S1311 and S13 by instrument, original and residual maturity; FRA 1980Q4-, DEU 1991Q4-, GBR 1995Q1-"
+    trees: [debt]
+    countries: [GBR, FRA, DEU]
+    role: reconciliation_intermediate
+    api: {kind: sdmx, base: https://sdmx.oecd.org/public/rest, dataflow: "OECD.SDD.NAD,DSD_NASEC20@DF_T7PSD_Q,1.1"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  OECD_FINMARK:
+    institution: OECD
+    object: "DSD_STES@DF_FINMARK: IR3TIB (FRA 1970-, DEU 1960-, GBR 1986-), IRLT (1956/1960-)"
+    trees: [debt]
+    countries: [GBR, FRA, DEU]
+    role: reference_series
+    api: {kind: sdmx, base: https://sdmx.oecd.org/public/rest, dataflow: "OECD.SDD.STES,DSD_STES@DF_FINMARK,4.0"}
+    verification: {status: confirmed_live, checked: 2026-09-09}
+  ECB_EMMI_RATES:
+    institution: ECB / EMMI
+    object: "€STR, Euribor fixings (contractual references for euro floaters)"
+    trees: [debt]
+    countries: [FRA, DEU]
+    role: reference_series
+    api: {kind: sdmx, base: https://data-api.ecb.europa.eu/service/data/FM/}
+    verification: {status: blocked, checked: 2026-09-09}
+  BDF_WEBSTAT:
+    institution: Banque de France
+    object: "Webstat SC1 État securities stock and net issuance (S1311 F.33); TEC10; daily bond indices"
+    trees: [debt]
+    countries: [FRA]
+    role: reconciliation_intermediate
+    api: {kind: html_download, landing: https://webstat.banque-france.fr/}
+    verification: {status: blocked, checked: 2026-09-09}
+  BBK_KAPITALMARKT:
+    institution: Deutsche Bundesbank
+    object: "Kapitalmarktstatistik (PDF per issue), Umlauf von Schuldverschreibungen (Nr. 03), Svensson curve, yields by residual maturity"
+    trees: [debt]
+    countries: [DEU]
+    role: reconciliation_intermediate
+    api: {kind: html_download, landing: https://www.bundesbank.de/de/statistiken/geld-und-kapitalmaerkte/wertpapieremissionen}
+    verification: {status: blocked, checked: 2026-09-09}

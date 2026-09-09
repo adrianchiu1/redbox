@@ -1,0 +1,82 @@
+# Debt extension configuration (DEBT_KICKOFF.md §4, §8, §10, DD1-DD7).
+
+perimeter:                       # DD1 — what enters the register
+  GBR: {issuer_sector: S1311, office: DMO, includes: [gilts_all, treasury_bills, foreign_currency]}
+  FRA: {issuer_sector: S1311, office: AFT, includes: [oat_all, btan, btf]}
+  DEU: {issuer_sector: S1311, office: FINANZAGENTUR,
+        includes: [bund, bobl, schatz, bubill, bund_ei, bobl_ei, green_twins, foreign_currency, special_funds_listed]}
+
+instrument_classes: [fixed_bullet, floating, inflation_linked, bill, other]   # DD2
+
+# office sub-type -> class; extended as readers meet new labels
+sub_types:
+  gilt_conventional: fixed_bullet
+  gilt_floating: floating
+  ilg_8m: inflation_linked
+  ilg_3m: inflation_linked
+  gilt_undated: other
+  gilt_double_dated: other
+  treasury_bill: bill
+  oat: fixed_bullet
+  oat_green: fixed_bullet
+  oati: inflation_linked
+  oatei: inflation_linked
+  oat_tec10: floating
+  btan: fixed_bullet
+  btf: bill
+  bund: fixed_bullet
+  bobl: fixed_bullet
+  schatz: fixed_bullet
+  bubill: bill
+  bund_ei: inflation_linked
+  bobl_ei: inflation_linked
+  bund_green: fixed_bullet
+  bund_frn: floating
+  bund_usd: fixed_bullet
+
+maturity_buckets:                # DD7, §4.4 — right-closed edges in years; last is open
+  edges: [0, 1, 2, 3, 5, 7, 10, 15, 20, 30]
+  labels: ["0-1", "1-2", "2-3", "3-5", "5-7", "7-10", "10-15", "15-20", "20-30", "30+"]
+  undated_bucket: "30+"
+  issuance_measure: residual_at_settlement     # not original maturity
+  year_end: {GBR: ["12-31", "03-31"], FRA: ["12-31"], DEU: ["12-31"]}   # DD6
+
+reference_series:                # §4.2 — series_id -> where it comes from
+  UK_RPI:        {contractual: UK_DMO_GILTS, statistical: ONS_RPI, splice: [CDKO, CHAW], base: "1987-01"}
+  FR_CPI_XT:     {contractual: FRA_AFT_INDEXATION, statistical: INSEE_IPC, chain: ["1998", "2015", "2025"]}
+  EA_HICP_XT:    {contractual: [FRA_AFT_INDEXATION, DEU_FINANZAGENTUR], statistical: EUROSTAT_PRC_HICP, geo: EA}
+  UK_SONIA:      {statistical: BOE_IADB, code: IUDSOIA}
+  UK_BANK_RATE:  {statistical: BOE_IADB, code: IUDBEDR}
+  EA_MM_3M:      {statistical: EUROSTAT_IRT, key: M.IRT_M3.EA}
+  EA_MM_6M:      {statistical: EUROSTAT_IRT, key: M.IRT_M6.EA}
+  FR_IR3:        {statistical: OECD_FINMARK, key: FRA.M.IR3TIB}
+  DE_IR3:        {statistical: OECD_FINMARK, key: DEU.M.IR3TIB}
+  GB_IR3:        {statistical: OECD_FINMARK, key: GBR.M.IR3TIB}
+  FR_TEC10:      {contractual: BDF_WEBSTAT, status: blocked}        # DD10
+  UK_GLC_NOMINAL: {statistical: BOE_YIELD_CURVES, part: nominal}
+  UK_GLC_REAL:   {statistical: BOE_YIELD_CURVES, part: real}
+  UK_OIS:        {statistical: BOE_YIELD_CURVES, part: ois}
+
+reconciliation:                  # §8 — official intermediate per step (DD4, DD5)
+  interest:
+    GBR: {A_cg_cash: HMT_NLF, A_cg_accrued: ONS_PSF_TIMESERIES, B_s1311_d41: ONS_PSF_APPENDIX_A, C_s13: package_GF01_7}
+    FRA: {A_cg_cash: FRA_PLF_P117, B_s1311_d41: EUROSTAT_GOV10A_MAIN_S1311, C_s13: package_GF01_7}
+    DEU: {A_cg_cash: BMF_KREDITAUFNAHMEBERICHT, A_cg_monthly: BMF_DATENPORTAL, B_s1311_d41: EUROSTAT_GOV10A_MAIN_S1311, C_s13: package_GF01_7}
+  financing:
+    GBR: {A_cg_ncr: ONS_PSF_APPENDIX_S, A_cross: HMT_DMR, B_s1311_b9: ONS_PSF_APPENDIX_A, C_s13: package_NLB}
+    FRA: {A_cg_ncr: FRA_AFT_FINANCEMENT, B_s1311_b9: EUROSTAT_GOV10DD, C_s13: package_NLB}
+    DEU: {A_cg_ncr: BMF_KREDITAUFNAHMEBERICHT, A_cg_monthly: BMF_DATENPORTAL, B_s1311_b9: EUROSTAT_GOV10DD, C_s13: package_NLB}
+  stock_cross_check:
+    GBR: ONS_PSF_APPENDIX_A        # PSA8A_1: BKPM gilts, BKPJ bills
+    FRA: [EUROSTAT_GOV10DD, INSEE_AFT_AGG]
+    DEU: [BMF_DATENPORTAL, EUROSTAT_GOV10DD]
+  maturity_cross_check:
+    GBR: OECD_T7PSD
+    FRA: EUROSTAT_GOV10DD          # gov_10dd_rmd from 2020
+    DEU: EUROSTAT_GOV10DD          # gov_10dd_rmd from 1995
+
+tolerances:
+  v30_recurrence_abs_mn: 0.5
+  v30_recurrence_pct: 0.01
+  v31_stock_vs_official_pct: {GBR: 1.0, FRA: 1.0, DEU: 1.0}
+  v34_index_ratio_pct: 0.01

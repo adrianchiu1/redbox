@@ -200,5 +200,33 @@ def detect_vintages(hash: bool = typer.Option(
     typer.echo(f"\nwrote {dest}  ({n_action} finding(s) need action)")
 
 
+# ---------- debt extension (DEBT_KICKOFF.md) ----------
+
+debt_app = typer.Typer(no_args_is_help=True, add_completion=False,
+                       help="Debt securities register, interest/financing "
+                            "reconciliation, maturity profile (DEBT_KICKOFF.md).")
+app.add_typer(debt_app, name="debt")
+
+
+@debt_app.command("fetch")
+def debt_fetch(family: list[str] = typer.Option(None, "--family",
+                                                help="Restrict to these families")):
+    """Pull every debt-extension source into the snapshot store (Stage D0).
+    Blocked hosts (OQ-8) are reported, not skipped silently."""
+    from ggfiscal.debt.fetch import fetch_all as debt_fetch_all
+
+    ok, failed = debt_fetch_all(tuple(family) if family else None)
+    for rec in ok:
+        typer.echo(f"OK    {rec['source_id']}/{rec.get('part', '')}  "
+                   f"sha256={rec['sha256'][:12]}  {rec['size']} bytes")
+    for rec in failed:
+        typer.echo(f"FAIL  {rec['source_id']}/{rec.get('part', '')}  {rec['error']}: {rec['detail']}")
+    blocked = [r for r in failed if r["error"] == "FetchBlocked"]
+    if blocked:
+        typer.echo(f"\n{len(blocked)} pull(s) denied by egress policy — see OPEN_QUESTIONS.md OQ-8.")
+    if failed:
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()
