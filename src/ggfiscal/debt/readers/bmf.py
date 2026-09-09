@@ -291,13 +291,45 @@ def kreditaufnahmebericht_text(year: int) -> str:
     return "\f".join(kreditaufnahmebericht_pages(year))
 
 
-def _annex_pages(year: int, annex: str, unit_marker: str) -> list[str]:
-    """Pages belonging to one annex: the heading (or its "Noch" continuation)
-    plus the unit marker that only the table pages carry (this drops the table
-    of contents, which repeats the heading)."""
-    head = re.compile(rf"^(?:Noch\s+)?{re.escape(annex)}(?:\s|$)", re.M)
-    return [p for p in kreditaufnahmebericht_pages(year)
-            if head.search(p) and unit_marker in p]
+#: How to find an annex in an edition. The *number* of an annex moves between
+#: editions (the Verzinsung table is 4.10 in 2019, 4.6 in 2020, 4.5 from 2022;
+#: the Abrechnung is 4.11 in 2020-21 and 4.10 from 2022), so the annex is found
+#: by its title and its unit line, and the number is read off the heading that
+#: matched. The keys are the 2025 numbering, as used by DEBT_KICKOFF.md §6.3.
+_ANNEX_SPECS = {
+    "4.5": (re.compile(r"^(?:Anhang\s*)?(\d+\.\d+)\s*:?\s+"
+                       r"(?:nachrichtlich:\s*)?Verzinsung\b", re.M), "in Mio."),
+    "4.10": (re.compile(r"^(?:Anhang\s*)?(\d+\.\d+)\s*:?\s+"
+                        r"Abrechnung des Kreditfinanzierungsplans", re.M), "in €"),
+}
+
+
+def _annex_pages(year: int, annex: str) -> list[str]:
+    """The pages of one annex, in order: the page whose heading matches the
+    annex title, plus the continuation pages ("Noch 4.5 ...", "4.11:
+    Fortsetzung") that repeat its number. Requiring the unit line as well drops
+    the table of contents, which repeats every title."""
+    title_re, unit = _ANNEX_SPECS[annex]
+    pages = kreditaufnahmebericht_pages(year)
+    first = None
+    for i, page in enumerate(pages):
+        m = title_re.search(page)
+        # Chapter 4 is the annex in every edition that carries these tables;
+        # the same words appear in chapter 1-3 body headings, which are not it.
+        if m and m.group(1).startswith("4.") and unit in page:
+            first, number = i, m.group(1)
+            break
+    if first is None:
+        return []
+    out = [pages[first]]
+    number_re = re.compile(rf"(?<!\d){re.escape(number)}(?!\d)")
+    for page in pages[first + 1:]:
+        if (unit in page and number_re.search(page)
+                and ("Fortsetzung" in page or "Noch" in page)):
+            out.append(page)
+        elif unit not in page or not number_re.search(page):
+            break
+    return out
 
 
 def _page_rows_45(page: str) -> list[dict]:
@@ -347,7 +379,7 @@ def _parse_45(year: int) -> pd.DataFrame:
     """
     records: list[dict] = []
     carried: dict[str, list[tuple[str, str]]] = {}
-    for page in _annex_pages(year, "4.5", "in Mio."):
+    for page in _annex_pages(year, "4.5"):
         table = ("kap3205" if re.search(r"nachrichtlich.*Epl\.\s*32", page, re.I)
                  else "verzinsung")
         rows = _page_rows_45(page)
@@ -384,7 +416,7 @@ def _parse_410(year: int) -> pd.DataFrame:
     "Nettokreditaufnahme" totals, is kept.
     """
     records: list[dict] = []
-    for page in _annex_pages(year, "4.10", "in €"):
+    for page in _annex_pages(year, "4.10"):
         buffer: list[str] = []
         group = ""
         for raw in page.splitlines():

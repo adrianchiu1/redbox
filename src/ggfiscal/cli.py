@@ -228,5 +228,15 @@ def debt_fetch(family: list[str] = typer.Option(None, "--family",
         raise typer.Exit(code=1)
 
 
+@debt_app.command("build")
+def debt_build(no_curves: bool = typer.Option(False, "--no-curves",
+                                              help="Skip the BoE yield-curve series")):
+    """Reference series and official intermediate totals -> data/canonical/debt_*.csv (Stage D1)."""
+    from ggfiscal.debt.build import build as debt_build_
+
+    for name, p in debt_build_(include_curves=not no_curves).items():
+        typer.echo(f"wrote {name}: {p}")
+
+
 if __name__ == "__main__":
     app()

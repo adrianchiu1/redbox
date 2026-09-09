@@ -50,6 +50,8 @@ DATENPORTAL_BASE = (f"{BMF_BASE}/Datenportal/Daten/offene-daten/"
 
 TIMEOUT = 180
 ATTEMPTS = 8
+#: Extra tries reserved for resuming a body that was cut off mid-transfer.
+MAX_RESUMES = 16
 MAX_REDIRECTS = 6
 
 #: Full browser header set. The Radware manager 403s / bounces bare clients and
@@ -258,32 +260,45 @@ def _attempt(url: str, resume_from: int = 0) -> tuple[bytes, str, int]:
 def _fetch(url: str, attempts: int = ATTEMPTS) -> tuple[bytes, str, int]:
     """Retry :func:`_attempt`; classify a run of pure CONNECT denials as blocked.
 
-    Returns (body, content-type, status). A resumed transfer is reported as 200:
-    the 206 is an artefact of our retry, not of the pull.
+    Returns (body, content-type, status). Two failure modes are retried on
+    separate budgets: a rejected *request* (the bot manager) costs one of
+    `attempts`, while a *body* cut short mid-transfer costs one of
+    ``MAX_RESUMES`` and keeps the bytes already received, because the large
+    Haushaltsrechnung PDFs arrive in several megabyte-sized pieces and would
+    otherwise exhaust the request budget without ever finishing. A resumed
+    transfer is reported as 200: the 206 is an artefact of our retry, not of
+    the pull.
     """
     errors: list[str] = []
-    denials = 0
+    tries = denials = resumes = 0
     prefix = b""
-    for i in range(attempts):
+    while tries < attempts:
         try:
             body, ctype, status = _attempt(url, len(prefix))
         except _Denied as exc:
+            tries += 1
             denials += 1
+            prefix = b""
             errors.append(f"proxy CONNECT denied: {exc}")
         except _Partial as exc:
             errors.append(str(exc))
-            prefix = prefix + exc.data if exc.data else b""
+            if exc.data and resumes < MAX_RESUMES:
+                prefix += exc.data      # forward progress: resume, don't spend
+                resumes += 1            # a bot-manager attempt on it
+            else:
+                tries += 1
+                prefix = b""
         except FetchError as exc:
-            errors.append(str(exc))
+            tries += 1
             prefix = b""
+            errors.append(str(exc))
         else:
             if status == 206:
                 return prefix + body, ctype, 200
             return body, ctype, status  # server ignored the Range: full body
-        if i + 1 < attempts:
-            time.sleep(random.uniform(1.0, 3.0))
-    detail = f"{url} after {attempts} attempts: " + "; ".join(errors[-4:])
-    if denials == attempts:
+        time.sleep(random.uniform(1.0, 3.0))
+    detail = f"{url} after {tries} attempts ({resumes} resumes): " + "; ".join(errors[-4:])
+    if denials == tries:
         raise FetchBlocked(f"egress policy denied every attempt for {detail}")
     raise FetchError(f"failed {detail}")
 

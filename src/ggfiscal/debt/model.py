@@ -228,3 +228,23 @@ TABLES = {
     "debt_issuance_by_bucket": ISSUANCE_BY_BUCKET,
     "debt_official_holdings": OFFICIAL_HOLDINGS,
 }
+
+OFFICIAL_TOTALS = pa.DataFrameSchema(
+    {
+        "run_id": Column(str),
+        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "year": Column(int, pa.Check.in_range(1900, 2100)),
+        "chain": Column(str, pa.Check.isin(["interest", "financing"])),
+        "step": Column(str, pa.Check.isin(INTEREST_STEPS + FINANCING_STEPS)),
+        "value_lcu_mn": Column(float, nullable=True),
+        "item_source_id": Column(str),
+        "basis": Column(str, nullable=True),
+        "period_basis": Column(str, nullable=True),
+        "period_conversion_method": Column(str, nullable=True),
+        "snapshot_sha256": Column(str, nullable=True),
+        "quality_grade": Column(str, pa.Check.isin(GRADES)),
+        "notes": Column(str, nullable=True),
+    },
+    strict=True, coerce=True, unique=["iso3", "year", "chain", "step"],
+)
+TABLES["debt_official_totals"] = OFFICIAL_TOTALS
