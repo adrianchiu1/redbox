@@ -24,7 +24,7 @@ dynamics to the IMF WEO** general-government aggregates.
 | `debt_official_totals.csv` | 732 | 13 | the official intermediate totals of the two reconciliation chains per country-year: finance-ministry central-government interest / net cash requirement (step A), S.1311 D.41 / B.9 (step B), the package's GF01_7 / NLB (step C); null where the source is blocked (OQ-8) |
 | `debt_class_aggregates.csv` | 5,045 | 13 | the ministries' and statistical offices' own instrument-class totals per country-year (stock at 31 Dec, gross issuance, redemptions, net issuance, interest, own holdings) — the DD8 aggregate layer standing in for the per-security register |
 | `debt_interest_reconciliation.csv` | 1,674 | 13 | interest chain: Σ register by class → CG interest (ministry) → S.1311 D.41 → GF01_7, with every bridge item and the residual per step, per country-year (V32: official_total = carried + Σ items + residual) |
-| `debt_financing_reconciliation.csv` | 2,651 | 13 | financing chain: Σ net issuance by class → CG net cash requirement / Nettokreditaufnahme → S.1311 B.9 → NLB, same shape |
+| `debt_financing_reconciliation.csv` | 2,666 | 13 | financing chain: Σ net issuance by class → CG net cash requirement / Nettokreditaufnahme → S.1311 B.9 → NLB, same shape |
 | `data_dictionary.csv` | 302 | 3 | every column of every file above, described |
 
 Start with `data_dictionary.csv` (every column of every file) and
