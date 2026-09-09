@@ -80,3 +80,19 @@ tolerances:
   v30_recurrence_pct: 0.01
   v31_stock_vs_official_pct: {GBR: 1.0, FRA: 1.0, DEU: 1.0}
   v34_index_ratio_pct: 0.01
+
+# Register step of the chains while the per-security register is pending
+# (DD8): which aggregate sub_types are summed per country and measure. Ordered
+# alternatives; the first whose members all exist in a year is used, so a
+# source's own total is never added to its own components. `all` = every
+# in-register row (DEU: the BMF leaves are disjoint).
+register_selection:
+  DEU:
+    interest: [all]
+    net_issuance: [all]
+  GBR:
+    interest: [[gilts_all, treasury_bills], [gilts_all]]
+    net_issuance: [[gilts_all, treasury_bills]]
+  FRA:
+    interest: []                                  # no reachable class-level interest (OQ-8)
+    net_issuance: [[btf, oat_btan_all], [f31_short_term_securities, f32_long_term_securities]]

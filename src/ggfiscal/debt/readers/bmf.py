@@ -299,8 +299,14 @@ def kreditaufnahmebericht_text(year: int) -> str:
 _ANNEX_SPECS = {
     "4.5": (re.compile(r"^(?:Anhang\s*)?(\d+\.\d+)\s*:?\s+"
                        r"(?:nachrichtlich:\s*)?Verzinsung\b", re.M), "in Mio."),
+    # "Kreditfi?nanzierungsplan": the 2019 edition's own text layer misspells
+    # the word "Kreditfnanzierungsplan" (dropped "i") on its one page that
+    # carries the table's "in €" unit line (the correctly spelled occurrences
+    # are all table-of-contents entries with no unit line, so making the "i"
+    # optional -- rather than dropping the unit-line check -- is what lets
+    # 2019 in without also picking up its own ToC).
     "4.10": (re.compile(r"^(?:Anhang\s*)?(\d+\.\d+)\s*:?\s+"
-                        r"Abrechnung des Kreditfinanzierungsplans", re.M), "in €"),
+                        r"Abrechnung des Kreditfi?nanzierungsplans", re.M), "in €"),
 }
 
 

@@ -46,8 +46,11 @@ def _subsector_items(iso3: str, chain: str, year: int) -> list[ChainItem]:
         except Exception:
             continue
         if year in s.index and pd.notna(s[year]):
-            items.append(ChainItem(STEP_C[chain], f"{label}_{'d41' if chain == 'interest' else 'b9'}",
-                                   float(s[year]), "official", "EUROSTAT_GOV10A_MAIN_S1311", "accrued"))
+            # financing chain runs in net-borrowing sign (+ = borrowing) = −B.9
+            v = float(s[year]) if chain == "interest" else -float(s[year])
+            items.append(ChainItem(STEP_C[chain], f"{label}_{'d41' if chain == 'interest' else 'net_borrowing'}",
+                                   v, "official", "EUROSTAT_GOV10A_MAIN_S1311",
+                                   "accrued" if chain == "interest" else "accrued, net borrowing = -B.9"))
     return items
 
 
@@ -85,6 +88,19 @@ def _short(label: str) -> str:
     return _slug(label)[:40]
 
 
+def _register_rows(iso3: str, measure: str, in_reg: pd.DataFrame) -> pd.DataFrame:
+    """config/debt.yaml register_selection: the first alternative whose
+    sub_types all exist this year; `all` keeps every in-register row."""
+    alts = (config.debt().get("register_selection") or {}).get(iso3, {}).get(measure, [])
+    for alt in alts:
+        if alt == "all":
+            return in_reg
+        present = set(in_reg["sub_type"])
+        if set(alt) <= present:
+            return in_reg[in_reg["sub_type"].isin(alt)]
+    return in_reg.iloc[0:0]
+
+
 def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
                 run_id: str) -> pd.DataFrame:
     measure = MEASURE[chain]
@@ -98,7 +114,7 @@ def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
         for year in years:
             items: list[ChainItem] = []
             a_y = a_iso[a_iso["year"] == year]
-            for klass, g in a_y[a_y["in_register"]].groupby("instrument_class"):
+            for klass, g in _register_rows(iso3, measure, a_y[a_y["in_register"]]).groupby("instrument_class"):
                 items.append(ChainItem("register", f"sum_{klass}", float(g["value_lcu_mn"].sum()),
                                        "official", str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
             for sub, g in a_y[~a_y["in_register"]].groupby("sub_type"):
@@ -122,8 +138,13 @@ def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
                                                -(float(own[year]) - float(own[year - 1])), "declared",
                                                "BMF_DATENPORTAL", "nominal"))
             for _, r in t_iso[t_iso["year"] == year].iterrows():
-                items.append(ChainItem(r["step"], "official_total", r["value_lcu_mn"], "official",
-                                       r["item_source_id"], r["basis"]))
+                v, basis = r["value_lcu_mn"], r["basis"]
+                if chain == "financing" and r["step"] in ("B_s1311_b9", "C_s13_nlb") and pd.notna(v):
+                    # totals are stored as B.9 / NLB (net lending); the chain
+                    # runs in net-borrowing sign so it flows from net issuance
+                    v, basis = -float(v), f"{basis}, net borrowing = -B.9"
+                items.append(ChainItem(r["step"], "official_total", v, "official",
+                                       r["item_source_id"], basis))
             items += _subsector_items(iso3, chain, year)
             frames.append(assemble(iso3, int(year), STEPS[chain], items))
     out = pd.concat(frames, ignore_index=True)
