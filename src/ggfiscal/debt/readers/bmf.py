@@ -645,25 +645,64 @@ def bund_interest_annual(edition: int = 2025) -> pd.Series:
 
 
 def bund_net_borrowing_annual() -> pd.Series:
-    """Step-A financing total for DEU: Nettokreditaufnahme (Ist) from each
-    edition's annex 4.10 'Abrechnung des Kreditfinanzierungsplans', in EUR
-    mn, for every edition whose annex parses (2020 onward; earlier
-    editions' annexes are not machine-readable in the text layer)."""
+    """Step-A financing total for DEU: Nettokreditaufnahme, in EUR mn, one
+    value per year, from every Kreditaufnahmebericht edition in the store.
+
+    Two sources, never mixed for the same year:
+
+    * **2019 onward**: annex 4.10 'Abrechnung des Kreditfinanzierungsplans',
+      Nettokreditaufnahme *Ist*, exact to the cent (verified: the top-level
+      3.x items of the annex's own 'Herleitung der Nettokreditaufnahme'
+      group sum to this figure to within 1 EUR in every edition that
+      parses).
+    * **2013-2018**: no such annex exists in these editions (see
+      ``reports/debt_sources/bmf.md``); :func:`_narrative_nka_by_year` reads
+      the "Nettokreditaufnahme" row of the body-text table those editions do
+      carry instead. Values are rounded to whole EUR mn (2013-2014: EUR
+      100mn) and on a narrower concept -- "des Bundeshaushalts (ohne
+      Sondervermögen)" -- than the annex's; grading that difference is left
+      to the caller. Editions are folded in ascending year order so a later
+      edition's revision of an earlier year (e.g. 2014's own report leaves
+      2014 as "-"/unsettled; 2015's table restates it as 0) wins.
+    """
     from ggfiscal.standardise.readers import latest_snapshots
-    out = {}
-    for (sid, part) in latest_snapshots():
-        if sid != "BMF_KREDITAUFNAHMEBERICHT" or not part.isdigit():
-            continue
+    editions = sorted(int(part) for (sid, part) in latest_snapshots()
+                      if sid == "BMF_KREDITAUFNAHMEBERICHT" and part.isdigit())
+
+    out: dict[int, float] = {}
+    sourced_from_annex: set[int] = set()
+    narrative: dict[int, float] = {}
+    narrative_edition: dict[int, int] = {}
+    for edition in editions:
         try:
-            t = kreditaufnahmebericht_annex(int(part), "4.10")
+            t = kreditaufnahmebericht_annex(edition, "4.10")
         except Exception:
-            continue
-        if t.empty:
-            continue
-        r = t[t["label"].str.strip().str.lower().str.startswith("nettokreditaufnahme")]
-        if r.empty:
-            continue
-        out[int(part)] = float(r["ist_eur"].iloc[0]) / 1e6
+            t = pd.DataFrame()
+        if not t.empty:
+            r = t[t["label"].str.strip().str.lower().str.startswith("nettokreditaufnahme")]
+            if not r.empty:
+                out[edition] = float(r["ist_eur"].iloc[0]) / 1e6
+                sourced_from_annex.add(edition)
+                continue
+        # no annex for this edition: fold in its narrative table, letting a
+        # later edition's revision of the same year overwrite an earlier one
+        for y, v in _narrative_nka_by_year(edition).items():
+            narrative[y], narrative_edition[y] = v, edition
+
+    for y, v in narrative.items():
+        if y not in out:      # the annex, where it exists, always wins
+            out[y] = v
+
     s = pd.Series(out, dtype=float).sort_index()
-    s.attrs["note"] = "Kreditaufnahmebericht annex 4.10 Nettokreditaufnahme (Ist), edition = year"
+    annex_years = sorted(sourced_from_annex)
+    narrative_years = sorted(y for y in narrative if y not in sourced_from_annex)
+    s.attrs["note"] = (
+        "Kreditaufnahmebericht annex 4.10 Nettokreditaufnahme (Ist), edition = year, "
+        f"for {annex_years[0]}-{annex_years[-1]} (annexed editions: {annex_years}); "
+        + (f"{narrative_years[0]}-{narrative_years[-1]} instead from each edition's own "
+           "body-text 'Nettokreditaufnahme' table (narrower 'des Bundeshaushalts ohne "
+           "Sondervermögen' concept, rounded to whole EUR mn or coarser; source edition "
+           f"per year: {narrative_edition}) -- not the same series, do not merge on trend."
+           if narrative_years else "no earlier edition adds a narrative-table year.")
+    )
     return s
