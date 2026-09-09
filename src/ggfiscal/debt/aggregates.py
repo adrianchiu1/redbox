@@ -143,6 +143,34 @@ def deu_class_aggregates(run_id: str) -> pd.DataFrame:
                             r["gross_issuance"] - r["redemptions"], "BMF_DATENPORTAL", basis="cash",
                             in_register=DEU_LEAVES_BY_SUB[sub][2], sha256=sha256, grade="B",
                             notes="gross_issuance − redemptions (Datenportal); from 2025 not equal to Δstock (agio/disagio spreading)"))
+    # The instrument tree sums to the WIDER Gesamt row ("Kredite … und
+    # Mitfinanzierung Abwicklungsanstalten und KfW"); the Kreditaufnahme-
+    # bericht totals (step A) are the NARROWER "Finanzierung Bundeshaushalt
+    # und Sondervermögen". The difference — credit raised on behalf of the
+    # FMS resolution agencies and KfW — is an out-of-register official item
+    # so the step-A residual is not polluted by it.
+    for measure, sheet, sign in (("interest", "rpgZinsen Gesamt", -1.0),
+                                 ("gross_issuance", "rpgBruttokreditaufnahme Gesamt", 1.0),
+                                 ("redemptions", "rpgTilgungen", -1.0)):
+        g = B.datenportal(sheet)
+        g = g[(g["level"] == 0) & (g["period"].dt.month == 12)]
+        wide = g[g["series_path"].str.contains("Mitfinanzierung")].set_index(g[g["series_path"].str.contains("Mitfinanzierung")]["period"].dt.year)["value_eur_mn"]
+        narrow = g[g["series_path"].str.contains("Finanzierung Bundeshaushalt und Sonderverm")].set_index(g[g["series_path"].str.contains("Finanzierung Bundeshaushalt und Sonderverm")]["period"].dt.year)["value_eur_mn"]
+        for year in sorted(set(wide.index) & set(narrow.index)):
+            rows.append(row(run_id, "DEU", year, "out_of_register", "mitfinanzierung_abwicklungsanstalten_kfw",
+                            measure, sign * (float(narrow[year]) - float(wide[year])), "BMF_DATENPORTAL",
+                            basis="cash", in_register=False, sha256=sha256, grade="B",
+                            notes="narrower Gesamt (Finanzierung Bundeshaushalt und Sondervermögen) minus the wider "
+                                  "Gesamt the instrument tree sums to (incl. Mitfinanzierung Abwicklungsanstalten und KfW)"))
+    df = pd.DataFrame(rows)
+    piv = df[df["sub_type"] == "mitfinanzierung_abwicklungsanstalten_kfw"].pivot_table(
+        index="year", columns="measure", values="value_lcu_mn", aggfunc="first")
+    for year, r in piv.iterrows():
+        if pd.notna(r.get("gross_issuance")) and pd.notna(r.get("redemptions")):
+            rows.append(row(run_id, "DEU", year, "out_of_register", "mitfinanzierung_abwicklungsanstalten_kfw",
+                            "net_issuance", r["gross_issuance"] - r["redemptions"], "BMF_DATENPORTAL",
+                            basis="cash", in_register=False, sha256=sha256, grade="B",
+                            notes="narrower minus wider Gesamt, gross issuance − redemptions"))
     # memo: Umlaufvolumen (gross of own book) and Eigenbestände
     s = B.datenportal("rpgSchuldenstand")
     s = s[(s["section"] == "Nachrichtlich") & (s["period"].dt.month == 12)]

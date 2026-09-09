@@ -74,8 +74,9 @@ def assemble(iso3: str, year: int, steps: list[str], items: list[ChainItem]) -> 
                                                         official.source_id if official else None,
                                                         official.basis if official else None)))
             rows.append(_row(iso3, year, step, ChainItem(step, RESIDUAL, None, "residual")))
-            # nothing official to carry: keep carrying the last known level plus declared bridges
-            carried = _sum([carried] + [it.value for it in bridge])
+            # nothing official to carry: keep carrying the last known level
+            # plus declared bridges — unless nothing is known yet at all
+            carried = None if carried is None else _sum([carried] + [it.value for it in bridge])
         else:
             rows.append(_row(iso3, year, step, official))
             if carried is None:

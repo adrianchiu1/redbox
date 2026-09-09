@@ -57,7 +57,7 @@ def test_deu_interest_register_close_to_step_a(chains):
         g = df[(df["iso3"] == "DEU") & (df["year"] == y)].set_index(["step", "item"])["value_lcu_mn"]
         reg = g[("register", OFFICIAL_TOTAL)]
         off = g[("A_cg_cash", OFFICIAL_TOTAL)]
-        assert abs(g[("A_cg_cash", RESIDUAL)]) < 0.05 * abs(off), y     # leaves vs published total
+        assert abs(g[("A_cg_cash", RESIDUAL)]) < 5.0, y     # leaves + Mitfinanzierung item = published total
         assert reg > 0 and off > 0
 
 
