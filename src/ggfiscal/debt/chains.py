@@ -51,6 +51,40 @@ def _subsector_items(iso3: str, chain: str, year: int) -> list[ChainItem]:
     return items
 
 
+def _deu_nka_items(year: int) -> list[ChainItem]:
+    """Kreditaufnahmebericht annex 4.10 'Herleitung der Nettokreditaufnahme':
+    the official items between gross issuance − redemptions and the NKA
+    (sonstige Einnahmen zur Schuldentilgung, Eigenbestand change, the
+    non-cash / non-NKA-relevant special-fund and Selbstbewirtschaftung
+    lines). Only the top-level items (3.x, not 3.x.y) so nothing double
+    counts; 3.1 and 3.3 (gross, redemptions) are the register's own
+    quantities and are excluded. Available for the editions that parse."""
+    try:
+        from ggfiscal.debt.readers import bmf as B
+        t = B.kreditaufnahmebericht_annex(year, "4.10")
+    except Exception:
+        return []
+    if t.empty:
+        return []
+    h = t[t["group"].str.contains("Herleitung", na=False)]
+    items = []
+    for _, r in h.iterrows():
+        item = str(r["item"]).strip()
+        if item.count(".") != 1 or item in ("3.1", "3.3"):
+            continue
+        label = str(r["label"]).strip()
+        if label.lower().startswith("nettokreditaufnahme"):
+            continue
+        items.append(ChainItem("A_cg_cash_requirement", f"nka_{item.replace('.', '_')}_{_short(label)}",
+                               float(r["ist_eur"]) / 1e6, "official", "BMF_KREDITAUFNAHMEBERICHT", "cash"))
+    return items
+
+
+def _short(label: str) -> str:
+    from ggfiscal.debt.aggregates import _slug
+    return _slug(label)[:40]
+
+
 def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
                 run_id: str) -> pd.DataFrame:
     measure = MEASURE[chain]
@@ -68,15 +102,25 @@ def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
                 items.append(ChainItem("register", f"sum_{klass}", float(g["value_lcu_mn"].sum()),
                                        "official", str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
             for sub, g in a_y[~a_y["in_register"]].groupby("sub_type"):
-                items.append(ChainItem(STEP_A[chain], f"out_of_register_{sub}", float(g["value_lcu_mn"].sum()),
-                                       "official", str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
+                v = float(g["value_lcu_mn"].sum())
+                if sub.startswith("sondervermoegen_"):
+                    # special-fund borrowing is INSIDE the register sum (the
+                    # instrument tree is Bund-wide) and OUTSIDE the core-budget
+                    # NKA: subtract it on the way to step A
+                    items.append(ChainItem(STEP_A[chain], f"less_{sub}", -v, "official",
+                                           str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
+                else:
+                    items.append(ChainItem(STEP_A[chain], f"out_of_register_{sub}", v, "official",
+                                           str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
             if chain == "financing" and iso3 == "DEU":
-                own = aggregates[(aggregates["iso3"] == "DEU") & (aggregates["measure"] == "own_holdings")]
-                own = own.set_index("year")["value_lcu_mn"]
-                if year in own.index and (year - 1) in own.index:
-                    items.append(ChainItem(STEP_A[chain], "own_holdings_change_declared",
-                                           -(float(own[year]) - float(own[year - 1])), "declared",
-                                           "BMF_DATENPORTAL", "nominal"))
+                items += _deu_nka_items(int(year))
+                if not any(it.item.startswith("nka_") for it in items):
+                    own = aggregates[(aggregates["iso3"] == "DEU") & (aggregates["measure"] == "own_holdings")]
+                    own = own.set_index("year")["value_lcu_mn"]
+                    if year in own.index and (year - 1) in own.index:
+                        items.append(ChainItem(STEP_A[chain], "own_holdings_change_declared",
+                                               -(float(own[year]) - float(own[year - 1])), "declared",
+                                               "BMF_DATENPORTAL", "nominal"))
             for _, r in t_iso[t_iso["year"] == year].iterrows():
                 items.append(ChainItem(r["step"], "official_total", r["value_lcu_mn"], "official",
                                        r["item_source_id"], r["basis"]))

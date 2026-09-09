@@ -323,11 +323,17 @@ def _annex_pages(year: int, annex: str) -> list[str]:
         return []
     out = [pages[first]]
     number_re = re.compile(rf"(?<!\d){re.escape(number)}(?!\d)")
+    other_title_re = re.compile(r"^(?:Anhang\s*)?(4\.\d+)\s*:?\s+\S", re.M)
+    item_line_re = re.compile(r"^\s*\d+\.\d+(?:\.\d+)?\s+\S", re.M)
     for page in pages[first + 1:]:
-        if (unit in page and number_re.search(page)
-                and ("Fortsetzung" in page or "Noch" in page)):
+        # a page that opens another annex (a different 4.x number) ends this one
+        titles = {m.group(1) for m in other_title_re.finditer(page)} - {number}
+        if titles and not number_re.search(page):
+            break
+        if unit in page and (number_re.search(page) or "Fortsetzung" in page or "Noch" in page
+                             or item_line_re.search(page)):
             out.append(page)
-        elif unit not in page or not number_re.search(page):
+        else:
             break
     return out
 
@@ -416,9 +422,9 @@ def _parse_410(year: int) -> pd.DataFrame:
     "Nettokreditaufnahme" totals, is kept.
     """
     records: list[dict] = []
+    group = ""          # carried across pages: a continuation page repeats no heading
     for page in _annex_pages(year, "4.10"):
         buffer: list[str] = []
-        group = ""
         for raw in page.splitlines():
             line = raw.strip()
             if not line:

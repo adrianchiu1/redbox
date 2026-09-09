@@ -96,6 +96,11 @@ def test_derived_fixed_bullet_is_taux_fixe_minus_btf(fra):
     expected = _stock(fra, "taux_fixe") - _stock(fra, "btf")
     pd.testing.assert_series_equal(derived, expected, check_names=False)
     assert derived.loc[2024] == pytest.approx(2_111_417, abs=1)
+    # independent route to the same number: MLT less the inflation-linked
+    # aggregate (holds only because all BTF are fixed-rate and all linkers
+    # are medium/long term)
+    alt = _stock(fra, "oat_btan_all") - _stock(fra, "oati_oatei")
+    assert (alt - derived).abs().max() == 0.0
     notes = fra[fra["sub_type"] == "oat_btan_fixed"]["notes"].unique()
     assert len(notes) == 1 and "derived" in notes[0]
     assert (fra[fra["sub_type"] == "oat_btan_fixed"]["quality_grade"] == "B").all()
@@ -195,6 +200,27 @@ def test_net_issuance_reproduces_delta_stock_exactly(fra):
     assert _stock(fra, "btf").index.min() == 2009
     assert flows[flows["sub_type"] == "btf"]["year"].min() == 2010
     assert flows[flows["sub_type"] == "f31_short_term_securities"]["year"].min() == 2001
+
+
+def test_insee_net_issuance_equals_the_aft_published_ytd_variation(fra):
+    """Independent confirmation that Δ December stock is the office's own
+    annual net figure: AFT publishes "variations depuis le début de
+    l'année" separately (001738856 CT, 001738857 MLT) and the December
+    observation matches to 0.0 EUR mn."""
+    from ggfiscal.debt.aggregates_fra import AFT_YTD_VARIATION
+    from ggfiscal.debt.readers.eurostat_insee_oecd import aft_aggregates
+
+    a = aft_aggregates()
+    dec = a[a["period"].dt.month == 12].copy()
+    dec["year"] = dec["period"].dt.year
+    piv = dec.pivot_table(index="year", columns="idbank", values="value_eur_mn")
+    flows = fra[(fra["measure"] == "net_issuance") & (fra["source_id"] == "INSEE_AFT_AGG")]
+    for stock_idbank, sub_type in (("001711532", "btf"), ("001711533", "oat_btan_all")):
+        published = piv[AFT_YTD_VARIATION[stock_idbank]].dropna()
+        got = flows[flows["sub_type"] == sub_type].set_index("year")["value_lcu_mn"].sort_index()
+        common = got.index.intersection(published.index)
+        assert len(common) == len(got)
+        assert (got[common] - published[common]).abs().max() == 0.0
 
 
 def test_no_interest_uplift_or_own_holdings_rows(fra):

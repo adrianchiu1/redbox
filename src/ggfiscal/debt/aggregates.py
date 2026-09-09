@@ -149,9 +149,10 @@ def deu_class_aggregates(run_id: str) -> pd.DataFrame:
     # und Sondervermögen". The difference — credit raised on behalf of the
     # FMS resolution agencies and KfW — is an out-of-register official item
     # so the step-A residual is not polluted by it.
-    for measure, sheet, sign in (("interest", "rpgZinsen Gesamt", -1.0),
-                                 ("gross_issuance", "rpgBruttokreditaufnahme Gesamt", 1.0),
-                                 ("redemptions", "rpgTilgungen", -1.0)):
+    # Interest only: for the financing measures the Verwendung tree (below)
+    # already carries the Mitfinanzierung rows (FMS § 9 Abs. 5), so a second
+    # item would double count.
+    for measure, sheet, sign in (("interest", "rpgZinsen Gesamt", -1.0),):
         g = B.datenportal(sheet)
         g = g[(g["level"] == 0) & (g["period"].dt.month == 12)]
         wide = g[g["series_path"].str.contains("Mitfinanzierung")].set_index(g[g["series_path"].str.contains("Mitfinanzierung")]["period"].dt.year)["value_eur_mn"]
@@ -162,15 +163,36 @@ def deu_class_aggregates(run_id: str) -> pd.DataFrame:
                             basis="cash", in_register=False, sha256=sha256, grade="B",
                             notes="narrower Gesamt (Finanzierung Bundeshaushalt und Sondervermögen) minus the wider "
                                   "Gesamt the instrument tree sums to (incl. Mitfinanzierung Abwicklungsanstalten und KfW)"))
+    # Verwendung: the Kreditaufnahmebericht's Nettokreditaufnahme is the core
+    # budget's (Verwendung / Bundeshaushalt); the special funds' own net
+    # borrowing (FMS, WSF, Bundeswehr, SVIK, …) sits in the instrument tree
+    # but outside the NKA — out-of-register official items for step A.
+    # Financing measures only (the interest total at step A already includes
+    # the special funds; the Mitfinanzierung item above bridges interest).
+    # The Verwendung tree sums to the WIDER Gesamt, so these rows are the
+    # exact complement of the core budget: Σ special funds = wider − Bundeshaushalt.
+    for measure, fn, sign in (("gross_issuance", B.bund_gross_issuance_by_instrument, 1.0),
+                              ("redemptions", B.bund_redemptions_by_instrument, -1.0)):
+        sheet = {"gross_issuance": "rpgBruttokreditaufnahme Gesamt", "redemptions": "rpgTilgungen"}[measure]
+        v = B.datenportal(sheet)
+        v = v[(v["section"] == "Verwendung") & (v["period"].dt.month == 12) & (v["series_path"].str.count(" / ") == 1)]
+        v = v[~v["series_label"].str.startswith("Bundeshaushalt")]
+        for _, r in v.iterrows():
+            sub = "sondervermoegen_" + _slug(r["series_label"])
+            rows.append(row(run_id, "DEU", r["period"].year, "out_of_register", sub, measure,
+                            sign * float(r["value_eur_mn"]), "BMF_DATENPORTAL", basis="cash",
+                            in_register=False, sha256=sha256, grade="B",
+                            notes=f"Verwendung row '{r['series_label']}': special-fund borrowing, inside the "
+                                  "instrument tree but outside the core budget's Nettokreditaufnahme"))
     df = pd.DataFrame(rows)
-    piv = df[df["sub_type"] == "mitfinanzierung_abwicklungsanstalten_kfw"].pivot_table(
-        index="year", columns="measure", values="value_lcu_mn", aggfunc="first")
-    for year, r in piv.iterrows():
+    sv = df[df["sub_type"].str.startswith("sondervermoegen_")].pivot_table(
+        index=["year", "sub_type"], columns="measure", values="value_lcu_mn", aggfunc="first")
+    for (year, sub), r in sv.iterrows():
         if pd.notna(r.get("gross_issuance")) and pd.notna(r.get("redemptions")):
-            rows.append(row(run_id, "DEU", year, "out_of_register", "mitfinanzierung_abwicklungsanstalten_kfw",
-                            "net_issuance", r["gross_issuance"] - r["redemptions"], "BMF_DATENPORTAL",
-                            basis="cash", in_register=False, sha256=sha256, grade="B",
-                            notes="narrower minus wider Gesamt, gross issuance − redemptions"))
+            rows.append(row(run_id, "DEU", year, "out_of_register", sub, "net_issuance",
+                            r["gross_issuance"] - r["redemptions"], "BMF_DATENPORTAL", basis="cash",
+                            in_register=False, sha256=sha256, grade="B",
+                            notes="special-fund gross issuance − redemptions (Datenportal Verwendung)"))
     # memo: Umlaufvolumen (gross of own book) and Eigenbestände
     s = B.datenportal("rpgSchuldenstand")
     s = s[(s["section"] == "Nachrichtlich") & (s["period"].dt.month == 12)]
@@ -189,6 +211,14 @@ def deu_class_aggregates(run_id: str) -> pd.DataFrame:
 
 
 DEU_LEAVES_BY_SUB = {v[1]: v for v in DEU_LEAVES.values()}
+
+
+def _slug(label: str) -> str:
+    import re
+    import unicodedata
+    t = unicodedata.normalize("NFKD", label).encode("ascii", "ignore").decode()
+    t = re.sub(r"[^A-Za-z0-9]+", "_", t).strip("_").lower()
+    return t[:120]
 
 
 # ------------------------------------------------------------------ all

@@ -22,10 +22,10 @@ Two perimeter facts govern everything below and are documented in
   unsuffixed `f31_*`/`f32_*` rows carry. The `_s13` rows are general
   government, the wider step-B/step-C perimeter cross-check.
 * **The État's own perimeter is the INSEE/AFT series**, which is
-  négociable debt of the État alone: 1.6-2.1% *below* Eurostat `S1311`
-  F3 at each year-end 2012-2025 (11.5% below in 2009), the difference
-  being ODAC securities plus the non-négociable/valuation content of the
-  Maastricht measure.
+  négociable debt of the État alone and sits *below* Eurostat `S1311`
+  F31+F32 at every common year-end: 11.5% below in 2009, 3.2% or less
+  from 2014, 1.6% in 2025. The difference is ODAC securities (CADES,
+  ...) plus the non-négociable content of the Maastricht measure.
 
 No `interest` rows are emitted: programme 117 (charge de la dette) is on
 `www.budget.gouv.fr`/`www.performance-publique.budget.gouv.fr`, both
@@ -157,7 +157,10 @@ def _aft_rows(run_id: str, piv: pd.DataFrame) -> list[dict]:
                                    "aggregate. Identity checked: 001738853 + 001738854 = "
                                    "001711531 exactly at every December 2009-2025. "
                                    "snapshot_sha256 is that of idbank 001738853; the "
-                                   "subtracted BTF series is snapshot 001711532")))
+                                   "subtracted BTF series is snapshot 001711532. Cross-check: "
+                                   "equals 001711533 (MLT) − 001738854 (indexée) to 0.0 at "
+                                   "every December, i.e. all BTF are fixed-rate and all "
+                                   "inflation-linked debt is medium/long term")))
     # foreign-currency négociable debt: emitted only where non-zero
     for idbank, (klass, sub, in_reg, title) in AFT_FX.items():
         if idbank not in piv.columns:
@@ -172,6 +175,14 @@ def _aft_rows(run_id: str, piv: pd.DataFrame) -> list[dict]:
     return rows
 
 
+# stock idbank -> the AFT "variations depuis le début de l'année" idbank of
+# the same aggregate. At December the YTD variation equals the change in the
+# December stock to 0.0 EUR mn at every year 2010-2025, so the Δstock rows
+# below are the AFT's own published annual net figure by another route.
+AFT_YTD_VARIATION = {"001711531": "001738855", "001711532": "001738856",
+                     "001711533": "001738857"}
+
+
 def _aft_net_issuance(run_id: str, piv: pd.DataFrame) -> list[dict]:
     """Δ December stock of the CT (BTF) and MLT (OAT/BTAN) aggregates."""
     rows: list[dict] = []
@@ -179,11 +190,13 @@ def _aft_net_issuance(run_id: str, piv: pd.DataFrame) -> list[dict]:
         if idbank not in piv.columns:
             continue
         klass, sub, in_reg, title = AFT_STOCK[idbank]
+        note = (f'{_DELTA_NOTE}; INSEE/AFT idbank {idbank} "{title}"; equals the '
+                f'AFT year-to-date variation series {AFT_YTD_VARIATION[idbank]} at '
+                "December exactly, i.e. this is the office's own annual net figure")
         for year, value in piv[idbank].dropna().diff().dropna().items():
             rows.append(row(run_id, "FRA", year, klass, sub, "net_issuance", value,
                             INSEE_SOURCE, basis="nominal_change", in_register=in_reg,
-                            sha256=sha(INSEE_SOURCE, idbank), grade="B",
-                            notes=f'{_DELTA_NOTE}; INSEE/AFT idbank {idbank} "{title}"'))
+                            sha256=sha(INSEE_SOURCE, idbank), grade="B", notes=note))
     return rows
 
 
