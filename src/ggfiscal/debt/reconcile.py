@@ -54,7 +54,10 @@ def assemble(iso3: str, year: int, steps: list[str], items: list[ChainItem]) -> 
         its = by_step[step]
         if step == "register":
             vals = [it.value for it in its if it.item != OFFICIAL_TOTAL]
-            total = _sum(vals)
+            # no register data at all (e.g. FRA while AFT is blocked): the
+            # register total is unknown, not zero — carried stays None and
+            # the first residual is null (never a fabricated gap)
+            total = _sum(vals) if any(v is not None and not _isnan(v) for v in vals) else None
             for it in its:
                 rows.append(_row(iso3, year, step, it))
             rows.append(_row(iso3, year, step, ChainItem(step, OFFICIAL_TOTAL, total, "computed",
@@ -75,7 +78,10 @@ def assemble(iso3: str, year: int, steps: list[str], items: list[ChainItem]) -> 
             carried = _sum([carried] + [it.value for it in bridge])
         else:
             rows.append(_row(iso3, year, step, official))
-            resid = official.value - _sum([carried] + [it.value for it in bridge])
+            if carried is None:
+                resid = None          # nothing to reconcile against yet
+            else:
+                resid = official.value - _sum([carried] + [it.value for it in bridge])
             rows.append(_row(iso3, year, step, ChainItem(step, RESIDUAL, resid, "residual",
                                                         None, official.basis)))
             carried = official.value
@@ -97,9 +103,9 @@ def check_additivity(chain: pd.DataFrame, tol: float = 1e-6) -> list[str]:
         if OFFICIAL_TOTAL not in d or RESIDUAL not in d or CARRIED not in d:
             problems.append(f"{iso3} {year} {step}: incomplete step")
             continue
-        if _isnan(d[OFFICIAL_TOTAL]):
+        if _isnan(d[OFFICIAL_TOTAL]) or _isnan(d[CARRIED]):
             if not _isnan(d[RESIDUAL]):
-                problems.append(f"{iso3} {year} {step}: residual without official total")
+                problems.append(f"{iso3} {year} {step}: residual without official total or carried value")
             continue
         bridge = d.drop([OFFICIAL_TOTAL, RESIDUAL, CARRIED])
         lhs = float(d[OFFICIAL_TOTAL]) - _sum([d[CARRIED]] + list(bridge)) - float(d[RESIDUAL])
