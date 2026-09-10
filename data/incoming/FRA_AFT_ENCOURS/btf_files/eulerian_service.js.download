@@ -1,0 +1,124 @@
+(function ($, Drupal, drupalSettings, once) {
+  "use strict";
+
+  Drupal.behaviors.eulerian_service = {
+    attach: function (context) {
+      if (typeof tarteaucitron == "undefined") {
+        return;
+      }
+      once('eulerian_service_init', 'body', context).forEach(function () {
+        window.eulerian_has_pushed = false;
+        tarteaucitron.services["eulerian-analytics"] = {
+          "key": "eulerian-analytics",
+          "type": "analytic",
+          "name": "Eulerian Analytics",
+          "needConsent": drupalSettings.eulerian_service.needConsent,
+          "readmoreLink": "https://tarteaucitron.io/service/eulerian",
+          "cookies": ["etuix"],
+          "uri" : "https://eulerian.com/vie-privee",
+          "js": function () {
+            "use strict";
+              (function(x,w){ if (!x._ld){ x._ld = 1;
+                let ff = function() { if(x._f){x._f('tac',tarteaucitron,1)} };
+                w.__eaGenericCmpApi = function(f) { x._f = f; ff(); };
+                w.addEventListener("tac.close_alert", ff);
+                w.addEventListener("tac.close_panel", ff);
+              }})(this,window);
+
+              ECall();
+          },
+          "fallback": function () { this.js(); }
+        };
+      });
+    }
+  }
+
+  function ECall() {
+    var settings = drupalSettings.eulerian_service
+
+    // Création d'un datalayer au scope global :
+    window.EA_datalayer = [];
+
+    var useApiAnalytics = false;
+
+    if (drupalSettings.eulerian_service.use_analytics != undefined) {
+      useApiAnalytics = drupalSettings.eulerian_service.use_analytics;
+    }
+
+    if (useApiAnalytics && (window.dsfr.analytics.opt.isDisabled || !window.dsfr.analytics.isReady)) {
+      return;
+    }
+
+    var propNames = [
+      "site_entity",
+      "site_environment",
+      "site_language",
+      "site_target",
+      "site_type",
+      "content_id",
+      "content_name",
+      "content_type",
+      "content_date",
+      "page_name",
+    ];
+
+    // Gestion des données de page.
+    propNames.forEach(name => {
+      if (settings.hasOwnProperty(name) && settings[name] != "") {
+        if (useApiAnalytics) {
+          let propertyName = name.replace('site_', '');
+          window.dsfr.analytics.site[propertyName] = settings[name];
+        }
+        else {
+          window.EA_datalayer.push(name, settings[name]);
+        }
+      }
+    });
+
+    // Call custom service to alter data if it exists.
+    if ($.fn.hasOwnProperty("custom_eulerian_service")) {
+      $.fn.custom_eulerian_service();
+    }
+
+    // Gestion de l'opt-out.
+    var useOptoutBlock = drupalSettings.eulerian_service.optout_block;
+    if (useOptoutBlock) {
+      $("form#optout-form input.tarteaucitron-optout-checkbox").each(function () {
+        if (window._EA_disabled() || (useApiAnalytics && window.dsfr.analytics.opt.isDisabled)) {
+          $(this).prop("checked", true);
+          $(this).siblings('label').text(Drupal.t("Vous n'êtes actuellement pas suivi(e). Décochez cette case pour ne plus être exclu(e)."));
+        }
+        else {
+          $(this).prop("checked", false);
+          $(this).siblings('label').text(Drupal.t("Vous n'êtes pas exclu(e). Cochez cette case pour vous exclure."));
+        }
+
+        this.addEventListener("click", function (e) {
+          if (useApiAnalytics) {
+            window.dsfr.analytics.opt.toggle();
+          }
+          else {
+            window._EA_toggle();
+          }
+
+          location.reload();
+        });
+      });
+    }
+
+    // Envoi des données :
+    if (window.eulerian_has_pushed == false) {
+      // Gestion API Analytics
+
+      if (useApiAnalytics) {
+        window.dsfr.analytics.collect()
+      }
+      else {
+        window.EA_push(window.EA_datalayer);
+      }
+
+      window.eulerian_has_pushed = true;
+    }
+  }
+
+})(jQuery, Drupal, drupalSettings, once);

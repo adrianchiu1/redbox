@@ -1,0 +1,12 @@
+/**
+ * Put here values for tarteaucitron Obj before loading.
+ */
+
+var tarteaucitronForceCDN = "/libraries/tarteaucitron/";
+var tarteaucitronCustomText = {
+  'essential': {
+    "title": "Services strictement nécessaires et fonctionnels",
+    "details": "Services strictement nécessaires et fonctionnels",
+  }
+};
+var tarteaucitronDescriptionsServices = {};

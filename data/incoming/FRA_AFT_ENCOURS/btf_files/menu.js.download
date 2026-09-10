@@ -1,0 +1,28 @@
+
+(function($){
+  let titreNiv1 = $("li.sf-depth-1");
+  let titreNiv2 = $("li.sf-depth-2");
+  let titreNiv3 = $("a.sf-depth-3");
+
+  // A l'ouverture de la barre de navigation
+  titreNiv1.click( function()
+  {
+    let urlActuelle = window.location.pathname;
+
+    titreNiv3.each(function()
+    {
+      let href = $(this).attr("href");
+
+      if (href == urlActuelle)
+        {
+        // Recherche du li qui contient toute la colonne de liens (titre 2 + titres 3)
+        titreNiv2 = $(this).parent().parent().parent().parent();
+        titreNiv2.addClass('active-trail');
+
+        // Ajout au 1er li parent
+        $(this).parent().addClass('active-trail');
+      }
+    });
+
+  });
+})(jQuery);

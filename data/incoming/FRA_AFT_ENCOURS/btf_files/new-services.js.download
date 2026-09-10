@@ -1,0 +1,30 @@
+(function ($, Drupal, drupalSettings) {
+
+  Drupal.behaviors.tarteaucitronNewServices = {
+    attach: function (context) {
+      // Initialisation des services personnalisés
+      window.addEventListener("tac.root_available", function () {
+        drupalSettings.tarteaucitron.new_services.forEach(function (service) {
+          // Ajouter un nouveau service à Tarteaucitron
+
+          tarteaucitron.services[service.key] = {
+            "key": service.key,
+            "name": service.name,
+            "type": service.type,
+            "uri": service.uri,
+            "needConsent": true,
+            "cookies": [],
+            "js": function () {
+            },
+            "fallback": function () {
+            }
+          };
+        });
+
+        // Actualisation des services.
+        $.fn.updateTTJobs();
+      });
+    }
+  }
+
+})(jQuery, Drupal, drupalSettings);

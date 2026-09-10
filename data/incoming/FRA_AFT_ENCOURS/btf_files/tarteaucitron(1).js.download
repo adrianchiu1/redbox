@@ -1,0 +1,195 @@
+
+(function ($, Drupal, drupalSettings, once) {
+
+  $.fn.updateTTJobs = function () {
+    drupalSettings.tarteaucitron.job_list.forEach(function (key) {
+      if (tarteaucitron.services.hasOwnProperty(key)) {
+        if (tarteaucitron.job.indexOf(key) === -1) {
+          tarteaucitron.job.push(key);
+        }
+      }
+    });
+  }
+
+  window.addEventListener("tac.root_available", function () {
+    $.fn.updateTTJobs();
+  })
+
+  Drupal.behaviors.tarteaucitron = {
+    attach: function (context) {
+      once('tarteaucitron_init', 'body', context).forEach(function(){
+
+        if (drupalSettings.tarteaucitron.use_link_as_alert) {
+          $('a[href="#tarteaucitronManager"]').attr('id', 'tarteaucitronManager');
+        }
+
+        tarteaucitron.init({
+          "privacyUrl": drupalSettings.tarteaucitron.showPrivacyUrl ? drupalSettings.tarteaucitron.privacyUrl : "", /* Privacy policy url */
+          "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
+          "cookieName": "tartaucitron", /* Cookie name */
+          "orientation": "bottom", /* Banner position (top - bottom) */
+          "showAlertSmall": !drupalSettings.tarteaucitron.use_link_as_alert, /* Show the small banner on bottom right */
+          "cookieslist": false, /* Show the cookie list */
+          "showIcon": false, /* Show cookie icon to manage cookies */
+          "iconPosition": "BottomLeft", /* BottomRight, BottomLeft, TopRight and TopLeft */
+          "adblocker": false, /* Show a Warning if an adblocker is detected */
+          "AcceptAllCta": true, /* Show the accept all button when highPrivacy on */
+          "DenyAllCta": true, /* Show the deny all button */
+          "highPrivacy": true, /* Disable auto consent */
+          "handleBrowserDNTRequest": true, /* If Do Not Track == 1, disallow all */
+          "removeCredit": true, /* Remove credit link */
+          "moreInfoLink": true, /* Show more info link */
+          "useExternalCss": true,
+          /* If false, the tarteaucitron.css file will be loaded */
+          // "cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
+          "readmoreLink": drupalSettings.tarteaucitron.readmoreLink, /* Change the default readmore link */
+          "mandatory": false, /* Show a message about mandatory cookies */
+          "bodyPosition" : "top" /* Position in the html */
+        });
+
+        // Overload cookie checkCount :
+        tarteaucitron.cookie.checkCount = function (key) {
+          "use strict";
+          var arr = tarteaucitron.services[key].cookies,
+              nb = arr.length,
+              html = '',
+              status = document.cookie.indexOf(key + '=true');
+
+          if (status >= 0 && nb === 0) {
+              html += tarteaucitron.lang.useNoCookie;
+          } else if (nb === 0) {
+              html = tarteaucitron.lang.noCookie;
+          } else {
+              html += tarteaucitron.lang.useCookie + ' ' + nb + ' cookie';
+              if (nb > 1) {
+                  html += 's';
+              }
+              html += '.';
+          }
+
+          if (document.getElementById('tacCL' + key) !== null) {
+              document.getElementById('tacCL' + key).innerHTML = html;
+          }
+        };
+
+        // DS engage :
+        if (drupalSettings.tarteaucitron.use_dse_theme) {
+          tarteaucitron.engage = function (id) {
+            var html = '',
+              r = Math.floor(Math.random() * 100000),
+              engage = tarteaucitron.services[id].name + ' ' + tarteaucitron.lang.fallback,
+              allowStrService = Drupal.t("Autorisez le dépôt de cookies pour accéder au service ") + tarteaucitron.services[id].name,
+              allowStr = Drupal.t("Autorisez le dépôt de cookies pour accéder à cette fonctionnalité.");
+
+            if (tarteaucitron.lang['engage-' + id] !== undefined) {
+              engage = tarteaucitron.lang['engage-' + id];
+            }
+
+            html += '<div class="fr-consent-placeholder tac_activate tac_activate_' + id + '">';
+            html += '  <p class="fr-h6 fr-mb-2v">' + engage + '</p>';
+            html += '  <p class="fr-mb-6v">' + allowStr + '</p>';
+            html += '  <button type="button" class="fr-btn tarteaucitronAllow" title="' + allowStrService + '" id="Eng' + r + 'ed' + id + '">';
+            html += '    <span class="tarteaucitronCheck"></span> ' + tarteaucitron.lang.allow;
+            html += '  </button>';
+            html += '</div>';
+
+            return html;
+          }
+        }
+
+        // Custom text
+        for (let index = 0; index < drupalSettings.tarteaucitron.custom_text.length; index++) {
+          var str = drupalSettings.tarteaucitron.custom_text[index];
+          if (str.length > 0) {
+            str = str.split('::');
+            setTranslationString(tarteaucitronCustomText, str);
+          }
+        }
+
+        // Custom Descriptions
+        for (let index = 0; index < drupalSettings.tarteaucitron.custom_descriptions.length; index++) {
+          var str = drupalSettings.tarteaucitron.custom_descriptions[index];
+          if (str.length > 0) {
+            var data = str.split('::');
+            var key = data.shift();
+            var text = data.join('::');
+            tarteaucitronDescriptionsServices[key] = text;
+          }
+        }
+
+        window.addEventListener("tac.open_panel", updateDescriptionsDesServices);
+
+        // Custom user variables
+        drupalSettings.tarteaucitron.custom_user_variables.forEach(function (str) {
+          const [key, value] = str.split('::');
+          tarteaucitron.user[key] = value;
+        });
+
+        tarteaucitron.lang = tarteaucitron.AddOrUpdate(tarteaucitron.lang, tarteaucitronCustomText);
+
+        // Jobs
+        tarteaucitron.job = tarteaucitron.job || [];
+
+        if (tarteaucitron.userInterface.respondAllLegacyMinimale == undefined) {
+          tarteaucitron.userInterface.respondAllLegacyMinimale = tarteaucitron.userInterface.respondAll;
+          tarteaucitron.userInterface.respondAll = function (status, type, allowSafeAnalytics) {
+            if (status == false) {
+              var backup = tarteaucitron.job;
+
+              tarteaucitron.job = [];
+
+              backup.forEach((key, index) => {
+                if (!key.endsWith('_minimale') && !key.endsWith('_exempted')) {
+                  tarteaucitron.job.push(key);
+                }
+              });
+
+              tarteaucitron.userInterface.respondAllLegacyMinimale(status, type, allowSafeAnalytics);
+
+              tarteaucitron.job = backup;
+            }
+            else {
+              tarteaucitron.userInterface.respondAllLegacyMinimale(status, type, allowSafeAnalytics);
+            }
+          }
+        }
+
+        $.fn.updateTTJobs();
+      });
+    }
+  }
+
+  function updateDescriptionsDesServices() {
+    for (const key in tarteaucitronDescriptionsServices) {
+      var status = $('#tarteaucitron #' + key + 'Line .tarteaucitronStatusInfo');
+      var txt = $('<p class="tarteaucitronListAddInfo">' + tarteaucitronDescriptionsServices[key] + '</p>');
+
+      var info = status.find(".tarteaucitronListAddInfo");
+
+      if (info.length == 0) {
+        status.append(txt);
+      }
+      else {
+        info.replaceWith(txt);
+      }
+    }
+  }
+
+  function setTranslationString(lang, newStrings) {
+    if (newStrings.length < 2) {
+      return lang;
+    }
+    var newTranslation = {};
+    var index = newStrings.shift();
+    if (lang.hasOwnProperty(index)) {
+      newTranslation = lang[index];
+    }
+    if (newStrings.length > 1) {
+      lang[index] = setTranslationString(newTranslation, newStrings);
+    }
+    else {
+      lang[index] = newStrings[0];
+    }
+    return lang;
+  }
+})(jQuery, Drupal, drupalSettings, once);

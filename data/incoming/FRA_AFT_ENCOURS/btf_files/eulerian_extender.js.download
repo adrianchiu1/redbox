@@ -1,0 +1,43 @@
+(function ($, Drupal, drupalSettings) {
+  "use strict";
+
+  if (typeof tarteaucitron == "undefined") {
+    return;
+  }
+
+  $.fn.custom_eulerian_service = function () {
+
+    let allPageBaseVar = ['segment-site', 'pagegroup', 'page_label', 'page_template', 'page_name'];
+    let fixPageVar = ['segment-site', 'pagegroup', 'page_template'];
+    // Si page 404
+    if(!drupalSettings.path.currentPath){
+      window.EA_datalayer.push('error', 1);
+      allPageBaseVar.forEach(variable => window.EA_datalayer.push(variable, 'erreur_404'));
+    } else {
+      let categories = drupalSettings.eulerian_service.categories;
+      //Si accueil ou non
+      if(categories[0] == "home" || categories[0] == ""){
+        allPageBaseVar.forEach(variable => window.EA_datalayer.push(variable, 'accueil'));
+      } else {
+        fixPageVar.forEach(variable => window.EA_datalayer.push(variable, 'autres'));
+        window.EA_datalayer.push("pagelabel", 'pages');
+        window.EA_datalayer.push("page_name", drupalSettings.eulerian_service.var_page_name);
+        var categoryHierarchie = "";
+        if(categories[0]){
+          window.EA_datalayer.push('page_category1', categories[0]);
+          categoryHierarchie = categories[0];
+        };
+        if(categories[1]){
+          window.EA_datalayer.push('page_category2', categories[1]);
+          categoryHierarchie = categories[1];
+        };
+        if(categories[2]){
+          window.EA_datalayer.push('page_category3', categories[2]);
+          categoryHierarchie = categories[2];
+        };
+      }
+    }
+  }
+
+})(jQuery, Drupal, drupalSettings);
+
