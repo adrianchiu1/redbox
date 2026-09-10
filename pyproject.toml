@@ -22,6 +22,9 @@ dependencies = [
 dev = ["pytest>=7.4"]
 # Only needed to re-execute notebooks/derivation.ipynb; reading it needs nothing.
 notebook = ["nbformat>=5.9", "nbclient>=0.9", "nbconvert>=7.0", "ipykernel>=6.25"]
+# Only needed for `ggfiscal statistical-forecasts`; the published CSV it
+# writes is read with pandas alone.
+forecast = ["pmdarima>=2.0", "statsmodels>=0.14", "prophet>=1.1", "scipy>=1.11"]
 
 [project.scripts]
 ggfiscal = "ggfiscal.cli:app"

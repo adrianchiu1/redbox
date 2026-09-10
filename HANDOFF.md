@@ -214,6 +214,15 @@ extension above does not change any of it.
   the trees' TE/TR (they differ by up to 0.5% for GBR). Rows run to the
   last year any strict series reaches (GBR 2030, FRA/DEU 2070), not the
   chartbook's 2031 display cap.
+- **Statistical benchmark forecasts** (D-S9-007) —
+  `ggfiscal statistical-forecasts` writes
+  `deliverables/statistical_forecasts.csv` (60 series x 5 methods to
+  2031: auto.arima, ets, prophet, unobserved components, and their
+  combination), and six notebooks
+  `forecasts_{GBR,FRA,DEU}_{expenditure,revenue}.ipynb` chart them. Fitted
+  on OUTTURN ONLY so the official projection can be read against the
+  model; a benchmark, never a rival — nothing enters the canonical layer.
+  Needs `pip install -e .[forecast]`.
 - **The forward-balance section** (D-S9-006, chartbook §4.4) — why a
   forward `explained_share` exists where a forward "our NLB" does not: a
   level needs every component, a change does not. Plus the chart that
@@ -233,7 +242,7 @@ extension above does not change any of it.
   chart, not only those with a forecast; and a per-variant caption saying
   how far each projects or why it does not — 44 of 72 series carry no
   projection at all, across five recorded statuses, tabulated up front.
-- **`tests/deliverables/test_flat_files.py`** (32 tests) enforces the three
+- **`tests/deliverables/test_flat_files.py`** (47 tests) enforces the three
   invariants: nothing recomputed (bit-exact copy, `float_precision=
   "round_trip"`), every chained value reproducible from the flat file alone,
   and the data dictionary covering every column of every file by set
@@ -286,6 +295,18 @@ their committed outputs match the bundle.
   (fetching a blob page returns "Loading" at any size); nbviewer is the
   documented fallback, and splitting per country is the next step if 0.88
   MB still fails.
+- **`main` is red for reasons that are not the fiscal work's** (checked at
+  7003193, D-S9-007): `ggfiscal report` aborts with `KeyError: nan` in
+  `validate/runner.py:166`, the non-debt suite is 16 failed / 106 passed
+  and `tests/debt` 33 failed / 21 errors, all identically with and without
+  the fiscal branch applied. Regenerate the README with
+  `report.readme.write()` directly until `report` runs again.
+- statsmodels only forecasts past a `RangeIndex`. ETS and UC must be
+  handed a 0..n-1 indexed Series (`forecast.statistical._positional`), not
+  a year-indexed one and not a bare ndarray; the year index is put back by
+  the caller. Whether pandas hands back a RangeIndex or a plain Index for
+  a year column is incidental, which is what made this look like a
+  per-series flake.
 - The §8.3 forecast decomposition is additive ONLY with
   `weo_internal_wedge` in the identity: covered_total + denom_effect +
   residuals + wedge = weo_change (to 1e-9). The WEO's own GGR - GGX does

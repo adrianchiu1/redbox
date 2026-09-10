@@ -349,9 +349,76 @@ def test_forecast_decomposition_is_additive_in_the_bundle():
     assert (lines == 0).any(), "no exhausted horizon — check the fixture"
 
 
+# ------------------------------------------------- statistical forecasts
+
+FORECAST_METHODS = {"auto.arima", "ets", "prophet", "uc", "combination"}
+
+
+def test_statistical_forecasts_cover_exactly_the_series_that_need_them():
+    """A benchmark exists for every granular line whose official strict
+    series stops short of 2031, and for none that already reaches it."""
+    fc = read("statistical_forecasts.csv")
+    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    strict = tree.query("variant == 'strict'")
+    granular = strict[~strict.line_code.isin(["TE", "TR"])]
+    ends = granular.groupby(["iso3", "line_code"]).year.max()
+
+    have = set(map(tuple, fc[["iso3", "line_code"]].drop_duplicates().values))
+    want = set(ends[ends < 2031].index)
+    already = set(ends[ends >= 2031].index)
+    assert have == want, have ^ want
+    assert already and not (have & already), "forecast a series that has one"
+
+    for (iso3, line), g in fc.groupby(["iso3", "line_code"]):
+        assert set(g.method) == FORECAST_METHODS, (iso3, line)
+        last_actual = int(granular.query(
+            "iso3 == @iso3 and line_code == @line and basis == 'actual'"
+        ).year.max())
+        for method, m in g.groupby("method"):
+            years = sorted(m.year)
+            assert years == list(range(last_actual + 1, 2032)), (iso3, line,
+                                                                 method)
+            # fitted on outturn only — never on the official forecast years
+            assert (m.fit_last_year == last_actual).all(), (iso3, line, method)
+
+
+def test_statistical_forecast_intervals_are_ordered_and_finite():
+    fc = read("statistical_forecasts.csv")
+    assert fc[["pct_gdp", "se", "lo80", "hi80", "lo95", "hi95"]].notna().all().all()
+    assert (fc.se > 0).all()
+    assert (fc.lo95 < fc.lo80).all() and (fc.lo80 < fc.pct_gdp).all()
+    assert (fc.pct_gdp < fc.hi80).all() and (fc.hi80 < fc.hi95).all()
+    # the bands are exactly the recorded standard error, not a redrawn number
+    assert (fc.hi95 - fc.pct_gdp - 1.959964 * fc.se).abs().max() < 1e-9
+    assert (fc.pct_gdp - fc.lo80 - 1.281552 * fc.se).abs().max() < 1e-9
+
+
+def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
+    """Point = mean of the four. Variance = average within-model variance
+    plus the variance across their point forecasts, so agreement is never
+    mistaken for information."""
+    fc = read("statistical_forecasts.csv")
+    key = ["iso3", "line_code", "year"]
+    parts = fc[fc.method != "combination"]
+    comb = fc[fc.method == "combination"].set_index(key)
+    assert len(parts) == 4 * len(comb)
+
+    means = parts.groupby(key).pct_gdp.mean()
+    assert (means - comb.pct_gdp).abs().max() < 1e-9
+
+    within = parts.assign(v=parts.se ** 2).groupby(key).v.mean()
+    between = parts.groupby(key).pct_gdp.var(ddof=1)
+    assert ((within + between) - comb.se ** 2).abs().max() < 1e-9
+    assert (comb.se ** 2 >= within - 1e-12).all()
+
+
 # ----------------------------------------------------------------- notebooks
 
-NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb")
+FORECAST_NOTEBOOKS = tuple(
+    f"forecasts_{iso3}_{tree}.ipynb"
+    for iso3 in ("GBR", "FRA", "DEU")
+    for tree in ("expenditure", "revenue"))
+NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb", *FORECAST_NOTEBOOKS)
 
 
 def _notebook(name: str):
@@ -367,7 +434,9 @@ def _notebook(name: str):
 def test_notebook_is_executed_error_free_and_reads_only_the_flat_files(name):
     nb, code, source, markdown = _notebook(name)
     assert nb["nbformat"] == 4
-    assert len(code) >= 15 and len(markdown) > 3000
+    # enough prose to be a document rather than a bare chart dump; the
+    # forecast books carry one long preamble and short per-series headings
+    assert len(code) >= 15 and len(markdown) > 2000
 
     # executed, with outputs committed, and no cell raised
     assert all(c["outputs"] for c in code), f"{name} has unexecuted cells"
@@ -377,6 +446,38 @@ def test_notebook_is_executed_error_free_and_reads_only_the_flat_files(name):
     # reads the published bundle, never the canonical layer or the raw data
     assert "deliverables" in source
     assert "data/canonical" not in source and "data/raw" not in source
+
+
+@pytest.mark.parametrize("name", FORECAST_NOTEBOOKS)
+def test_forecast_notebook_charts_every_series_seven_ways(name):
+    """Per series: the levels chart, the same series as a share of GDP, and a
+    fan for each of the five methods — unless the official strict forecast
+    already reaches 2031, in which case levels and share only."""
+    _, code, source, markdown = _notebook(name)
+    iso3, tree = name[len("forecasts_"):-len(".ipynb")].split("_")
+    stem = {"expenditure": "expenditure_cofog", "revenue": "revenue_esa"}[tree]
+    lines = (read(f"{stem}.csv").query("iso3 == @iso3 and variant == 'strict'")
+             .query("line_code not in ['TE', 'TR']").line_code.unique())
+    forecast = read("statistical_forecasts.csv").query("iso3 == @iso3")
+
+    charted = 0
+    for line in lines:
+        assert f'levels("{iso3}", "{line}")' in source, line
+        assert f'share("{iso3}", "{line}")' in source, line
+        charted += 2
+        has = not forecast.query("line_code == @line").empty
+        for method in sorted(FORECAST_METHODS):
+            call = f'fan("{iso3}", "{line}", "{method}")'
+            assert (call in source) == has, (line, method)
+        charted += 5 * has
+    figures = [o for c in code for o in c["outputs"]
+               if "data" in o and "image/png" in o["data"]]
+    assert len(figures) == charted, (len(figures), charted)
+
+    # the caveats a reader needs before believing any of it
+    for topic in ("fitted on outturn only", "benchmark", "random walk",
+                  "Prophet's intervals are the narrowest"):
+        assert topic in markdown, topic
 
 
 def test_derivation_notebook_explains_the_whole_ask():

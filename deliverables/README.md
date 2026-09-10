@@ -32,7 +32,7 @@ dynamics to the IMF WEO** general-government aggregates.
 | `debt_interest_by_security.csv` | 33,834 | 18 | interest per security-year on both bases (accrued, cash): coupon, indexation uplift, bill discount, floating coupon, premium/discount amortisation, with the derivation |
 | `debt_maturity_profile.csv` | 1,939 | 14 | nominal outstanding by instrument class and residual-maturity bucket at each 31 December |
 | `debt_issuance_by_bucket.csv` | 1,208 | 13 | gross issuance by instrument class and residual maturity at settlement, per year |
-| `data_dictionary.csv` | 417 | 3 | every column of every file above, described |
+| `data_dictionary.csv` | 435 | 3 | every column of every file above, described |
 
 Start with `data_dictionary.csv` (every column of every file) and
 `series_catalogue.csv` (one row per published series: span, grades,
