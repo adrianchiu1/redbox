@@ -301,3 +301,118 @@ debt_financing_reconciliation.csv,source_id,"Register id of the source (config/d
 debt_financing_reconciliation.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
 debt_financing_reconciliation.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
 debt_financing_reconciliation.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_securities.csv,iso3,"Country: GBR, FRA, DEU."
+debt_securities.csv,security_id,"ISIN, or {iso3}_{office code} for pre-ISIN securities."
+debt_securities.csv,isin,ISIN where one exists.
+debt_securities.csv,name,Name as published by the office.
+debt_securities.csv,instrument_class,DD2: fixed_bullet | floating | inflation_linked | bill | other.
+debt_securities.csv,sub_type,National instrument name (config/debt.yaml sub_types).
+debt_securities.csv,currency,Issue currency.
+debt_securities.csv,coupon_pct,"Annual coupon, %; null for bills and floaters."
+debt_securities.csv,coupon_frequency,Coupon payments per year.
+debt_securities.csv,day_count,Accrual convention.
+debt_securities.csv,first_issue_date,First issue (settlement) date.
+debt_securities.csv,maturity_date,Final redemption date; null for undated.
+debt_securities.csv,first_call_date,First call date for callable/double-dated securities.
+debt_securities.csv,dividend_dates,"Coupon dates, e.g. '22 Apr/Oct'."
+debt_securities.csv,index_reference,Reference index id for linkers (§4.2).
+debt_securities.csv,index_lag_months,Indexation lag.
+debt_securities.csv,base_index,Base index value of the linker.
+debt_securities.csv,floating_reference,Reference rate id for floaters.
+debt_securities.csv,spread_bp,"Spread over the reference rate, basis points."
+debt_securities.csv,is_green,Green-bond flag.
+debt_securities.csv,issuer_unit,"state, or special_fund:{name}."
+debt_securities.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_securities.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_securities.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_securities.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_securities.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_positions.csv,iso3,"Country: GBR, FRA, DEU."
+debt_positions.csv,security_id,"ISIN, or {iso3}_{office code} for pre-ISIN securities."
+debt_positions.csv,as_of,Position date.
+debt_positions.csv,nominal_lcu_mn,"Nominal in issue (unindexed), millions LCU."
+debt_positions.csv,nominal_uplifted_lcu_mn,Nominal × index ratio for linkers.
+debt_positions.csv,nominal_issue_ccy_mn,Nominal in the issue currency.
+debt_positions.csv,official_holdings_lcu_mn,"Issuer's own book (Eigenbestand, DMO/CRND holdings)."
+debt_positions.csv,market_hands_lcu_mn,Nominal less official holdings.
+debt_positions.csv,position_type,office_snapshot | office_annual | rolled_from_flows.
+debt_positions.csv,fx_rate,Conversion rate used for foreign-currency issues.
+debt_positions.csv,fx_source_id,Its source.
+debt_positions.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_positions.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_positions.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_positions.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_positions.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_flows.csv,iso3,"Country: GBR, FRA, DEU."
+debt_flows.csv,security_id,"ISIN, or {iso3}_{office code} for pre-ISIN securities."
+debt_flows.csv,settlement_date,Settlement date of the operation.
+debt_flows.csv,flow_type,"§4.3: auction, syndication, tap, tender, conversion_in/out, switch_in/out, buyback, redemption, retention, own_book_sale/purchase, implied."
+debt_flows.csv,seq,Sequence number for same-day rows.
+debt_flows.csv,operation_date,Operation (auction) date.
+debt_flows.csv,nominal_lcu_mn,"Nominal amount, millions LCU."
+debt_flows.csv,cash_lcu_mn,Cash proceeds where published.
+debt_flows.csv,price_pct,Price per 100 nominal.
+debt_flows.csv,yield_pct,"Yield at issue, %."
+debt_flows.csv,method,Issuance method as published.
+debt_flows.csv,counter_security_id,Counterpart security of a conversion or switch.
+debt_flows.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_flows.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_flows.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_flows.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_flows.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_index_ratios.csv,iso3,"Country: GBR, FRA, DEU."
+debt_index_ratios.csv,security_id,"ISIN, or {iso3}_{office code} for pre-ISIN securities."
+debt_index_ratios.csv,date,Ratio date.
+debt_index_ratios.csv,reference_index,Reference index value on that date.
+debt_index_ratios.csv,index_ratio,Index ratio (uplift factor).
+debt_index_ratios.csv,ratio_source,office | recomputed.
+debt_index_ratios.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_index_ratios.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_index_ratios.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_index_ratios.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_index_ratios.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_interest_by_security.csv,iso3,"Country: GBR, FRA, DEU."
+debt_interest_by_security.csv,security_id,"ISIN, or {iso3}_{office code} for pre-ISIN securities."
+debt_interest_by_security.csv,year,Calendar year (DD6).
+debt_interest_by_security.csv,basis,accrued | cash (DD3).
+debt_interest_by_security.csv,coupon_lcu_mn,Coupon interest.
+debt_interest_by_security.csv,uplift_lcu_mn,Indexation uplift.
+debt_interest_by_security.csv,discount_lcu_mn,Bill discount accretion.
+debt_interest_by_security.csv,floating_lcu_mn,Floating coupon.
+debt_interest_by_security.csv,premium_discount_amort_lcu_mn,Premium/discount amortisation (accrued basis).
+debt_interest_by_security.csv,total_lcu_mn,Sum (coupon + uplift + discount + floating − amortisation); null when not computable.
+debt_interest_by_security.csv,computability,computed | not_computable (DD10).
+debt_interest_by_security.csv,reference_values_used,Index ratios / fixings used.
+debt_interest_by_security.csv,derivation,The arithmetic in words.
+debt_interest_by_security.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_interest_by_security.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_interest_by_security.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_interest_by_security.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_interest_by_security.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_maturity_profile.csv,iso3,"Country: GBR, FRA, DEU."
+debt_maturity_profile.csv,as_of,31 December.
+debt_maturity_profile.csv,instrument_class,DD2 class.
+debt_maturity_profile.csv,bucket,Residual-maturity bucket (§4.4).
+debt_maturity_profile.csv,nominal_lcu_mn,Nominal outstanding.
+debt_maturity_profile.csv,nominal_uplifted_lcu_mn,Uplifted nominal (linkers).
+debt_maturity_profile.csv,market_hands_lcu_mn,Nominal less official holdings.
+debt_maturity_profile.csv,n_securities,Securities in the cell.
+debt_maturity_profile.csv,weighted_residual_years,"Nominal-weighted residual maturity, years."
+debt_maturity_profile.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_maturity_profile.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_maturity_profile.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_maturity_profile.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_maturity_profile.csv,notes,"Free-text provenance: table, row, conversion, caveat."
+debt_issuance_by_bucket.csv,iso3,"Country: GBR, FRA, DEU."
+debt_issuance_by_bucket.csv,year,Calendar year (DD6).
+debt_issuance_by_bucket.csv,instrument_class,DD2 class.
+debt_issuance_by_bucket.csv,bucket,Residual maturity at settlement (§4.4).
+debt_issuance_by_bucket.csv,gross_nominal_lcu_mn,"Gross issuance, nominal."
+debt_issuance_by_bucket.csv,gross_cash_lcu_mn,"Gross issuance, cash proceeds."
+debt_issuance_by_bucket.csv,n_operations,Operations in the cell.
+debt_issuance_by_bucket.csv,weighted_residual_years_at_issue,Nominal-weighted residual maturity at issue.
+debt_issuance_by_bucket.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
+debt_issuance_by_bucket.csv,source_id,"Register id of the source (config/debt_sources.yaml), or the module that derived the row."
+debt_issuance_by_bucket.csv,snapshot_sha256,sha256 of the raw snapshot the value was read from (D8); empty for derived rows.
+debt_issuance_by_bucket.csv,quality_grade,"A–D per DEBT_KICKOFF.md §9; official rows A, aggregate-layer and derived rows B, declared items C, blocked D."
+debt_issuance_by_bucket.csv,notes,"Free-text provenance: table, row, conversion, caveat."

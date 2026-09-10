@@ -75,6 +75,13 @@ FLAT_FILES = [
     "deliverables/debt_class_aggregates.csv",
     "deliverables/debt_interest_reconciliation.csv",
     "deliverables/debt_financing_reconciliation.csv",
+    "deliverables/debt_securities.csv",
+    "deliverables/debt_positions.csv",
+    "deliverables/debt_flows.csv",
+    "deliverables/debt_index_ratios.csv",
+    "deliverables/debt_interest_by_security.csv",
+    "deliverables/debt_maturity_profile.csv",
+    "deliverables/debt_issuance_by_bucket.csv",
     "deliverables/README.md",
 ]
 
