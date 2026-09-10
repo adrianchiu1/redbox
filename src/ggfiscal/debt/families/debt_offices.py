@@ -197,6 +197,15 @@ def pulls() -> list[Pull]:
         Pull("FRA_AFT_INDEXATION", "oatei_page", f"{AFT}/en/oateuroi-key-figures", headers=BROWSER_HEADERS),
         Pull("FRA_AFT_FINANCEMENT", "rapports", f"{AFT}/fr/rapports-activite", headers=BROWSER_HEADERS),
         Pull("FRA_AFT_FINANCEMENT", "bulletins_index", f"{AFT}/fr/bulletins-mensuels", headers=BROWSER_HEADERS),
+        # pages found from the site map (2026-09-10, _aft_links.txt)
+        Pull("FRA_AFT_ENCOURS", "oati", f"{AFT}/fr/encours-detaille-oati", headers=BROWSER_HEADERS),
+        Pull("FRA_AFT_ADJUDICATIONS", "historique", f"{AFT}/fr/historique-adjudications", headers=BROWSER_HEADERS),
+        Pull("FRA_AFT_ENCOURS", "principaux_chiffres_dette", f"{AFT}/fr/principaux-chiffres-dette", headers=BROWSER_HEADERS),
+        Pull("FRA_AFT_ENCOURS", "principaux_chiffres_oat", f"{AFT}/fr/principaux-chiffres-oat", headers=BROWSER_HEADERS),
+        Pull("FRA_AFT_ENCOURS", "btf_principaux_chiffres", f"{AFT}/fr/btf-principaux-chiffres", headers=BROWSER_HEADERS),
+        Pull("FRA_AFT_ENCOURS", "chiffres_cles", f"{AFT}/fr/chiffres-cles", headers=BROWSER_HEADERS),
+        Pull("FRA_AFT_FINANCEMENT", "caisse_dette_publique", f"{AFT}/fr/caisse-dette-publique", headers=BROWSER_HEADERS),
+        Pull("FRA_AFT_ENCOURS", "definition_perimetre", f"{AFT}/fr/definition-perimetre", headers=BROWSER_HEADERS),
     ]
     # The xlsx links behind the AFT pages are versioned; they are resolved
     # from the page HTML by the reader once the pages are in the store.

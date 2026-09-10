@@ -94,3 +94,35 @@ and run `ggfiscal debt ingest-incoming`.
 Any Excel/CSV file those pages link to (auction history, indexation
 coefficients): save it as `{SOURCE_ID}/{page part}_file_{its filename}` in the
 same folder, e.g. `FRA_AFT_ADJUDICATIONS/archives_file_historique_oat.xlsx`.
+
+## AFT, second round (2026-09-10 pm): the pages the site map revealed, and the indexation files
+
+Same method (Ctrl+S → "Webpage, HTML only"; files: click to download), same
+folder layout, then `git add data/incoming && git commit && git push`.
+
+Pages — the first two matter most (OATi outstanding; the auction history):
+
+| # | URL | save as |
+|---|---|---|
+| 1 | https://www.aft.gouv.fr/fr/encours-detaille-oati | `FRA_AFT_ENCOURS/oati.html` |
+| 2 | https://www.aft.gouv.fr/fr/historique-adjudications | `FRA_AFT_ADJUDICATIONS/historique.html` — and every Excel/CSV file it offers, as `FRA_AFT_ADJUDICATIONS/historique_file_{filename}` |
+| 3 | https://www.aft.gouv.fr/fr/principaux-chiffres-dette | `FRA_AFT_ENCOURS/principaux_chiffres_dette.html` (+ its files as `principaux_chiffres_dette_file_{filename}`) |
+| 4 | https://www.aft.gouv.fr/fr/principaux-chiffres-oat | `FRA_AFT_ENCOURS/principaux_chiffres_oat.html` (+ files likewise) |
+| 5 | https://www.aft.gouv.fr/fr/btf-principaux-chiffres | `FRA_AFT_ENCOURS/btf_principaux_chiffres.html` (+ files likewise) |
+| 6 | https://www.aft.gouv.fr/fr/caisse-dette-publique | `FRA_AFT_FINANCEMENT/caisse_dette_publique.html` |
+| 7 | https://www.aft.gouv.fr/fr/chiffres-cles | `FRA_AFT_ENCOURS/chiffres_cles.html` |
+
+Files linked from the pages already saved (click each; save into the folder named):
+
+| # | URL | save as |
+|---|---|---|
+| 8 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.3_OATi/2026-08_coef_oati-octobre26.xls | `FRA_AFT_INDEXATION/oati_page_file_2026-08_coef_oati-octobre26.xls` |
+| 9 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.3_OATi/coef_oati_histo_1998_2016.xls | `FRA_AFT_INDEXATION/oati_page_file_coef_oati_histo_1998_2016.xls` |
+| 10 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.3_OATi/2026-08_IPC.xls | `FRA_AFT_INDEXATION/oati_page_file_2026-08_IPC.xls` |
+| 11 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.3_OATEi/2026-08_coef_oatei_octobre_2026.xlsx | `FRA_AFT_INDEXATION/oatei_page_file_2026-08_coef_oatei_octobre_2026.xlsx` |
+| 12 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.3_OATEi/coef_oatEi_2001_2016.xls | `FRA_AFT_INDEXATION/oatei_page_file_coef_oatEi_2001_2016.xls` |
+| 13 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.3_OATEi/2026/2026-08_IPCH.xlsx | `FRA_AFT_INDEXATION/oatei_page_file_2026-08_IPCH.xlsx` |
+
+Optional, if the desktop script now passes the challenge: `python
+tools/harvest_offices_local.py --only aft --part oat` crawls the 59 OAT
+"fiche titre" pages (first issue date, coupon dates, the line's auctions).
