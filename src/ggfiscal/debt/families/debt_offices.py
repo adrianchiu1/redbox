@@ -43,11 +43,24 @@ DMO_GILT_REPORTS = ("D1A", "D1C", "D1D", "D2.1E", "D2.1A", "D2.1PROF7",
 DMO_BILL_REPORTS = ("D2.2A", "D2.2D", "D2.2E", "D2.2G")
 
 
-def dmo_export_url(code: str, fmt: str = "xls") -> str:
+# Presentation type each report is exported in. Verified live 2026-09-10
+# through the browser session: the export handler serves each report in
+# exactly one of xml / xls, and answers every other pair with the 35-byte
+# stub "Unable to fulfil the report request" (STUB_MARKERS). The xls of
+# D10A is an HTML table under an .xls name (sniffed at store time).
+DMO_FORMATS = {
+    "D1A": "xml", "D10C": "xml", "D4L": "xml", "D2.1E": "xml", "D2.2D": "xml",
+    "D1C": "xls", "D2.1A": "xls", "D2.1PROF7": "xls", "D2.1PROF9": "xls", "D10A": "xls",
+    "D8B": "xls", "D2.2E": "xls", "D2.2G": "xls",
+}
+
+
+def dmo_export_url(code: str, fmt: str | None = None) -> str:
     """The URL behind the DMO pages' export buttons. `ExportReport?reportCode=`
     alone answers "Report X is not available in this presentation type":
-    the presentation type is `exportFormatValue` (xls | xml | pdf), and the
-    COBDate is left blank for the latest close of business."""
+    the presentation type is `exportFormatValue`; see DMO_FORMATS for the
+    one each report accepts. COBDate blank = latest close of business."""
+    fmt = fmt or DMO_FORMATS.get(code, "xls")
     return (f"{DMO}/umbraco/surface/DataExport/GetDataExport?reportCode={code}"
             f"&exportFormatValue={fmt}&parameters=&COBDate=")
 
@@ -73,14 +86,19 @@ def month_ends(start: dt.date, end: dt.date) -> list[dt.date]:
 def cob_pulls(start: dt.date = dt.date(1998, 4, 30),
               end: dt.date | None = None) -> list[Pull]:
     """Month-end D1A snapshots — the positions panel (§5.2). Run separately
-    (`--family debt_offices` pulls only the current reports); the earliest
-    accepted COBDate is unverified (DMO inception April 1998 assumed)."""
+    (`--family debt_offices` pulls only the current reports). Verified
+    2026-09-10: the export endpoint ignores COBDate in xml and returns the
+    stub in xls, so these pulls fail until the page's own export link (which
+    carries the date in `parameters=`) is captured; the positions panel is
+    meanwhile rebuilt from the flows (D2.1E, D1C, D2.1PROF7)."""
     end = end or dt.date.today()
     return [Pull("UK_DMO_GILTS", f"D1A_cob_{d:%Y%m%d}", dmo_cob_url("D1A", d),
                  headers=BROWSER_HEADERS) for d in month_ends(start, end)]
 
 
 CHALLENGE_MARKERS = ("ShieldSquare Captcha", "<title>Just a moment...</title>", "perfdrive.com/aperture")
+# Short text bodies the DMO export handler returns instead of a file
+STUB_MARKERS = ("Unable to fulfil the report request", "is not available in this presentation type")
 
 
 BROWSER_HOSTS = ("www.dmo.gov.uk", "www.aft.gouv.fr")
@@ -110,7 +128,32 @@ def get(pull: Pull):
     body, ctype, status = browser.fetch(pull.url)
     if status >= 400:
         raise FetchError(f"HTTP {status} via browser for {pull.url}")
-    return body, ctype, status
+    if is_stub(body):
+        raise FetchError(f"server stub instead of a file ({body.decode('utf-8', 'ignore').strip()[:60]!r}) for {pull.url}")
+    return body, sniff_type(body, ctype), status
+
+
+def sniff_type(body: bytes, declared: str) -> str:
+    """The DMO labels every export with the type of the format requested
+    (D10A's "xls" is an HTML table; an error is XML). Trust the bytes."""
+    head = body.lstrip()[:8]
+    if head[:2] == b"PK":
+        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    if body[:8] == bytes.fromhex("d0cf11e0a1b11ae1"):
+        return "application/vnd.ms-excel"
+    if head[:5] == b"%PDF-":
+        return "application/pdf"
+    if head[:5] == b"<?xml" or head[:5] == b"<Data" or head[:6] == b"<Error":
+        return "application/xml"
+    if head[:1] == b"<":
+        return "text/html"
+    return declared
+
+
+def is_stub(body: bytes) -> bool:
+    """The DMO export handler answers some (report, format) pairs with a
+    35-byte sentence and a 200; that is a failed pull, never a snapshot."""
+    return len(body) < 400 and any(m in body.decode("utf-8", "ignore") for m in STUB_MARKERS)
 
 
 # Parts that are hand-downloaded from links the pages carry (versioned file
@@ -138,7 +181,7 @@ def pulls() -> list[Pull]:
     out: list[Pull] = []
     for code in DMO_GILT_REPORTS:
         out.append(Pull("UK_DMO_GILTS", code, dmo_export_url(code), headers=BROWSER_HEADERS))
-    out.append(Pull("UK_DMO_GILTS", "D1A_xml", dmo_export_url("D1A", "xml"), headers=BROWSER_HEADERS))
+    out.append(Pull("UK_DMO_GILTS", "D1A_xml", dmo_xml_url("D1A"), headers=BROWSER_HEADERS))
     out.append(Pull("UK_DMO_GILTS", "yldeqns", f"{DMO}/media/1sljygul/yldeqns.pdf", headers=BROWSER_HEADERS))
     out.append(Pull("UK_DMO_GILTS", "igcalc", f"{DMO}/media/0ltegugd/igcalc.pdf", headers=BROWSER_HEADERS))
     for code in DMO_BILL_REPORTS:

@@ -9,7 +9,7 @@ every file in DOWNLOAD_LIST.md into data/incoming/{SOURCE_ID}/{part}.{ext}
 with the names `ggfiscal debt ingest-incoming` expects.
 
 Setup (once):   pip install playwright && playwright install chromium
-Run:            python tools/harvest_offices_local.py [--only dmo|aft] [--skip-cob]
+Run:            python tools/harvest_offices_local.py [--only dmo|aft] [--cob] [--dmo-format TOKEN]
 Afterwards:     git add data/incoming && git commit -m "DMO/AFT files" && git push
                 (or copy data/incoming/ to the build box), then
                 ggfiscal debt ingest-incoming
@@ -36,6 +36,18 @@ GILT_REPORTS = ["D1A", "D1C", "D1D", "D2.1E", "D2.1A", "D2.1PROF7", "D2.1PROF9",
 BILL_REPORTS = ["D2.2A", "D2.2D", "D2.2E", "D2.2G"]
 
 CHALLENGE = ("ShieldSquare Captcha", "<title>Just a moment...</title>", "perfdrive.com/aperture")
+# Short text bodies the DMO's export handler returns instead of a file; a
+# download that carries one of these is a failure, not data.
+STUBS = ("Unable to fulfil the report request", "is not available in this presentation type")
+# Presentation type each DMO report exports in (verified 2026-09-10: each
+# report answers exactly one of xml / xls; the other pairs return a stub).
+# Reports not listed are tried in DMO_FORMATS order.
+KNOWN_FORMAT = {
+    "D1A": "xml", "D10C": "xml", "D4L": "xml", "D2.1E": "xml", "D2.2D": "xml",
+    "D1C": "xls", "D2.1A": "xls", "D2.1PROF7": "xls", "D2.1PROF9": "xls", "D10A": "xls",
+    "D8B": "xls", "D2.2E": "xls", "D2.2G": "xls",
+}
+DMO_FORMATS = ["xls", "xml", "pdf", "csv"]
 
 
 def export_url(code: str, fmt: str = "xls", cob: str = "") -> str:
@@ -46,15 +58,15 @@ def export_url(code: str, fmt: str = "xls", cob: str = "") -> str:
             f"&exportFormatValue={fmt}&parameters=&COBDate={cob}")
 
 
-def dmo_jobs(skip_cob: bool) -> list[tuple[str, str, str]]:
-    jobs = [("UK_DMO_GILTS", "D1A_xml", export_url("D1A", "xml"))]
-    jobs += [("UK_DMO_GILTS", c, export_url(c)) for c in GILT_REPORTS]
-    jobs += [("UK_DMO_BILLS", c, export_url(c)) for c in BILL_REPORTS]
+def dmo_jobs(skip_cob: bool) -> list[tuple[str, str, str, str]]:
+    """(source, part, report code, COBDate) — the format token is chosen at run time."""
+    jobs = [("UK_DMO_GILTS", "D1A_xml", "D1A", "xml")]
+    jobs += [("UK_DMO_GILTS", c, c, "") for c in GILT_REPORTS]
+    jobs += [("UK_DMO_BILLS", c, c, "") for c in BILL_REPORTS]
     if not skip_cob:
         for y in range(1998, dt.date.today().year):
             d = dt.date(y, 12, 31)
-            jobs.append(("UK_DMO_GILTS", f"D1A_cob_{d:%Y%m%d}",
-                         export_url("D1A", "xls", f"{d:%d}%2F{d:%m}%2F{d:%Y}")))
+            jobs.append(("UK_DMO_GILTS", f"D1A_cob_{d:%Y%m%d}", "D1A", f"{d:%d}%2F{d:%m}%2F{d:%Y}"))
     return jobs
 
 
@@ -80,6 +92,10 @@ def is_challenge(html: str) -> bool:
     return any(m in html for m in CHALLENGE)
 
 
+def is_stub(body: bytes) -> bool:
+    return len(body) < 400 and any(m in body.decode("utf-8", "ignore") for m in STUBS)
+
+
 def wait_human(page, what: str) -> None:
     """Block until the interstitial is gone; the person at the screen solves it."""
     t0 = time.time()
@@ -97,7 +113,7 @@ def ext_for(name: str, body: bytes) -> str:
         return "xls"
     if body[:5] == b"%PDF-" or n.endswith(".pdf"):
         return "pdf"
-    if body.lstrip()[:5] == b"<?xml" or n.endswith(".xml"):
+    if body.lstrip()[:5] in (b"<?xml", b"<Data") or n.endswith(".xml"):
         return "xml"
     if body.lstrip()[:1] == b"<":
         return "html"
@@ -134,6 +150,8 @@ def grab(page, url: str, source: str, part: str) -> None:
         pass
     if not body or is_challenge(body.decode("utf-8", "ignore")[:20000]):
         raise RuntimeError("still a challenge page")
+    if is_stub(body):
+        raise RuntimeError("stub: " + body.decode("utf-8", "ignore").strip()[:80])
     save(source, part, body, hint)
 
 
@@ -141,15 +159,33 @@ class _Done(Exception):
     pass
 
 
-def run_dmo(ctx, skip_cob: bool) -> list[str]:
+def run_dmo(ctx, skip_cob: bool, formats: list[str]) -> list[str]:
     failed = []
     page = ctx.new_page()
     print("\n== DMO: a browser window will open; if you see a captcha, solve it and the script continues.")
-    for source, part, url in dmo_jobs(skip_cob):
-        try:
-            grab(page, url, source, part)
-        except Exception as e:
-            print(f"FAIL {source}/{part}: {str(e)[:120]}", flush=True)
+    formats = list(formats)
+    for source, part, code, cob in dmo_jobs(skip_cob):
+        if part == "D1A_xml":
+            tries = ["xml"]
+        elif code in KNOWN_FORMAT:
+            tries = [KNOWN_FORMAT[code]] + [f for f in formats if f != KNOWN_FORMAT[code]]
+        else:
+            tries = formats
+        err = None
+        for fmt in tries:
+            try:
+                grab(page, export_url(code, fmt, cob), source, part)
+                err = None
+                if fmt != tries[0] and code not in KNOWN_FORMAT and part != "D1A_xml":
+                    print(f"     (format token {fmt!r} works for {code})", flush=True)
+                break
+            except Exception as e:
+                err = e
+                if not str(e).startswith("stub"):
+                    break
+            page.wait_for_timeout(1000)
+        if err is not None:
+            print(f"FAIL {source}/{part}: {str(err)[:120]}", flush=True)
             failed.append(f"{source}/{part}")
         page.wait_for_timeout(1500)
     page.close()
@@ -186,8 +222,14 @@ def run_aft(ctx) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", choices=["dmo", "aft"])
-    ap.add_argument("--skip-cob", action="store_true", help="skip the 28 UK year-end position snapshots")
+    ap.add_argument("--cob", action="store_true",
+                    help="also try the 28 UK year-end D1A snapshots (COBDate=); off by default because the "
+                         "export ignores the date in xml and returns a stub in xls (2026-09-10)")
+    ap.add_argument("--dmo-format", default=None,
+                    help="presentation-type token for the DMO Excel export, if known (default: try "
+                         + ", ".join(DMO_FORMATS) + " in turn)")
     a = ap.parse_args()
+    formats = [a.dmo_format] + [f for f in DMO_FORMATS if f != a.dmo_format] if a.dmo_format else DMO_FORMATS
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -198,7 +240,7 @@ def main() -> int:
         browser = p.chromium.launch(headless=False)
         ctx = browser.new_context(accept_downloads=True)
         if a.only in (None, "dmo"):
-            failed += run_dmo(ctx, a.skip_cob)
+            failed += run_dmo(ctx, not a.cob, formats)
         if a.only in (None, "aft"):
             failed += run_aft(ctx)
         browser.close()

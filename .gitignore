@@ -26,6 +26,14 @@ data/canonical/*
 !data/raw/OBR_FRS/
 !data/raw/OBR_PSF_DATABANK/
 !data/raw/OBR_HIST_PF/
+# Debt offices behind bot management (OQ-8): hand-downloaded or browser-fetched,
+# not refetchable by a fresh container, so committed likewise.
+!data/raw/UK_DMO_GILTS/
+!data/raw/UK_DMO_BILLS/
+!data/raw/FRA_AFT_ENCOURS/
+!data/raw/FRA_AFT_ADJUDICATIONS/
+!data/raw/FRA_AFT_INDEXATION/
+!data/raw/FRA_AFT_FINANCEMENT/
 
 # Jupyter
 .ipynb_checkpoints/

@@ -287,6 +287,14 @@ def debt_ingest_incoming(folder: str = typer.Option("data/incoming", "--folder")
         if url is None:
             typer.echo(f"SKIP  {sid}/{part}: unknown part name (see families/debt_offices.py)")
             continue
+        head = path.read_bytes()[:30000]
+        text = head.decode("utf-8", "ignore")
+        if any(m in text for m in DO.CHALLENGE_MARKERS):
+            typer.echo(f"SKIP  {sid}/{part}: bot-challenge page, not data")
+            continue
+        if len(head) < 400 and any(m in text for m in DO.STUB_MARKERS):
+            typer.echo(f"SKIP  {sid}/{part}: server stub ({text.strip()[:60]!r}), not data")
+            continue
         rec = ingest_local(path, sid, part, url, note="hand-downloaded by the committee (OQ-8, bot-challenged host)")
         typer.echo(f"OK    {rec['source_id']}/{rec['part']}  sha256={rec['sha256'][:12]}  {rec['size']} bytes")
         n += 1
