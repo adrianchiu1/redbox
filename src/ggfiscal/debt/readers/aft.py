@@ -252,3 +252,69 @@ def auctions_all() -> pd.DataFrame:
         return pd.DataFrame()
     df = pd.concat(frames, ignore_index=True)
     return df.drop_duplicates(["isin", "auction_date"], keep="first").reset_index(drop=True)
+
+
+# -------------------------------------------------------------- indexation
+
+#: The coefficient files' part names in the store (page part + file name).
+COEF_PARTS = {
+    "OATi": ("oati_page_file_2026-08_coef_oati-octobre26", "oati_page_file_coef_oati_histo_1998_2016"),
+    "OAT€i": ("oati_page_file_2026-08_coef_oatei_octobre_2026", "oati_page_file_coef_oatEi_2001_2016"),
+}
+INDEX_PARTS = {"OATi": "oati_page_file_2026-08_IPC", "OAT€i": "oati_page_file_2026-08_IPCH"}
+
+
+def coefficient_file(part: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """One AFT coefficient workbook -> (terms, daily).
+
+    Layout (sheet 1): column A the day, column B the daily reference index
+    (``référence quotidienne d'inflation``), then one column per line with a
+    header block in rows 2–8: kind (``OATi`` / ``OAT€i`` / ``BTANi``), coupon
+    (as a fraction), maturity date, the date the index base refers to (the
+    ``date de jouissance``), the base index; data from row 10. The current
+    files run from the first line's issue (1998 / 2001) to the coming month;
+    the ``histo`` files stop in 2016 and are on the earlier CPI base.
+    ``terms`` has one row per column: kind, coupon_pct, maturity_date,
+    base_date, base_index, column; ``daily`` is long: date, reference_index,
+    column, coefficient.
+    """
+    x = pd.read_excel(snap_path(SOURCE_INDEXATION, part), header=None)
+    terms = []
+    for col in range(2, x.shape[1]):
+        kind = x.iat[1, col]
+        if not isinstance(kind, str) or not kind.strip():
+            continue
+        terms.append({"column": col, "kind": kind.strip().replace("OAT€I", "OAT€i"),
+                      "coupon_pct": float(x.iat[2, col]) * 100.0 if pd.notna(x.iat[2, col]) else None,
+                      "maturity_date": pd.Timestamp(x.iat[3, col]) if pd.notna(x.iat[3, col]) else None,
+                      "base_date": pd.Timestamp(x.iat[5, col]) if pd.notna(x.iat[5, col]) else None,
+                      "base_index": float(x.iat[7, col]) if pd.notna(x.iat[7, col]) else None, "part": part})
+    terms = pd.DataFrame(terms)
+    body = x.iloc[9:].copy()
+    body = body[pd.to_datetime(body[0], errors="coerce").notna()]
+    dates = pd.to_datetime(body[0])
+    ref = pd.to_numeric(body[1], errors="coerce")
+    frames = []
+    for t in terms.itertuples(index=False):
+        c = pd.to_numeric(body[t.column], errors="coerce")
+        f = pd.DataFrame({"date": dates.values, "reference_index": ref.values, "column": t.column,
+                          "coefficient": c.values})
+        frames.append(f[f["coefficient"].notna()])
+    daily = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(
+        columns=["date", "reference_index", "column", "coefficient"])
+    return terms, daily
+
+
+def price_index(kind: str) -> pd.DataFrame:
+    """The AFT's monthly reference price index (IPC ex-tobacco for OATi,
+    euro-area HICP ex-tobacco for OAT€i), every published base side by
+    side: month (the 15th), index (current base) and the older bases."""
+    part = INDEX_PARTS[kind]
+    x = pd.read_excel(snap_path(SOURCE_INDEXATION, part), header=None)
+    header = [str(v).replace("\n", " ").strip() for v in x.iloc[1].tolist()]
+    body = x.iloc[2:].copy()
+    body = body[pd.to_datetime(body[0], errors="coerce").notna()]
+    out = pd.DataFrame({"month": pd.to_datetime(body[0]).values})
+    for i, h in enumerate(header[1:], start=1):
+        out[h] = pd.to_numeric(body[i], errors="coerce").values
+    return out[out.iloc[:, 1].notna()].reset_index(drop=True)

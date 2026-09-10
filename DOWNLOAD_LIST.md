@@ -126,3 +126,19 @@ Files linked from the pages already saved (click each; save into the folder name
 Optional, if the desktop script now passes the challenge: `python
 tools/harvest_offices_local.py --only aft --part oat` crawls the 59 OAT
 "fiche titre" pages (first issue date, coupon dates, the line's auctions).
+
+## AFT, third round (2026-09-10 evening): the auction histories (five direct files)
+
+Save into `data/incoming/FRA_AFT_ADJUDICATIONS/`:
+
+| # | URL | save as |
+|---|---|---|
+| 1 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chiffres/2026-08_hist_mlt.xlsx | `historique_file_2026-08_hist_mlt.xlsx` |
+| 2 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.4_BTF/2026-08_hist_btf.xlsx | `historique_file_2026-08_hist_btf.xlsx` |
+| 3 | https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chiffres/1999-2026_historique_syndications.xlsx | `historique_file_1999-2026_historique_syndications.xlsx` |
+| 4 | https://www.aft.gouv.fr/files/archives/attachments/26622.xls | `historique_file_26622_oat_btan_1999_2018.xls` |
+| 5 | https://www.aft.gouv.fr/files/archives/attachments/26621.xls | `historique_file_26621_btf_1999_2018.xls` |
+
+Second round received 2026-09-10: OATi page, the seven key-figure pages, the six
+coefficient/index files (all ingested; the coefficient files give daily office
+ratios for every linker in issue since 1999/2002).

@@ -73,28 +73,42 @@ def master() -> pd.DataFrame:
 
 
 def securities(run_id: str, m: pd.DataFrame, first_issue: pd.Series) -> pd.DataFrame:
+    T, _ = coefficient_terms()
+    terms = T.set_index("key") if len(T) else pd.DataFrame()
     rows = []
     for r in m.itertuples(index=False):
         klass, sub = KIND.get(r.kind, ("fixed_bullet", "oat"))
         linker = klass == "inflation_linked"
         notes = ["terms from the libellé of the encours page" if r.in_encours else
                  "line seen only on an adjudications page; not in the encours pages in the store"]
+        base_index, base_date = np.nan, pd.NaT
         if linker:
-            notes.append(f"indexed on {INDEX_REFERENCE[r.kind]} with a 3-month lag; base index pending the AFT "
-                         "coefficient files (OQ-8), ratios not yet recomputed")
-        if pd.isna(first_issue.get(r.isin, pd.NaT)):
+            key = _term_key(r.kind, r.coupon_pct, r.maturity_date)
+            if key in terms.index:
+                base_index, base_date = float(terms.loc[key, "base_index"]), terms.loc[key, "base_date"]
+                notes.append(f"indexed on {INDEX_REFERENCE[r.kind]} with a 3-month lag; base index "
+                             f"{base_index:.5f} at {pd.Timestamp(base_date):%Y-%m-%d} (AFT coefficient file, "
+                             "current CPI base)")
+            else:
+                notes.append(f"indexed on {INDEX_REFERENCE[r.kind]} with a 3-month lag; no AFT coefficient "
+                             "column for this line (ratios not computable)")
+        fi = first_issue.get(r.isin, pd.NaT)
+        if pd.isna(fi) and pd.notna(base_date):
+            fi = pd.Timestamp(base_date)
+            notes.append("first_issue_date = the line's base (jouissance) date from the coefficient file")
+        elif pd.isna(fi):
             notes.append("first issue date unknown until the auction history is in the store")
         rows.append({
             "iso3": ISO3, "security_id": r.isin, "isin": r.isin, "name": r.name,
             "instrument_class": klass, "sub_type": sub, "currency": "EUR",
             "coupon_pct": None if klass == "bill" else r.coupon_pct,
             "coupon_frequency": 1, "day_count": "ACT/360" if klass == "bill" else "ACT/ACT",
-            "first_issue_date": first_issue.get(r.isin, pd.NaT), "maturity_date": r.maturity_date,
+            "first_issue_date": fi, "maturity_date": r.maturity_date,
             "first_call_date": pd.NaT,
             "dividend_dates": (f"{r.maturity_date.day:02d} {r.maturity_date.strftime('%b')}"
                                if pd.notna(r.maturity_date) and klass != "bill" else None),
             "index_reference": INDEX_REFERENCE.get(r.kind) if linker else None,
-            "index_lag_months": 3.0 if linker else np.nan, "base_index": np.nan,
+            "index_lag_months": 3.0 if linker else np.nan, "base_index": base_index if linker else np.nan,
             "floating_reference": None, "spread_bp": np.nan, "is_green": bool(r.is_green), "issuer_unit": "state",
             **_prov(run_id, A.SOURCE_ENCOURS if r.in_encours else A.SOURCE_ADJUDICATIONS, r.part, "A",
                     "; ".join(notes)),
@@ -154,6 +168,106 @@ def flows(run_id: str, m: pd.DataFrame) -> pd.DataFrame:
     return FLOWS.validate(out.sort_values(["settlement_date", "security_id", "seq"]).reset_index(drop=True))
 
 
+# ----------------------------------------------------------- index ratios
+
+def _term_key(kind: str, coupon: float | None, maturity) -> str | None:
+    if coupon is None or pd.isna(coupon) or maturity is None or pd.isna(maturity):
+        return None
+    return f"{kind}|{round(float(coupon), 3)}|{pd.Timestamp(maturity):%Y-%m-%d}"
+
+
+def coefficient_terms() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Every line of every coefficient file in the store: terms (with a
+    term key) and the daily coefficients keyed the same way. The current
+    files take precedence over the 2016 history files for the same line."""
+    terms, dailies = [], []
+    for kind, parts in A.COEF_PARTS.items():
+        for part in parts:
+            if not A.have(A.SOURCE_INDEXATION, part):
+                continue
+            t, d = A.coefficient_file(part)
+            t["key"] = [_term_key(k, c, m) for k, c, m in zip(t["kind"], t["coupon_pct"], t["maturity_date"])]
+            d = d.merge(t[["column", "key"]], on="column")
+            d["part"] = part
+            terms.append(t)
+            dailies.append(d)
+    if not terms:
+        return pd.DataFrame(), pd.DataFrame()
+    T = pd.concat(terms, ignore_index=True).drop_duplicates("key", keep="first")
+    D = pd.concat(dailies, ignore_index=True)
+    D = D.sort_values(["key", "date", "part"]).drop_duplicates(["key", "date"], keep="first")
+    return T, D
+
+
+def reference_index_3m(day: pd.Timestamp, monthly: pd.Series) -> float:
+    """AFT daily reference index: index(m−3) + (d−1)/days(m) × (index(m−2) −
+    index(m−3)); `monthly` is indexed by the first of the month."""
+    day = pd.Timestamp(day)
+    m3 = (day - pd.DateOffset(months=3)).to_period("M").to_timestamp()
+    m2 = (day - pd.DateOffset(months=2)).to_period("M").to_timestamp()
+    if m3 not in monthly.index or m2 not in monthly.index:
+        return np.nan
+    return float(monthly[m3] + (day.day - 1) / day.days_in_month * (monthly[m2] - monthly[m3]))
+
+
+def _monthly_index(kind: str) -> pd.Series:
+    px = A.price_index(kind)
+    s = px.set_index(px["month"].dt.to_period("M").dt.to_timestamp()).iloc[:, 1]
+    return pd.to_numeric(s, errors="coerce").dropna().sort_index()
+
+
+def index_ratios(run_id: str, secs: pd.DataFrame, end: pd.Timestamp) -> pd.DataFrame:
+    linkers = secs[secs["instrument_class"] == "inflation_linked"]
+    if linkers.empty or not any(A.have(A.SOURCE_INDEXATION, p) for ps in A.COEF_PARTS.values() for p in ps):
+        return pd.DataFrame(columns=list(INDEX_RATIOS.columns))
+    T, D = coefficient_terms()
+    kinds = {"oati": "OATi", "oatei": "OAT€i"}
+    frames = []
+    for s_ in linkers.itertuples(index=False):
+        kind = kinds.get(s_.sub_type)
+        key = _term_key(kind, s_.coupon_pct, s_.maturity_date)
+        office = D[D["key"] == key] if key else D.iloc[0:0]
+        if len(office):
+            frames.append(pd.DataFrame({
+                "security_id": s_.security_id, "date": office["date"].values,
+                "reference_index": office["reference_index"].values, "index_ratio": office["coefficient"].values,
+                "ratio_source": "office", "source_id": A.SOURCE_INDEXATION, "part": office["part"].values,
+                "notes": "AFT coefficient file: daily reference index and indexation coefficient as published",
+            }))
+        # recomputed monthly points beyond the office series (lines matured
+        # after the 2016 history files) from the monthly index, base = the
+        # reference index at the line's base date
+        term = T[T["key"] == key] if key else T.iloc[0:0]
+        stop = min(end, s_.maturity_date) if pd.notna(s_.maturity_date) else end
+        if len(term) and (office.empty or office["date"].max() < stop - pd.Timedelta(days=45)):
+            monthly = _monthly_index(kind)
+            base_date = term["base_date"].iloc[0]
+            base = reference_index_3m(base_date, monthly) if pd.notna(base_date) else np.nan
+            start = office["date"].max() + pd.offsets.MonthBegin(1) if len(office) else pd.Timestamp(base_date)
+            if pd.notna(base) and base > 0:
+                dates = pd.date_range(start.normalize(), stop, freq="MS")
+                refs = np.array([reference_index_3m(d, monthly) for d in dates])
+                ok = ~np.isnan(refs)
+                frames.append(pd.DataFrame({
+                    "security_id": s_.security_id, "date": dates[ok], "reference_index": refs[ok],
+                    "index_ratio": refs[ok] / base, "ratio_source": "recomputed",
+                    "source_id": A.SOURCE_INDEXATION, "part": A.INDEX_PARTS[kind],
+                    "notes": "recomputed: AFT 3-month-lag formula on the AFT monthly index (base 2025) / the "
+                             "reference index at the line's base date; monthly points, linear within the month",
+                }))
+    if not frames:
+        return pd.DataFrame(columns=list(INDEX_RATIOS.columns))
+    df = pd.concat(frames, ignore_index=True)
+    out = pd.DataFrame({
+        "iso3": ISO3, "security_id": df["security_id"], "date": pd.to_datetime(df["date"]),
+        "reference_index": df["reference_index"], "index_ratio": df["index_ratio"],
+        "ratio_source": df["ratio_source"], "run_id": run_id, "source_id": df["source_id"],
+        "snapshot_sha256": [A.sha(A.SOURCE_INDEXATION, p) for p in df["part"]],
+        "quality_grade": "A", "notes": df["notes"],
+    }).drop_duplicates(["security_id", "date", "ratio_source"])
+    return INDEX_RATIOS.validate(out.sort_values(["security_id", "date", "ratio_source"]).reset_index(drop=True))
+
+
 def build(run_id: str) -> dict[str, pd.DataFrame]:
     if not any(A.have(A.SOURCE_ENCOURS, p) for p in A.ENCOURS_PARTS):
         raise FileNotFoundError("no AFT encours snapshot")
@@ -163,7 +277,8 @@ def build(run_id: str) -> dict[str, pd.DataFrame]:
              if len(fl) else pd.Series(dtype="datetime64[ns]"))
     secs = securities(run_id, m, first)
     pos = positions(run_id, m)
-    ratios = pd.DataFrame(columns=list(INDEX_RATIOS.columns))
+    end = pd.Timestamp(pos["as_of"].max()) if len(pos) else pd.Timestamp.today().normalize()
+    ratios = index_ratios(run_id, secs, end)
     return {"debt_securities": secs, "debt_positions": pos, "debt_flows": fl, "debt_index_ratios": ratios}
 
 
