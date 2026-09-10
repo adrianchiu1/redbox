@@ -142,6 +142,24 @@ series_catalogue.csv,residual_method,Residual assumption where the series carrie
 series_catalogue.csv,reason_series_ends,Why the series stops where it does.
 series_catalogue.csv,forecast_status,Recorded status when no strict forecast exists.
 series_catalogue.csv,forecast_note,"Why, in words."
+statistical_forecasts.csv,iso3,"Country (GBR, FRA, DEU)."
+statistical_forecasts.csv,country,"Country name, for readability."
+statistical_forecasts.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+statistical_forecasts.csv,line_label,Human-readable name of the line.
+statistical_forecasts.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+statistical_forecasts.csv,classification,COFOG or ESA_REV.
+statistical_forecasts.csv,method,auto.arima | ets | prophet | uc | combination. The first four are standard univariate methods fitted to the line's own history; combination is their mean.
+statistical_forecasts.csv,pct_gdp,"Point forecast, as a percentage of GDP."
+statistical_forecasts.csv,se,"Standard error of the point forecast, from the method itself. For combination it carries both the average within-model variance and the variance across the four point forecasts."
+statistical_forecasts.csv,lo80,pct_gdp - 1.2816 * se.
+statistical_forecasts.csv,hi80,pct_gdp + 1.2816 * se.
+statistical_forecasts.csv,lo95,pct_gdp - 1.9600 * se.
+statistical_forecasts.csv,hi95,pct_gdp + 1.9600 * se.
+statistical_forecasts.csv,model,"The specification the method selected, e.g. ARIMA(0, 1, 2)+drift or ETS(A,Ad,N)."
+statistical_forecasts.csv,fit_first_year,First year of the estimation sample.
+statistical_forecasts.csv,fit_last_year,"Last year of the estimation sample — the last OUTTURN, never the last official forecast, so a line's official projection can be read against the model on the same axes."
+statistical_forecasts.csv,n_obs,Number of outturn observations fitted.
+statistical_forecasts.csv,run_id,Run that produced the forecasts.
 data_dictionary.csv,file,Flat file the column belongs to.
 data_dictionary.csv,column,"Name of the column, as it appears in that file's header."
 data_dictionary.csv,description,What the column holds.

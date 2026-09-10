@@ -1263,3 +1263,68 @@ validate` 22 OK, 2 SKIP, 28 WARN unchanged. Ten French tests.
 asks: the PLF programme 117 tables), the ISIN "fiche titre" pages
 (first coupon dates: the register uses the base date from the
 coefficient files where available and the first auction otherwise).
+
+## D-S9-007 — Statistical benchmark forecasts of every granular line to 2031, and six notebooks that chart them (serves §1, D-S9-002; new deliverable)
+2026-09-10, session 6 (continued). The committee asked, for each granular
+COFOG/ESA strict series: keep the levels chart, add the series as a share
+of GDP (call it X), then forecast X to 2031 four ways — R `auto.arima`,
+R `ets`, Facebook `prophet`, and the statsmodels unobserved-components
+("statespace cycles") model — each as a fan chart, plus a fifth chart
+combining the four.
+**Built.** `src/ggfiscal/forecast/statistical.py` +
+`ggfiscal statistical-forecasts` write
+`deliverables/statistical_forecasts.csv` (1,940 rows: 60 series x 5
+methods x 6-7 horizon years). Six notebooks —
+`forecasts_{GBR,FRA,DEU}_{expenditure,revenue}.ipynb` — read that CSV and
+plot, 0.57-0.72 MB each, all executed with outputs committed.
+Four committee decisions, taken before building:
+  - **Six notebooks, not one.** 366 new charts is ~2.9 MB in a single
+    file, back above the size that stopped GitHub rendering (D-S9-004).
+    One book per country per tree lands each at ~0.6 MB. The committee
+    confirmed the existing 0.91 MB chartbook now renders, so ~0.6 MB has
+    real headroom.
+  - **Fitted on outturn only**, never on the official forecast years, so
+    where a line carries an official projection the two sit on the same
+    axes and can be read against each other. The alternative (fit on the
+    full strict series, gap-fill the remainder) was rejected as losing
+    that comparison.
+  - **Series whose official strict forecast already reaches 2031 are
+    skipped** — FRA/DEU GF01_7 (2036), GF07 and GF09 (2070). Six series;
+    they get the levels and share charts only.
+  - **Combination** = mean of the four point forecasts, with variance =
+    average within-model variance PLUS the variance across the four point
+    forecasts, so agreement between methods is never mistaken for
+    information. Inverse-variance weighting was rejected: it would let
+    Prophet dominate, and Prophet's intervals are the narrowest here for
+    reasons that have nothing to do with these series.
+Scope and status of the numbers: these are a **benchmark, not a rival
+forecast**. Nothing enters the canonical layer, the trees, the strict
+matrices or any other bundle file; `statistical_forecasts.csv` is the one
+file in `deliverables/` that is not a copy of the gated layer, and it says
+so in the bundle README.
+Two defects found and fixed while building, both worth not rediscovering:
+  - **statsmodels only forecasts past a `RangeIndex`.** Whether a year
+    index comes back from pandas as `RangeIndex` or plain `Index` is
+    incidental to the data, and ETS and UC failed on exactly the series
+    that got the latter ("No supported index is available"). Both methods
+    now re-index onto 0..n-1 via `_positional` and the caller puts years
+    back. Passing a bare ndarray instead does NOT work — statsmodels 0.15
+    then raises `'numpy.ndarray' object has no attribute 'index'`.
+  - **Prophet, `auto.arima` and `ets` behave as the data deserves, not as
+    a demo.** On 30-61 annual points `auto.arima` picks ARIMA(0,1,0) for
+    ~16 series and `ets` picks (A,N,N)/(M,N,N) for most — flat point
+    forecasts. That is the honest answer and the notebooks say so up
+    front rather than leaving a reader to think the chart is broken.
+Verified: 47 tests in `tests/deliverables` (15 new), covering that the
+forecast set is exactly the series that need one, that intervals are
+ordered and equal the recorded standard error, that the combination is
+the mean with within+between variance, and that each notebook charts
+every series seven ways (or two, for the six skipped).
+**Pre-existing breakage NOT caused by this work, recorded for whoever owns
+it:** on clean `main` at 7003193, `ggfiscal report` aborts with
+`KeyError: nan` in `validate/runner.py:166` (`run_all`), and the non-debt
+suite is 16 failed / 106 passed with `tests/debt` at 33 failed / 21 errors
+— unchanged with this branch applied (16 failed / 121 passed, the extra
+15 being this work's new passing tests). The README here was regenerated
+by calling `report.readme.write()` directly, since `ggfiscal report` cannot
+complete.

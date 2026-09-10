@@ -650,6 +650,31 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
         "forecast_status": "Recorded status when no strict forecast exists.",
         "forecast_note": "Why, in words.",
     })
+    _dict_rows("statistical_forecasts.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "line_code",
+                                   "line_label", "year")},
+        "classification": "COFOG or ESA_REV.",
+        "method": "auto.arima | ets | prophet | uc | combination. The first "
+                  "four are standard univariate methods fitted to the line's "
+                  "own history; combination is their mean.",
+        "pct_gdp": "Point forecast, as a percentage of GDP.",
+        "se": "Standard error of the point forecast, from the method itself. "
+              "For combination it carries both the average within-model "
+              "variance and the variance across the four point forecasts.",
+        "lo80": "pct_gdp - 1.2816 * se.",
+        "hi80": "pct_gdp + 1.2816 * se.",
+        "lo95": "pct_gdp - 1.9600 * se.",
+        "hi95": "pct_gdp + 1.9600 * se.",
+        "model": "The specification the method selected, e.g. "
+                 "ARIMA(0, 1, 2)+drift or ETS(A,Ad,N).",
+        "fit_first_year": "First year of the estimation sample.",
+        "fit_last_year": "Last year of the estimation sample — the last "
+                         "OUTTURN, never the last official forecast, so a "
+                         "line's official projection can be read against the "
+                         "model on the same axes.",
+        "n_obs": "Number of outturn observations fitted.",
+        "run_id": "Run that produced the forecasts.",
+    })
     _dict_rows("data_dictionary.csv", {
         "file": "Flat file the column belongs to.",
         "column": "Name of the column, as it appears in that file's header.",
@@ -759,6 +784,10 @@ DESCRIPTIONS = {
         "built it, and why it ends",
     "data_dictionary.csv":
         "every column of every file above, described",
+    "statistical_forecasts.csv":
+        "benchmark forecasts of each granular line as a share of GDP to 2031 "
+        "— auto.arima, ets, prophet, an unobserved-components model and their "
+        "combination, fitted on outturn only",
     **{f"strict_{iso3}.csv":
        f"{name}, strict variant only: one column per series, one row per "
        "year — the same series the chartbook plots, in the shape you model "

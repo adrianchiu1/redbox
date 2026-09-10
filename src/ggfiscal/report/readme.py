@@ -254,7 +254,7 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Start here",
         "",
-        "The end product is the flat files, plus two notebooks that "
+        "The end product is the flat files, plus the notebooks that "
         "explain and display them. None of it needs the pipeline to read:",
         "",
         "1. **[`deliverables/strict_GBR.csv`](deliverables/strict_GBR.csv), "
@@ -274,12 +274,18 @@ def write(path: Path | None = None) -> Path:
         "3. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — "
         "how each series was derived, series by series, executed against "
         "those files with its outputs committed.",
-        "4. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
+        "4. **[`notebooks/forecasts_*.ipynb`](notebooks/)** — six books, "
+        "one per country and tree: every granular line as a share of GDP, "
+        "with `auto.arima`, `ets`, `prophet` and an unobserved-components "
+        "forecast to 2031 and their combination, each as a fan chart beside "
+        "the official projection. Benchmarks, not rivals \u2014 the numbers are "
+        "in `deliverables/statistical_forecasts.csv`.",
+        "5. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
         "the same series plotted, one chart each, country by category by "
         "series, with seams and projection years marked, plus our totals "
         "against the IMF WEO. For eyeballing construction quality.",
         "",
-        "Both notebooks need only `pandas` and `matplotlib` to re-run: "
+        "The notebooks need only `pandas` and `matplotlib` to re-run: "
         "`pip install -e .[notebook] && jupyter nbconvert --execute "
         "--inplace notebooks/*.ipynb`. GitHub renders them in the browser "
         "and gives up on large ones (the chartbook is kept under a "
@@ -300,6 +306,7 @@ def write(path: Path | None = None) -> Path:
         "ggfiscal report             # small multiples, reconciliation + validation reports, README",
         "ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)",
         "ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)",
+        "ggfiscal statistical-forecasts   # benchmark forecasts to 2031 -> deliverables/statistical_forecasts.csv (needs .[forecast])",
         "ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md",
         "pytest                      # per-stage gate tests",
         "```",
@@ -317,7 +324,7 @@ def write(path: Path | None = None) -> Path:
         "data/            raw -> manual -> standard -> canonical -> manifest (§11.1)",
         "src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report | publish",
         "deliverables/    the flat-file bundle: every series as plain CSV, plus a data dictionary",
-        "notebooks/       derivation.ipynb (how each series was derived) + chartbook.ipynb (every series plotted)",
+        "notebooks/       derivation.ipynb, chartbook.ipynb, forecasts_{GBR,FRA,DEU}_{expenditure,revenue}.ipynb",
         "tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6) + tests/deliverables",
         "reports/         verification, validation, reconciliation, vintage diff",
         "```",

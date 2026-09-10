@@ -1,5 +1,6 @@
 """ggfiscal CLI (§11.2): fetch | standardise | build | reconcile | validate |
-report | flatten | detect-vintages, plus register/coverage helpers."""
+report | flatten | statistical-forecasts | detect-vintages, plus
+register/coverage helpers."""
 
 from __future__ import annotations
 
@@ -176,6 +177,28 @@ def flatten():
 
     for name, path in write().items():
         typer.echo(f"wrote {name}: {path}")
+
+
+@app.command("statistical-forecasts")
+def statistical_forecasts():
+    """Fit four standard univariate methods (auto.arima, ets, prophet, an
+    unobserved-components model) to each granular line's history as a share
+    of GDP and project to 2031, plus their combination — a benchmark to read
+    the official forecasts against. Writes
+    deliverables/statistical_forecasts.csv. Needs the `forecast` extra."""
+    from ggfiscal.build import build_run_id
+    from ggfiscal.forecast.statistical import write
+
+    dest, notes = write(build_run_id())
+    for note in notes:
+        typer.echo(f"  {note}")
+    import pandas as pd
+    frame = pd.read_csv(dest)
+    typer.echo(f"\nwrote {dest}  ({len(frame)} rows, "
+               f"{frame.groupby(['iso3', 'line_code']).ngroups} series x "
+               f"{frame.method.nunique()} methods)")
+    from ggfiscal import manifest as M
+    M.update_flat_files()
 
 
 @app.command("detect-vintages")
