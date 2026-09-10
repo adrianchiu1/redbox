@@ -42,7 +42,7 @@ def parse_dividend_dates(text: str | None, maturity: pd.Timestamp | None,
                          frequency: int) -> list[tuple[int, int]]:
     """'22 Apr/Oct' -> [(22, 4), (22, 10)]; '25 Jul' -> [(25, 7)]. Falls back
     to the maturity anniversary spread by 12/frequency months."""
-    if text:
+    if isinstance(text, str) and text.strip():
         m = re.match(r"\s*(\d{1,2})\s+([A-Za-z]{3})(?:/([A-Za-z]{3}))*", text)
         if m:
             day = int(m.group(1))
@@ -172,23 +172,25 @@ def _year_bounds(year: int) -> tuple[pd.Timestamp, pd.Timestamp]:
 
 
 def accrued_coupon(security: pd.Series, path: pd.Series, year: int) -> float:
-    """§7.2 actual/actual ICMA on the daily nominal path."""
+    """§7.2 actual/actual ICMA on the daily nominal path: each coupon period
+    overlapping the year contributes coupon/frequency × mean nominal over
+    its days in the year × (days in year / period days)."""
     if security["instrument_class"] in ("bill",) or pd.isna(security.get("coupon_pct")):
         return 0.0
     c = float(security["coupon_pct"]) / 100.0
     f = int(security["coupon_frequency"]) if pd.notna(security.get("coupon_frequency")) else 2
     y0, y1 = _year_bounds(year)
+    yp = path.loc[y0:y1]
+    if yp.empty or float(yp.abs().sum()) == 0.0:
+        return 0.0
     total = 0.0
-    cache: dict[tuple, int] = {}
-    for d in pd.date_range(y0, y1, freq="D"):
-        n = float(path.get(d, 0.0))
-        if n == 0.0:
-            continue
+    d = y0
+    while d <= y1:
         prev, nxt = coupon_period_bounds(security, d)
-        key = (prev, nxt)
-        if key not in cache:
-            cache[key] = (nxt - prev).days
-        total += c / f * n / cache[key]
+        end = min(nxt, y1)
+        seg = yp.loc[d:end]
+        total += c / f * float(seg.sum()) / (nxt - prev).days
+        d = end + pd.Timedelta(days=1)
     return total
 
 
@@ -241,14 +243,19 @@ def bill_discount(security: pd.Series, flows: pd.DataFrame, year: int, basis: st
         return 0.0
     fl = flows[(flows["security_id"] == security["security_id"])
                & (flows["flow_type"].isin(["auction", "tender", "tap", "syndication"]))
-               & flows["cash_lcu_mn"].notna()]
+               & (flows["price_pct"].notna() | flows["cash_lcu_mn"].notna())]
     mat = security.get("maturity_date")
     if fl.empty or pd.isna(mat):
         return 0.0
     y0, y1 = _year_bounds(year)
     total = 0.0
     for _, r in fl.iterrows():
-        disc = float(r["nominal_lcu_mn"]) - float(r["cash_lcu_mn"])
+        # price-based when published: nominal − cash would count a retained
+        # tranche (nominal issued, no cash) as discount
+        if pd.notna(r["price_pct"]):
+            disc = float(r["nominal_lcu_mn"]) * (1.0 - float(r["price_pct"]) / 100.0)
+        else:
+            disc = float(r["nominal_lcu_mn"]) - float(r["cash_lcu_mn"])
         s = pd.Timestamp(r["settlement_date"])
         life = (mat - s).days
         if life <= 0:
@@ -340,7 +347,16 @@ def interest_for_security(security: pd.Series, positions: pd.DataFrame,
                                                      and security["instrument_class"] == "inflation_linked") else None
     rows = []
     for basis in ("accrued", "cash"):
-        coupon = accrued_coupon(security, path, year) if basis == "accrued" else cash_coupon(security, path, year, ir)
+        try:
+            coupon = accrued_coupon(security, path, year) if basis == "accrued" else cash_coupon(security, path, year, ir)
+        except ValueError as e:      # no coupon schedule derivable (undated, no dividend dates)
+            rows.append({
+                "iso3": security["iso3"], "security_id": sid, "year": year, "basis": basis,
+                "coupon_lcu_mn": None, "uplift_lcu_mn": None, "discount_lcu_mn": None,
+                "floating_lcu_mn": None, "premium_discount_amort_lcu_mn": None, "total_lcu_mn": None,
+                "computability": "not_computable", "reference_values_used": None,
+                "derivation": f"{basis}: not computable — {e}", "implied_flows": implied})
+            continue
         up = uplift(security, path, ir, year, basis)
         disc = bill_discount(security, flows, year, basis)
         flo = floating_coupon(security, path, year, reference, basis)

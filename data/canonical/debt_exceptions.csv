@@ -1,10 +1,10 @@
 check_id,severity,scope,message
-V29,SKIP,-,every position and flow references a registered security: per-security register not built (OQ-8)
-V30,SKIP,-,position recurrence per security (implied flows listed): per-security register not built (OQ-8)
-V33,SKIP,-,bucket sums equal class totals: per-security register not built (OQ-8)
-V34,SKIP,-,recomputed vs office index ratio: per-security register not built (OQ-8)
-V36,SKIP,-,not_computable securities carry a DD10 declaration: per-security register not built (OQ-8)
-V40,SKIP,-,market-hands ≤ total; holdings overlay ≤ nominal in issue: per-security register not built (OQ-8)
+V29,WARN,-,0 positions and 0 flows reference unknown securities; 121 securities without a position (issued and redeemed between two year-ends: bills)
+V30,WARN,-,"2274 security-years reproduce snapshot(t) = snapshot(t−1) + Σ flows; 1297 do not; worst: [('DEU', 'DE0001141216', 1997, np.float64(7759.1)), ('DEU', 'DE0001141257', 1998, np.float64(7419.5)), ('DEU', 'DE0001141208', 1997, np.float64(2045.2)), ('DEU', 'DE0001141240', 1998, np.float64(1022.6)), ('DEU', 'DE0001030070', 2009, np.float64(-679.3))]"
+V33,OK,-,"bucket sums equal class totals on 114 (country, year-end, class) cells"
+V34,SKIP,-,office ratios only (no recomputed ratios yet)
+V36,WARN,-,1 securities with not_computable interest (DD10); declared in notes
+V40,OK,-,0 positions with market-hands above nominal
 V31,SKIP,FRA,Eurostat GD_F3 (debt securities) rows not found
 V31,WARN,DEU/1995,"aggregate stock 494,113 vs Eurostat S1311 GD_F3 527,690: -6.36% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
 V31,WARN,DEU/1996,"aggregate stock 525,607 vs Eurostat S1311 GD_F3 561,362: -6.37% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
@@ -38,8 +38,8 @@ V31,WARN,DEU/2023,"aggregate stock 1,630,972 vs Eurostat S1311 GD_F3 1,655,913: 
 V31,WARN,DEU/2024,"aggregate stock 1,676,949 vs Eurostat S1311 GD_F3 1,696,961: -1.18% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
 V31,OK,DEU/2025,"aggregate stock 1,773,391 vs Eurostat S1311 GD_F3 1,789,103: -0.88% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
 V31,OK,GBR,aggregate gilt and bill stocks are the ONS PSA8A_1 rows themselves (same source); independent cross-check awaits the DMO register
-V32,OK,interest,official_total = carried + Σ items + residual on all 488 steps
-V32,OK,financing,official_total = carried + Σ items + residual on all 488 steps
+V32,OK,interest,official_total = carried + Σ items + residual on all 492 steps
+V32,OK,financing,official_total = carried + Σ items + residual on all 492 steps
 V35,OK,GBR/C_s13_gf01_7,step C equals the package's series on 39 years
 V35,OK,GBR/C_s13_nlb,step C equals the package's series on 36 years
 V35,OK,FRA/C_s13_gf01_7,step C equals the package's series on 48 years

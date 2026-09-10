@@ -48,7 +48,7 @@ def check_register_stage() -> list[Finding]:
     orphan = [k for k in keys if pos is None or k not in set(zip(pos["iso3"], pos["security_id"]))]
     out.append(Finding("V29", "ERROR" if (bad_p or bad_f) else ("WARN" if orphan else "OK"), "-",
                        f"{len(bad_p)} positions and {len(bad_f)} flows reference unknown securities; "
-                       f"{len(orphan)} securities without a position"))
+                       f"{len(orphan)} securities without a position (issued and redeemed between two year-ends: bills)"))
     # V30 recurrence: year-end snapshot(t) vs snapshot(t-1) + Σ flows
     tol_abs = config.debt()["tolerances"]["v30_recurrence_abs_mn"]
     tol_pct = config.debt()["tolerances"]["v30_recurrence_pct"] / 100
@@ -61,6 +61,9 @@ def check_register_stage() -> list[Finding]:
         n_ok = n_bad = 0
         worst = []
         ye = pos[(pos["as_of"].dt.month == 12) & (pos["as_of"].dt.day == 31)]
+        first_flow = flows.groupby("iso3")["settlement_date"].min()
+        # only years the flow record covers (DEU auctions start 1999)
+        ye = ye[[d >= first_flow.get(i, pd.Timestamp.max) for i, d in zip(ye["iso3"], ye["as_of"])]]
         for (iso3, sid), g in ye.groupby(["iso3", "security_id"]):
             g = g.sort_values("as_of")
             f = flows[(flows["iso3"] == iso3) & (flows["security_id"] == sid)]

@@ -135,6 +135,12 @@ def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
                 for _, r in r_y.iterrows():
                     items.append(ChainItem("register", f"sum_{r['instrument_class']}", float(r["value_lcu_mn"]),
                                            "computed", "ggfiscal.debt.register", str(r["basis"])))
+                if register_sums is not None:
+                    br = register_sums[(register_sums["chain"] == f"{chain}_bridge_A")
+                                       & (register_sums["iso3"] == iso3) & (register_sums["year"] == year)]
+                    for _, r in br.iterrows():
+                        items.append(ChainItem(STEP_A[chain], str(r["instrument_class"]), float(r["value_lcu_mn"]),
+                                               "computed", "ggfiscal.debt.register", str(r["basis"])))
             else:
                 for klass, g in _register_rows(iso3, measure, a_y[a_y["in_register"]]).groupby("instrument_class"):
                     items.append(ChainItem("register", f"sum_{klass}", float(g["value_lcu_mn"].sum()),
@@ -152,7 +158,18 @@ def build_chain(chain: str, aggregates: pd.DataFrame, totals: pd.DataFrame,
                                            str(g["source_id"].iloc[0]), str(g["basis"].iloc[0])))
             if chain == "financing" and iso3 == "DEU":
                 items += _deu_nka_items(int(year))
-                if not any(it.item.startswith("nka_") for it in items):
+                if len(r_y):
+                    # computed register counts auctions at total volume (incl.
+                    # the tranche retained for market management); the cash
+                    # actually raised differs by the change in the Bund's own
+                    # book — an official aggregate from the office
+                    own = aggregates[(aggregates["iso3"] == "DEU") & (aggregates["measure"] == "own_holdings")]
+                    own = own.set_index("year")["value_lcu_mn"]
+                    if year in own.index and (year - 1) in own.index:
+                        items.append(ChainItem(STEP_A[chain], "own_holdings_change",
+                                               -(float(own[year]) - float(own[year - 1])), "official",
+                                               "BMF_DATENPORTAL", "nominal"))
+                elif not any(it.item.startswith("nka_") for it in items):
                     own = aggregates[(aggregates["iso3"] == "DEU") & (aggregates["measure"] == "own_holdings")]
                     own = own.set_index("year")["value_lcu_mn"]
                     if year in own.index and (year - 1) in own.index:

@@ -152,5 +152,21 @@ def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
             rows.append({"iso3": iso3, "year": int(year), "chain": "financing",
                          "instrument_class": klass, "value_lcu_mn": float(g["_v"].sum()),
                          "n_securities": int(g["security_id"].nunique()), "basis": "nominal"})
+    # step-A bridge for the interest chain: premia/discounts realised at
+    # issue (the ministries' cash interest books agio/disagio at value
+    # date; the register's cash coupons do not) — Σ (price − 100)/100 ×
+    # nominal placed, per year, sign such that a premium REDUCES interest
+    if len(fl):
+        priced = fl[fl["price_pct"].notna() & fl["flow_type"].isin(["auction", "syndication", "tap", "tender"])].copy()
+        if len(priced):
+            ret = fl[fl["flow_type"] == "retention"].groupby(["iso3", "security_id", "settlement_date"])["nominal_lcu_mn"].sum()
+            placed = priced["nominal_lcu_mn"] - [ret.get((a, b, d), 0.0) for a, b, d in
+                                                  zip(priced["iso3"], priced["security_id"], priced["settlement_date"])]
+            priced["_prem"] = -(priced["price_pct"] - 100.0) / 100.0 * placed
+            for (iso3, year), g in priced.groupby(["iso3", "year"]):
+                rows.append({"iso3": iso3, "year": int(year), "chain": "interest_bridge_A",
+                             "instrument_class": "issue_premium_at_value_date",
+                             "value_lcu_mn": float(g["_prem"].sum()), "n_securities": int(g["security_id"].nunique()),
+                             "basis": "cash"})
     return pd.DataFrame(rows, columns=["iso3", "year", "chain", "instrument_class",
                                        "value_lcu_mn", "n_securities", "basis"])
