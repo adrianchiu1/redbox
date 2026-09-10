@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-09 18:36 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-10 00:29 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -97,15 +97,22 @@ The same numbers as above, rendered flat by `ggfiscal flatten` — no value is r
 | `deliverables/weo_levels_bridge.csv` | 398 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
 | `deliverables/weo_reconciliation.csv` | 5995 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
 | `deliverables/series_catalogue.csv` | 72 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
-| `deliverables/data_dictionary.csv` | 302 | every column of every file above, described |
+| `deliverables/data_dictionary.csv` | 417 | every column of every file above, described |
 | `deliverables/strict_GBR.csv` | 66 | United Kingdom, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_FRA.csv` | 106 | France, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_DEU.csv` | 80 | Germany, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
-| `deliverables/debt_reference_series.csv` | 126888 | guide to the bundle |
+| `deliverables/debt_reference_series.csv` | 137169 | guide to the bundle |
 | `deliverables/debt_official_totals.csv` | 732 | guide to the bundle |
 | `deliverables/debt_class_aggregates.csv` | 5045 | guide to the bundle |
-| `deliverables/debt_interest_reconciliation.csv` | 1706 | guide to the bundle |
-| `deliverables/debt_financing_reconciliation.csv` | 3152 | guide to the bundle |
+| `deliverables/debt_interest_reconciliation.csv` | 1778 | guide to the bundle |
+| `deliverables/debt_financing_reconciliation.csv` | 3156 | guide to the bundle |
+| `deliverables/debt_securities.csv` | 1654 | guide to the bundle |
+| `deliverables/debt_positions.csv` | 5348 | guide to the bundle |
+| `deliverables/debt_flows.csv` | 6163 | guide to the bundle |
+| `deliverables/debt_index_ratios.csv` | 31102 | guide to the bundle |
+| `deliverables/debt_interest_by_security.csv` | 13866 | guide to the bundle |
+| `deliverables/debt_maturity_profile.csv` | 536 | guide to the bundle |
+| `deliverables/debt_issuance_by_bucket.csv` | 314 | guide to the bundle |
 | `deliverables/README.md` | — | guide to the bundle |
 
 ## Debt in issue (DEBT_KICKOFF.md)
@@ -118,7 +125,7 @@ Years with a published residual per step (interest A/B/C, financing A/B/C) and t
 |---|---|---|---|---|---|---|---|
 | GBR | 2009–2024 | 2009–2024 | 1987–2025 | 1997–2025 | 1998–2025 | 1997–2025 | 1975–2026 |
 | FRA | — | — | 1995–2025 | — | 2001–2025 | 1995–2025 | 2000–2025 |
-| DEU | 1996–2025 | 1996–2025 | 1995–2025 | 2009–2025 | 1996–2025 | 1995–2025 | 1995–2025 |
+| DEU | 1996–2025 | 1995–2025 | 1995–2025 | 2009–2025 | 1996–2025 | 1995–2025 | 1995–2025 |
 
 ## Coverage (66 line series)
 

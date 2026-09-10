@@ -5,9 +5,9 @@ Rewritten 2026-09-09, end of session 7 (the debt-in-issue extension, on
 
 ## Current stage
 
-**Debt extension (DEBT_KICKOFF.md v1.0): D0, D1 and the DD8 aggregate
-version of D2–D5 complete (D-S10-002/003); the per-security register
-itself is blocked on the debt-office hosts (OQ-8).** The parent
+**Debt extension (DEBT_KICKOFF.md v1.0): D0–D5 complete for Germany on the
+per-security register (D-S10-004); UK and France run on the DD8 aggregate
+layer until the DMO and AFT files arrive (OQ-8: interactive captchas).** The parent
 package is untouched except: `config.sources()` now merges
 `config/debt_sources.yaml`; the snapshot store names pdf/html extensions;
 pypdf and cffi are dependencies. Parent baseline still 120 passed (the
@@ -35,6 +35,18 @@ rerun alone).
   closes and what remains residual.
 - Tests: `tests/debt` 152 passed, 6 skipped; parent suite unchanged.
 
+## Session 8 (2026-09-10) in brief
+
+- All domains allowlisted. Finanzagentur harvested in full; `register_deu.py`
+  (readers/finanzagentur.py) builds the German register; `register.py`
+  assembles interest by security, maturity profile, issuance by bucket and
+  the computed register sums; chains switch to them per country-year.
+- ECB/Bundesbank family: €STR, Euribor, EONIA, DFR, Bund 10y.
+- DMO/AFT: `browser.py` (committee-authorised) cleared both challenges once;
+  after debugging visits both sites now serve captchas — stopped.
+- `tests/debt` 187 passed, 6 skipped; deliverables 30 passed; bundle carries
+  the seven register tables (Germany populated).
+
 ## Blocked on whom
 
 - **OQ-8 (committee)**: allowlist `www.dmo.gov.uk`, `www.aft.gouv.fr`,
@@ -52,8 +64,9 @@ ggfiscal debt build            # reference series + official totals
 python3 -m pytest tests/debt -q
 ```
 
-Next build steps, in order, once OQ-8 is resolved or files arrive via
-`ggfiscal ingest-file`: (1) DEU first — the Finanzagentur's per-ISIN annual
+Next build steps once the DMO/AFT files arrive (`DOWNLOAD_LIST.md` →
+`data/incoming/` → `ggfiscal debt ingest-incoming`, or a cooled-off
+`browser.py` pass): (1) DEU is DONE — use `register_deu.py` as the template — the Finanzagentur's per-ISIN annual
 list since 1995 + Emissionshistorie → `debt_securities/positions/flows`,
 `interest.py` per security, V29–V31/V33/V34 wired in `debt/validate.py`,
 register items in `chains.py` switched from aggregates to computed sums

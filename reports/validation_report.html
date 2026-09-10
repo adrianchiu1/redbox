@@ -1,7 +1,7 @@
 <html><head><meta charset='utf-8'><title>gg-fiscal validation report</title><style>body{font-family:sans-serif;margin:2em;max-width:75em}table{border-collapse:collapse;margin:1em 0}td,th{border:1px solid #ccc;padding:0.3em 0.6em;text-align:left;font-size:0.9em}.ERROR{background:#fdd}.WARN{background:#ffedcc}.OK{background:#e8f5e9}.SKIP{background:#eee}</style></head><body>
 <h1>Validation report — §10 suite</h1>
-<p>Generated 2026-09-09 18:36 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
-<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>911</td><td class='OK'>55</td><td class='SKIP'>0</td></tr></table>
+<p>Generated 2026-09-10 00:29 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
+<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>907</td><td class='OK'>55</td><td class='SKIP'>0</td></tr></table>
 <p><b>No ERROR findings: the gate holds.</b></p>
 <p>The WARN tiers are intended visibility, not defects: documented concept wedges (V1/V21/V25 crosswalk and perimeter differences), the withheld AMECO→DSM interest join flagged for the committee (V16, OQ-7), blocked register URLs (V18, OQ-6), stitch diagnostics at their measured C/D grades (V5), and raw snapshot bytes of earlier sessions not synced into this container (S0_SNAPSHOTS, by design D-S0-004 — provenance lives in the hash manifest).</p>
 <h2>Per-check outcomes</h2>
@@ -20,7 +20,7 @@
 <tr><td>V15</td><td>forecast: covered sums ≤ envelope × (1 + tol)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V16</td><td>short/long-term overlap divergence</td><td class='WARN'>WARN</td><td></td><td>5</td><td>2</td><td></td></tr>
 <tr><td>V17</td><td>coverage_share_year on every proxy/composite row</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>V18</td><td>register URLs resolve or archived copy present</td><td class='WARN'>WARN</td><td></td><td>19</td><td></td><td></td></tr>
+<tr><td>V18</td><td>register URLs resolve or archived copy present</td><td class='WARN'>WARN</td><td></td><td>15</td><td></td><td></td></tr>
 <tr><td>V19</td><td>GF01_X + GF01_7 = GF01; GF01_X never forecast</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V2</td><td>history: Σ GF01–GF10 = TE (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V20</td><td>interest rows carry concept_flag; strict rows gross</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
@@ -104,7 +104,7 @@
 <tr class='WARN'><td>FRA/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>DEU/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 </table>
-<h3>V18 — 19 WARNs: register URLs resolve or archived copy present</h3><table><tr><th>scope</th><th>message</th></tr>
+<h3>V18 — 15 WARNs: register URLs resolve or archived copy present</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>register/INSEE_APU</td><td>no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)</td></tr>
 <tr class='WARN'><td>register/DESTATIS_81000</td><td>no archived copy and unresolved URL (status: unverified; Stage 2 concern)</td></tr>
 <tr class='WARN'><td>register/FRA_LPFP_PSTAB</td><td>no URL recorded and no archived copy (status: not_machine_readable; PDF-only publication; §11.4 second keying unavailable to a single-agent session (OQ-5 precedent)</td></tr>
@@ -113,17 +113,13 @@
 <tr class='WARN'><td>register/FRA_LFSS</td><td>no URL recorded and no archived copy (status: not_machine_readable; annex PDFs only (§11.4 blocked)</td></tr>
 <tr class='WARN'><td>register/DEU_BMAS_RVB</td><td>no URL recorded and no archived copy (status: blocked; bmas.de CONNECT denied by the egress policy (OQ-6))</td></tr>
 <tr class='WARN'><td>register/DEU_BMF_FINPLAN</td><td>no URL recorded and no archived copy (status: not_machine_readable; Finanzplan is PDF-only (§11.4 blocked)</td></tr>
-<tr class='WARN'><td>register/UK_DMO_GILTS</td><td>no URL recorded and no archived copy (status: blocked; egress proxy denies www.dmo.gov.uk, pwlb.gov.uk, crnd.gov.uk, data.gov.uk and web.archive.org (OQ-8); report codes verified by search; D1A XML schema verified from a cached payload)</td></tr>
 <tr class='WARN'><td>register/UK_DMO_BILLS</td><td>no URL recorded and no archived copy (status: blocked)</td></tr>
 <tr class='WARN'><td>register/FRA_AFT_ENCOURS</td><td>no archived copy and unresolved URL (status: blocked; aft.gouv.fr, data.gouv.fr (all subdomains), webstat.banque-france.fr, budget.gouv.fr blocked (OQ-8); historical month-by-month register exists only as the Bulletin mensuel PDF archive (~1990-, inferred from numbering))</td></tr>
 <tr class='WARN'><td>register/FRA_AFT_ADJUDICATIONS</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
 <tr class='WARN'><td>register/FRA_AFT_INDEXATION</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
 <tr class='WARN'><td>register/FRA_AFT_FINANCEMENT</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
 <tr class='WARN'><td>register/FRA_PLF_P117</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
-<tr class='WARN'><td>register/DEU_FINANZAGENTUR</td><td>no archived copy and unresolved URL (status: blocked; deutsche-finanzagentur.de, bundesbank.de, genesis.destatis.de blocked (OQ-8))</td></tr>
-<tr class='WARN'><td>register/ECB_EMMI_RATES</td><td>no URL recorded and no archived copy (status: blocked)</td></tr>
 <tr class='WARN'><td>register/BDF_WEBSTAT</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
-<tr class='WARN'><td>register/BBK_KAPITALMARKT</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
 </table>
 <h3>V21 — 30 WARNs: Level II GF01.7 vs D.41 payable within 5%</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>FRA/1999</td><td>Level II 01.7 vs D.41 payable diff 5.44% &gt; 5.0%</td></tr>
