@@ -10,17 +10,23 @@ sources:
     trees: [debt]
     countries: [GBR]
     role: debt_register
-    api: {kind: umbraco_report, base: "https://www.dmo.gov.uk/data/", export: "https://www.dmo.gov.uk/data/ExportReport?reportCode={code}", xml: "https://www.dmo.gov.uk/data/XmlDataReport?reportCode={code}",
-          cob: "https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode={code}&exportFormatValue=xls&parameters=&COBDate={dd}%2F{mm}%2F{yyyy}"}
-    verification: {status: blocked, checked: 2026-09-09, note: "egress proxy denies www.dmo.gov.uk, pwlb.gov.uk, crnd.gov.uk, data.gov.uk and web.archive.org (OQ-8); report codes verified by search; D1A XML schema verified from a cached payload"}
+    api: {kind: umbraco_report, base: "https://www.dmo.gov.uk/data/",
+          export: "https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode={code}&exportFormatValue={xml|xls}&parameters=&COBDate=",
+          xml: "https://www.dmo.gov.uk/data/XmlDataReport?reportCode={code}",
+          formats: {D1A: xml, D2.1E: xml, D4L: xml, D10C: xml, D1C: xls, D2.1A: xls, D2.1PROF7: xls, D2.1PROF9: xls, D10A: xls, D8B: xls},
+          not_exportable: [D1D, D5I, D9C],
+          cob: "the COBDate parameter is ignored by the xml export and answered with a stub by the xls export (verified 2026-09-10); year-end snapshots are rolled from the D2.1E operations instead"}
+    verification: {status: verified, checked: 2026-09-10, note: "reachable through the package's browser session (Radware ShieldSquare clears for the export endpoint; the HTML report pages re-challenge); each report exports in exactly one presentation type, every other pair returns the 35-byte stub 'Unable to fulfil the report request', which the family refuses; 14 reports snapshotted 2026-09-10"}
   UK_DMO_BILLS:
     institution: UK Debt Management Office
     object: "Treasury bill tender results and stock: D2.2A, D2.2D, D2.2E, D2.2G"
     trees: [debt]
     countries: [GBR]
     role: debt_register
-    api: {kind: umbraco_report, base: "https://www.dmo.gov.uk/data/"}
-    verification: {status: blocked, checked: 2026-09-09}
+    api: {kind: umbraco_report, base: "https://www.dmo.gov.uk/data/",
+          export: "https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode={code}&exportFormatValue={xml|xls}&parameters=&COBDate=",
+          formats: {D2.2D: xml, D2.2E: xls, D2.2G: xls}, not_exportable: [D2.2A]}
+    verification: {status: verified, checked: 2026-09-10, note: "as UK_DMO_GILTS; D2.2D tender history 2000-04 onward is the bills register, D2.2G the monthly stock cross-check"}
   BOE_APF:
     institution: Bank of England
     object: "Asset Purchase Facility gilt operations per ISIN: purchases (2009-03-), sales (2022-11-), financial-stability purchases and sales (2022), maturity profile by gilt"

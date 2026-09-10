@@ -91,6 +91,17 @@ tolerances:
 # alternatives; the first whose members all exist in a year is used, so a
 # source's own total is never added to its own components. `all` = every
 # in-register row (DEU: the BMF leaves are disjoint).
+# How a COMPUTED register (register_{iso3}.py) enters the chains: the basis
+# of its interest sum (the ministry's step-A book decides: BMF cash with
+# agio/disagio at value date; the UK NLF accounts are accruals-based, uplift
+# and discounts included) and the step-A bridge items the register itself
+# supplies (register.register_sums). Bridges are computed from the register,
+# never declared.
+register_chain_items:
+  DEU: {interest_basis: cash, interest_bridge_A: [issue_premium_at_value_date, accrued_interest_received_at_issue], financing_bridge_A: []}
+  GBR: {interest_basis: accrued, interest_bridge_A: [], financing_bridge_A: [issuance_cash_less_nominal]}
+  FRA: {interest_basis: cash, interest_bridge_A: [], financing_bridge_A: []}
+
 register_selection:
   DEU:
     interest: [all]

@@ -150,7 +150,38 @@ as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
 stop. The V5-style diagnostics and both sources' snapshots are in place; no
 code change needed for any option.
 
-## OQ-8 — Debt-office hosts: allowlisted 2026-09-10; DMO and AFT now behind interactive captchas (updated; see D-S10-004)
+## OQ-8 — Debt-office hosts: DMO reachable and harvested; AFT still needs the desktop run (updated 2026-09-10 pm; see D-S10-005)
+
+**Update 2026-09-10 (afternoon).** The DMO's export endpoint clears the
+challenge for the package's browser session (`ggfiscal debt fetch --family
+debt_offices`): 14 reports snapshotted, the UK register is built. Two
+residual asks: (a) **AFT** — run `python tools/harvest_offices_local.py
+--only aft` on a desktop, commit `data/incoming/`, then `ggfiscal debt
+ingest-incoming`; (b) **DMO year-end positions** — on the Gilts in Issue page
+pick a past close-of-business date, right-click the Excel/XML icon and send
+the link (the `COBDate` parameter is ignored by the xml export and answered
+with a stub by the xls export; the page's own link must carry the date
+elsewhere). Not blocking: positions are rolled from the operations record and
+verified against the office's anchors (D-S10-005).
+
+## OQ-9 — UK gilts held inside central government: the ONS/DMR gilt stock is consolidated, the DMO's register is gross (raised 2026-09-10, D-S10-005)
+The register's conventional gilts exceed HMT DMR table A.1 and ONS PSA8A_1
+BKPM by 150–171 £bn (8%) at end-2023/2024/2025, and the ONS gilt stock by
+7–17% from 2008, while the index-linked unindexed nominal matches the DMR to
+the million. The ONS series (F.332 at nominal, consolidated within S.1311)
+and the DMR table net out gilts held by central-government bodies — the Debt
+Management Account, the CRND funds (National Insurance Fund etc.) and others;
+the register carries the DMO's gross creation, as DD1 requires. The same
+wedge appears in the financing chain (ONS F.332 net financing vs Σ register
+issuance: −57 £bn in 2022, −63/−40 in 2008/2009). **Ask:** is an official
+series of gilts held by CG bodies (by year, ideally by ISIN) known to the
+committee — the DMA's annual accounts, the CRND accounts, or the ONS PSF
+methodology's consolidation table? With it the wedge becomes a DD11 holdings
+overlay and an official step-A item; without it the residual stays published
+as it is now.
+
+Earlier update (kept):
+## OQ-8 (morning) — Debt-office hosts: allowlisted 2026-09-10; DMO and AFT behind interactive captchas (see D-S10-004)
 
 **Update 2026-09-10.** The committee allowlisted every domain. Finanzagentur,
 Bundesbank, ECB, Banque de France and budget.gouv.fr are reachable on plain

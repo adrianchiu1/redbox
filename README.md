@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-10 00:29 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-10 08:38 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -104,28 +104,36 @@ The same numbers as above, rendered flat by `ggfiscal flatten` — no value is r
 | `deliverables/debt_reference_series.csv` | 137169 | guide to the bundle |
 | `deliverables/debt_official_totals.csv` | 732 | guide to the bundle |
 | `deliverables/debt_class_aggregates.csv` | 5045 | guide to the bundle |
-| `deliverables/debt_interest_reconciliation.csv` | 1778 | guide to the bundle |
-| `deliverables/debt_financing_reconciliation.csv` | 3156 | guide to the bundle |
-| `deliverables/debt_securities.csv` | 1654 | guide to the bundle |
-| `deliverables/debt_positions.csv` | 5348 | guide to the bundle |
-| `deliverables/debt_flows.csv` | 6163 | guide to the bundle |
-| `deliverables/debt_index_ratios.csv` | 31102 | guide to the bundle |
-| `deliverables/debt_interest_by_security.csv` | 13866 | guide to the bundle |
-| `deliverables/debt_maturity_profile.csv` | 536 | guide to the bundle |
-| `deliverables/debt_issuance_by_bucket.csv` | 314 | guide to the bundle |
+| `deliverables/debt_interest_reconciliation.csv` | 1951 | guide to the bundle |
+| `deliverables/debt_financing_reconciliation.csv` | 3344 | guide to the bundle |
+| `deliverables/debt_securities.csv` | 3401 | guide to the bundle |
+| `deliverables/debt_positions.csv` | 9856 | guide to the bundle |
+| `deliverables/debt_flows.csv` | 14336 | guide to the bundle |
+| `deliverables/debt_index_ratios.csv` | 41664 | guide to the bundle |
+| `deliverables/debt_interest_by_security.csv` | 26166 | guide to the bundle |
+| `deliverables/debt_maturity_profile.csv` | 1401 | guide to the bundle |
+| `deliverables/debt_issuance_by_bucket.csv` | 794 | guide to the bundle |
 | `deliverables/README.md` | — | guide to the bundle |
 
 ## Debt in issue (DEBT_KICKOFF.md)
 
-The debt extension adds the central-government debt-securities register and two reconciliation chains — **interest**: Σ register by instrument class → finance-ministry interest → S.1311 D.41 → `GF01_7`; **financing**: Σ net issuance → CG net cash requirement → S.1311 net borrowing → `NLB` — each step carrying its official bridge items and a published residual (never allocated), plus the reference series (RPI, CPI/HICP ex-tobacco, SONIA, Bank Rate, money-market rates, BoE curves). While the debt-office hosts are blocked (OQ-8) the register step is the ministries' own instrument-class aggregates (DD8); the per-security engine, schemas and tests are in place for when they open. Files: `deliverables/debt_*.csv`; notebook: [`notebooks/debtbook.ipynb`](notebooks/debtbook.ipynb).
+The debt extension adds the central-government debt-securities register and two reconciliation chains — **interest**: Σ register by instrument class → finance-ministry interest → S.1311 D.41 → `GF01_7`; **financing**: Σ net issuance → CG net cash requirement → S.1311 net borrowing → `NLB` — each step carrying its official bridge items and a published residual (never allocated), plus the reference series (RPI, CPI/HICP ex-tobacco, SONIA, Bank Rate, money-market rates, BoE curves). The register step is the computed per-security register where one is built (Germany from the Finanzagentur files, the United Kingdom from the DMO reports: every security, its year-end positions, operations and index ratios, interest per security on both bases, the maturity profile and issuance by residual-maturity bucket) and the ministries' own instrument-class aggregates (DD8) elsewhere (France, until the AFT files arrive — OQ-8). Files: `deliverables/debt_*.csv`; notebook: [`notebooks/debtbook.ipynb`](notebooks/debtbook.ipynb).
 
 Years with a published residual per step (interest A/B/C, financing A/B/C) and the aggregate layer's span:
 
 | country | int A | int B | int C | fin A | fin B | fin C | aggregates |
 |---|---|---|---|---|---|---|---|
-| GBR | 2009–2024 | 2009–2024 | 1987–2025 | 1997–2025 | 1998–2025 | 1997–2025 | 1975–2026 |
+| GBR | 2009–2024 | 1987–2025 | 1987–2025 | 1997–2025 | 1998–2025 | 1990–2025 | 1975–2026 |
 | FRA | — | — | 1995–2025 | — | 2001–2025 | 1995–2025 | 2000–2025 |
 | DEU | 1996–2025 | 1995–2025 | 1995–2025 | 2009–2025 | 1996–2025 | 1995–2025 | 1995–2025 |
+
+Per-security register (stage D2–D4) per country:
+
+| country | securities | classes | year-end positions | flows | register source |
+|---|---|---|---|---|---|
+| GBR | 1,747 | bill 1406, fixed_bullet 283, inflation_linked 56, floating 2 | 1981–2025 (4,404 rows) | 8,173 (1981–2027) | UK_DMO_BILLS, UK_DMO_GILTS |
+| FRA | — | — | — | — | aggregate layer only (OQ-8) |
+| DEU | 1,654 | other 859, fixed_bullet 400, bill 384, inflation_linked 9, floating 2 | 1995–2025 (5,256 rows) | 6,163 (1996–2026) | DEU_FINANZAGENTUR |
 
 ## Coverage (66 line series)
 

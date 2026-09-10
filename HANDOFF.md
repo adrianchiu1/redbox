@@ -1,85 +1,102 @@
 # HANDOFF.md
 
-Rewritten 2026-09-09, end of session 7 (the debt-in-issue extension, on
+Rewritten 2026-09-10, end of session 9 (the debt-in-issue extension, on
 `claude/stoic-dijkstra-bc42s1` branched from the merged `main` at 6441366).
 
 ## Current stage
 
-**Debt extension (DEBT_KICKOFF.md v1.0): D0–D5 complete for Germany on the
-per-security register (D-S10-004); UK and France run on the DD8 aggregate
-layer until the DMO and AFT files arrive (OQ-8: interactive captchas).** The parent
-package is untouched except: `config.sources()` now merges
+**Debt extension (DEBT_KICKOFF.md v1.0): D0–D5 complete on the per-security
+register for Germany (D-S10-004) and the United Kingdom (D-S10-005); France
+runs on the DD8 aggregate layer until the AFT files arrive (OQ-8).** The
+parent package is untouched except: `config.sources()` merges
 `config/debt_sources.yaml`; the snapshot store names pdf/html extensions;
-pypdf and cffi are dependencies. Parent baseline still 120 passed (the
+pypdf, cffi, bs4 are dependencies. Parent baseline still 120 passed (the
 three validation tests are order-sensitive when a build runs concurrently —
 rerun alone).
 
-## What session 7 did (D-S10-001/002)
+## What session 9 did (D-S10-005)
 
-- `DEBT_SCOPING.md` (source findings, design, Q-D1–Q-D11) → committee
-  accepted defaults → `DEBT_KICKOFF.md` v1.0 (DD1–DD13, V29–V40, D0–D5).
-- `ggfiscal.debt`: family pull registry + `debt fetch`; four reachable
-  families harvested (138 pulls, all OK) with readers and 57 family tests;
-  `debt_offices` family defined but denied by egress.
-- Engines (pure, unit-tested): §7 interest (both bases, uplift, bills,
-  floaters, premium/discount), DD7 maturity buckets and issuance-by-
-  residual-maturity, §8 chain assembler with V32 additivity.
-- `debt build` → `data/canonical/debt_reference_series.csv` (350 series),
-  `debt_official_totals.csv`, `debt_class_aggregates.csv` (DEU 1995–,
-  GBR 1975/1997–, FRA 2000–), `debt_interest_reconciliation.csv`,
-  `debt_financing_reconciliation.csv`; `debt validate` → V29–V40;
-  `flatten` copies the five tables into `deliverables/` with dictionary
-  rows; `notebooks/debtbook.ipynb` (45 cells, 330 KB) walks the chains.
-- Bridge items (`debt/bridges.py`): ONS REC2/PSA7C/PSA6J/PSA2, Eurostat
-  EDP stock-flow items, BMF annex 4.10 derivation; see D-S10-003 for what
-  closes and what remains residual.
-- Tests: `tests/debt` 152 passed, 6 skipped; parent suite unchanged.
+- **DMO access.** The export endpoint clears the ShieldSquare challenge for
+  `browser.py`; each report exports in exactly one presentation type
+  (`families/debt_offices.DMO_FORMATS`), every other request returns a
+  35-byte stub that the family, `ingest-incoming` and the desktop script now
+  refuse. 14 reports snapshotted; D1D/D5I/D9C/D2.2A export in no format; the
+  `COBDate` year-end snapshots do not work by URL.
+- **`readers/dmo.py` + `register_gbr.py`**: 1,747 securities, 4,404 year-end
+  positions 1981–2025 rolled from the operations record and anchored on D1A
+  (in issue) / D1C (nominal at redemption), 8,173 flows, 10,562 index-ratio
+  points recomputed from the ONS RPI (D10C reproduced to 5 dp). Recurrence
+  exact on 3,499 year-end pairs; IL unindexed nominal = DMR to the million
+  2023–2025; conventional gilts 8% above the consolidated ONS/DMR stock
+  (OQ-9).
+- **Chains**: `config/debt.yaml` `register_chain_items` — the register's
+  interest basis and step-A bridges per country (GBR accrued, no value-date
+  items; DEU cash with the two BMF items); new financing bridge
+  `issuance_cash_less_nominal`. UK interest step A within ±3.3 £bn 2010–2024
+  (three years 5–8); financing step A within ±13 £bn except 2022 and
+  2008–09 (OQ-9 wedge).
+- Tests: `tests/debt` 200 passed, 6 skipped (13 new GBR); deliverables and
+  README regenerated; notebook re-executed with a register section.
 
-## Session 8 (2026-09-10) in brief
+## Sessions 7–8 in brief
 
-- All domains allowlisted. Finanzagentur harvested in full; `register_deu.py`
-  (readers/finanzagentur.py) builds the German register; `register.py`
+- Session 7: `DEBT_SCOPING.md` → `DEBT_KICKOFF.md` v1.0; `ggfiscal.debt`
+  families, engines (§7 interest, DD7 maturity, §8 chain assembler), the
+  aggregate layer, chains, validate, flatten, notebook (D-S10-001/002/003).
+- Session 8: Finanzagentur harvested; `register_deu.py`; `register.py`
   assembles interest by security, maturity profile, issuance by bucket and
-  the computed register sums; chains switch to them per country-year.
-- ECB/Bundesbank family: €STR, Euribor, EONIA, DFR, Bund 10y.
-- DMO/AFT: `browser.py` (committee-authorised) cleared both challenges once;
-  after debugging visits both sites now serve captchas — stopped.
-- `tests/debt` 187 passed, 6 skipped; deliverables 30 passed; bundle carries
-  the seven register tables (Germany populated).
+  the computed register sums; ECB/Bundesbank family (D-S10-004).
 
 ## Blocked on whom
 
-- **OQ-8 (committee)**: allowlist `www.dmo.gov.uk`, `www.aft.gouv.fr`,
-  `www.deutsche-finanzagentur.de` (+ Bundesbank, ECB, Banque de France,
-  budget.gouv.fr, bdm.insee.fr). Fallback: hand-download the `DEBT_SCOPING.md`
-  §6 lists and `ggfiscal ingest-file` with the part names documented in
-  `src/ggfiscal/debt/families/debt_offices.py`.
+- **OQ-8 (committee)**: AFT files — `python tools/harvest_offices_local.py
+  --only aft` on a desktop, commit `data/incoming/`, then `ggfiscal debt
+  ingest-incoming`; and, when convenient, the DMO page's own export link for
+  a past close-of-business date (DOWNLOAD_LIST.md).
+- **OQ-9 (committee)**: an official series of gilts held by CG bodies (DMA,
+  CRND) would turn the register-vs-ONS wedge into a holdings overlay.
 - Q-D7 (committee, later): PDF extraction rule for pre-register years.
 
 ## Exact next command
 
 ```
-ggfiscal debt fetch            # re-harvest (all families; debt_offices will FAIL until OQ-8)
-ggfiscal debt build            # reference series + official totals
+ggfiscal debt fetch --family debt_offices   # DMO through the browser session; AFT will FAIL until OQ-8
+ggfiscal debt build && ggfiscal debt validate && ggfiscal flatten
 python3 -m pytest tests/debt -q
 ```
 
-Next build steps once the DMO/AFT files arrive (`DOWNLOAD_LIST.md` →
-`data/incoming/` → `ggfiscal debt ingest-incoming`, or a cooled-off
-`browser.py` pass): (1) DEU is DONE — use `register_deu.py` as the template — the Finanzagentur's per-ISIN annual
-list since 1995 + Emissionshistorie → `debt_securities/positions/flows`,
-`interest.py` per security, V29–V31/V33/V34 wired in `debt/validate.py`,
-register items in `chains.py` switched from aggregates to computed sums
-(the aggregate rows become V31/V39); (2) GBR from D1A/D1C/D2.1E/D5I with
-the COBDate month-end loop (`families/debt_offices.cob_pulls`); (3) FRA
-from the AFT Excel files; (4) the maturity profile and issuance-by-bucket
-tables (`maturity.py` is ready) and the flatten/notebook additions. Without
-OQ-8, the remaining reachable improvements are small: DEU S.1311 perimeter
-items at financing step B (FMS-Wertmanagement), a GBR interest step-B
-bridge if the OBR debt-interest split becomes reachable.
+Next build steps: (1) FRA from the AFT Excel files once ingested —
+`register_fra.py` on the `register_gbr.py` / `register_deu.py` pattern
+(encours détaillé per line = positions; adjudications = flows; the OATi/OAT€i
+coefficient files or the recomputation from `FR_CPI_XT` / `EA_HICP_XT` =
+ratios); (2) per-ISIN APF holdings from the BOE_APF snapshots into
+`official_holdings_lcu_mn` (DD11); (3) the LIBID fixings for the two
+floating-rate gilts if a source appears (DD10).
 
 ## Data facts future sessions must not rediscover (debt)
 
+- DMO export endpoint: `GetDataExport?reportCode=X&exportFormatValue=xml|xls
+  &parameters=&COBDate=` — one format per report (DMO_FORMATS); the report
+  HTML pages re-challenge the headless browser, the export endpoint does not
+  once the challenge has cleared on `XmlDataReport?reportCode=D1A`.
+- D2.1E (issuance history) carries signed nominals: creations positive,
+  cancellations/reverse auctions negative, conversions and switches both
+  signs; `ACTUAL_DATE` is the settlement date; prices are clean. Tranche
+  ISINs (`… 2007 A`) are assimilated into the parent — fold them.
+- D1C lists redeemed gilts by name only (no ISIN): join on
+  `readers.dmo.name_key` (coupon | IL/CV | years, tranche dropped). Gilts
+  converted or switched out in full before 2000 appear nowhere.
+- Index ratios: reference RPI(d) = RPI(m−3) + (d−1)/days(m) × (RPI(m−2) −
+  RPI(m−3)), base = reference RPI at first issue; `UK_RPI` is on Jan 1987 =
+  100 and reproduces D10C exactly. 8-month linkers: RPI(m−8).
+- The NLF accounts are accruals-based: the UK register enters the interest
+  chain on the accrued basis (uplift accrual and amortisation included);
+  never add the BMF value-date bridges to the UK.
+- ONS Appendix S / PSA8A_1 gilt rows (F.332) are consolidated within CG;
+  HMT DMR table A.1 likewise. The register is gross (OQ-9).
+- UK bills: one security per maturity date (fungible); bilateral/ad hoc
+  bills are outside the tender history, so the register bill stock is
+  below ONS BKPJ after 2006.
 - The financing chain runs in NET-BORROWING sign: steps B and C carry
   −B.9 / −NLB (basis says so). Register selection per country lives in
   `config/debt.yaml`; DEU special funds are subtracted at step A and
@@ -92,7 +109,6 @@ bridge if the OBR debt-interest split becomes reachable.
   PSA6J NUGW is LG interest. No intra-GG consolidation line is published.
 - Eurostat EDP identity: GD_CH = B9_T3 + F_ASS + ORADJ + YA3 (KX and K61
   are inside ORADJ); edpt3 starts FR 2021 / DE 2022.
-
 - BMF Datenportal flow sheets are cumulative year-to-date (December = full
   year); Tilgungen/Zinsen are negative; values in whole euro. Indent-0
   totals: "Kredite … inklusive Mitfinanzierung" is the wider total the
@@ -124,3 +140,7 @@ bridge if the OBR debt-interest split becomes reachable.
   `_iadb-fromshowcolumns.asp` returns CSV when Datefrom ≥ series start,
   else HTML/302; curve workbooks: spot sheet, maturities row 4, dates from
   row 6.
+- Playwright/Chromium through the agent proxy: `--disable-quic`,
+  `--disable-features=PostQuantumKyber,UseMLKEM,EncryptedClientHello`,
+  `--ssl-version-max=tls1.2`; never `pkill -f` a pattern that matches your
+  own shell command line (it kills the session's shell).

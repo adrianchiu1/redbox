@@ -1074,3 +1074,71 @@ repeated automated visits needed to debug the route, both sites now
 serve interactive captchas. Automated attempts are stopped; the hand-
 download list (`DOWNLOAD_LIST.md`, `ggfiscal debt ingest-incoming`) and a
 cooled-off retry are the two ways forward, recorded in OQ-8.
+
+## D-S10-005 — The UK register from the DMO's own reports: positions rolled from the operations record, ratios recomputed from the RPI, chains on the accrued basis (serves DEBT_KICKOFF.md §12 D2–D4 GBR; updates OQ-8, raises OQ-9)
+2026-09-10. **Access.** The DMO's export endpoint
+(`/umbraco/surface/DataExport/GetDataExport?reportCode=…&exportFormatValue=…`)
+is reachable from the build box through the committee-authorised browser
+session: the ShieldSquare challenge clears for it, while the HTML report
+pages keep re-challenging. Each report exports in exactly one presentation
+type — xml for D1A, D2.1E, D4L, D10C, D2.2D; xls for D1C, D2.1A, D2.1PROF7,
+D2.1PROF9, D10A (an HTML table under the .xls name), D8B, D2.2E, D2.2G —
+and every other pair, the plain `ExportReport` form and the `COBDate`
+year-end snapshots answer with the 35-byte stub "Unable to fulfil the report
+request" under a 200 (the committee's desktop run had saved 37 of these as
+data; the family, the ingest command and the desktop script now refuse
+them). D1D, D5I, D9C and D2.2A export in no format. Fourteen reports are
+snapshotted; the AFT still needs the desktop run.
+**Method.** With no positions table by date, the register takes the office's
+two anchors — nominal in issue at the close of business (D1A) and nominal
+outstanding at redemption for every gilt redeemed since 1981 (D1C) — and
+walks them back through the complete operations record (D2.1E, signed
+nominal per operation since 1981-03-27). Σ operations reproduces D1A for
+102 of 104 gilts in issue and D1C for every redeemed gilt the record covers
+(tranches such as `8½% Treasury Loan 2007 A` folded into their parent);
+where the sum falls short — pre-1981 issues, early-1990s tenders the extract
+omits, and the 154 older stocks with no operation at all — the difference is
+one `implied` flow dated 1981-01-01, graded B/C and never allocated to a
+later date, so the year-end positions are exact from each security's first
+recorded operation and constant before it. Bills are one security per
+maturity date from the tender history (D2.2D, from April 2000), redeemed at
+par. Index ratios: the DMO's 3-month-lag formula on the ONS RPI reproduces
+every D10C reference RPI and ratio to 5 dp, so ratios are recomputed for the
+whole life of every linker (monthly points; the formula is linear within the
+month, as the engine interpolates); 8-month linkers use RPI(m−8) on the base
+of the issue month. **Result.** 1,747 securities (283 conventional, 56
+index-linked, 2 floating, 1,406 bills), 4,404 year-end positions 1981–2025
+plus 104 office snapshots, 8,173 flows, 10,562 ratio points; the recurrence
+snapshot(t) = snapshot(t−1) + Σ flows holds on all 3,499 year-end pairs. The
+unindexed nominal of index-linked gilts equals HMT's DMR table A.1 to the
+million at end-2023/2024/2025 (382.0 / 393.5 / 433.4 £bn) and the uplifted
+nominal is within 0.7–1.3%; bills equal ONS BKPJ exactly 2001–2006 (later
+years carry bilateral/ad hoc bills outside the tender history, 0.6–1.0).
+Conventional gilts exceed the DMR/ONS figure by 150–171 £bn (8%) in
+2023–2025 and the ONS gilt stock by 7–17% from 2008: the ONS and DMR
+figures are consolidated within central government (gilts held by the DMA,
+CRND funds and other CG bodies netted), the register is the DMO's gross
+creation — raised as OQ-9, published as V31, never adjusted. Before 2005
+the register is short of the ONS stock (0.85 in 1997): gilts converted or
+switched out in full before 2000 appear in neither D1C nor D2.1E.
+**Chains.** (i) The UK register enters the interest chain on the ACCRUED
+basis: the NLF accounts are accruals-based, so HMT's step-A total carries
+accrued uplift and effective-interest amortisation, and the BMF-style
+value-date bridges do not apply; the basis and the bridge items are now per
+country in `config/debt.yaml` `register_chain_items` (DEU unchanged: cash
+with the two value-date items). Step A then closes to within ±3.3 £bn
+(≤ 6%) in every year 2010–2024 except 2009 (+8.4, the deflation year's
+negative uplift), 2012 (+4.8) and 2021 (+6.3), with National Savings and
+the other NLF finance costs as the only out-of-register items. (ii) The
+financing chain gains one computed bridge, `issuance_cash_less_nominal` (Σ
+cash raised − nominal created, from the priced operations: −19.7 £bn in
+2022, +34.5 in 2020); step A then closes within ±13 £bn 2010–2025 except
+2022 (−61) and 2008–2009 (−53, −41), the years in which the ONS F.332
+financing row (net of gilts acquired by CG bodies) departs furthest from the
+DMO's gross issuance — the same OQ-9 wedge. `ggfiscal debt validate`: 22 OK,
+2 SKIP, 28 WARN (V29 bills between year-ends, V30 DEU pre-1999, V31 DEU
+perimeter, V36 three floaters); 13 new GBR tests. **Not done:** the UK
+year-end positions panel from the office itself (needs the page's own
+export link, see DOWNLOAD_LIST.md), per-ISIN APF holdings (DD11 overlay,
+BOE_APF snapshots are in the store), the two floating-rate gilts' LIBID
+fixings (DD10), France.

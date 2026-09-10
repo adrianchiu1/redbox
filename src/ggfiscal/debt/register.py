@@ -123,19 +123,32 @@ def build_maturity_tables(reg: dict[str, pd.DataFrame], run_id: str) -> tuple[pd
 
 # ------------------------------------------------ register sums for the chains
 
+DEFAULT_CHAIN_ITEMS = {"interest_basis": "cash", "interest_bridge_A": [], "financing_bridge_A": []}
+
+
+def _chain_items(iso3: str, chain_items: dict | None) -> dict:
+    cfg = (chain_items if chain_items is not None else config.debt().get("register_chain_items", {}))
+    return {**DEFAULT_CHAIN_ITEMS, **(cfg.get(iso3) or {})}
+
+
 def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
-                  basis: str = "cash") -> pd.DataFrame:
+                  chain_items: dict | None = None) -> pd.DataFrame:
     """Computed register-step items per (iso3, year, chain, instrument_class):
-    interest on `basis` (cash matches the ministries' step-A totals; the
-    accrued figure is published alongside in debt_interest_by_security),
-    and net issuance = Σ issuance − redemptions − buybacks ± conversions
-    from the flows. Only countries with a register appear."""
+    interest on the country's configured basis (config/debt.yaml
+    `register_chain_items`: cash where the ministry's step-A book is cash,
+    accrued where it is accruals-based; the other basis is published
+    alongside in debt_interest_by_security), net issuance = Σ issuance −
+    redemptions − buybacks ± conversions from the flows, and the configured
+    step-A bridge items (chains `interest_bridge_A` / `financing_bridge_A`).
+    Only countries with a register appear."""
     rows = []
     secs = reg["debt_securities"].set_index(["iso3", "security_id"])["instrument_class"]
     if len(interest):
-        it = interest[(interest["basis"] == basis) & (interest["computability"] == "computed")].copy()
+        it = interest[interest["computability"] == "computed"].copy()
         it["instrument_class"] = [secs.get((a, b)) for a, b in zip(it["iso3"], it["security_id"])]
-        for (iso3, year, klass), g in it.groupby(["iso3", "year", "instrument_class"]):
+        for (iso3, year, klass, basis), g in it.groupby(["iso3", "year", "instrument_class", "basis"]):
+            if basis != _chain_items(iso3, chain_items)["interest_basis"]:
+                continue
             rows.append({"iso3": iso3, "year": int(year), "chain": "interest",
                          "instrument_class": klass, "value_lcu_mn": float(g["total_lcu_mn"].sum()),
                          "n_securities": int(g["security_id"].nunique()), "basis": basis})
@@ -158,6 +171,18 @@ def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
     # nominal placed, per year, sign such that a premium REDUCES interest
     if len(fl):
         priced = fl[fl["price_pct"].notna() & fl["flow_type"].isin(["auction", "syndication", "tap", "tender"])].copy()
+        # financing bridge: the cash an issue raised less its nominal (a
+        # discount raises less cash than the nominal added to the debt)
+        cashed = fl[fl["cash_lcu_mn"].notna() & fl["flow_type"].isin(["auction", "syndication", "tap", "tender"])]
+        for (iso3, year), g in cashed.groupby(["iso3", cashed["settlement_date"].dt.year]):
+            if "issuance_cash_less_nominal" not in _chain_items(iso3, chain_items)["financing_bridge_A"]:
+                continue
+            rows.append({"iso3": iso3, "year": int(year), "chain": "financing_bridge_A",
+                         "instrument_class": "issuance_cash_less_nominal",
+                         "value_lcu_mn": float((g["cash_lcu_mn"] - g["nominal_lcu_mn"]).sum()),
+                         "n_securities": int(g["security_id"].nunique()), "basis": "cash"})
+        priced = priced[[
+            "issue_premium_at_value_date" in _chain_items(i, chain_items)["interest_bridge_A"] for i in priced["iso3"]]]
         if len(priced):
             ret = fl[fl["flow_type"] == "retention"].groupby(["iso3", "security_id", "settlement_date"])["nominal_lcu_mn"].sum()
             placed = priced["nominal_lcu_mn"] - [ret.get((a, b, d), 0.0) for a, b, d in

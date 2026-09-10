@@ -96,10 +96,14 @@ def _debt_section(root: Path) -> list[str]:
         "S.1311 net borrowing → `NLB` — each step carrying its official "
         "bridge items and a published residual (never allocated), plus the "
         "reference series (RPI, CPI/HICP ex-tobacco, SONIA, Bank Rate, money-"
-        "market rates, BoE curves). While the debt-office hosts are blocked "
-        "(OQ-8) the register step is the ministries' own instrument-class "
-        "aggregates (DD8); the per-security engine, schemas and tests are in "
-        "place for when they open. Files: `deliverables/debt_*.csv`; notebook: "
+        "market rates, BoE curves). The register step is the computed per-"
+        "security register where one is built (Germany from the Finanzagentur "
+        "files, the United Kingdom from the DMO reports: every security, its "
+        "year-end positions, operations and index ratios, interest per security "
+        "on both bases, the maturity profile and issuance by residual-maturity "
+        "bucket) and the ministries' own instrument-class aggregates (DD8) "
+        "elsewhere (France, until the AFT files arrive — OQ-8). Files: "
+        "`deliverables/debt_*.csv`; notebook: "
         "[`notebooks/debtbook.ipynb`](notebooks/debtbook.ipynb).",
         "",
         "Years with a published residual per step (interest A/B/C, financing "
@@ -109,7 +113,37 @@ def _debt_section(root: Path) -> list[str]:
         "|---|---|---|---|---|---|---|---|",
         *rows,
         "",
+        *_register_rows(root),
     ]
+
+
+def _register_rows(root: Path) -> list[str]:
+    """Per-country register coverage: securities, positions span, flows."""
+    import pandas as pd
+    p = root / "data" / "canonical" / "debt_securities.csv"
+    if not p.exists():
+        return []
+    secs = pd.read_csv(p)
+    if secs.empty:
+        return []
+    pos = pd.read_csv(root / "data" / "canonical" / "debt_positions.csv", parse_dates=["as_of"])
+    fl = pd.read_csv(root / "data" / "canonical" / "debt_flows.csv", parse_dates=["settlement_date"])
+    out = ["Per-security register (stage D2–D4) per country:", "",
+           "| country | securities | classes | year-end positions | flows | register source |",
+           "|---|---|---|---|---|---|"]
+    for iso3 in ("GBR", "FRA", "DEU"):
+        s = secs[secs["iso3"] == iso3]
+        if s.empty:
+            out.append(f"| {iso3} | — | — | — | — | aggregate layer only (OQ-8) |")
+            continue
+        pp = pos[(pos["iso3"] == iso3) & (pos["as_of"].dt.month == 12)]
+        ff = fl[fl["iso3"] == iso3]
+        classes = ", ".join(f"{k} {v}" for k, v in s["instrument_class"].value_counts().items())
+        span = f"{pp['as_of'].dt.year.min()}–{pp['as_of'].dt.year.max()} ({len(pp):,} rows)" if len(pp) else "—"
+        src = ", ".join(sorted(set(s["source_id"])))
+        out.append(f"| {iso3} | {len(s):,} | {classes} | {span} | {len(ff):,} ({ff['settlement_date'].dt.year.min()}–"
+                   f"{ff['settlement_date'].dt.year.max()}) | {src} |")
+    return out + [""]
 
 
 def _coverage_section(root: Path) -> list[str]:
