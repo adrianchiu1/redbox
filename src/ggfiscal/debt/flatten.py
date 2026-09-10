@@ -105,7 +105,7 @@ DICTIONARY: dict[str, dict[str, str]] = {
         "value_lcu_mn": "Millions of national currency; null where the total is unknown (blocked source or no register).",
         "item_type": "computed | official | declared | residual.",
         "item_source_id": "Where the item comes from.",
-        "basis": "Accounting basis of the item.",
+        "basis": "Accounting basis of the item (cash, accrued, nominal).",
     },
 }
 _REG_COMMON = {**_COMMON, "security_id": "ISIN, or {iso3}_{office code} for pre-ISIN securities."}
@@ -114,54 +114,54 @@ DICTIONARY["debt_securities.csv"] = {
     "isin": "ISIN where one exists.", "name": "Name as published by the office.",
     "instrument_class": "DD2: fixed_bullet | floating | inflation_linked | bill | other.",
     "sub_type": "National instrument name (config/debt.yaml sub_types).",
-    "currency": "Issue currency.", "coupon_pct": "Annual coupon, %; null for bills and floaters.",
-    "coupon_frequency": "Coupon payments per year.", "day_count": "Accrual convention.",
+    "currency": "Currency of issue (ISO code).", "coupon_pct": "Annual coupon, %; null for bills and floaters.",
+    "coupon_frequency": "Number of coupon payments per year.", "day_count": "Day-count / accrual convention.",
     "first_issue_date": "First issue (settlement) date.", "maturity_date": "Final redemption date; null for undated.",
     "first_call_date": "First call date for callable/double-dated securities.",
     "dividend_dates": "Coupon dates, e.g. '22 Apr/Oct'.",
-    "index_reference": "Reference index id for linkers (§4.2).", "index_lag_months": "Indexation lag.",
+    "index_reference": "Reference index id for linkers (§4.2).", "index_lag_months": "Indexation lag in months.",
     "base_index": "Base index value of the linker.", "floating_reference": "Reference rate id for floaters.",
-    "spread_bp": "Spread over the reference rate, basis points.", "is_green": "Green-bond flag.",
+    "spread_bp": "Spread over the reference rate, basis points.", "is_green": "True for green bonds and green twins.",
     "issuer_unit": "state, or special_fund:{name}.",
 }
 DICTIONARY["debt_positions.csv"] = {
-    **_REG_COMMON, "as_of": "Position date.", "nominal_lcu_mn": "Nominal in issue (unindexed), millions LCU.",
+    **_REG_COMMON, "as_of": "Date of the position (as-of).", "nominal_lcu_mn": "Nominal in issue (unindexed), millions LCU.",
     "nominal_uplifted_lcu_mn": "Nominal × index ratio for linkers.", "nominal_issue_ccy_mn": "Nominal in the issue currency.",
     "official_holdings_lcu_mn": "Issuer's own book (Eigenbestand, DMO/CRND holdings).",
     "market_hands_lcu_mn": "Nominal less official holdings.",
     "position_type": "office_snapshot | office_annual | rolled_from_flows.",
-    "fx_rate": "Conversion rate used for foreign-currency issues.", "fx_source_id": "Its source.",
+    "fx_rate": "Conversion rate used for foreign-currency issues.", "fx_source_id": "Register id of the FX rate source.",
 }
 DICTIONARY["debt_flows.csv"] = {
     **_REG_COMMON, "settlement_date": "Settlement date of the operation.",
     "flow_type": "§4.3: auction, syndication, tap, tender, conversion_in/out, switch_in/out, buyback, redemption, retention, own_book_sale/purchase, implied.",
     "seq": "Sequence number for same-day rows.", "operation_date": "Operation (auction) date.",
     "nominal_lcu_mn": "Nominal amount, millions LCU.", "cash_lcu_mn": "Cash proceeds where published.",
-    "price_pct": "Price per 100 nominal.", "yield_pct": "Yield at issue, %.", "method": "Issuance method as published.",
+    "price_pct": "Issue price per 100 nominal.", "yield_pct": "Yield at issue, per cent.", "method": "Issuance method as published.",
     "counter_security_id": "Counterpart security of a conversion or switch.",
 }
 DICTIONARY["debt_index_ratios.csv"] = {
-    **_REG_COMMON, "date": "Ratio date.", "reference_index": "Reference index value on that date.",
+    **_REG_COMMON, "date": "Date of the index ratio.", "reference_index": "Reference index value on that date.",
     "index_ratio": "Index ratio (uplift factor).", "ratio_source": "office | recomputed.",
 }
 DICTIONARY["debt_interest_by_security.csv"] = {
-    **_REG_COMMON, "basis": "accrued | cash (DD3).", "coupon_lcu_mn": "Coupon interest.",
-    "uplift_lcu_mn": "Indexation uplift.", "discount_lcu_mn": "Bill discount accretion.",
-    "floating_lcu_mn": "Floating coupon.", "premium_discount_amort_lcu_mn": "Premium/discount amortisation (accrued basis).",
+    **_REG_COMMON, "basis": "accrued | cash (DD3).", "coupon_lcu_mn": "Coupon interest, millions LCU.",
+    "uplift_lcu_mn": "Indexation uplift, millions LCU.", "discount_lcu_mn": "Bill discount accretion, millions LCU.",
+    "floating_lcu_mn": "Floating-rate coupon, millions LCU.", "premium_discount_amort_lcu_mn": "Premium/discount amortisation (accrued basis).",
     "total_lcu_mn": "Sum (coupon + uplift + discount + floating − amortisation); null when not computable.",
     "computability": "computed | not_computable (DD10).", "reference_values_used": "Index ratios / fixings used.",
     "derivation": "The arithmetic in words.",
 }
 DICTIONARY["debt_maturity_profile.csv"] = {
-    **_COMMON, "as_of": "31 December.", "instrument_class": "DD2 class.", "bucket": "Residual-maturity bucket (§4.4).",
-    "nominal_lcu_mn": "Nominal outstanding.", "nominal_uplifted_lcu_mn": "Uplifted nominal (linkers).",
-    "market_hands_lcu_mn": "Nominal less official holdings.", "n_securities": "Securities in the cell.",
+    **_COMMON, "as_of": "Position date, 31 December.", "instrument_class": "Instrument class per DD2.", "bucket": "Residual-maturity bucket (§4.4).",
+    "nominal_lcu_mn": "Nominal outstanding, millions LCU.", "nominal_uplifted_lcu_mn": "Uplifted nominal (linkers).",
+    "market_hands_lcu_mn": "Nominal less official holdings.", "n_securities": "Number of securities in the cell.",
     "weighted_residual_years": "Nominal-weighted residual maturity, years.",
 }
 DICTIONARY["debt_issuance_by_bucket.csv"] = {
-    **_COMMON, "instrument_class": "DD2 class.", "bucket": "Residual maturity at settlement (§4.4).",
+    **_COMMON, "instrument_class": "Instrument class per DD2.", "bucket": "Residual maturity at settlement (§4.4).",
     "gross_nominal_lcu_mn": "Gross issuance, nominal.", "gross_cash_lcu_mn": "Gross issuance, cash proceeds.",
-    "n_operations": "Operations in the cell.", "weighted_residual_years_at_issue": "Nominal-weighted residual maturity at issue.",
+    "n_operations": "Number of operations in the cell.", "weighted_residual_years_at_issue": "Nominal-weighted residual maturity at issue.",
 }
 DICTIONARY["debt_financing_reconciliation.csv"] = {
     **DICTIONARY["debt_interest_reconciliation.csv"],

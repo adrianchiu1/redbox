@@ -186,10 +186,10 @@
    "sha256": "befd12a8d37f362fbd00621fef25c49a4b7a0d17053cc90b27725680e41ce95f"
   },
   "deliverables/data_dictionary.csv": {
-   "bytes": 44645,
+   "bytes": 44982,
    "present": true,
    "rows": 417,
-   "sha256": "e05effdfc903b7c918b9a5f91b2ea188bf04fc4ca361628572271849ab73c984"
+   "sha256": "e96119bb3c58f055a7257bbc8e600bdc1d4e538f3e3804bcfb030302b9b1e66c"
   },
   "deliverables/debt_class_aggregates.csv": {
    "bytes": 1571608,
@@ -312,7 +312,7 @@
    "sha256": "98390f2314ce9a2563e0ecc41d7bda337ecb36e6545c4953b4ddc4f7d68cdd2f"
   }
  },
- "flat_files_updated_at": "2026-09-10T00:26:35+00:00",
+ "flat_files_updated_at": "2026-09-10T00:27:19+00:00",
  "run_id": "20260908T093901Z",
  "snapshots": {
   "DEU_STEUERSCHAETZUNG/2026_05": "7b6e755b7c42e3d1525258eed1bfd06edb4d540f056abd891e4c7e7f1ea00a12",
