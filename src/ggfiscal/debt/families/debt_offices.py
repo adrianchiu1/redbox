@@ -43,8 +43,13 @@ DMO_GILT_REPORTS = ("D1A", "D1C", "D1D", "D2.1E", "D2.1A", "D2.1PROF7",
 DMO_BILL_REPORTS = ("D2.2A", "D2.2D", "D2.2E", "D2.2G")
 
 
-def dmo_export_url(code: str) -> str:
-    return f"{DMO}/data/ExportReport?reportCode={code}"
+def dmo_export_url(code: str, fmt: str = "xls") -> str:
+    """The URL behind the DMO pages' export buttons. `ExportReport?reportCode=`
+    alone answers "Report X is not available in this presentation type":
+    the presentation type is `exportFormatValue` (xls | xml | pdf), and the
+    COBDate is left blank for the latest close of business."""
+    return (f"{DMO}/umbraco/surface/DataExport/GetDataExport?reportCode={code}"
+            f"&exportFormatValue={fmt}&parameters=&COBDate=")
 
 
 def dmo_xml_url(code: str) -> str:
@@ -133,7 +138,7 @@ def pulls() -> list[Pull]:
     out: list[Pull] = []
     for code in DMO_GILT_REPORTS:
         out.append(Pull("UK_DMO_GILTS", code, dmo_export_url(code), headers=BROWSER_HEADERS))
-    out.append(Pull("UK_DMO_GILTS", "D1A_xml", dmo_xml_url("D1A"), headers=BROWSER_HEADERS))
+    out.append(Pull("UK_DMO_GILTS", "D1A_xml", dmo_export_url("D1A", "xml"), headers=BROWSER_HEADERS))
     out.append(Pull("UK_DMO_GILTS", "yldeqns", f"{DMO}/media/1sljygul/yldeqns.pdf", headers=BROWSER_HEADERS))
     out.append(Pull("UK_DMO_GILTS", "igcalc", f"{DMO}/media/0ltegugd/igcalc.pdf", headers=BROWSER_HEADERS))
     for code in DMO_BILL_REPORTS:

@@ -4,29 +4,32 @@ Save each file as `data/incoming/{SOURCE_ID}/{part}.{ext}` exactly as named in t
 third column (keep the extension the site gives: .xml, .xls, .xlsx, .pdf), then run
 `ggfiscal debt ingest-incoming`. Open the URL in a normal browser; the first visit
 solves the site's challenge, after which the export links download directly.
+If a DMO URL answers "Report X is not available in this presentation type", the
+`exportFormatValue` parameter is missing — use the form below, or the page's own
+export button (Data → Gilt market → the report → Excel/XML icon).
 
 ## UK Debt Management Office — dmo.gov.uk
 
 | # | URL | save as |
 |---|---|---|
-| 1 | https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D1A | `UK_DMO_GILTS/D1A_xml.xml` |
-| 2 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D1A | `UK_DMO_GILTS/D1A.xls` |
-| 3 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D1C | `UK_DMO_GILTS/D1C.xls` |
-| 4 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D1D | `UK_DMO_GILTS/D1D.xls` |
-| 5 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.1E | `UK_DMO_GILTS/D2.1E.xls` |
-| 6 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.1A | `UK_DMO_GILTS/D2.1A.xls` |
-| 7 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.1PROF7 | `UK_DMO_GILTS/D2.1PROF7.xls` |
-| 8 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.1PROF9 | `UK_DMO_GILTS/D2.1PROF9.xls` |
-| 9 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D10A | `UK_DMO_GILTS/D10A.xls` |
-| 10 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D4L | `UK_DMO_GILTS/D4L.xls` |
-| 11 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D8B | `UK_DMO_GILTS/D8B.xls` |
-| 12 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D5I | `UK_DMO_GILTS/D5I.xls` |
-| 13 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D10C | `UK_DMO_GILTS/D10C.xls` |
-| 14 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D9C | `UK_DMO_GILTS/D9C.xls` |
-| 15 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.2A | `UK_DMO_BILLS/D2.2A.xls` |
-| 16 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.2D | `UK_DMO_BILLS/D2.2D.xls` |
-| 17 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.2E | `UK_DMO_BILLS/D2.2E.xls` |
-| 18 | https://www.dmo.gov.uk/data/ExportReport?reportCode=D2.2G | `UK_DMO_BILLS/D2.2G.xls` |
+| 1 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D1A&exportFormatValue=xml&parameters=&COBDate= | `UK_DMO_GILTS/D1A_xml.xml` |
+| 2 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D1A&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D1A.xls` |
+| 3 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D1C&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D1C.xls` |
+| 4 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D1D&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D1D.xls` |
+| 5 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.1E&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D2.1E.xls` |
+| 6 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.1A&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D2.1A.xls` |
+| 7 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.1PROF7&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D2.1PROF7.xls` |
+| 8 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.1PROF9&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D2.1PROF9.xls` |
+| 9 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D10A&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D10A.xls` |
+| 10 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D4L&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D4L.xls` |
+| 11 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D8B&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D8B.xls` |
+| 12 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D5I&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D5I.xls` |
+| 13 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D10C&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D10C.xls` |
+| 14 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D9C&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_GILTS/D9C.xls` |
+| 15 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.2A&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_BILLS/D2.2A.xls` |
+| 16 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.2D&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_BILLS/D2.2D.xls` |
+| 17 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.2E&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_BILLS/D2.2E.xls` |
+| 18 | https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D2.2G&exportFormatValue=xls&parameters=&COBDate= | `UK_DMO_BILLS/D2.2G.xls` |
 | 19 | https://www.dmo.gov.uk/data/gilt-market/gross-and-net-issuance-data/ | `UK_DMO_GILTS/gross_net_issuance_annual.xls (the 'annual gross and net issuance' export) and UK_DMO_GILTS/cash_sales_by_type_and_maturity.xls (the 'cash sales of gilts by type and maturity' export)` |
 
 Year-end positions (one per 31 December; the site returns the previous working day when the date is not one — that is fine):

@@ -38,16 +38,23 @@ BILL_REPORTS = ["D2.2A", "D2.2D", "D2.2E", "D2.2G"]
 CHALLENGE = ("ShieldSquare Captcha", "<title>Just a moment...</title>", "perfdrive.com/aperture")
 
 
+def export_url(code: str, fmt: str = "xls", cob: str = "") -> str:
+    """The URL behind the DMO pages' export buttons (the presentation type is
+    `exportFormatValue`; without it the site says the report "is not
+    available in this presentation type")."""
+    return (f"{DMO}/umbraco/surface/DataExport/GetDataExport?reportCode={code}"
+            f"&exportFormatValue={fmt}&parameters=&COBDate={cob}")
+
+
 def dmo_jobs(skip_cob: bool) -> list[tuple[str, str, str]]:
-    jobs = [("UK_DMO_GILTS", "D1A_xml", f"{DMO}/data/XmlDataReport?reportCode=D1A")]
-    jobs += [("UK_DMO_GILTS", c, f"{DMO}/data/ExportReport?reportCode={c}") for c in GILT_REPORTS]
-    jobs += [("UK_DMO_BILLS", c, f"{DMO}/data/ExportReport?reportCode={c}") for c in BILL_REPORTS]
+    jobs = [("UK_DMO_GILTS", "D1A_xml", export_url("D1A", "xml"))]
+    jobs += [("UK_DMO_GILTS", c, export_url(c)) for c in GILT_REPORTS]
+    jobs += [("UK_DMO_BILLS", c, export_url(c)) for c in BILL_REPORTS]
     if not skip_cob:
         for y in range(1998, dt.date.today().year):
             d = dt.date(y, 12, 31)
             jobs.append(("UK_DMO_GILTS", f"D1A_cob_{d:%Y%m%d}",
-                         f"{DMO}/umbraco/surface/DataExport/GetDataExport?reportCode=D1A"
-                         f"&exportFormatValue=xls&parameters=&COBDate={d:%d}%2F{d:%m}%2F{d:%Y}"))
+                         export_url("D1A", "xls", f"{d:%d}%2F{d:%m}%2F{d:%Y}")))
     return jobs
 
 
