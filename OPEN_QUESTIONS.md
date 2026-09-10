@@ -149,3 +149,52 @@ as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
 (b) wait for DSM 2026 (expected ~Feb 2027) and re-run, or (c) keep the 2027
 stop. The V5-style diagnostics and both sources' snapshots are in place; no
 code change needed for any option.
+
+## OQ-8 — Cyclically adjusted variants: not available at our granularity (NEW, informational + one decision)
+
+Raised 2026-09-10 (session 6), in answer to the committee's question: is the
+data this repo stitches available in cyclically adjusted form from official
+sources, for GBR/FRA/DEU? Full evidence and measured spans in
+`reports/cyclical_adjustment_availability.md` (+ `.csv`).
+
+**Findings, all verified live 2026-09-10:**
+- **COFOG expenditure: nothing exists**, from Eurostat (0 of 8,156
+  dataflows), OECD, AMECO, IMF WEO, ONS/OBR, Destatis or INSEE. This is
+  methodological, not editorial: under the EU method (DG ECFIN DP 098) the
+  ONLY cyclical expenditure item is unemployment-related spending, which sits
+  inside `GF10` and is never published separately. A cyclically adjusted
+  `GF02` or `GF07` is an *undefined* concept, not an unpublished series —
+  constructing one would be original research, which D13/D16 forbid.
+- **Revenue: 4 of our 10 lines have an official adjusted analogue**, from the
+  OECD Economic Outlook only — `TINDA` → `R01`+`R02` (jointly; no VAT split),
+  `TYHA` → `R03`, `TYBA` → `R04`, `SSRGA` → `R06`. Spans 1971/1985/1991–2027.
+  `R05`, `R07`–`R10` have none anywhere.
+- **Aggregates are well covered** (AMECO `UBLGAP`/`URTGAP`/`UUTGAP`, IMF WEO
+  `GGSB_NPGDP`, OECD `NLGQA`, OBR CANB/GGNB). One trap: **AMECO's GBR
+  `URTGAP`/`UUTGAP` carry 2026–2027 only** — the same post-Brexit hole OQ-4
+  records for unadjusted `URTG`/`UUTG`, so OQ-4's conclusion carries over
+  unchanged.
+- Caution for the record: Eurostat/NSI **seasonally and calendar adjusted**
+  quarterly government data is a within-year timing adjustment and is NOT
+  cyclical adjustment. The two must not be conflated.
+
+**Ask (one decision):** whether to add cyclical context to the §8
+reconciliation module — nothing enters the 66 lines either way.
+(a) Add IMF WEO `GGSB_NPGDP` + `NGAP_NPGDP` to §8 reconciliation only. The
+pipeline already pulls this dataflow and vintage; it is a `sources.yaml`
+subject-list change, no new source, no code change. **Recommended.**
+(b) Also register OECD EO as a reconciliation source for the four revenue
+lines above, carrying the measured concept wedges (VAT not split; `SSRGA`
+excludes imputed contributions; OECD adjusts on its own output gap, so
+adjusted levels from different providers are never additive).
+(c) Do nothing.
+
+Not recommended under any option: constructing cyclically adjusted COFOG
+lines from published elasticities (D13/D16).
+
+**Incidental unblock for OQ-6:** the March 2026 EFO PDF is mirrored on
+`assets.publishing.service.gov.uk` (allowlisted under D-S7-002) and fetched
+cleanly here, while `obr.uk` returned 403 as usual. The gov.uk asset mirror
+can stand in for obr.uk **for EFO documents**, softening OQ-6(d) for each new
+EFO round. It does not cover the PSF databank or supplementary tables, which
+remain obr.uk-only.
