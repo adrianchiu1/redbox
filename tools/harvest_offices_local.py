@@ -359,8 +359,11 @@ def main() -> int:
         return 2
     failed: list[str] = []
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        # AutomationControlled off: Cloudflare re-challenges a browser that
+        # advertises webdriver control on every navigation
+        browser = p.chromium.launch(headless=False, args=["--disable-blink-features=AutomationControlled"])
         ctx = browser.new_context(accept_downloads=True)
+        ctx.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         if a.only in (None, "dmo"):
             failed += run_dmo(ctx, not a.cob, formats)
         if a.only in (None, "aft"):

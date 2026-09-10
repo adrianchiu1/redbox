@@ -71,3 +71,26 @@ These pages carry versioned Excel links; download the file the page offers and s
 Optional, larger: the Bulletin mensuel PDF archive at https://www.aft.gouv.fr/fr/bulletins-mensuels (the only month-by-month line register before the AFT Excel era). Not needed for the first pass; if you want it, save the PDFs as `FRA_AFT_BULLETINS/{YYYY-MM}.pdf` and say so.
 
 Already harvested automatically (no action): everything from the Finanzagentur, BMF, ONS, HM Treasury, Bank of England, Eurostat, INSEE, OECD, ECB.
+
+## AFT by hand (2026-09-10): the pages are the data
+
+The encours pages are HTML tables (no Excel behind them). If the desktop script
+is challenged on every navigation, save each page from a normal browser with
+Ctrl+S → "Webpage, HTML only" under the name shown, then commit `data/incoming/`
+and run `ggfiscal debt ingest-incoming`.
+
+| # | URL | save as |
+|---|---|---|
+| 1 | https://www.aft.gouv.fr/fr/encours-detaille-oat | `FRA_AFT_ENCOURS/oat.html` (done) |
+| 2 | https://www.aft.gouv.fr/fr/encours-detaille-btf | `FRA_AFT_ENCOURS/btf.html` |
+| 3 | https://www.aft.gouv.fr/en/encours-detaille-oatei | `FRA_AFT_ENCOURS/oatei.html` |
+| 4 | https://www.aft.gouv.fr/fr/dernieres-adjudications | `FRA_AFT_ADJUDICATIONS/dernieres.html` |
+| 5 | https://www.aft.gouv.fr/fr/dernieres-adjudications-archives | `FRA_AFT_ADJUDICATIONS/archives.html` |
+| 6 | https://www.aft.gouv.fr/fr/oati-principaux-chiffres | `FRA_AFT_INDEXATION/oati_page.html` |
+| 7 | https://www.aft.gouv.fr/en/oateuroi-key-figures | `FRA_AFT_INDEXATION/oatei_page.html` |
+| 8 | https://www.aft.gouv.fr/fr/rapports-activite | `FRA_AFT_FINANCEMENT/rapports.html` |
+| 9 | https://www.aft.gouv.fr/fr/bulletins-mensuels | `FRA_AFT_FINANCEMENT/bulletins_index.html` |
+
+Any Excel/CSV file those pages link to (auction history, indexation
+coefficients): save it as `{SOURCE_ID}/{page part}_file_{its filename}` in the
+same folder, e.g. `FRA_AFT_ADJUDICATIONS/archives_file_historique_oat.xlsx`.
