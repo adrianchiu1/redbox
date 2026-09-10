@@ -48,7 +48,7 @@ ISIN_RE = re.compile(r"^FR[0-9A-Z]{10}$")
 DATE_TEXT_RE = re.compile(r"(\d{1,2})(?:er)?\s+([A-Za-zéûÉ\.]+)\s+(\d{4})")
 DATE_NUM_RE = re.compile(r"^(\d{2})/(\d{2})/(\d{4})$")
 NAME_RE = re.compile(
-    r"^(?P<green>GREEN\s+)?(?P<kind>OAT€I|OAT€i|OATi|OAT\$?i|OAT|BTAN|BTF)\s*(?P<green2>verte\s+|VERTE\s+)?"
+    r"^(?P<green>GREEN\s+)?(?P<kind>OAT€I|OAT€i|OATi|OAT\$?i|BTANi|BTAN€i|BTAN|OAT|BTF)\s*(?P<green2>verte\s+|VERTE\s+)?"
     r"(?:(?P<zero>z[ée]ro\s+coupon)|(?P<coupon>[\d,\.]+)\s*%)\s*(?P<rest>.*)$", re.IGNORECASE)
 
 
@@ -118,7 +118,9 @@ def parse_libelle(name: str) -> dict:
     if not m:
         return {"kind": None, "coupon_pct": None, "maturity_date": date_text(t), "is_green": False}
     kind = m.group("kind").replace("$", "")
-    kind = {"OAT€I": "OAT€i", "OATI": "OATi"}.get(kind.upper() if kind.upper() in ("OAT€I", "OATI") else kind, kind)
+    kind = {"OAT€I": "OAT€i", "OATI": "OATi", "BTANI": "BTANi", "BTAN€I": "BTAN€i"}.get(kind.upper(), kind)
+    if kind.upper() == "OAT":
+        kind = "OAT"
     return {"kind": kind, "coupon_pct": 0.0 if m.group("zero") else eur(m.group("coupon")),
             "maturity_date": date_text(m.group("rest")),
             "is_green": bool(m.group("green") or m.group("green2"))}
@@ -318,3 +320,96 @@ def price_index(kind: str) -> pd.DataFrame:
     for i, h in enumerate(header[1:], start=1):
         out[h] = pd.to_numeric(body[i], errors="coerce").values
     return out[out.iloc[:, 1].notna()].reset_index(drop=True)
+
+
+# ------------------------------------------------------- auction histories
+
+HIST_MLT_PART = "historique_file_2026-08_hist_mlt"
+HIST_BTF_PART = "historique_file_2026-08_hist_btf"
+HIST_SYND_PART = "historique_file_1999-2026_historique_syndications"
+HIST_MLT_2018_PART = "historique_file_26622_oat_btan_1999_2018"
+HIST_BTF_2018_PART = "historique_file_26621_btf_1999_2018"
+
+
+def _hist_frame(part: str) -> pd.DataFrame:
+    x = pd.read_excel(snap_path(SOURCE_ADJUDICATIONS, part), header=None)
+    head = [str(v).replace("\n", " ").strip().lower() for v in x.iloc[0].tolist()]
+    body = x.iloc[1:].copy()
+    body.columns = range(x.shape[1])
+    return head, body
+
+
+def _col(head: list[str], *needles: str) -> int | None:
+    """Index of the first header containing every needle; the apostrophe in
+    the AFT headers is typographic (’) in some files and plain (') in others."""
+    alts = [tuple(n.replace("’", "'") for n in needles), tuple(n.replace("'", "’") for n in needles)]
+    for i, h in enumerate(head):
+        hh = h.replace("’", "'")
+        if any(all(n.replace("’", "'") in hh for n in alt) for alt in alts):
+            return i
+    return None
+
+
+def history_mlt(part: str = HIST_MLT_PART) -> pd.DataFrame:
+    """The AFT medium/long-term auction history (``hist_mlt``, 1999→): one
+    row per (auction, line): type (adju_LT / adju_MT / adju_I), auction and
+    settlement dates, ISIN, line, bid, allotted, cover, ONC, total issued
+    (EUR mn), weighted-average yield (fraction) and price (fraction of par),
+    indexation coefficient at settlement for the linkers."""
+    head, b = _hist_frame(part)
+    c = {"kind": _col(head, "type"), "auction_date": _col(head, "date d'adjudication"),
+         "settlement_date": _col(head, "règlement"), "isin": _col(head, "isin"), "line": _col(head, "ligne"),
+         "bid_mn": _col(head, "soumission"), "allotted_mn": _col(head, "adjugé"), "cover": _col(head, "couverture"),
+         "onc_mn": _col(head, "onc"), "total_issued_mn": _col(head, "total émis"), "avg_yield": _col(head, "taux moyen"),
+         "avg_price": _col(head, "prix moyen"), "coefficient": _col(head, "coefficient")}
+    out = pd.DataFrame({k: (b[v] if v is not None else None) for k, v in c.items()})
+    out = out[pd.to_datetime(out["auction_date"], errors="coerce").notna() & out["isin"].astype(str).str.match(r"^FR")]
+    for k in ("auction_date", "settlement_date"):
+        out[k] = pd.to_datetime(out[k], errors="coerce")
+    for k in ("bid_mn", "allotted_mn", "cover", "onc_mn", "total_issued_mn", "avg_yield", "avg_price", "coefficient"):
+        out[k] = pd.to_numeric(out[k], errors="coerce")
+    out["isin"] = out["isin"].astype(str).str.strip()
+    out["line"] = out["line"].astype(str).str.replace("\xa0", " ").str.strip()
+    out["part"] = part
+    return out.reset_index(drop=True)
+
+
+def history_btf(part: str = HIST_BTF_PART) -> pd.DataFrame:
+    """The AFT BTF tender history (``hist_btf``, 1999→): auction and
+    settlement dates, tenor in weeks, maturity date, ISIN (the 2018 archive
+    has none), bid, allotted, cover, ONC, total issued (EUR mn), yield."""
+    head, b = _hist_frame(part)
+    c = {"auction_date": _col(head, "date d'adjudication"),
+         "settlement_date": _col(head, "règlement"), "weeks": _col(head, "durée"), "maturity_date": _col(head, "échéance"),
+         "isin": _col(head, "isin"), "bid_mn": _col(head, "soumission"), "allotted_mn": _col(head, "adjugé"),
+         "cover": _col(head, "couverture"), "onc_mn": _col(head, "onc"), "total_issued_mn": _col(head, "total émis"),
+         "avg_yield": _col(head, "taux moyen")}
+    out = pd.DataFrame({k: (b[v] if v is not None else None) for k, v in c.items()})
+    out = out[pd.to_datetime(out["auction_date"], errors="coerce").notna()]
+    for k in ("auction_date", "settlement_date", "maturity_date"):
+        out[k] = pd.to_datetime(out[k], errors="coerce")
+    for k in ("weeks", "bid_mn", "allotted_mn", "cover", "onc_mn", "total_issued_mn", "avg_yield"):
+        out[k] = pd.to_numeric(out[k], errors="coerce")
+    if out["isin"].notna().any():
+        out["isin"] = out["isin"].astype(str).str.strip()
+    out["part"] = part
+    return out.reset_index(drop=True)
+
+
+def history_syndications(part: str = HIST_SYND_PART) -> pd.DataFrame:
+    """The AFT syndication history (1999→): type (synd_LT / synd_I),
+    settlement date, ISIN, line, volume issued (+) or bought back (−) in
+    EUR mn, yield, price, coefficient."""
+    head, b = _hist_frame(part)
+    c = {"kind": _col(head, "type"), "settlement_date": _col(head, "règlement"), "isin": _col(head, "isin"),
+         "line": _col(head, "ligne"), "volume_mn": _col(head, "volume"), "avg_yield": _col(head, "taux moyen"),
+         "avg_price": _col(head, "prix moyen"), "coefficient": _col(head, "coefficient")}
+    out = pd.DataFrame({k: (b[v] if v is not None else None) for k, v in c.items()})
+    out = out[pd.to_datetime(out["settlement_date"], errors="coerce").notna() & out["isin"].astype(str).str.match(r"^FR")]
+    out["settlement_date"] = pd.to_datetime(out["settlement_date"], errors="coerce")
+    for k in ("volume_mn", "avg_yield", "avg_price", "coefficient"):
+        out[k] = pd.to_numeric(out[k], errors="coerce")
+    out["isin"] = out["isin"].astype(str).str.strip()
+    out["line"] = out["line"].astype(str).str.replace("\xa0", " ").str.strip()
+    out["part"] = part
+    return out.reset_index(drop=True)

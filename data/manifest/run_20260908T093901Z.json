@@ -175,9 +175,9 @@
  },
  "flat_files": {
   "deliverables/README.md": {
-   "bytes": 6759,
+   "bytes": 6763,
    "present": true,
-   "sha256": "c9136976c6d9a18db59e8af9fdbc461fe2ab2cef61833059c7e0a15060a7d617"
+   "sha256": "a1a949590856d7ca14f4e3f2a151f69157cbcb30f98e41eb041c5a0c989d4ffe"
   },
   "deliverables/balance_ledger.csv": {
    "bytes": 100129,
@@ -195,73 +195,73 @@
    "bytes": 1571608,
    "present": true,
    "rows": 5045,
-   "sha256": "286ed5b818d9aa8ae75efe0b509023732435a93f819689c824b26a78d45ff5f8"
+   "sha256": "1e95645209fde26d64f41a5ccd7ef1e8ca76f30925b7881dc70abbcbb53c9f3d"
   },
   "deliverables/debt_financing_reconciliation.csv": {
-   "bytes": 567824,
+   "bytes": 575235,
    "present": true,
-   "rows": 3330,
-   "sha256": "208709287db9eca85a684405dd33aa402a05eb4c974903f378f9e76e22b5b2d1"
+   "rows": 3371,
+   "sha256": "ae6d117f20361f3732896e6bcd191c341b6195f0891d524e028313a3150a306c"
   },
   "deliverables/debt_flows.csv": {
-   "bytes": 4620377,
+   "bytes": 7911231,
    "present": true,
-   "rows": 14344,
-   "sha256": "59d88e7c3128b82913f95db63daa964ec7650682b708f5cd283b3bff7934e98c"
+   "rows": 22239,
+   "sha256": "c52b355e2749c05a8738ecfbdf0d7e6e51ee52e12b8d53f5802665943c4a7af5"
   },
   "deliverables/debt_index_ratios.csv": {
-   "bytes": 12127658,
+   "bytes": 34364813,
    "present": true,
-   "rows": 41664,
-   "sha256": "ba07b6964bfc0a39d72dae0d4936772f37d4afb83c1c3441059f1085c357d098"
+   "rows": 133803,
+   "sha256": "f2a936e65f58a3acff41bb4d9eb4917713fd79335252d9cd834aadabd4e9d347"
   },
   "deliverables/debt_interest_by_security.csv": {
-   "bytes": 5134328,
+   "bytes": 6699687,
    "present": true,
-   "rows": 26368,
-   "sha256": "d839f5ecd2885ae06bc935cc00500decf2db0af0b7d8d6c461c51749c000f603"
+   "rows": 33834,
+   "sha256": "cc2a40cb11681088d14829d9f8e3a50f5c31363c18f9e9d322246f4f8bea61d1"
   },
   "deliverables/debt_interest_reconciliation.csv": {
-   "bytes": 250054,
+   "bytes": 269996,
    "present": true,
-   "rows": 1936,
-   "sha256": "ca764a1881d91d5953916c6517a6bc573ae3d32e6c78417e6d15ebb15e96905b"
+   "rows": 2027,
+   "sha256": "f68c75f88a16a48a2dd5cc7b00561d909485dadcfb9e45b81786721c25dd8bdd"
   },
   "deliverables/debt_issuance_by_bucket.csv": {
-   "bytes": 89902,
+   "bytes": 136184,
    "present": true,
-   "rows": 798,
-   "sha256": "87e13c2c01cd8605e771c727f86b9a99eeaf6ea0c2644199c8d4566a1144856b"
+   "rows": 1208,
+   "sha256": "f69e2f82190c6e0f67be5526d2d3e7c2b2b7e4582a8808c5a5d8db7969372ce5"
   },
   "deliverables/debt_maturity_profile.csv": {
-   "bytes": 169048,
+   "bytes": 225317,
    "present": true,
-   "rows": 1452,
-   "sha256": "3728088a4b665897ecce41b0c9445d31803a5837c348b53e6b64490d03571a09"
+   "rows": 1939,
+   "sha256": "96b0ac04bab20257a752bb8d97cc3ea987890cb5b402db091da376c4cf5b611f"
   },
   "deliverables/debt_official_totals.csv": {
    "bytes": 143285,
    "present": true,
    "rows": 732,
-   "sha256": "c99e1c154396ebaea7800ce425cae6118b7048601515cd0ad86e2247d7ff574f"
+   "sha256": "dda504b7a4b1065739f770f50c4297a3dc230475fcacd25b49900e8df80d8e30"
   },
   "deliverables/debt_positions.csv": {
-   "bytes": 2358013,
+   "bytes": 2841603,
    "present": true,
-   "rows": 9957,
-   "sha256": "3eae52e1c928121b935122d1b63fd8502b3aa28ce399509753c09947f98fe314"
+   "rows": 12031,
+   "sha256": "f24d459ceddecb3ed518ae89f964cededeec02b79ecbc97418cd0fcabfe90874"
   },
   "deliverables/debt_reference_series.csv": {
    "bytes": 28358138,
    "present": true,
    "rows": 137169,
-   "sha256": "98921fe9579e176ad50559a2af1a05ee8ab572a96a428b401bbe401b12701c9f"
+   "sha256": "618257581834fb4d1f18a3f8f7ec10487c071154a12778314deaf91d84eac131"
   },
   "deliverables/debt_securities.csv": {
-   "bytes": 1418328,
+   "bytes": 1970076,
    "present": true,
-   "rows": 3502,
-   "sha256": "acafae52b31de742c76d06cd1906f521c89562a7279acf78cffa52c9fc07601d"
+   "rows": 5004,
+   "sha256": "73281919e0890935d0df81580d1d90de3f8e0c3fca2585d9602557548c93a6f9"
   },
   "deliverables/expenditure_cofog.csv": {
    "bytes": 1055115,
@@ -312,7 +312,7 @@
    "sha256": "98390f2314ce9a2563e0ecc41d7bda337ecb36e6545c4953b4ddc4f7d68cdd2f"
   }
  },
- "flat_files_updated_at": "2026-09-10T10:44:43+00:00",
+ "flat_files_updated_at": "2026-09-10T11:40:59+00:00",
  "run_id": "20260908T093901Z",
  "snapshots": {
   "DEU_STEUERSCHAETZUNG/2026_05": "7b6e755b7c42e3d1525258eed1bfd06edb4d540f056abd891e4c7e7f1ea00a12",

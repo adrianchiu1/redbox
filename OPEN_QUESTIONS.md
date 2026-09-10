@@ -150,7 +150,19 @@ as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
 stop. The V5-style diagnostics and both sources' snapshots are in place; no
 code change needed for any option.
 
-## OQ-8 — Debt-office hosts: DMO harvested; AFT pages saved by hand, second round listed (updated 2026-09-10 evening; see D-S10-006)
+## OQ-8 — Debt-office hosts: DMO harvested; AFT saved by hand in three rounds — the three registers are built (updated 2026-09-10 night; see D-S10-007)
+
+**Update 2026-09-10 (night).** All three rounds of AFT files are in the
+store and France's register is complete on them. What remains behind the
+hosts, none of it blocking: (a) the DMO page's own export link for a past
+close-of-business date (the year-end positions the DMO publishes, to cross-
+check the rolled positions); (b) the AFT "fiche titre" pages per ISIN
+(first coupon dates), and the AFT's monthly bulletins if a per-line
+buyback record exists in them; (c) budget.gouv.fr programme 117 tables for
+the État's own interest (step A). The desktop script keeps its AFT part
+for the day the challenge relents.
+
+## OQ-8 (evening) — Debt-office hosts: DMO harvested; AFT pages saved by hand, second round listed (updated 2026-09-10 evening; see D-S10-006)
 
 **Update 2026-09-10 (evening).** Nine AFT pages saved by the committee are
 ingested and read; the French snapshot register is built. The AFT

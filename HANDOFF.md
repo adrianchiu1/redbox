@@ -6,9 +6,10 @@ Rewritten 2026-09-10, end of session 9 (the debt-in-issue extension, on
 ## Current stage
 
 **Debt extension (DEBT_KICKOFF.md v1.0): D0–D5 complete on the per-security
-register for Germany (D-S10-004) and the United Kingdom (D-S10-005); France
-has a snapshot register from the AFT pages (D-S10-006) and runs on the DD8
-aggregate layer in the chains until the auction history arrives (OQ-8).** The
+register for all three countries — Germany (D-S10-004), the United Kingdom
+(D-S10-005), France (D-S10-006/007).** The aggregate layer (DD8) stays as the
+register step before each register starts (FRA before 2000, DEU before
+1995/2005 for the tests, GBR before 1987) and as the V31/V39 cross-check. The
 parent package is untouched except: `config.sources()` merges
 `config/debt_sources.yaml`; the snapshot store names pdf/html extensions;
 pypdf, cffi, bs4 are dependencies. Parent baseline still 120 passed (the
@@ -39,6 +40,19 @@ rerun alone).
 - Tests: `tests/debt` 200 passed, 6 skipped (13 new GBR); deliverables and
   README regenerated; notebook re-executed with a register section.
 
+## Session 9, third part (D-S10-007): France complete
+
+- Three rounds of AFT files saved by the committee (pages, coefficient and
+  index files, the auction histories) → `readers/aft.py` +
+  `register_fra.py`: 1,603 securities, 2,069 year-end positions 1999–2025
+  rolled back from the encours through the auction histories, 7,903 flows,
+  92,139 ratio points (office daily). Σ BTF = AFT total to the euro
+  2009–2020; linkers uplifted within 3%; fixed lines 1–4% above the AFT
+  total in recent years (buybacks published only in aggregate). France in
+  both chains from 2000; step A (État cash) remains blocked, the register
+  meets S.1311 at step B.
+- Tests: `tests/debt` 245 passed, 6 skipped.
+
 ## Session 9, second part (D-S10-006): France
 
 - Nine AFT pages saved by the committee (Cloudflare challenges every
@@ -61,13 +75,10 @@ rerun alone).
 
 ## Blocked on whom
 
-- **OQ-8 (committee)**: the AFT second round (DOWNLOAD_LIST.md): the OATi
-  encours page, `historique-adjudications` and its files, the six
-  coefficient/index files, the key-figure pages — saved by hand (the desktop
-  script is challenged on every navigation), committed under
-  `data/incoming/`, then `ggfiscal debt ingest-incoming`; and, when
-  convenient, the DMO page's own export link for a past close-of-business
-  date.
+- **OQ-8 (committee, residual)**: nothing blocking. Optional: the DMO
+  page's own export link for a past close-of-business date; the AFT fiche
+  titre pages (first coupon dates); budget.gouv.fr programme 117 tables
+  (France's step A).
 - **OQ-9 (committee)**: an official series of gilts held by CG bodies (DMA,
   CRND) would turn the register-vs-ONS wedge into a holdings overlay.
 - Q-D7 (committee, later): PDF extraction rule for pre-register years.
@@ -80,14 +91,9 @@ ggfiscal debt build && ggfiscal debt validate && ggfiscal flatten
 python3 -m pytest tests/debt -q
 ```
 
-Next build steps: (1) FRA history once the second round is ingested —
-`register_fra.py` gains the auction history (`readers/aft.auctions_all`
-already reads every adjudications page in the store), positions rolled back
-from the snapshot through the flows as in `register_gbr.py`, ratios from the
-coefficient files' base indices recomputed on `FR_CPI_XT` / `EA_HICP_XT`
-(the DMO-style 3-month-lag formula is in `register_gbr.reference_rpi_3m`);
-then the full-year rule in `register.register_sums` lets France into the
-chains by itself; (2) per-ISIN APF holdings from the BOE_APF snapshots into
+Next build steps: (1) per-line buybacks for France if a source appears
+(the AFT bulletins), and the État's step-A totals (programme 117); (2)
+per-ISIN APF holdings from the BOE_APF snapshots into
 `official_holdings_lcu_mn` (DD11); (3) the LIBID fixings for the two
 floating-rate gilts if a source appears (DD10).
 
@@ -158,6 +164,15 @@ floating-rate gilts if a source appears (DD10).
   `_iadb-fromshowcolumns.asp` returns CSV when Datefrom ≥ series start,
   else HTML/302; curve workbooks: spot sheet, maturities row 4, dates from
   row 6.
+- AFT files: `hist_mlt` / `hist_btf` (auction histories, EUR mn, yields
+  and prices as fractions), `historique_syndications` (negative volume =
+  buyback), coefficient files (header block rows 2–8: kind, coupon,
+  maturity, base date, base index; daily data from row 10; the current
+  files cover 1998/2001 → the coming month, the `histo` files stop in 2016
+  and carry the lines matured since), `IPC` / `IPCH` (monthly index on
+  every base). The daily reference index is the 3-month-lag interpolation
+  of the monthly index (1.5e-5). Column 0 of a header list is falsy: never
+  `_col(...) or _col(...)`.
 - AFT: the encours pages are HTML tables (no Excel behind them); libellés
   carry coupon and maturity (`readers/aft.parse_libelle`); French amounts
   use space thousands and comma decimals, the English OAT€i page uses

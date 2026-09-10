@@ -1175,3 +1175,42 @@ round): the OATi encours page, the `historique-adjudications` page and its
 files (flows since 2018, the archives before), the six coefficient / index
 files, the key-figure pages; with the history the positions are rolled
 back from the snapshot as for the UK.
+
+## D-S10-007 — France complete on the per-security register: the AFT histories, the coefficient files, positions rolled back from the encours (serves DEBT_KICKOFF.md §12 D2–D4 FRA; closes the AFT part of OQ-8)
+2026-09-10 (night). The committee saved the second and third rounds by hand
+(OATi page, key-figure pages, six coefficient/index files, five auction
+history files). **Readers** (`readers/aft.py`): `coefficient_file` (daily
+reference index and coefficient per line, terms in the header block:
+kind, coupon, maturity, base date = date de jouissance, base index),
+`price_index` (the AFT monthly IPC / IPCH on every base), `history_mlt`
+(2,288 OAT/BTAN/OATi/OAT€i auctions 1999-01 → 2026-07), `history_btf`
+(4,029 tenders 1999 → 2026-07), `history_syndications` (45, two negative
+= buybacks). **Register** (`register_fra.py`): 1,603 securities (166 OAT/
+BTAN, 35 linkers, 1,402 BTF), 2,069 year-end positions 1999–2025 plus 106
+office snapshots, 7,903 flows, 92,139 ratio points (office daily for every
+linker in the coefficient files, recomputed monthly for the lines matured
+before the 2016 history files with the base at the coupon anniversary on
+or before the first settlement). Anchoring as for the UK: the encours
+walked back through the operations; a positive shortfall for a line first
+seen before 1999 is dated 1999-01-01 (pre-1999 issuance), a positive
+shortfall for a later line at its first operation, a negative one (bought
+back; the AFT publishes rachats only in aggregate) at the snapshot, so the
+year-ends before it are gross of the buyback; matured lines are Σ
+operations, redeemed at that amount (grade B). **Checks**: Σ BTF at 31
+December equals the AFT's own BTF total to the euro 2009–2020 and within
+0.3% 2021–2024; the uplifted linkers are within 3% of the AFT's
+oati_oatei total every year 2009–2025; the recomputed ratios reproduce the
+coefficient the AFT prints for each linker auction to 1e-5 (878 auctions);
+fixed-rate lines run 0.96 of the AFT total in 2009 (pre-1999 issues of
+lines matured 2009–2015 unseen) and 1.01–1.04 in 2014–2025 (the unseen
+buybacks). **Chains**: France enters both chains from 2000 (the full-year
+rule); the register meets S.1311 D.41 directly at step B (the État's own
+totals, step A, remain blocked): the interest residual falls from +31 EUR
+bn in 2000 to ≈0 in 2012 and stays within ±6 EUR bn 2013–2025 except 2020
+(−14); the financing residual at B is the whole cash/accrual wedge plus
+the aggregate-only buybacks and premia, published. `ggfiscal debt
+validate` 22 OK, 2 SKIP, 28 WARN unchanged. Ten French tests.
+**Open**: per-line buybacks, the pre-1999 lines, step A (OQ-8 residual
+asks: the PLF programme 117 tables), the ISIN "fiche titre" pages
+(first coupon dates: the register uses the base date from the
+coefficient files where available and the first auction otherwise).

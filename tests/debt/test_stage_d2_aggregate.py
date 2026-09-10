@@ -81,13 +81,18 @@ def test_subsector_b9_closes_the_s13_step_for_fra_deu(chains):
         assert (recent.abs() < 1.0).all(), iso3      # S.13 B.9 = Σ subsector B.9 in the source
 
 
-def test_no_register_means_null_residual_not_zero(chains):
-    """FRA has no reachable class-level interest: the register total must be
-    null and the step-B residual null, while step C still reconciles."""
+def test_blocked_step_means_null_residual_not_zero(chains):
+    """FRA's step A (the État's own interest, programme 117) is blocked: its
+    official total and residual must be null, never zero, while the computed
+    register (D-S10-007) carries through to step B, where the residual is
+    published, and step C still reconciles."""
     df = chains["interest"]
     g = df[(df["iso3"] == "FRA") & (df["year"] == 2024)].set_index(["step", "item"])["value_lcu_mn"]
-    assert pd.isna(g[("register", OFFICIAL_TOTAL)])
+    assert pd.notna(g[("register", OFFICIAL_TOTAL)])
     assert pd.isna(g[("A_cg_cash", OFFICIAL_TOTAL)]) and pd.isna(g[("A_cg_cash", RESIDUAL)])
-    assert pd.isna(g[("B_s1311_d41", RESIDUAL)])
+    assert pd.notna(g[("B_s1311_d41", RESIDUAL)])
     assert pd.notna(g[("C_s13_gf01_7", RESIDUAL)])
     assert g[("C_s13_gf01_7", CARRIED)] == g[("B_s1311_d41", OFFICIAL_TOTAL)]
+    # a year before the French register starts keeps the old shape
+    g0 = df[(df["iso3"] == "FRA") & (df["year"] == 1999)].set_index(["step", "item"])["value_lcu_mn"]
+    assert pd.isna(g0[("register", OFFICIAL_TOTAL)]) and pd.isna(g0[("B_s1311_d41", RESIDUAL)])
