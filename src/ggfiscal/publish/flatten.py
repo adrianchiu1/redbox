@@ -784,6 +784,16 @@ def write() -> dict[str, Path]:
                  for iso3 in COUNTRY_NAME}
     country_columns = {f"strict_{iso3}.csv": _country_columns(exp, rev, iso3)
                        for iso3 in COUNTRY_NAME}
+    # The debt extension's tables join the bundle verbatim (DEBT_KICKOFF.md
+    # DD12): files, dictionary rows and README descriptions come from
+    # ggfiscal.debt.flatten and are absent when the debt layer is not built.
+    from ggfiscal.debt.flatten import bundle as debt_bundle
+    debt_files, debt_dict, debt_desc = debt_bundle()
+    DESCRIPTIONS.update(debt_desc)
+    dictionary = _build_dictionary(country_columns)
+    if debt_dict:
+        dictionary = pd.concat([dictionary, pd.DataFrame(debt_dict, columns=dictionary.columns)],
+                               ignore_index=True)
     files = {
         "expenditure_cofog.csv": exp,
         "revenue_esa.csv": rev,
@@ -792,7 +802,8 @@ def write() -> dict[str, Path]:
         "weo_reconciliation.csv": _flat_reconciliation(),
         "series_catalogue.csv": _flat_catalogue(exp, rev),
         **countries,
-        "data_dictionary.csv": _build_dictionary(country_columns),
+        **debt_files,
+        "data_dictionary.csv": dictionary,
     }
     written: dict[str, Path] = {}
     for name, df in files.items():

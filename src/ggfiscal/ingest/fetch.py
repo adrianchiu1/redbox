@@ -62,6 +62,10 @@ def _ext_for(url: str, resp: requests.Response) -> str:
         return "json"
     if "xml" in ctype or "sdmx" in ctype:
         return "xml"
+    if url.lower().split("?")[0].endswith(".pdf") or "application/pdf" in ctype:
+        return "pdf"
+    if "text/html" in ctype:
+        return "html"
     return "bin"
 
 

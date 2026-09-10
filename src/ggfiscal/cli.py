@@ -200,5 +200,110 @@ def detect_vintages(hash: bool = typer.Option(
     typer.echo(f"\nwrote {dest}  ({n_action} finding(s) need action)")
 
 
+# ---------- debt extension (DEBT_KICKOFF.md) ----------
+
+debt_app = typer.Typer(no_args_is_help=True, add_completion=False,
+                       help="Debt securities register, interest/financing "
+                            "reconciliation, maturity profile (DEBT_KICKOFF.md).")
+app.add_typer(debt_app, name="debt")
+
+
+@debt_app.command("fetch")
+def debt_fetch(family: list[str] = typer.Option(None, "--family",
+                                                help="Restrict to these families")):
+    """Pull every debt-extension source into the snapshot store (Stage D0).
+    Blocked hosts (OQ-8) are reported, not skipped silently."""
+    from ggfiscal.debt.fetch import fetch_all as debt_fetch_all
+
+    ok, failed = debt_fetch_all(tuple(family) if family else None)
+    for rec in ok:
+        typer.echo(f"OK    {rec['source_id']}/{rec.get('part', '')}  "
+                   f"sha256={rec['sha256'][:12]}  {rec['size']} bytes")
+    for rec in failed:
+        typer.echo(f"FAIL  {rec['source_id']}/{rec.get('part', '')}  {rec['error']}: {rec['detail']}")
+    blocked = [r for r in failed if r["error"] == "FetchBlocked"]
+    if blocked:
+        typer.echo(f"\n{len(blocked)} pull(s) denied by egress policy — see OPEN_QUESTIONS.md OQ-8.")
+    if failed:
+        raise typer.Exit(code=1)
+
+
+@debt_app.command("build")
+def debt_build(no_curves: bool = typer.Option(False, "--no-curves",
+                                              help="Skip the BoE yield-curve series")):
+    """Reference series and official intermediate totals -> data/canonical/debt_*.csv (Stage D1)."""
+    from ggfiscal.debt.build import build as debt_build_
+
+    for name, p in debt_build_(include_curves=not no_curves).items():
+        typer.echo(f"wrote {name}: {p}")
+
+
+@debt_app.command("validate")
+def debt_validate():
+    """V29-V40 on the built debt tables -> data/canonical/debt_exceptions.csv (SKIP where the register is pending)."""
+    import csv
+    from ggfiscal import config as C
+    from ggfiscal.debt.validate import run_all as debt_run_all
+
+    findings = debt_run_all()
+    dest = C.repo_root() / "data" / "canonical" / "debt_exceptions.csv"
+    with open(dest, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["check_id", "severity", "scope", "message"])
+        for x in findings:
+            w.writerow([x.check_id, x.severity, x.scope, x.message])
+    counts: dict[str, int] = {}
+    for x in findings:
+        counts[x.severity] = counts.get(x.severity, 0) + 1
+    for x in findings:
+        if x.severity in ("ERROR", "WARN"):
+            typer.echo(f"{x.severity:5s} {x.check_id:5s} {x.scope}: {x.message}")
+    typer.echo(f"\n{' '.join(f'{k}={v}' for k, v in sorted(counts.items()))}  -> {dest}")
+    if counts.get("ERROR"):
+        raise typer.Exit(code=1)
+
+
+@debt_app.command("ingest-incoming")
+def debt_ingest_incoming(folder: str = typer.Option("data/incoming", "--folder")):
+    """Store hand-downloaded debt-office files as D8 snapshots (D-S7-001 route).
+    Layout: {folder}/{SOURCE_ID}/{part}.{ext}; the part must match a pull
+    definition in families/debt_offices.py (or a documented part name) so the
+    publication URL is recorded from it."""
+    from pathlib import Path
+    from ggfiscal import config as C
+    from ggfiscal.debt.families import debt_offices as DO
+    from ggfiscal.ingest.fetch import ingest_local
+
+    known = {(p.source_id, p.part): p.url for p in DO.pulls()}
+    known.update({(p.source_id, p.part): p.url for p in DO.cob_pulls()})
+    known.update({(sid, part): url for (sid, part, url) in DO.HAND_PARTS})
+    root = C.repo_root() / folder
+    n = 0
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.name.startswith("."):
+            continue
+        sid, part = path.parent.name, path.stem
+        url = known.get((sid, part))
+        if url is None and sid == "FRA_AFT_ENCOURS" and part.startswith("isin_"):
+            url = f"{DO.AFT}/fr/encours-detaille-oat#{part[5:]}"      # the ISIN page linked from the encours table
+        if url is None and "_file_" in part:
+            url = known.get((sid, part.split("_file_")[0]))                # a file linked from a saved page
+        if url is None:
+            typer.echo(f"SKIP  {sid}/{part}: unknown part name (see families/debt_offices.py)")
+            continue
+        head = path.read_bytes()[:30000]
+        text = head.decode("utf-8", "ignore")
+        if any(m in text for m in DO.CHALLENGE_MARKERS):
+            typer.echo(f"SKIP  {sid}/{part}: bot-challenge page, not data")
+            continue
+        if len(head) < 400 and any(m in text for m in DO.STUB_MARKERS):
+            typer.echo(f"SKIP  {sid}/{part}: server stub ({text.strip()[:60]!r}), not data")
+            continue
+        rec = ingest_local(path, sid, part, url, note="hand-downloaded by the committee (OQ-8, bot-challenged host)")
+        typer.echo(f"OK    {rec['source_id']}/{rec['part']}  sha256={rec['sha256'][:12]}  {rec['size']} bytes")
+        n += 1
+    typer.echo(f"\n{n} file(s) ingested from {root}")
+
+
 if __name__ == "__main__":
     app()

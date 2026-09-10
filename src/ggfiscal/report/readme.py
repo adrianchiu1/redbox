@@ -63,6 +63,89 @@ def _fmt_int(v) -> str:
         return "—"
 
 
+def _debt_section(root: Path) -> list[str]:
+    """DEBT_KICKOFF.md: the debt-in-issue extension, present once
+    `ggfiscal debt build` has run."""
+    import pandas as pd
+    p = root / "data" / "canonical" / "debt_interest_reconciliation.csv"
+    if not p.exists():
+        return []
+    chains = {c: pd.read_csv(root / "data" / "canonical" / f"debt_{c}_reconciliation.csv")
+              for c in ("interest", "financing")}
+    agg = pd.read_csv(root / "data" / "canonical" / "debt_class_aggregates.csv")
+    rows = []
+    for iso3 in ("GBR", "FRA", "DEU"):
+        cells = [iso3]
+        for c in ("interest", "financing"):
+            df = chains[c]
+            for step in sorted(df["step"].unique(), key=lambda s: ["register", "A", "B", "C"].index(s[0]) if s[0] in "ABC" else 0):
+                if step == "register":
+                    continue
+                r = df[(df["iso3"] == iso3) & (df["step"] == step) & (df["item"] == "residual")].dropna(subset=["value_lcu_mn"])
+                cells.append(f"{int(r['year'].min())}–{int(r['year'].max())}" if len(r) else "—")
+        a = agg[(agg["iso3"] == iso3) & agg["in_register"]]
+        cells.append(f"{int(a['year'].min())}–{int(a['year'].max())}" if len(a) else "—")
+        rows.append("| " + " | ".join(cells) + " |")
+    return [
+        "## Debt in issue (DEBT_KICKOFF.md)",
+        "",
+        "The debt extension adds the central-government debt-securities "
+        "register and two reconciliation chains — **interest**: Σ register by "
+        "instrument class → finance-ministry interest → S.1311 D.41 → "
+        "`GF01_7`; **financing**: Σ net issuance → CG net cash requirement → "
+        "S.1311 net borrowing → `NLB` — each step carrying its official "
+        "bridge items and a published residual (never allocated), plus the "
+        "reference series (RPI, CPI/HICP ex-tobacco, SONIA, Bank Rate, money-"
+        "market rates, BoE curves). The register step is the computed per-"
+        "security register where one is built (Germany from the Finanzagentur "
+        "files, the United Kingdom from the DMO reports: every security, its "
+        "year-end positions, operations and index ratios, interest per security "
+        "on both bases, the maturity profile and issuance by residual-maturity "
+        "bucket) and the ministries' own instrument-class aggregates (DD8) "
+        "elsewhere (France, until the AFT files arrive — OQ-8). Files: "
+        "`deliverables/debt_*.csv`; notebook: "
+        "[`notebooks/debtbook.ipynb`](notebooks/debtbook.ipynb).",
+        "",
+        "Years with a published residual per step (interest A/B/C, financing "
+        "A/B/C) and the aggregate layer's span:",
+        "",
+        "| country | int A | int B | int C | fin A | fin B | fin C | aggregates |",
+        "|---|---|---|---|---|---|---|---|",
+        *rows,
+        "",
+        *_register_rows(root),
+    ]
+
+
+def _register_rows(root: Path) -> list[str]:
+    """Per-country register coverage: securities, positions span, flows."""
+    import pandas as pd
+    p = root / "data" / "canonical" / "debt_securities.csv"
+    if not p.exists():
+        return []
+    secs = pd.read_csv(p)
+    if secs.empty:
+        return []
+    pos = pd.read_csv(root / "data" / "canonical" / "debt_positions.csv", parse_dates=["as_of"])
+    fl = pd.read_csv(root / "data" / "canonical" / "debt_flows.csv", parse_dates=["settlement_date"])
+    out = ["Per-security register (stage D2–D4) per country:", "",
+           "| country | securities | classes | year-end positions | flows | register source |",
+           "|---|---|---|---|---|---|"]
+    for iso3 in ("GBR", "FRA", "DEU"):
+        s = secs[secs["iso3"] == iso3]
+        if s.empty:
+            out.append(f"| {iso3} | — | — | — | — | aggregate layer only (OQ-8) |")
+            continue
+        pp = pos[(pos["iso3"] == iso3) & (pos["as_of"].dt.month == 12)]
+        ff = fl[fl["iso3"] == iso3]
+        classes = ", ".join(f"{k} {v}" for k, v in s["instrument_class"].value_counts().items())
+        span = f"{pp['as_of'].dt.year.min()}–{pp['as_of'].dt.year.max()} ({len(pp):,} rows)" if len(pp) else "—"
+        src = ", ".join(sorted(set(s["source_id"])))
+        out.append(f"| {iso3} | {len(s):,} | {classes} | {span} | {len(ff):,} ({ff['settlement_date'].dt.year.min()}–"
+                   f"{ff['settlement_date'].dt.year.max()}) | {src} |")
+    return out + [""]
+
+
 def _coverage_section(root: Path) -> list[str]:
     cm = pd.read_csv(root / "data" / "canonical" / "coverage_matrix.csv")
     out = []
@@ -284,6 +367,7 @@ def write(path: Path | None = None) -> Path:
                      f"{_FLAT.get(name, 'guide to the bundle')} |")
     lines += [
         "",
+        *_debt_section(root),
         "## Coverage (66 line series)",
         "",
         "Spans per line and variant, from `coverage_matrix.csv` (which adds "

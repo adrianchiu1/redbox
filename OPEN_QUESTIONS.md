@@ -149,3 +149,96 @@ as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
 (b) wait for DSM 2026 (expected ~Feb 2027) and re-run, or (c) keep the 2027
 stop. The V5-style diagnostics and both sources' snapshots are in place; no
 code change needed for any option.
+
+## OQ-8 — Debt-office hosts: DMO harvested; AFT saved by hand in three rounds — the three registers are built (updated 2026-09-10 night; see D-S10-007)
+
+**Update 2026-09-10 (night).** All three rounds of AFT files are in the
+store and France's register is complete on them. What remains behind the
+hosts, none of it blocking: (a) the DMO page's own export link for a past
+close-of-business date (the year-end positions the DMO publishes, to cross-
+check the rolled positions); (b) the AFT "fiche titre" pages per ISIN
+(first coupon dates), and the AFT's monthly bulletins if a per-line
+buyback record exists in them; (c) budget.gouv.fr programme 117 tables for
+the État's own interest (step A). The desktop script keeps its AFT part
+for the day the challenge relents.
+
+## OQ-8 (evening) — Debt-office hosts: DMO harvested; AFT pages saved by hand, second round listed (updated 2026-09-10 evening; see D-S10-006)
+
+**Update 2026-09-10 (evening).** Nine AFT pages saved by the committee are
+ingested and read; the French snapshot register is built. The AFT
+challenges every automated navigation and its static files, so the
+remaining items are a second hand-save round (DOWNLOAD_LIST.md, "AFT, second
+round"): the OATi encours page, the auction-history page and its files, the
+six indexation/index files, the key-figure pages. With the auction history
+the French positions are rolled back from the snapshot as the UK's are.
+
+## OQ-8 (afternoon) — Debt-office hosts: DMO reachable and harvested; AFT still needs the desktop run (updated 2026-09-10 pm; see D-S10-005)
+
+**Update 2026-09-10 (afternoon).** The DMO's export endpoint clears the
+challenge for the package's browser session (`ggfiscal debt fetch --family
+debt_offices`): 14 reports snapshotted, the UK register is built. Two
+residual asks: (a) **AFT** — run `python tools/harvest_offices_local.py
+--only aft` on a desktop, commit `data/incoming/`, then `ggfiscal debt
+ingest-incoming`; (b) **DMO year-end positions** — on the Gilts in Issue page
+pick a past close-of-business date, right-click the Excel/XML icon and send
+the link (the `COBDate` parameter is ignored by the xml export and answered
+with a stub by the xls export; the page's own link must carry the date
+elsewhere). Not blocking: positions are rolled from the operations record and
+verified against the office's anchors (D-S10-005).
+
+## OQ-9 — UK gilts held inside central government: the ONS/DMR gilt stock is consolidated, the DMO's register is gross (raised 2026-09-10, D-S10-005)
+The register's conventional gilts exceed HMT DMR table A.1 and ONS PSA8A_1
+BKPM by 150–171 £bn (8%) at end-2023/2024/2025, and the ONS gilt stock by
+7–17% from 2008, while the index-linked unindexed nominal matches the DMR to
+the million. The ONS series (F.332 at nominal, consolidated within S.1311)
+and the DMR table net out gilts held by central-government bodies — the Debt
+Management Account, the CRND funds (National Insurance Fund etc.) and others;
+the register carries the DMO's gross creation, as DD1 requires. The same
+wedge appears in the financing chain (ONS F.332 net financing vs Σ register
+issuance: −57 £bn in 2022, −63/−40 in 2008/2009). **Ask:** is an official
+series of gilts held by CG bodies (by year, ideally by ISIN) known to the
+committee — the DMA's annual accounts, the CRND accounts, or the ONS PSF
+methodology's consolidation table? With it the wedge becomes a DD11 holdings
+overlay and an official step-A item; without it the residual stays published
+as it is now.
+
+Earlier update (kept):
+## OQ-8 (morning) — Debt-office hosts: allowlisted 2026-09-10; DMO and AFT behind interactive captchas (see D-S10-004)
+
+**Update 2026-09-10.** The committee allowlisted every domain. Finanzagentur,
+Bundesbank, ECB, Banque de France and budget.gouv.fr are reachable on plain
+HTTP and harvested (Germany's register is complete). `www.dmo.gov.uk` and
+`www.aft.gouv.fr` answer with JavaScript challenges (Radware ShieldSquare,
+Cloudflare); the committee authorised a browser session, which cleared both
+on first contact, but after the debugging visits both sites now serve
+interactive captchas to this address. **Ask (either):** (a) hand-download
+the files in `DOWNLOAD_LIST.md` into `data/incoming/` and run
+`ggfiscal debt ingest-incoming` — 60 files, of which the UK year-end
+position snapshots (28) and the AFT Excel exports (13) matter most; or
+(b) allow a cooled-off retry of `browser.py` in a day or two, ideally from a
+different egress address, one careful pass with no debugging.
+
+Original item (kept):
+## OQ-8 (original) — Debt-office and central-bank hosts denied by the egress policy (2026-09-09)
+Raised 2026-09-09 (D-S10-001). Every bond-level source for the debt
+extension is unreachable from this environment; the agent cannot change
+the allowlist — it is an environment network setting the committee
+controls (the route used for OQ-1 and OQ-6). Tested denied: `www.dmo.gov.uk`
+(and `pwlb.gov.uk`, `crnd.gov.uk`, `data.gov.uk`), `www.aft.gouv.fr` (and
+every `*.data.gouv.fr`, `webstat.banque-france.fr`, `www.budget.gouv.fr`,
+`www.performance-publique.budget.gouv.fr`, `bdm.insee.fr`, `api.insee.fr`),
+`www.deutsche-finanzagentur.de` (and `www.bundesbank.de`,
+`api.statistiken.bundesbank.de`, `genesis.destatis.de`, `www.bundeshaushalt.de`),
+`data-api.ecb.europa.eu`, `www.ecb.europa.eu`, `www.emmi-benchmarks.eu`,
+`web.archive.org`. **Ask:** allowlist, in priority order:
+1. `www.dmo.gov.uk`, `www.aft.gouv.fr`, `www.deutsche-finanzagentur.de`
+   (the registers);
+2. `www.bundesbank.de`, `api.statistiken.bundesbank.de`,
+   `webstat.banque-france.fr`, `data-api.ecb.europa.eu` (yields, TEC10,
+   €STR/Euribor, pre-1995 German issuance statistics);
+3. `www.budget.gouv.fr`, `www.performance-publique.budget.gouv.fr`
+   (programme 117 interest tables), `bdm.insee.fr`.
+Fallback per D-S7-001: hand-download the file lists in `DEBT_SCOPING.md`
+§6 and ingest with `ggfiscal ingest-file`. Until either happens the
+extension builds the reference series, the official intermediates and the
+DEU aggregate layer (all reachable), and the per-security register waits.

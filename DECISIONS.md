@@ -994,3 +994,272 @@ of GDP), and the pipeline reports that discrepancy as its own component
 rather than absorbing it into ours. A test now pins the full identity,
 and a second pins that a horizon with no covered line contributes nothing
 covered. pytest 122 passed; no data file changed.
+## D-S10-001 — Debt-in-issue extension scoped; committee accepted the defaults; `DEBT_KICKOFF.md` v1.0 governs the debt side (serves §1 extension, §16; new decisions DD1–DD13)
+2026-09-09. The committee asked for the register of central-government
+marketable debt securities per country, with per-security interest,
+issuance/redemption/buy-back flows and a residual-maturity profile, each
+reconciled to the package's `GF01_7` and `NLB`. A research pass (four
+source catalogues, condensed in `DEBT_SCOPING.md`) established that every
+bond-level publisher (DMO, AFT, Finanzagentur) and every central-bank data
+host is denied by the egress policy, while the statistical and
+finance-ministry sources around them are reachable and verified. The
+committee accepted all eleven scoping defaults (Q-D1–Q-D11), recorded as
+DD1–DD13 in `DEBT_KICKOFF.md` v1.0: central-government marketable
+securities incl. bills; accrued and cash interest both computed, uplift as
+interest; three-step reconciliation chains with official intermediates and
+published residuals (never allocated); calendar year with GBR financial-
+year memoranda; residual-maturity bucketing at settlement for issuance;
+machine-readable sources only in this phase; BoE APF overlay and BoE yield
+curves stored now; reference-rate gaps declared `not_computable`. Build
+proceeds in the same package as `ggfiscal.debt` with register entries in
+`config/debt_sources.yaml` merged into `config.sources()`, so the source
+register and vintage detection cover the extension without a second
+mechanism. The access question is OQ-8; harvest of reachable sources
+(Stage D0) does not wait for it.
+
+## D-S10-002 — Stages D0 and D1 complete on the reachable sources; the debt-office hosts remain the D2 blocker (serves DEBT_KICKOFF.md §12 D0–D1, §13; depends on OQ-8)
+2026-09-09. Four source families harvested into the D8 store with readers
+and tests: BoE (18 pulls: APF operations per ISIN 2009–, yield curves
+1979–, SONIA, Bank Rate), ONS/HMT (41: PSF Appendix A and S, PUSF and RPI
+series, Debt Management Reports, National Loans Fund accounts 2005-06–),
+BMF (20: Datenportal monthly Bund debt/issuance/redemptions/interest by
+instrument 1996–, Kreditaufnahmeberichte 2013–2025, Monatsbericht,
+Haushaltsrechnung), Eurostat/INSEE/OECD (59: D.41 and B.9 by subsector,
+debt by instrument/holder/maturity, quarterly debt, HICP and CPI
+ex-tobacco, money-market and long rates, OECD quarterly public-sector
+debt). The debt-office family carries complete pull definitions (incl.
+the month-end D1A COBDate loop) that fail on the egress denial and are
+reported, not skipped. `ggfiscal debt build` writes two schema-checked
+canonical tables: `debt_reference_series` (350 series incl. the BoE
+curves) and `debt_official_totals` — the step A/B/C intermediates of both
+chains per country-year. Findings that shape D2–D4: (i) the two GBR
+step-A/B measures (NLF finance costs, ONS NMFX) agree within 10% and the
+package's GF01_7 sits 1–2% above NMFX; (ii) DEU step A is cash-like
+(disagio at value date until 2024) and swings against S.1311 D.41 by up
+to 15 EUR bn in 2023, exactly the bridge item the chain must carry;
+(iii) FRA has no reachable step A; (iv) Eurostat's remaining-maturity
+table starts 2020 for FRA and carries four of seven bands for DEU, so
+the maturity cross-check is thin outside the register; (v) BMF HTML
+carries per-request bot-manager tokens, so hash-based vintage detection
+must normalise it. Per DD8 the next step while OQ-8 is open is an
+aggregate class-level layer (ministry instrument-type totals, grade B/C)
+feeding the register step of both chains, so the reconciliations can be
+published for every year the aggregates cover and replaced security by
+security as the offices become reachable.
+
+## D-S10-003 — Both reconciliation chains published on the aggregate class layer; what closes, what remains, and the DEU perimeter choice (serves DEBT_KICKOFF.md §8, §12 D2–D5, DD4/DD5/DD8; depends on OQ-8)
+2026-09-09. With the debt offices still denied (OQ-8), the register step of
+both chains is the ministries' own instrument-class aggregates (DD8; config
+`register_selection` names the one consistent row set per country so a
+source's total is never added to its components). Results, residual by step:
+  - **DEU interest**: step A closes to zero 1996–2025 (BMF instrument
+    leaves + the Mitfinanzierung item = Kreditaufnahmebericht annex 4.5);
+    step B is the cash-vs-accrual wedge (agio/disagio at value date until
+    2024; Eurostat's ORD41A_ADJ item is applied where published); step C
+    carries Länder, local and social-security D.41 and leaves the
+    consolidation/COFOG-vs-D.41 wedge (≈ 2–4 EUR bn).
+  - **DEU financing**: step A closes to zero 2019–2025 (special funds
+    subtracted, annex 4.10 derivation items applied; the 2023 edition's
+    correction-booking rows and 2019's reversed wrapping are parsed);
+    2009–2018 use the narrative-table NKA (narrower concept, whole EUR mn)
+    with the derivation items unavailable, residual published. Step B adds
+    the special funds back (they are S.1311) and the Eurostat EDP
+    stock-flow items 2022–; what remains is the S.1311 perimeter beyond the
+    Bund and its funds (FMS-Wertmanagement and other federal units) and is
+    left as residual, not allocated. Step C closes exactly.
+  - **GBR interest**: step A is the NLF finance costs (FY→CY per §7.10)
+    with NS&I and other costs as items, closing by construction 2009–2024;
+    step B (NLF → ONS NMFX) has no published bridge and swings ±£10 bn with
+    the index-linked uplift; step C carries local-government D.41 (PSA6J)
+    and leaves the COFOG-vs-D.41 wedge (≈ £0.1–0.2 bn).
+  - **GBR financing**: step A closes to zero 1997–2025 (ONS Appendix S is
+    an identity); step B closes to £2 mn (REC2 columns + PSA7C coverage
+    items); step C closes to ≤ £13 mn (PSA2 local-government net borrowing).
+  - **FRA**: no step A on either chain (programme 117, AFT blocked);
+    interest step B has no carried value and step C closes to the
+    consolidation/COFOG wedge (≈ 1.5–4 EUR bn); financing register = Δ
+    year-end stock (INSEE/AFT, Eurostat), step B via Eurostat EDP items
+    2021– leaves −0.6 to −4 EUR bn (buy-backs and ODAC perimeter), step C
+    closes exactly.
+Decision on the DEU step-A concept: the core-budget Nettokreditaufnahme is
+kept as the step-A total (it is the published, audited figure) and the
+special funds are re-added at step B, rather than inventing an S.1311-wide
+cash measure. All residuals are published per (country, year, step); V32
+additivity is exact; `ggfiscal debt validate` reports 19 OK, 25 WARN (V31
+Bund-vs-S.1311 perimeter, ≤ 8% narrowing to 1%), 8 SKIP (register checks).
+Deliverables: `deliverables/debt_*.csv` (five files, in the dictionary and
+README) and `notebooks/debtbook.ipynb`.
+
+## D-S10-004 — Germany's per-security register built and reconciled; the DMO and AFT need a browser and now serve interactive captchas (serves DEBT_KICKOFF.md §12 D2–D4; updates OQ-8)
+2026-09-10. With every domain allowlisted, the Finanzagentur served all
+its files on plain HTTP: the per-ISIN annual list since 1995, the monthly
+list, the auction history, the three index-ratio archives and the
+Kreditaufnahmeberichte 2004–2012. `register_deu.py` builds 1,654
+securities, 5,348 year-end positions (1995–2025), 6,163 flows and 31,102
+index ratios; Σ nominal reproduces the office's Umlaufvolumen exactly
+(1.0000 in 2024) and the recurrence snapshot(t) = snapshot(t−1) + Σ flows
+holds to the cent on the sampled Bunds. The engine now computes interest
+per security (13,866 security-years, one not computable), the maturity
+profile and issuance by bucket for every year, and the chains take the
+computed register sums at Germany's register step with three computed
+step-A items derived from the same flows: issue premia/discounts at value
+date, accrued interest received on reopenings, and the change in the
+Bund's own book. What remains at step A (2005–2025) is −1 to −8 EUR bn:
+largest in the negative-yield years, where the ministry's net figure
+includes interest income the register cannot see. Decisions: (i) the
+computed register uses the CASH basis at the register step because the
+ministries' step-A totals are cash; the accrued figures are published
+alongside in `debt_interest_by_security`; (ii) securities issued before
+the auction history (1999) lack coupons in some cases, so the register
+step is short before ~2003 — the aggregate layer remains the better
+register for those years and the tests start at 2005; (iii) retail paper
+listed by the office (Bundesschatzbriefe, Finanzierungsschätze) stays in
+`other` so the office's own total reproduces, flagged for a strict DD1
+consumer. The DMO and AFT: reachable, but both answer with JavaScript
+challenges; the committee authorised a browser session (browser.py: TLS
+capped at 1.2 through the proxy, one landing navigation per host, polite
+interval), which cleared both challenges on first contact but, after the
+repeated automated visits needed to debug the route, both sites now
+serve interactive captchas. Automated attempts are stopped; the hand-
+download list (`DOWNLOAD_LIST.md`, `ggfiscal debt ingest-incoming`) and a
+cooled-off retry are the two ways forward, recorded in OQ-8.
+
+## D-S10-005 — The UK register from the DMO's own reports: positions rolled from the operations record, ratios recomputed from the RPI, chains on the accrued basis (serves DEBT_KICKOFF.md §12 D2–D4 GBR; updates OQ-8, raises OQ-9)
+2026-09-10. **Access.** The DMO's export endpoint
+(`/umbraco/surface/DataExport/GetDataExport?reportCode=…&exportFormatValue=…`)
+is reachable from the build box through the committee-authorised browser
+session: the ShieldSquare challenge clears for it, while the HTML report
+pages keep re-challenging. Each report exports in exactly one presentation
+type — xml for D1A, D2.1E, D4L, D10C, D2.2D; xls for D1C, D2.1A, D2.1PROF7,
+D2.1PROF9, D10A (an HTML table under the .xls name), D8B, D2.2E, D2.2G —
+and every other pair, the plain `ExportReport` form and the `COBDate`
+year-end snapshots answer with the 35-byte stub "Unable to fulfil the report
+request" under a 200 (the committee's desktop run had saved 37 of these as
+data; the family, the ingest command and the desktop script now refuse
+them). D1D, D5I, D9C and D2.2A export in no format. Fourteen reports are
+snapshotted; the AFT still needs the desktop run.
+**Method.** With no positions table by date, the register takes the office's
+two anchors — nominal in issue at the close of business (D1A) and nominal
+outstanding at redemption for every gilt redeemed since 1981 (D1C) — and
+walks them back through the complete operations record (D2.1E, signed
+nominal per operation since 1981-03-27). Σ operations reproduces D1A for
+102 of 104 gilts in issue and D1C for every redeemed gilt the record covers
+(tranches such as `8½% Treasury Loan 2007 A` folded into their parent);
+where the sum falls short — pre-1981 issues, early-1990s tenders the extract
+omits, and the 154 older stocks with no operation at all — the difference is
+one `implied` flow dated 1981-01-01, graded B/C and never allocated to a
+later date, so the year-end positions are exact from each security's first
+recorded operation and constant before it. Bills are one security per
+maturity date from the tender history (D2.2D, from April 2000), redeemed at
+par. Index ratios: the DMO's 3-month-lag formula on the ONS RPI reproduces
+every D10C reference RPI and ratio to 5 dp, so ratios are recomputed for the
+whole life of every linker (monthly points; the formula is linear within the
+month, as the engine interpolates); 8-month linkers use RPI(m−8) on the base
+of the issue month. **Result.** 1,747 securities (283 conventional, 56
+index-linked, 2 floating, 1,406 bills), 4,404 year-end positions 1981–2025
+plus 104 office snapshots, 8,173 flows, 10,562 ratio points; the recurrence
+snapshot(t) = snapshot(t−1) + Σ flows holds on all 3,499 year-end pairs. The
+unindexed nominal of index-linked gilts equals HMT's DMR table A.1 to the
+million at end-2023/2024/2025 (382.0 / 393.5 / 433.4 £bn) and the uplifted
+nominal is within 0.7–1.3%; bills equal ONS BKPJ exactly 2001–2006 (later
+years carry bilateral/ad hoc bills outside the tender history, 0.6–1.0).
+Conventional gilts exceed the DMR/ONS figure by 150–171 £bn (8%) in
+2023–2025 and the ONS gilt stock by 7–17% from 2008: the ONS and DMR
+figures are consolidated within central government (gilts held by the DMA,
+CRND funds and other CG bodies netted), the register is the DMO's gross
+creation — raised as OQ-9, published as V31, never adjusted. Before 2005
+the register is short of the ONS stock (0.85 in 1997): gilts converted or
+switched out in full before 2000 appear in neither D1C nor D2.1E.
+**Chains.** (i) The UK register enters the interest chain on the ACCRUED
+basis: the NLF accounts are accruals-based, so HMT's step-A total carries
+accrued uplift and effective-interest amortisation, and the BMF-style
+value-date bridges do not apply; the basis and the bridge items are now per
+country in `config/debt.yaml` `register_chain_items` (DEU unchanged: cash
+with the two value-date items). Step A then closes to within ±3.3 £bn
+(≤ 6%) in every year 2010–2024 except 2009 (+8.4, the deflation year's
+negative uplift), 2012 (+4.8) and 2021 (+6.3), with National Savings and
+the other NLF finance costs as the only out-of-register items. (ii) The
+financing chain gains one computed bridge, `issuance_cash_less_nominal` (Σ
+cash raised − nominal created, from the priced operations: −19.7 £bn in
+2022, +34.5 in 2020); step A then closes within ±13 £bn 2010–2025 except
+2022 (−61) and 2008–2009 (−53, −41), the years in which the ONS F.332
+financing row (net of gilts acquired by CG bodies) departs furthest from the
+DMO's gross issuance — the same OQ-9 wedge. `ggfiscal debt validate`: 22 OK,
+2 SKIP, 28 WARN (V29 bills between year-ends, V30 DEU pre-1999, V31 DEU
+perimeter, V36 three floaters); 13 new GBR tests. **Not done:** the UK
+year-end positions panel from the office itself (needs the page's own
+export link, see DOWNLOAD_LIST.md), per-ISIN APF holdings (DD11 overlay,
+BOE_APF snapshots are in the store), the two floating-rate gilts' LIBID
+fixings (DD10), France.
+
+## D-S10-006 — France: the AFT pages saved by the committee are the register; a snapshot register until the auction history arrives (serves DEBT_KICKOFF.md §12 D2 FRA; updates OQ-8)
+2026-09-10 (evening). **Access.** The AFT challenges every navigation of an
+automated browser and even its static Excel files from this box, so the
+committee saved nine pages by hand (Ctrl+S, "HTML only") and pushed them;
+`ggfiscal debt ingest-incoming` accepts the page parts (`oat`, `btf`,
+`oatei`, `dernieres`, `archives`, `oati_page`, `oatei_page`, `rapports`,
+`bulletins_index`) and files linked from a page as `{page}_file_{name}`.
+The pages are the data: the encours détaillé tables (ISIN, libellé, encours
+by maturity year) are what the DMO publishes as D1A. **Reader**
+(`readers/aft.py`): the libellé carries the terms (``OAT 2,50 % 24
+septembre 2026``, ``GREEN OAT€i 0.10% 25 JULY 2038``, ``OAT zéro coupon 28
+mars 2028``), amounts come in French and English formats, the adjudications
+tables are pivoted from attribute rows to one row per (auction, ISIN) with
+``Volume total émis = adjugé + ONC``. **Register** (`register_fra.py`): 101
+securities (59 OAT incl. 5 green, 12 OAT€i, 30 BTF; the OATi page is on the
+committee's list), positions at the pages' retrieval date
+(`office_snapshot`; the page states no date), the current month's eight
+auctions as flows; no ratios yet (the base indices are in the AFT
+coefficient files, also listed). Σ OAT 2,404 EUR bn, OAT€i 184, BTF 218;
+the aggregate layer's 307 for all linkers at end-2025 is the OATi gap.
+**Chains.** A register enters a chain year only when it covers the whole
+year (a position on or before 1 January: a 31 December anchor), so the
+French snapshot register contributes nothing to the chains — France stays
+on the DD8 aggregate layer — and its partial-year 2026 interest lives only
+in `debt_interest_by_security`. Same rule for every country
+(`register.register_sums`). The maturity profile is now also computed at
+each office's latest snapshot (the current profile), which is the French
+register's first DD7 output. **Next** (OQ-8, DOWNLOAD_LIST.md second
+round): the OATi encours page, the `historique-adjudications` page and its
+files (flows since 2018, the archives before), the six coefficient / index
+files, the key-figure pages; with the history the positions are rolled
+back from the snapshot as for the UK.
+
+## D-S10-007 — France complete on the per-security register: the AFT histories, the coefficient files, positions rolled back from the encours (serves DEBT_KICKOFF.md §12 D2–D4 FRA; closes the AFT part of OQ-8)
+2026-09-10 (night). The committee saved the second and third rounds by hand
+(OATi page, key-figure pages, six coefficient/index files, five auction
+history files). **Readers** (`readers/aft.py`): `coefficient_file` (daily
+reference index and coefficient per line, terms in the header block:
+kind, coupon, maturity, base date = date de jouissance, base index),
+`price_index` (the AFT monthly IPC / IPCH on every base), `history_mlt`
+(2,288 OAT/BTAN/OATi/OAT€i auctions 1999-01 → 2026-07), `history_btf`
+(4,029 tenders 1999 → 2026-07), `history_syndications` (45, two negative
+= buybacks). **Register** (`register_fra.py`): 1,603 securities (166 OAT/
+BTAN, 35 linkers, 1,402 BTF), 2,069 year-end positions 1999–2025 plus 106
+office snapshots, 7,903 flows, 92,139 ratio points (office daily for every
+linker in the coefficient files, recomputed monthly for the lines matured
+before the 2016 history files with the base at the coupon anniversary on
+or before the first settlement). Anchoring as for the UK: the encours
+walked back through the operations; a positive shortfall for a line first
+seen before 1999 is dated 1999-01-01 (pre-1999 issuance), a positive
+shortfall for a later line at its first operation, a negative one (bought
+back; the AFT publishes rachats only in aggregate) at the snapshot, so the
+year-ends before it are gross of the buyback; matured lines are Σ
+operations, redeemed at that amount (grade B). **Checks**: Σ BTF at 31
+December equals the AFT's own BTF total to the euro 2009–2020 and within
+0.3% 2021–2024; the uplifted linkers are within 3% of the AFT's
+oati_oatei total every year 2009–2025; the recomputed ratios reproduce the
+coefficient the AFT prints for each linker auction to 1e-5 (878 auctions);
+fixed-rate lines run 0.96 of the AFT total in 2009 (pre-1999 issues of
+lines matured 2009–2015 unseen) and 1.01–1.04 in 2014–2025 (the unseen
+buybacks). **Chains**: France enters both chains from 2000 (the full-year
+rule); the register meets S.1311 D.41 directly at step B (the État's own
+totals, step A, remain blocked): the interest residual falls from +31 EUR
+bn in 2000 to ≈0 in 2012 and stays within ±6 EUR bn 2013–2025 except 2020
+(−14); the financing residual at B is the whole cash/accrual wedge plus
+the aggregate-only buybacks and premia, published. `ggfiscal debt
+validate` 22 OK, 2 SKIP, 28 WARN unchanged. Ten French tests.
+**Open**: per-line buybacks, the pre-1999 lines, step A (OQ-8 residual
+asks: the PLF programme 117 tables), the ISIN "fiche titre" pages
+(first coupon dates: the register uses the base date from the
+coefficient files where available and the first auction otherwise).
