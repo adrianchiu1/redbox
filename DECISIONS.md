@@ -1040,3 +1040,37 @@ additivity is exact; `ggfiscal debt validate` reports 19 OK, 25 WARN (V31
 Bund-vs-S.1311 perimeter, ≤ 8% narrowing to 1%), 8 SKIP (register checks).
 Deliverables: `deliverables/debt_*.csv` (five files, in the dictionary and
 README) and `notebooks/debtbook.ipynb`.
+
+## D-S10-004 — Germany's per-security register built and reconciled; the DMO and AFT need a browser and now serve interactive captchas (serves DEBT_KICKOFF.md §12 D2–D4; updates OQ-8)
+2026-09-10. With every domain allowlisted, the Finanzagentur served all
+its files on plain HTTP: the per-ISIN annual list since 1995, the monthly
+list, the auction history, the three index-ratio archives and the
+Kreditaufnahmeberichte 2004–2012. `register_deu.py` builds 1,654
+securities, 5,348 year-end positions (1995–2025), 6,163 flows and 31,102
+index ratios; Σ nominal reproduces the office's Umlaufvolumen exactly
+(1.0000 in 2024) and the recurrence snapshot(t) = snapshot(t−1) + Σ flows
+holds to the cent on the sampled Bunds. The engine now computes interest
+per security (13,866 security-years, one not computable), the maturity
+profile and issuance by bucket for every year, and the chains take the
+computed register sums at Germany's register step with three computed
+step-A items derived from the same flows: issue premia/discounts at value
+date, accrued interest received on reopenings, and the change in the
+Bund's own book. What remains at step A (2005–2025) is −1 to −8 EUR bn:
+largest in the negative-yield years, where the ministry's net figure
+includes interest income the register cannot see. Decisions: (i) the
+computed register uses the CASH basis at the register step because the
+ministries' step-A totals are cash; the accrued figures are published
+alongside in `debt_interest_by_security`; (ii) securities issued before
+the auction history (1999) lack coupons in some cases, so the register
+step is short before ~2003 — the aggregate layer remains the better
+register for those years and the tests start at 2005; (iii) retail paper
+listed by the office (Bundesschatzbriefe, Finanzierungsschätze) stays in
+`other` so the office's own total reproduces, flagged for a strict DD1
+consumer. The DMO and AFT: reachable, but both answer with JavaScript
+challenges; the committee authorised a browser session (browser.py: TLS
+capped at 1.2 through the proxy, one landing navigation per host, polite
+interval), which cleared both challenges on first contact but, after the
+repeated automated visits needed to debug the route, both sites now
+serve interactive captchas. Automated attempts are stopped; the hand-
+download list (`DOWNLOAD_LIST.md`, `ggfiscal debt ingest-incoming`) and a
+cooled-off retry are the two ways forward, recorded in OQ-8.

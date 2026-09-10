@@ -150,7 +150,23 @@ as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
 stop. The V5-style diagnostics and both sources' snapshots are in place; no
 code change needed for any option.
 
-## OQ-8 — Debt-office and central-bank hosts denied by the egress policy (NEW, 2026-09-09; blocks Stages D2–D4 for the bond-level register)
+## OQ-8 — Debt-office hosts: allowlisted 2026-09-10; DMO and AFT now behind interactive captchas (updated; see D-S10-004)
+
+**Update 2026-09-10.** The committee allowlisted every domain. Finanzagentur,
+Bundesbank, ECB, Banque de France and budget.gouv.fr are reachable on plain
+HTTP and harvested (Germany's register is complete). `www.dmo.gov.uk` and
+`www.aft.gouv.fr` answer with JavaScript challenges (Radware ShieldSquare,
+Cloudflare); the committee authorised a browser session, which cleared both
+on first contact, but after the debugging visits both sites now serve
+interactive captchas to this address. **Ask (either):** (a) hand-download
+the files in `DOWNLOAD_LIST.md` into `data/incoming/` and run
+`ggfiscal debt ingest-incoming` — 60 files, of which the UK year-end
+position snapshots (28) and the AFT Excel exports (13) matter most; or
+(b) allow a cooled-off retry of `browser.py` in a day or two, ideally from a
+different egress address, one careful pass with no debugging.
+
+Original item (kept):
+## OQ-8 (original) — Debt-office and central-bank hosts denied by the egress policy (2026-09-09)
 Raised 2026-09-09 (D-S10-001). Every bond-level source for the debt
 extension is unreachable from this environment; the agent cannot change
 the allowlist — it is an environment network setting the committee
