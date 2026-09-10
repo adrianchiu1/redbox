@@ -100,13 +100,26 @@ def is_stub(body: bytes) -> bool:
     return len(body) < 400 and any(m in body.decode("utf-8", "ignore") for m in STUBS)
 
 
-def wait_human(page, what: str) -> None:
-    """Block until the interstitial is gone; the person at the screen solves it."""
-    t0 = time.time()
-    while is_challenge(page.content()):
-        if time.time() - t0 > 20 and int(time.time() - t0) % 20 == 0:
+def wait_human(page, what: str, limit_s: int = 600) -> bool:
+    """Block until the interstitial is gone; the person at the screen solves it.
+    Returns True when a challenge had to be cleared. A page that is mid-reload
+    (the challenge redirecting) cannot be read for a moment; that is retried,
+    not treated as an error."""
+    t0, seen, warned = time.time(), False, 0
+    while time.time() - t0 < limit_s:
+        try:
+            html = page.content()
+        except Exception:
+            page.wait_for_timeout(700)
+            continue
+        if not is_challenge(html):
+            return seen
+        seen = True
+        if time.time() - t0 > 20 * (warned + 1):
+            warned += 1
             print(f"   ... waiting for you to clear the challenge on {what}", flush=True)
         page.wait_for_timeout(1500)
+    raise RuntimeError("challenge not cleared in time")
 
 
 def ext_for(name: str, body: bytes) -> str:
@@ -240,7 +253,7 @@ def capture_click(page, source: str, part: str, seconds: int = 180) -> bool:
         return False
 
 
-def run_aft(ctx, browser, click: bool = False) -> list[str]:
+def run_aft(ctx, browser, click: bool = False, no_isin: bool = False) -> list[str]:
     failed = []
     print("\n== AFT: each page is saved as data; file links on it are downloaded; ISIN pages follow.")
     page = None
@@ -281,29 +294,37 @@ def run_aft(ctx, browser, click: bool = False) -> list[str]:
                     page.wait_for_timeout(1500)
                 if click:
                     capture_click(page, source, f"{part}_clicked")
-            # one page per ISIN on the encours pages
-            if source == "FRA_AFT_ENCOURS":
-                seen = set()
-                for h, t in links:
+            # one page per ISIN on the encours pages — in the SAME tab (a new
+            # tab is challenged again); after three challenges in a row the
+            # crawl stops and the encours table already saved stands
+            if source == "FRA_AFT_ENCOURS" and not no_isin:
+                seen, streak, saved = set(), 0, 0
+                isin_links = [(h, t) for h, t in links if (ISIN_LINK_RE.search(h) or ISIN_LINK_RE.search(t))
+                              and not h.startswith("mailto")]
+                for h, t in isin_links:
                     m = ISIN_LINK_RE.search(h) or ISIN_LINK_RE.search(t)
-                    if not m or m.group(1) in seen or h.startswith("mailto"):
+                    if m.group(1) in seen:
                         continue
                     seen.add(m.group(1))
                     dest = INCOMING / source / f"isin_{m.group(1)}.html"
                     if dest.exists():
                         continue
-                    sub = ctx.new_page()
                     try:
-                        sub.goto(h, wait_until="domcontentloaded", timeout=90000)
-                        wait_human(sub, h)
-                        sub_html = sub.content()
+                        page.goto(h, wait_until="domcontentloaded", timeout=90000)
+                        challenged = wait_human(page, h, limit_s=120)
+                        streak = streak + 1 if challenged else 0
+                        sub_html = page.content()
                         if not is_challenge(sub_html):
                             save(source, f"isin_{m.group(1)}", sub_html.encode("utf-8"), "x.html")
+                            saved += 1
                     except Exception as e:
                         print(f"   .. {h[-60:]}: {str(e)[:60]}", flush=True)
-                    finally:
-                        sub.close()
-                    page.wait_for_timeout(1500)
+                        streak += 1
+                    if streak >= 3:
+                        print(f"   !! the site challenges every ISIN page; stopping the ISIN crawl after {saved} "
+                              f"of {len(isin_links)} (rerun later with --part {part}, saved pages are skipped)", flush=True)
+                        break
+                    page.wait_for_timeout(2500)
         except Exception as e:
             print(f"FAIL {source}/{part}: {str(e)[:160]}", flush=True)
             failed.append(f"{source}/{part}")
@@ -318,6 +339,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", choices=["dmo", "aft"])
     ap.add_argument("--part", help="run one part only, e.g. oat (AFT) or D1A (DMO)")
+    ap.add_argument("--no-isin", action="store_true", help="AFT: skip the per-ISIN pages")
     ap.add_argument("--click", action="store_true",
                     help="AFT: after the automatic downloads, wait for you to click a file link on each page")
     ap.add_argument("--cob", action="store_true",
@@ -342,7 +364,7 @@ def main() -> int:
         if a.only in (None, "dmo"):
             failed += run_dmo(ctx, not a.cob, formats)
         if a.only in (None, "aft"):
-            failed += run_aft(ctx, browser, a.click)
+            failed += run_aft(ctx, browser, a.click, a.no_isin)
         browser.close()
     print(f"\ndone; {len(failed)} failed: {failed}" if failed else "\ndone; all files saved under data/incoming/")
     print("next: git add data/incoming && git commit -m 'DMO/AFT files' && git push   (then: ggfiscal debt ingest-incoming)")
