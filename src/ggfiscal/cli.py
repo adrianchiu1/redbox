@@ -284,6 +284,10 @@ def debt_ingest_incoming(folder: str = typer.Option("data/incoming", "--folder")
             continue
         sid, part = path.parent.name, path.stem
         url = known.get((sid, part))
+        if url is None and sid == "FRA_AFT_ENCOURS" and part.startswith("isin_"):
+            url = f"{DO.AFT}/fr/encours-detaille-oat#{part[5:]}"      # the ISIN page linked from the encours table
+        if url is None and "_file_" in part:
+            url = known.get((sid, part.split("_file_")[0]))                # a file linked from a saved page
         if url is None:
             typer.echo(f"SKIP  {sid}/{part}: unknown part name (see families/debt_offices.py)")
             continue

@@ -73,22 +73,23 @@ def dmo_jobs(skip_cob: bool) -> list[tuple[str, str, str, str]]:
     return jobs
 
 
-# AFT pages: (source, part, page URL, regex the wanted link's href or text must match)
+# AFT pages: (source, part the page's HTML is saved as, page URL, regex of
+# file links to download from it, or None). The encours pages ARE the data (an
+# HTML table of ISIN / libellé / encours by maturity year) and link to one page
+# per ISIN, which is saved too.
 AFT_PAGES = [
-    ("FRA_AFT_ENCOURS", "oat_xlsx", f"{AFT}/fr/encours-detaille-oat", r"\.xlsx?$"),
-    ("FRA_AFT_ENCOURS", "btf_xlsx", f"{AFT}/fr/encours-detaille-btf", r"\.xlsx?$"),
-    ("FRA_AFT_ENCOURS", "oatei_xlsx", f"{AFT}/en/encours-detaille-oatei", r"\.xlsx?$"),
-    ("FRA_AFT_ADJUDICATIONS", "hist_oat", f"{AFT}/fr/dernieres-adjudications", r"hist.*oat.*\.xlsx?$"),
-    ("FRA_AFT_ADJUDICATIONS", "hist_btf", f"{AFT}/fr/dernieres-adjudications", r"hist.*btf.*\.xlsx?$"),
-    ("FRA_AFT_ADJUDICATIONS", "archives_oat", f"{AFT}/fr/dernieres-adjudications-archives", r"(oat|btan).*\.xlsx?$"),
-    ("FRA_AFT_ADJUDICATIONS", "archives_btf", f"{AFT}/fr/dernieres-adjudications-archives", r"btf.*\.xlsx?$"),
-    ("FRA_AFT_INDEXATION", "oati_current", f"{AFT}/fr/oati-principaux-chiffres", r"^(?!.*1998).*\.xlsx?$"),
-    ("FRA_AFT_INDEXATION", "oati_hist_1998", f"{AFT}/fr/oati-principaux-chiffres", r"1998.*\.xlsx?$"),
-    ("FRA_AFT_INDEXATION", "oatei_current", f"{AFT}/en/oateuroi-key-figures", r"^(?!.*2005).*\.xlsx?$"),
-    ("FRA_AFT_INDEXATION", "oatei_hist_2005", f"{AFT}/en/oateuroi-key-figures", r"2005.*\.xlsx?$"),
-    ("FRA_AFT_FINANCEMENT", "rapport_2024", f"{AFT}/fr/rapports-activite", r"2024.*\.pdf$"),
-    ("FRA_AFT_FINANCEMENT", "rapport_2023", f"{AFT}/fr/rapports-activite", r"2023.*\.pdf$"),
+    ("FRA_AFT_ENCOURS", "oat", f"{AFT}/fr/encours-detaille-oat", None),
+    ("FRA_AFT_ENCOURS", "btf", f"{AFT}/fr/encours-detaille-btf", None),
+    ("FRA_AFT_ENCOURS", "oatei", f"{AFT}/en/encours-detaille-oatei", None),
+    ("FRA_AFT_ADJUDICATIONS", "dernieres", f"{AFT}/fr/dernieres-adjudications", r"\.(xlsx?|csv)$"),
+    ("FRA_AFT_ADJUDICATIONS", "archives", f"{AFT}/fr/dernieres-adjudications-archives", r"\.(xlsx?|csv)$"),
+    ("FRA_AFT_INDEXATION", "oati_page", f"{AFT}/fr/oati-principaux-chiffres", r"\.(xlsx?|csv)$"),
+    ("FRA_AFT_INDEXATION", "oatei_page", f"{AFT}/en/oateuroi-key-figures", r"\.(xlsx?|csv)$"),
+    ("FRA_AFT_FINANCEMENT", "rapports", f"{AFT}/fr/rapports-activite", None),
+    ("FRA_AFT_FINANCEMENT", "bulletins_index", f"{AFT}/fr/bulletins-mensuels", None),
+    ("FRA_AFT_ENCOURS", "dette_negociable", f"{AFT}/fr/dette-negociable", None),
 ]
+ISIN_LINK_RE = re.compile(r"(FR[0-9A-Z]{10})")
 
 
 def is_challenge(html: str) -> bool:
@@ -239,10 +240,12 @@ def capture_click(page, source: str, part: str, seconds: int = 180) -> bool:
         return False
 
 
-def run_aft(ctx, browser) -> list[str]:
+def run_aft(ctx, browser, click: bool = False) -> list[str]:
     failed = []
-    print("\n== AFT: same again; the page's Excel links are picked up automatically, or you click them.")
+    print("\n== AFT: each page is saved as data; file links on it are downloaded; ISIN pages follow.")
     page = None
+    log = INCOMING / "_aft_links.txt"
+    log.parent.mkdir(parents=True, exist_ok=True)
     for source, part, page_url, pattern in AFT_PAGES:
         if ONLY_PART and part != ONLY_PART:
             continue
@@ -252,32 +255,55 @@ def run_aft(ctx, browser) -> list[str]:
             page.goto(page_url, wait_until="domcontentloaded", timeout=90000)
             wait_human(page, page_url)
             links = page_links(page)
-            cands = match_links(links, pattern)
-            log = INCOMING / "_aft_links.txt"
-            log.parent.mkdir(parents=True, exist_ok=True)
+            html = page.content()
+            if is_challenge(html):
+                raise RuntimeError("still a challenge page")
+            save(source, part, html.encode("utf-8"), f"{part}.html")
             with open(log, "a", encoding="utf-8") as f:
                 f.write(f"\n## {source}/{part}  {page_url}\n")
                 for h, t in links:
                     f.write(f"{h}\t{t[:80]}\n")
-            done = False
-            for u in cands[:3]:
-                try:
-                    with page.expect_download(timeout=60000) as dl:
-                        page.evaluate("u => { const a = document.createElement('a'); a.href = u; a.download = ''; "
-                                      "document.body.appendChild(a); a.click(); }", u)
-                    d = dl.value
-                    body = Path(d.path()).read_bytes()
-                    if is_challenge(body.decode("utf-8", "ignore")[:20000]) or len(body) < 400:
+            # files linked from the page (strict match only)
+            if pattern:
+                rx = re.compile(pattern, re.I)
+                for i, u in enumerate([h for h, t in links if rx.search(h.split("?")[0])][:12]):
+                    name = re.sub(r"[^A-Za-z0-9._-]+", "_", u.split("?")[0].rsplit("/", 1)[-1])[:60]
+                    try:
+                        with page.expect_download(timeout=60000) as dl:
+                            page.evaluate("u => { const a = document.createElement('a'); a.href = u; "
+                                          "a.download = ''; document.body.appendChild(a); a.click(); }", u)
+                        d = dl.value
+                        body = Path(d.path()).read_bytes()
+                        if not is_challenge(body.decode("utf-8", "ignore")[:20000]) and len(body) >= 400:
+                            save(source, f"{part}_file_{name}", body, d.suggested_filename)
+                    except Exception as e:
+                        print(f"   .. {u[-60:]}: {str(e)[:60]}", flush=True)
+                    page.wait_for_timeout(1500)
+                if click:
+                    capture_click(page, source, f"{part}_clicked")
+            # one page per ISIN on the encours pages
+            if source == "FRA_AFT_ENCOURS":
+                seen = set()
+                for h, t in links:
+                    m = ISIN_LINK_RE.search(h) or ISIN_LINK_RE.search(t)
+                    if not m or m.group(1) in seen or h.startswith("mailto"):
                         continue
-                    save(source, part, body, d.suggested_filename)
-                    done = True
-                    break
-                except Exception as e:
-                    print(f"   .. {u[-60:]}: {str(e)[:60]}", flush=True)
-            if not done:
-                done = capture_click(page, source, part)
-            if not done:
-                raise RuntimeError(f"no download for this page; every link on it is listed in {log}")
+                    seen.add(m.group(1))
+                    dest = INCOMING / source / f"isin_{m.group(1)}.html"
+                    if dest.exists():
+                        continue
+                    sub = ctx.new_page()
+                    try:
+                        sub.goto(h, wait_until="domcontentloaded", timeout=90000)
+                        wait_human(sub, h)
+                        sub_html = sub.content()
+                        if not is_challenge(sub_html):
+                            save(source, f"isin_{m.group(1)}", sub_html.encode("utf-8"), "x.html")
+                    except Exception as e:
+                        print(f"   .. {h[-60:]}: {str(e)[:60]}", flush=True)
+                    finally:
+                        sub.close()
+                    page.wait_for_timeout(1500)
         except Exception as e:
             print(f"FAIL {source}/{part}: {str(e)[:160]}", flush=True)
             failed.append(f"{source}/{part}")
@@ -291,7 +317,9 @@ def run_aft(ctx, browser) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", choices=["dmo", "aft"])
-    ap.add_argument("--part", help="run one part only, e.g. oat_xlsx (AFT) or D1A (DMO)")
+    ap.add_argument("--part", help="run one part only, e.g. oat (AFT) or D1A (DMO)")
+    ap.add_argument("--click", action="store_true",
+                    help="AFT: after the automatic downloads, wait for you to click a file link on each page")
     ap.add_argument("--cob", action="store_true",
                     help="also try the 28 UK year-end D1A snapshots (COBDate=); off by default because the "
                          "export ignores the date in xml and returns a stub in xls (2026-09-10)")
@@ -314,7 +342,7 @@ def main() -> int:
         if a.only in (None, "dmo"):
             failed += run_dmo(ctx, not a.cob, formats)
         if a.only in (None, "aft"):
-            failed += run_aft(ctx, browser)
+            failed += run_aft(ctx, browser, a.click)
         browser.close()
     print(f"\ndone; {len(failed)} failed: {failed}" if failed else "\ndone; all files saved under data/incoming/")
     print("next: git add data/incoming && git commit -m 'DMO/AFT files' && git push   (then: ggfiscal debt ingest-incoming)")
