@@ -15,6 +15,8 @@ Afterwards:     git add data/incoming && git commit -m "DMO/AFT files" && git pu
                 ggfiscal debt ingest-incoming
 
 Polite by design: one browser, one tab per file, a pause between requests.
+Keep the browser window open until the script prints "done": the script
+drives it, and a closed window ends the run.
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+ONLY_PART = None
 INCOMING = ROOT / "data" / "incoming"
 DMO = "https://www.dmo.gov.uk"
 AFT = "https://www.aft.gouv.fr"
@@ -165,6 +168,8 @@ def run_dmo(ctx, skip_cob: bool, formats: list[str]) -> list[str]:
     print("\n== DMO: a browser window will open; if you see a captcha, solve it and the script continues.")
     formats = list(formats)
     for source, part, code, cob in dmo_jobs(skip_cob):
+        if ONLY_PART and part != ONLY_PART:
+            continue
         if part == "D1A_xml":
             tries = ["xml"]
         elif code in KNOWN_FORMAT:
@@ -192,36 +197,101 @@ def run_dmo(ctx, skip_cob: bool, formats: list[str]) -> list[str]:
     return failed
 
 
-def run_aft(ctx) -> list[str]:
+LINK_TEXT_HINTS = ("xls", "excel", "télécharger", "telecharger", "download", "fichier", "tableau")
+
+
+def page_links(page) -> list[tuple[str, str]]:
+    """Every anchor's (href, text) plus download attributes, after the page has
+    settled (the AFT lists its files from scripts on some pages)."""
+    try:
+        page.wait_for_load_state("networkidle", timeout=15000)
+    except Exception:
+        pass
+    return page.eval_on_selector_all(
+        "a[href]", "els => els.map(e => [e.href, (e.textContent || '').trim() + ' ' + (e.getAttribute('download') || '') "
+                   "+ ' ' + (e.getAttribute('title') || '')])")
+
+
+def match_links(links, pattern: str) -> list[str]:
+    rx = re.compile(pattern, re.I)
+    strict = [h for h, t in links if rx.search(h.split("?")[0]) or rx.search(t)]
+    if strict:
+        return strict
+    # broader: anything that looks like a spreadsheet download, by href or text
+    return [h for h, t in links
+            if re.search(r"xlsx?|\.csv|/download|/dl/|/files?/", h, re.I) or any(k in t.lower() for k in LINK_TEXT_HINTS)]
+
+
+def capture_click(page, source: str, part: str, seconds: int = 180) -> bool:
+    """Fallback: the person clicks the file link in the visible window; the
+    script captures whatever download that starts and saves it under the
+    right name."""
+    print(f"   >> In the browser window, click the Excel link for {source}/{part} "
+          f"(you have {seconds} s; press nothing here).", flush=True)
+    try:
+        with page.expect_download(timeout=seconds * 1000) as dl:
+            pass
+        d = dl.value
+        save(source, part, Path(d.path()).read_bytes(), d.suggested_filename)
+        return True
+    except Exception as e:
+        print(f"   .. no download captured ({str(e)[:60]})", flush=True)
+        return False
+
+
+def run_aft(ctx, browser) -> list[str]:
     failed = []
-    page = ctx.new_page()
-    print("\n== AFT: same again; the page's Excel links are picked up automatically.")
+    print("\n== AFT: same again; the page's Excel links are picked up automatically, or you click them.")
+    page = None
     for source, part, page_url, pattern in AFT_PAGES:
+        if ONLY_PART and part != ONLY_PART:
+            continue
+        if page is None or page.is_closed():
+            page = ctx.new_page()
         try:
             page.goto(page_url, wait_until="domcontentloaded", timeout=90000)
             wait_human(page, page_url)
-            links = page.eval_on_selector_all("a[href]", "els => els.map(e => [e.href, e.textContent.trim()])")
-            rx = re.compile(pattern, re.I)
-            cands = [h for h, t in links if rx.search(h.split("?")[0]) or rx.search(t)]
-            if not cands:
-                raise RuntimeError(f"no link matching /{pattern}/ on the page; download by hand into "
-                                   f"data/incoming/{source}/{part}.xlsx")
-            with page.expect_download(timeout=90000) as dl:
-                page.evaluate("u => { const a = document.createElement('a'); a.href = u; a.download = ''; "
-                              "document.body.appendChild(a); a.click(); }", cands[0])
-            d = dl.value
-            save(source, part, Path(d.path()).read_bytes(), d.suggested_filename)
+            links = page_links(page)
+            cands = match_links(links, pattern)
+            log = INCOMING / "_aft_links.txt"
+            log.parent.mkdir(parents=True, exist_ok=True)
+            with open(log, "a", encoding="utf-8") as f:
+                f.write(f"\n## {source}/{part}  {page_url}\n")
+                for h, t in links:
+                    f.write(f"{h}\t{t[:80]}\n")
+            done = False
+            for u in cands[:3]:
+                try:
+                    with page.expect_download(timeout=60000) as dl:
+                        page.evaluate("u => { const a = document.createElement('a'); a.href = u; a.download = ''; "
+                                      "document.body.appendChild(a); a.click(); }", u)
+                    d = dl.value
+                    body = Path(d.path()).read_bytes()
+                    if is_challenge(body.decode("utf-8", "ignore")[:20000]) or len(body) < 400:
+                        continue
+                    save(source, part, body, d.suggested_filename)
+                    done = True
+                    break
+                except Exception as e:
+                    print(f"   .. {u[-60:]}: {str(e)[:60]}", flush=True)
+            if not done:
+                done = capture_click(page, source, part)
+            if not done:
+                raise RuntimeError(f"no download for this page; every link on it is listed in {log}")
         except Exception as e:
             print(f"FAIL {source}/{part}: {str(e)[:160]}", flush=True)
             failed.append(f"{source}/{part}")
-        page.wait_for_timeout(1500)
-    page.close()
+            if "closed" in str(e).lower():
+                page = None
+        if page is not None and not page.is_closed():
+            page.wait_for_timeout(1500)
     return failed
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", choices=["dmo", "aft"])
+    ap.add_argument("--part", help="run one part only, e.g. oat_xlsx (AFT) or D1A (DMO)")
     ap.add_argument("--cob", action="store_true",
                     help="also try the 28 UK year-end D1A snapshots (COBDate=); off by default because the "
                          "export ignores the date in xml and returns a stub in xls (2026-09-10)")
@@ -229,6 +299,8 @@ def main() -> int:
                     help="presentation-type token for the DMO Excel export, if known (default: try "
                          + ", ".join(DMO_FORMATS) + " in turn)")
     a = ap.parse_args()
+    global ONLY_PART
+    ONLY_PART = a.part
     formats = [a.dmo_format] + [f for f in DMO_FORMATS if f != a.dmo_format] if a.dmo_format else DMO_FORMATS
     try:
         from playwright.sync_api import sync_playwright
@@ -242,7 +314,7 @@ def main() -> int:
         if a.only in (None, "dmo"):
             failed += run_dmo(ctx, not a.cob, formats)
         if a.only in (None, "aft"):
-            failed += run_aft(ctx)
+            failed += run_aft(ctx, browser)
         browser.close()
     print(f"\ndone; {len(failed)} failed: {failed}" if failed else "\ndone; all files saved under data/incoming/")
     print("next: git add data/incoming && git commit -m 'DMO/AFT files' && git push   (then: ggfiscal debt ingest-incoming)")
