@@ -7,7 +7,8 @@ Rewritten 2026-09-10, end of session 9 (the debt-in-issue extension, on
 
 **Debt extension (DEBT_KICKOFF.md v1.0): D0–D5 complete on the per-security
 register for Germany (D-S10-004) and the United Kingdom (D-S10-005); France
-runs on the DD8 aggregate layer until the AFT files arrive (OQ-8).** The
+has a snapshot register from the AFT pages (D-S10-006) and runs on the DD8
+aggregate layer in the chains until the auction history arrives (OQ-8).** The
 parent package is untouched except: `config.sources()` merges
 `config/debt_sources.yaml`; the snapshot store names pdf/html extensions;
 pypdf, cffi, bs4 are dependencies. Parent baseline still 120 passed (the
@@ -38,6 +39,17 @@ rerun alone).
 - Tests: `tests/debt` 200 passed, 6 skipped (13 new GBR); deliverables and
   README regenerated; notebook re-executed with a register section.
 
+## Session 9, second part (D-S10-006): France
+
+- Nine AFT pages saved by the committee (Cloudflare challenges every
+  automated navigation, static files included) → `readers/aft.py`,
+  `register_fra.py`: 101 securities, positions at the retrieval date, the
+  month's auctions as flows. Snapshot register: it does not enter the
+  chains (full-year coverage rule in `register.register_sums`), France
+  stays on the aggregate layer until the auction history is saved
+  (DOWNLOAD_LIST.md second round).
+- Maturity profile now also at each office's latest snapshot.
+
 ## Sessions 7–8 in brief
 
 - Session 7: `DEBT_SCOPING.md` → `DEBT_KICKOFF.md` v1.0; `ggfiscal.debt`
@@ -49,10 +61,13 @@ rerun alone).
 
 ## Blocked on whom
 
-- **OQ-8 (committee)**: AFT files — `python tools/harvest_offices_local.py
-  --only aft` on a desktop, commit `data/incoming/`, then `ggfiscal debt
-  ingest-incoming`; and, when convenient, the DMO page's own export link for
-  a past close-of-business date (DOWNLOAD_LIST.md).
+- **OQ-8 (committee)**: the AFT second round (DOWNLOAD_LIST.md): the OATi
+  encours page, `historique-adjudications` and its files, the six
+  coefficient/index files, the key-figure pages — saved by hand (the desktop
+  script is challenged on every navigation), committed under
+  `data/incoming/`, then `ggfiscal debt ingest-incoming`; and, when
+  convenient, the DMO page's own export link for a past close-of-business
+  date.
 - **OQ-9 (committee)**: an official series of gilts held by CG bodies (DMA,
   CRND) would turn the register-vs-ONS wedge into a holdings overlay.
 - Q-D7 (committee, later): PDF extraction rule for pre-register years.
@@ -65,11 +80,14 @@ ggfiscal debt build && ggfiscal debt validate && ggfiscal flatten
 python3 -m pytest tests/debt -q
 ```
 
-Next build steps: (1) FRA from the AFT Excel files once ingested —
-`register_fra.py` on the `register_gbr.py` / `register_deu.py` pattern
-(encours détaillé per line = positions; adjudications = flows; the OATi/OAT€i
-coefficient files or the recomputation from `FR_CPI_XT` / `EA_HICP_XT` =
-ratios); (2) per-ISIN APF holdings from the BOE_APF snapshots into
+Next build steps: (1) FRA history once the second round is ingested —
+`register_fra.py` gains the auction history (`readers/aft.auctions_all`
+already reads every adjudications page in the store), positions rolled back
+from the snapshot through the flows as in `register_gbr.py`, ratios from the
+coefficient files' base indices recomputed on `FR_CPI_XT` / `EA_HICP_XT`
+(the DMO-style 3-month-lag formula is in `register_gbr.reference_rpi_3m`);
+then the full-year rule in `register.register_sums` lets France into the
+chains by itself; (2) per-ISIN APF holdings from the BOE_APF snapshots into
 `official_holdings_lcu_mn` (DD11); (3) the LIBID fixings for the two
 floating-rate gilts if a source appears (DD10).
 
@@ -140,6 +158,13 @@ floating-rate gilts if a source appears (DD10).
   `_iadb-fromshowcolumns.asp` returns CSV when Datefrom ≥ series start,
   else HTML/302; curve workbooks: spot sheet, maturities row 4, dates from
   row 6.
+- AFT: the encours pages are HTML tables (no Excel behind them); libellés
+  carry coupon and maturity (`readers/aft.parse_libelle`); French amounts
+  use space thousands and comma decimals, the English OAT€i page uses
+  commas and a `.00`; auction pages are attribute rows × lines, ISIN last;
+  `Volume total émis = adjugé + ONC`. The site challenges every automated
+  navigation and its `/files/` downloads; a person's browser passes once
+  per page.
 - Playwright/Chromium through the agent proxy: `--disable-quic`,
   `--disable-features=PostQuantumKyber,UseMLKEM,EncryptedClientHello`,
   `--ssl-version-max=tls1.2`; never `pkill -f` a pattern that matches your

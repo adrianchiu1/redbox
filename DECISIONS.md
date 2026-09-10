@@ -1142,3 +1142,36 @@ year-end positions panel from the office itself (needs the page's own
 export link, see DOWNLOAD_LIST.md), per-ISIN APF holdings (DD11 overlay,
 BOE_APF snapshots are in the store), the two floating-rate gilts' LIBID
 fixings (DD10), France.
+
+## D-S10-006 — France: the AFT pages saved by the committee are the register; a snapshot register until the auction history arrives (serves DEBT_KICKOFF.md §12 D2 FRA; updates OQ-8)
+2026-09-10 (evening). **Access.** The AFT challenges every navigation of an
+automated browser and even its static Excel files from this box, so the
+committee saved nine pages by hand (Ctrl+S, "HTML only") and pushed them;
+`ggfiscal debt ingest-incoming` accepts the page parts (`oat`, `btf`,
+`oatei`, `dernieres`, `archives`, `oati_page`, `oatei_page`, `rapports`,
+`bulletins_index`) and files linked from a page as `{page}_file_{name}`.
+The pages are the data: the encours détaillé tables (ISIN, libellé, encours
+by maturity year) are what the DMO publishes as D1A. **Reader**
+(`readers/aft.py`): the libellé carries the terms (``OAT 2,50 % 24
+septembre 2026``, ``GREEN OAT€i 0.10% 25 JULY 2038``, ``OAT zéro coupon 28
+mars 2028``), amounts come in French and English formats, the adjudications
+tables are pivoted from attribute rows to one row per (auction, ISIN) with
+``Volume total émis = adjugé + ONC``. **Register** (`register_fra.py`): 101
+securities (59 OAT incl. 5 green, 12 OAT€i, 30 BTF; the OATi page is on the
+committee's list), positions at the pages' retrieval date
+(`office_snapshot`; the page states no date), the current month's eight
+auctions as flows; no ratios yet (the base indices are in the AFT
+coefficient files, also listed). Σ OAT 2,404 EUR bn, OAT€i 184, BTF 218;
+the aggregate layer's 307 for all linkers at end-2025 is the OATi gap.
+**Chains.** A register enters a chain year only when it covers the whole
+year (a position on or before 1 January: a 31 December anchor), so the
+French snapshot register contributes nothing to the chains — France stays
+on the DD8 aggregate layer — and its partial-year 2026 interest lives only
+in `debt_interest_by_security`. Same rule for every country
+(`register.register_sums`). The maturity profile is now also computed at
+each office's latest snapshot (the current profile), which is the French
+register's first DD7 output. **Next** (OQ-8, DOWNLOAD_LIST.md second
+round): the OATi encours page, the `historique-adjudications` page and its
+files (flows since 2018, the archives before), the six coefficient / index
+files, the key-figure pages; with the history the positions are rolled
+back from the snapshot as for the UK.

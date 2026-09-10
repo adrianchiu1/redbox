@@ -96,6 +96,9 @@ def build_maturity_tables(reg: dict[str, pd.DataFrame], run_id: str) -> tuple[pd
         if p.empty:
             continue
         year_ends = sorted(d for d in p["as_of"].unique() if pd.Timestamp(d).month == 12 and pd.Timestamp(d).day == 31)
+        latest = p["as_of"].max()                     # the office's latest snapshot: the current profile
+        if latest not in year_ends:
+            year_ends.append(latest)
         for d in year_ends:
             prof = M.maturity_profile(secs, p, pd.Timestamp(d), iso3)
             if len(prof):
@@ -143,11 +146,23 @@ def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
     Only countries with a register appear."""
     rows = []
     secs = reg["debt_securities"].set_index(["iso3", "security_id"])["instrument_class"]
+    # a register enters a chain year only when it covers the whole year: a
+    # position on or before 1 January of that year (a 31 December year-end
+    # anchor). A snapshot-only register (FRA until its auction history is in
+    # the store) contributes nothing to the chains, and its partial-year
+    # interest stays in debt_interest_by_security alone.
+    pos = reg["debt_positions"]
+    first_anchor = pos.groupby("iso3")["as_of"].min() if len(pos) else pd.Series(dtype="datetime64[ns]")
+
+    def covered(iso3: str, year: int) -> bool:
+        a = first_anchor.get(iso3)
+        return a is not None and pd.notna(a) and pd.Timestamp(a) <= pd.Timestamp(year=int(year), month=1, day=1)
+
     if len(interest):
         it = interest[interest["computability"] == "computed"].copy()
         it["instrument_class"] = [secs.get((a, b)) for a, b in zip(it["iso3"], it["security_id"])]
         for (iso3, year, klass, basis), g in it.groupby(["iso3", "year", "instrument_class", "basis"]):
-            if basis != _chain_items(iso3, chain_items)["interest_basis"]:
+            if basis != _chain_items(iso3, chain_items)["interest_basis"] or not covered(iso3, year):
                 continue
             rows.append({"iso3": iso3, "year": int(year), "chain": "interest",
                          "instrument_class": klass, "value_lcu_mn": float(g["total_lcu_mn"].sum()),
@@ -162,6 +177,8 @@ def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
         fl["_v"] = fl["nominal_lcu_mn"] * fl["flow_type"].map(sign).fillna(0)
         fl["year"] = fl["settlement_date"].dt.year
         for (iso3, year, klass), g in fl.groupby(["iso3", "year", "instrument_class"]):
+            if not covered(iso3, year):
+                continue
             rows.append({"iso3": iso3, "year": int(year), "chain": "financing",
                          "instrument_class": klass, "value_lcu_mn": float(g["_v"].sum()),
                          "n_securities": int(g["security_id"].nunique()), "basis": "nominal"})
@@ -175,7 +192,8 @@ def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
         # discount raises less cash than the nominal added to the debt)
         cashed = fl[fl["cash_lcu_mn"].notna() & fl["flow_type"].isin(["auction", "syndication", "tap", "tender"])]
         for (iso3, year), g in cashed.groupby(["iso3", cashed["settlement_date"].dt.year]):
-            if "issuance_cash_less_nominal" not in _chain_items(iso3, chain_items)["financing_bridge_A"]:
+            if "issuance_cash_less_nominal" not in _chain_items(iso3, chain_items)["financing_bridge_A"] \
+                    or not covered(iso3, year):
                 continue
             rows.append({"iso3": iso3, "year": int(year), "chain": "financing_bridge_A",
                          "instrument_class": "issuance_cash_less_nominal",
@@ -208,6 +226,8 @@ def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
                     accrued.append(0.0)
             priced["_acc"] = accrued
             for (iso3, year), g in priced.groupby(["iso3", "year"]):
+                if not covered(iso3, year):
+                    continue
                 rows.append({"iso3": iso3, "year": int(year), "chain": "interest_bridge_A",
                              "instrument_class": "issue_premium_at_value_date",
                              "value_lcu_mn": float(g["_prem"].sum()), "n_securities": int(g["security_id"].nunique()),

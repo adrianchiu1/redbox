@@ -150,7 +150,17 @@ as `not_applied_v16_divergence` (D-S3-005). **Ask:** approve one of
 stop. The V5-style diagnostics and both sources' snapshots are in place; no
 code change needed for any option.
 
-## OQ-8 — Debt-office hosts: DMO reachable and harvested; AFT still needs the desktop run (updated 2026-09-10 pm; see D-S10-005)
+## OQ-8 — Debt-office hosts: DMO harvested; AFT pages saved by hand, second round listed (updated 2026-09-10 evening; see D-S10-006)
+
+**Update 2026-09-10 (evening).** Nine AFT pages saved by the committee are
+ingested and read; the French snapshot register is built. The AFT
+challenges every automated navigation and its static files, so the
+remaining items are a second hand-save round (DOWNLOAD_LIST.md, "AFT, second
+round"): the OATi encours page, the auction-history page and its files, the
+six indexation/index files, the key-figure pages. With the auction history
+the French positions are rolled back from the snapshot as the UK's are.
+
+## OQ-8 (afternoon) — Debt-office hosts: DMO reachable and harvested; AFT still needs the desktop run (updated 2026-09-10 pm; see D-S10-005)
 
 **Update 2026-09-10 (afternoon).** The DMO's export endpoint clears the
 challenge for the package's browser session (`ggfiscal debt fetch --family
