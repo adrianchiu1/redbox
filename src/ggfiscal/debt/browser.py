@@ -122,8 +122,16 @@ class BrowserSession:
                         if resp is not None:
                             body, ctype, status = resp.body(), resp.headers.get("content-type", ""), resp.status
                             if "text/html" in ctype and is_challenge(body):
-                                page.wait_for_timeout(8000)
-                                body = page.content().encode("utf-8")
+                                deadline = time.time() + 45
+                                while time.time() < deadline:
+                                    page.wait_for_timeout(2000)
+                                    try:
+                                        html = page.content()
+                                    except Exception:      # navigated away (download or reload)
+                                        continue
+                                    if not is_challenge(html):
+                                        body, ctype, status = html.encode("utf-8"), "text/html", 200
+                                        break
                             raise _Done()
                     dl = dl_info.value
                     body = open(dl.path(), "rb").read()
