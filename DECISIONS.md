@@ -945,6 +945,55 @@ new tests hold it, including an explicit assertion that the maximum-only
 legs are absent and a guard that fails if the fixture ever stops having
 any. pytest 120 passed; no data file changed.
 
+## D-S9-006 — The forward balance: why `explained_share` exists where a forward "our NLB" does not, and the chart that shows it (serves §8.3, D-S9-002)
+2026-09-10, session 6 (continued). The committee asked a fair question of
+the chartbook: §4.4 reports a share of the WEO balance change explained,
+for both variants and all three countries, while §1-3 show no NLB
+projection and §4.1-4.3 stop at the last outturn. How can one exist
+without the other?
+The answer is a real asymmetry and is now stated in the notebook rather
+than left implicit: **a level needs every component, a change does not.**
+Our NLB is TR - TE on the balance anchor's own published totals, and
+those anchors publish outturns only; the sole way to state a forward
+level would be to sum our forecast lines, and 44 of 72 series carry no
+forecast at all (D-S9-003). For GBR 2028 that would mean adding defence,
+interest and four tax lines and calling the result "expenditure". The
+ledger therefore stops (§4.3) and the honest answer is that we have no
+forward NLB. A *change* survives the same gaps because the missing part
+is named: each covered line contributes its own d(line/GDP), each
+uncovered line contributes nothing to the covered total and is booked as
+`resid_coverage`. Nothing is set to zero by accident — the hole is a
+number in the table. That is precisely what D13/D16 buy.
+Added, since the comparison the levels charts cannot make can be made in
+one honest form: a **forward-balance chart per country** — the WEO's
+projected NLB/GDP path from its base year, and beside it the base year
+moved only by the lines we hold an official forecast for, for both
+variants. The vertical gap is the residual. Labelled emphatically as NOT
+a forecast of our balance: it is the base year plus the part of the WEO's
+move our lines account for, and the gap is the subject.
+Two presentation decisions the data forced:
+  - **The covered path breaks where coverage runs out.** GBR 2031 has
+    ZERO covered_line rows (every source horizon has expired), so
+    covered_total is 0 there — which drawn naively is a cliff back to the
+    base year, reading as a projected deterioration. It is undefined, not
+    flat, so the line stops and is annotated "no covered forecast from
+    2031".
+  - **A three-year run-in, not ten.** A decade of history drags 2020 onto
+    the axis (GBR -12.6% of GDP) and squashes the forward fork flat.
+Headline readings at the latest vintage (2026-04): GBR, the covered
+strict forecasts account for +2.12pp of the WEO's +3.68pp consolidation
+to 2030 and nothing at 2031; FRA, +0.13pp of +2.89pp to 2031 — the
+projected French consolidation sits almost entirely in residuals, and the
+maximum-extension path moves the other way; DEU, the WEO projects a
+widening deficit (-0.99pp) while the covered lines improve slightly, so
+the share is negative.
+Verified while building it: the forecast decomposition is additive in the
+bundle to 1e-9 — but ONLY once `weo_internal_wedge` is in the identity.
+The WEO's own GGR - GGX does not exactly equal its GGXCNL (max 3.2e-05 pp
+of GDP), and the pipeline reports that discrepancy as its own component
+rather than absorbing it into ours. A test now pins the full identity,
+and a second pins that a horizon with no covered line contributes nothing
+covered. pytest 122 passed; no data file changed.
 ## D-S10-001 — Debt-in-issue extension scoped; committee accepted the defaults; `DEBT_KICKOFF.md` v1.0 governs the debt side (serves §1 extension, §16; new decisions DD1–DD13)
 2026-09-09. The committee asked for the register of central-government
 marketable debt securities per country, with per-security interest,
