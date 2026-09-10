@@ -325,6 +325,30 @@ def test_country_file_ledger_columns_match_the_ledger(iso3):
         assert (both.iloc[:, 0] != both.iloc[:, 1]).any()
 
 
+def test_forecast_decomposition_is_additive_in_the_bundle():
+    """The property the forward-balance chart rests on: covered contributions
+    plus the denominator effect plus the residuals ARE the WEO's change. That
+    is what lets a change be decomposed where a level cannot be stated."""
+    fc = read("weo_reconciliation.csv").query("block == 'forecast'")
+    key = ["iso3", "variant", "weo_vintage", "year"]
+    w = fc.pivot_table(index=key, columns="component", values="contribution_pp",
+                       aggfunc="sum")
+    # weo_internal_wedge belongs in the identity: the WEO's own GGR - GGX does
+    # not exactly equal its GGXCNL, and that discrepancy is reported as its own
+    # component rather than absorbed into ours (max 3.2e-05 pp of GDP).
+    parts = w[["covered_total", "denom_effect", "resid_coverage",
+               "resid_disagreement", "resid_total",
+               "weo_internal_wedge"]].fillna(0).sum(axis=1)
+    assert (parts - w.weo_change).abs().max() < 1e-9
+
+    # a horizon with no covered line contributes nothing covered — the chart
+    # must break its line there rather than draw it flat at the base year
+    lines = (fc[fc.component == "covered_line"].groupby(key).size()
+             .reindex(w.index, fill_value=0))
+    assert (w.covered_total.fillna(0)[lines == 0] == 0).all()
+    assert (lines == 0).any(), "no exhausted horizon — check the fixture"
+
+
 # ----------------------------------------------------------------- notebooks
 
 NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb")
@@ -381,13 +405,28 @@ def test_chartbook_charts_every_published_series():
         for q in ("revenue", "expenditure", "nlb"):
             assert f'weo_chart("{iso3}", "{q}")' in source
 
+        assert f'weo_forward("{iso3}")' in source or "weo_forward(iso3)" in source
+
     figures = [o for c in code for o in c["outputs"]
                if "data" in o and "image/png" in o["data"]]
-    assert len(figures) >= len(cat) + 15 + 9, "a chart is missing"
+    assert len(figures) >= len(cat) + 15 + 9 + 3, "a chart is missing"
     # the schema caveats are stated, not left for the reader to discover
     for topic in ("GF01_X", "outturn-only", "two different TE numbers",
                   "explained_share", "seam"):
         assert topic in markdown, topic
+
+
+def test_chartbook_explains_why_there_is_no_forward_balance_of_our_own():
+    """The asymmetry a reader will ask about: a forward `explained_share`
+    exists while a forward `ours vs WEO` level does not. The notebook has to
+    say why, and show the comparison the data does support."""
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    for phrase in ("a level needs every component and a change does not",
+                   "resid_coverage", "covered-forecast path"):
+        assert phrase in markdown, phrase
+    # and it must not let the covered path be read as a balance forecast
+    assert "not a forecast of our balance" in markdown
+    assert "covered_total" in source
 
 
 def test_chartbook_shares_one_x_axis_per_country_and_shades_every_chart():

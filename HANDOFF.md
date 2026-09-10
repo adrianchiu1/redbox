@@ -36,6 +36,12 @@ derived".** Nothing in the engine changed; no number moved that the
   the trees' TE/TR (they differ by up to 0.5% for GBR). Rows run to the
   last year any strict series reaches (GBR 2030, FRA/DEU 2070), not the
   chartbook's 2031 display cap.
+- **The forward-balance section** (D-S9-006, chartbook §4.4) — why a
+  forward `explained_share` exists where a forward "our NLB" does not: a
+  level needs every component, a change does not. Plus the chart that
+  makes the forward comparison honestly (WEO path vs the base year moved
+  only by covered lines). Do not re-derive this; the answer is written up
+  in the notebook.
 - **`notebooks/chartbook.ipynb`** (D-S9-002) — 102 figures, one per series,
   laid out country → category → series, plus the WEO comparison (levels
   above, gap as % of TE below) for revenue, expenditure and NLB per
@@ -49,7 +55,7 @@ derived".** Nothing in the engine changed; no number moved that the
   chart, not only those with a forecast; and a per-variant caption saying
   how far each projects or why it does not — 44 of 72 series carry no
   projection at all, across five recorded statuses, tabulated up front.
-- **`tests/deliverables/test_flat_files.py`** (30 tests) enforces the three
+- **`tests/deliverables/test_flat_files.py`** (32 tests) enforces the three
   invariants: nothing recomputed (bit-exact copy, `float_precision=
   "round_trip"`), every chained value reproducible from the flat file alone,
   and the data dictionary covering every column of every file by set
@@ -61,7 +67,7 @@ derived".** Nothing in the engine changed; no number moved that the
 
 ## Headline result
 
-`pytest`: **120 passed** (90 + 30 new). `validate`: **OK=55 WARN=820, no
+`pytest`: **122 passed** (90 + 32 new). `validate`: **OK=55 WARN=820, no
 ERROR, no SKIP**. The WARN count is up from 661 on source-vintage drift
 alone (V25/V1 concept wedges against refreshed Eurostat/OECD/AMECO pulls of
 2026-09-08); no new check, no new tier, no ERROR.
@@ -105,7 +111,7 @@ use `python3 -m pytest`), `ggfiscal fetch --all`, then
 `build`, `reconcile`, `report` (which now also writes `deliverables/`),
 `validate`. The OBR raw bytes come with the clone (D-S7-001) — do NOT expect
 `fetch` to produce them. Expected green baseline on the 2026-09-08 harvest:
-120 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
+122 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
 notebooks** (`jupyter nbconvert --execute --inplace notebooks/*.ipynb`) so
 their committed outputs match the bundle.
 
@@ -134,6 +140,10 @@ their committed outputs match the bundle.
   (fetching a blob page returns "Loading" at any size); nbviewer is the
   documented fallback, and splitting per country is the next step if 0.88
   MB still fails.
+- The §8.3 forecast decomposition is additive ONLY with
+  `weo_internal_wedge` in the identity: covered_total + denom_effect +
+  residuals + wedge = weo_change (to 1e-9). The WEO's own GGR - GGX does
+  not equal its GGXCNL exactly, and that is reported, not absorbed.
 - Capping a chart's x-axis does NOT cap its y-axis: matplotlib autoscales
   over all plotted data, so the window must be applied to the DATA, not
   just to `set_xlim`, or a 2070 value flattens the visible history.
