@@ -163,10 +163,33 @@ def register_sums(reg: dict[str, pd.DataFrame], interest: pd.DataFrame,
             placed = priced["nominal_lcu_mn"] - [ret.get((a, b, d), 0.0) for a, b, d in
                                                   zip(priced["iso3"], priced["security_id"], priced["settlement_date"])]
             priced["_prem"] = -(priced["price_pct"] - 100.0) / 100.0 * placed
+            # accrued interest (Stückzinsen) received from buyers on a
+            # reopening: placed × coupon × days since the last coupon date /
+            # days in the coupon period — netted against interest paid by
+            # the ministries, and not in the register's cash coupons
+            sec_rows = reg["debt_securities"].set_index(["iso3", "security_id"])
+            accrued = []
+            for (iso3, sid, d, n) in zip(priced["iso3"], priced["security_id"], priced["settlement_date"], placed):
+                sec = sec_rows.loc[(iso3, sid)]
+                cpn = sec.get("coupon_pct")
+                if pd.isna(cpn) or sec.get("instrument_class") in ("bill", "floating") or n <= 0:
+                    accrued.append(0.0)
+                    continue
+                try:
+                    prev, nxt = I.coupon_period_bounds(sec, pd.Timestamp(d))
+                    f = int(sec["coupon_frequency"]) if pd.notna(sec.get("coupon_frequency")) else 1
+                    accrued.append(-float(n) * float(cpn) / 100.0 / f * (pd.Timestamp(d) - prev).days / (nxt - prev).days)
+                except Exception:
+                    accrued.append(0.0)
+            priced["_acc"] = accrued
             for (iso3, year), g in priced.groupby(["iso3", "year"]):
                 rows.append({"iso3": iso3, "year": int(year), "chain": "interest_bridge_A",
                              "instrument_class": "issue_premium_at_value_date",
                              "value_lcu_mn": float(g["_prem"].sum()), "n_securities": int(g["security_id"].nunique()),
+                             "basis": "cash"})
+                rows.append({"iso3": iso3, "year": int(year), "chain": "interest_bridge_A",
+                             "instrument_class": "accrued_interest_received_at_issue",
+                             "value_lcu_mn": float(g["_acc"].sum()), "n_securities": int(g["security_id"].nunique()),
                              "basis": "cash"})
     return pd.DataFrame(rows, columns=["iso3", "year", "chain", "instrument_class",
                                        "value_lcu_mn", "n_securities", "basis"])

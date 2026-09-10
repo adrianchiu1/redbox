@@ -75,7 +75,7 @@ def cob_pulls(start: dt.date = dt.date(1998, 4, 30),
                  headers=BROWSER_HEADERS) for d in month_ends(start, end)]
 
 
-CHALLENGE_MARKERS = ("ShieldSquare Captcha", "Just a moment...", "perfdrive.com/aperture", "cf-chl")
+CHALLENGE_MARKERS = ("ShieldSquare Captcha", "<title>Just a moment...</title>", "perfdrive.com/aperture")
 
 
 BROWSER_HOSTS = ("www.dmo.gov.uk", "www.aft.gouv.fr")

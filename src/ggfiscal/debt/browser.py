@@ -27,8 +27,9 @@ ARGS = ["--no-sandbox", "--disable-quic",
         "--ssl-version-max=tls1.2"]
 UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
       "Chrome/126.0.0.0 Safari/537.36")
-CHALLENGE_MARKERS = ("ShieldSquare Captcha", "Just a moment...", "perfdrive.com/aperture", "cf-chl",
-                     "challenge-platform")
+# Only markers of the interstitial itself: a cleared Cloudflare page still
+# references /cdn-cgi/challenge-platform/, so that string is NOT a marker.
+CHALLENGE_MARKERS = ("ShieldSquare Captcha", "<title>Just a moment...</title>", "perfdrive.com/aperture")
 # The page that is opened to clear the challenge: verified live 2026-09-09
 # (the DMO's /data/ landing never clears it; the report URL itself does).
 LANDING = {"www.dmo.gov.uk": "https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D1A",
