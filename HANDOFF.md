@@ -254,7 +254,9 @@ extension above does not change any of it.
 
 ### Parent baseline
 
-`pytest`: **122 passed** (90 + 32 new). `validate`: **OK=55 WARN=820, no
+`pytest`: **137 passed** on the non-debt suite (zero failures, D-S9-008);
+`tests/debt` 6 failed / 179 passed, all six needing German/French rate
+sources this container cannot retrieve. `validate`: **OK=55 WARN=820, no
 ERROR, no SKIP**. The WARN count is up from 661 on source-vintage drift
 alone (V25/V1 concept wedges against refreshed Eurostat/OECD/AMECO pulls of
 2026-09-08); no new check, no new tier, no ERROR.
@@ -295,12 +297,24 @@ their committed outputs match the bundle.
   (fetching a blob page returns "Loading" at any size); nbviewer is the
   documented fallback, and splitting per country is the next step if 0.88
   MB still fails.
-- **`main` is red for reasons that are not the fiscal work's** (checked at
-  7003193, D-S9-007): `ggfiscal report` aborts with `KeyError: nan` in
-  `validate/runner.py:166`, the non-debt suite is 16 failed / 106 passed
-  and `tests/debt` 33 failed / 21 errors, all identically with and without
-  the fiscal branch applied. Regenerate the README with
-  `report.readme.write()` directly until `report` runs again.
+- **`main` was red; fixed in D-S9-008.** The cause was NOT a merge
+  conflict: `latest_snapshots` took the last manifest line per source and
+  only then checked the file existed, so a pull made in another container
+  shadowed the byte-identical pull sitting on disk here and every source
+  came back unharvested. It now takes the last line WHOSE FILE EXISTS.
+  Snapshots are content-addressed, so an older entry with the same sha256
+  is the same bytes. Non-debt suite: 16 failed / 106 passed -> 137 passed.
+  If a source ever looks unharvested again, check
+  `latest_snapshots()` against `data/raw/` before re-fetching — the bytes
+  are often already there under an earlier timestamp.
+- **`ggfiscal debt fetch` needs `pip install -e .[debt]`** (playwright) and
+  `pypdf` comes with the base install; an environment built before the
+  debt merge will not have it, which is worth 20 debt-test failures.
+- **One blocked publisher no longer strands the rest of a debt harvest**
+  (D-S9-008): `debt/browser.py` raised a bare `RuntimeError` on an
+  unclearable challenge, escaping the `FetchBlocked`/`FetchError` net in
+  `debt.fetch.fetch_all`. It raises `FetchBlocked` now. dmo.gov.uk still
+  challenges from here, as obr.uk does (OQ-6).
 - statsmodels only forecasts past a `RangeIndex`. ETS and UC must be
   handed a 0..n-1 indexed Series (`forecast.statistical._positional`), not
   a year-indexed one and not a bare ndarray; the year index is put back by
