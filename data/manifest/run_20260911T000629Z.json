@@ -1,6 +1,8 @@
 {
  "config_files": {
   "countries.yaml": "10bca793c2d34cab6d64a2ec48cf77b619aa97ef25da2038890e364ccbdc0692",
+  "debt.yaml": "f78a44ee9a606239c52d4de7921167902d45067cf7748cdbc2dc338bb06891af",
+  "debt_sources.yaml": "59f432302985717946abd86bdbeab42bfdcbb767d0105eb8a9005b96dea654ea",
   "lines.yaml": "88135d8d1c7905def38b4932de7be84943ec510c63e6950393574461b597d8ce",
   "residual.yaml": "9d12db9b6c9698a6bd4c73629cd64bac646291da6056a4e804ab46274c5cb11d",
   "sources.yaml": "dbed4d794f6f0e30cfc566859a5f6cb4d750e985b39d8a41210c6399bf2cea16"
@@ -20,20 +22,20 @@
  },
  "deliverables": {
   "README.md": {
-   "bytes": 18591,
+   "bytes": 19975,
    "present": true,
-   "sha256": "25d681e46ccf8029b87318ff7f9ffa5e696207a420fdd62a2e83457fdf53b559"
+   "sha256": "ed86fa0589f83558e37c589c49a9db6da8b4c126586c95967037a316bfef0929"
   },
   "data/canonical/balance_ledger.csv": {
    "bytes": 23884,
    "present": true,
    "rows": 196,
-   "sha256": "3641e7475feb2b0786f88e41b169d7b4c96b68be40896bfbf2f344bef6b0c1f6"
+   "sha256": "bf438d04ad32d9e594311f5a0f4617f6d465d88dd7b76a125762194dcfb3d118"
   },
   "data/canonical/balance_ledger.parquet": {
    "bytes": 12274,
    "present": true,
-   "sha256": "3b32114edef1163a39d6a9177aa4640c0ea68c92c4217470e49a3907aacc09be"
+   "sha256": "abb40578cea67caa6d731054cc1d6fe65e7cd8d3ccd43de2413800f33e20e5e8"
   },
   "data/canonical/coverage_matrix.csv": {
    "bytes": 15709,
@@ -54,32 +56,32 @@
    "sha256": "df8951c86caa0d3f6138b3315d32181223fdee0b52d84c15e6bb7b8069c7d80c"
   },
   "data/canonical/exceptions.csv": {
-   "bytes": 105131,
+   "bytes": 147846,
    "present": true,
-   "rows": 875,
-   "sha256": "6909afeac894377e8f089d953eafbf98f1e944faa4baeea23d839ef289bc6759"
+   "rows": 1163,
+   "sha256": "e7521b087485dfaaf2bc15622934a651bb9874f68f18b2ba4719e501181ec5d6"
   },
   "data/canonical/expenditure_long_maximum_extension.csv": {
    "bytes": 636240,
    "present": true,
    "rows": 1562,
-   "sha256": "2ae58ce4af3bf429ff0434ba22556df8378363a33aa245333c317af2227cb428"
+   "sha256": "271961d016aebcb9cd3c980274edbfbac22a828c0edb70d6d48ececb2420c9b8"
   },
   "data/canonical/expenditure_long_maximum_extension.parquet": {
    "bytes": 93041,
    "present": true,
-   "sha256": "b1a5e266dbd8a2bc8b8e298f04dbbcce9ee3cefbc6b60ac266afbaf7e07055ae"
+   "sha256": "048020462f008cf362bba06a0fa71ac500b0821a447b79e24e38f787203a06f2"
   },
   "data/canonical/expenditure_long_strict.csv": {
    "bytes": 534586,
    "present": true,
    "rows": 1458,
-   "sha256": "e5997c83debc3951637fe67e28c8dbe51f873642537deb2b9eff3ae1fe00d2a7"
+   "sha256": "67f15986bed5f3228826795698a78c3f67bc910f2aae55699503bfc8714515b4"
   },
   "data/canonical/expenditure_long_strict.parquet": {
    "bytes": 88294,
    "present": true,
-   "sha256": "656ad61cae3c1eaf603e30724005177f6f37a2e72a8395f954b325537871ad5a"
+   "sha256": "3cbd64876d2da3ee1e5f0901a556706aeab58f307edc9dceff535e52a93f5781"
   },
   "data/canonical/forecast_boundaries.csv": {
    "bytes": 18960,
@@ -103,23 +105,23 @@
    "bytes": 609353,
    "present": true,
    "rows": 1394,
-   "sha256": "f5559371858a3b29a0b171b74dc7c6444aacdeb743d43b9d00761b2151dd4fd9"
+   "sha256": "dd67c4201b76e9a4e8d0c3c03b8a10f9baa71cf7f683f64fcca28f3d4e1feb8a"
   },
   "data/canonical/revenue_long_maximum_extension.parquet": {
    "bytes": 86232,
    "present": true,
-   "sha256": "a007fd01c885be0688b599f5cd70063b71bb6dfa969930a4817e1ef8ba2680ee"
+   "sha256": "40572fe3074386ee1c582cea8b122059ae0ea7b41c88eb0f07aa47b9e76026e6"
   },
   "data/canonical/revenue_long_strict.csv": {
    "bytes": 491654,
    "present": true,
    "rows": 1266,
-   "sha256": "19c9ffd71cd7f3cf54d7c8a7581e4c93ad3d4c534899b80e6ca51ffed213fc98"
+   "sha256": "269330d923e97ff112d284661426376e2df3da197090b885a6ef443a810c835a"
   },
   "data/canonical/revenue_long_strict.parquet": {
    "bytes": 81857,
    "present": true,
-   "sha256": "fb2e4e6b9b54e3fb2c914d1b7143deb58e95d49c2c0eb66b334b0cb10ddebeee"
+   "sha256": "c296dbf51b9a73b45a3e0f77181ebc979158215be5febd6bc829272502b8df0b"
   },
   "data/canonical/stitch_boundaries.csv": {
    "bytes": 10959,
@@ -148,18 +150,18 @@
   "reports/reconciliation_report.html": {
    "bytes": 160513,
    "present": true,
-   "sha256": "7fea8a1097d3ea0ba80924699b0ea4b55f696a3f9506fdb503c6ba1ee8568274"
+   "sha256": "fe1185d46caeb3ed6b641de95305675ef8cfeba71f05c92365ba1f10feab5749"
   },
   "reports/source_register.csv": {
-   "bytes": 23933,
+   "bytes": 24201,
    "present": true,
    "rows": 63,
-   "sha256": "5dd94085ef9935f2bffd4f0c6f18a030451fe45b72bec25740bf5638a83f37a1"
+   "sha256": "2ddaa60005d2dba39681ef301cf72833a1784a7cc07e8fbff2c78dfb593b1249"
   },
   "reports/validation_report.html": {
-   "bytes": 24809,
+   "bytes": 24188,
    "present": true,
-   "sha256": "ba46b2bcdba49635fc73bc7a8d0bdd9515cc4aacc81ce8cd8bfe11e3e0a4e49d"
+   "sha256": "abb6752dade2c8969f78a8fba0e0fb3a0bda13cbacf032e01d4fd1ca244a99e6"
   },
   "reports/vintage_diff.md": {
    "bytes": 4144,
@@ -167,7 +169,7 @@
    "sha256": "fc6d69b00e77b6300488c62fb8372037c6b42d802390aa94b29b9f147186eb67"
   }
  },
- "deliverables_updated_at": "2026-09-10T00:29:01+00:00",
+ "deliverables_updated_at": "2026-09-11T00:10:52+00:00",
  "environment": {
   "ggfiscal": "0.0.1",
   "pandas": "3.0.5",
@@ -177,7 +179,7 @@
   "deliverables/README.md": {
    "bytes": 6763,
    "present": true,
-   "sha256": "c3cf7d2fc604077a7675b424ad20c4d6f76fbe994ca8aad4e4acb0a2e4854f57"
+   "sha256": "368eb97aa6e0d12bc0d26dd6c8135e744cf763b4c857896023219afabfa097d4"
   },
   "deliverables/balance_ledger.csv": {
    "bytes": 100129,
@@ -312,8 +314,8 @@
    "sha256": "98390f2314ce9a2563e0ecc41d7bda337ecb36e6545c4953b4ddc4f7d68cdd2f"
   }
  },
- "flat_files_updated_at": "2026-09-11T00:03:01+00:00",
- "run_id": "20260908T093901Z",
+ "flat_files_updated_at": "2026-09-11T01:18:39+00:00",
+ "run_id": "20260911T000629Z",
  "snapshots": {
   "DEU_STEUERSCHAETZUNG/2026_05": "7b6e755b7c42e3d1525258eed1bfd06edb4d540f056abd891e4c7e7f1ea00a12",
   "EC_AGEING_2024/country_fiches": "8453dfda8db0ad253d3965cd85490c30e4b5d0598eb6c2ffa4adbf23ab45bb7f",
@@ -331,6 +333,33 @@
   "EUROSTAT_GOV10A_TAXAG/FRA": "4c0b48b8e89b92942c8743ba6e48c6647f2c562c14a8a2b21e307041ee0e9800",
   "EUROSTAT_NAMA10_GDP/DEU": "aa6e31798251914226ed0c0ef50fc7a58fd02b0016ca759dda14cb6343d2575a",
   "EUROSTAT_NAMA10_GDP/FRA": "1667cb5155602ad71cbc17294aed31c8d70026ac50a47b138e0e67b1e7ea6236",
+  "FRA_AFT_ADJUDICATIONS/archives": "a9d0a85661ed71d26def50ce0277b70f901c4c6fb18469c5f051710bc2031f52",
+  "FRA_AFT_ADJUDICATIONS/dernieres": "993c43e143cc52864d689b0cd79cb66a8568d96e39d95196200189d4c54bc45e",
+  "FRA_AFT_ADJUDICATIONS/historique": "ace4f6731462a019eeed3d05c3df96fc8e7280623d2bb7561745f9c194d4039c",
+  "FRA_AFT_ADJUDICATIONS/historique_file_1999-2026_historique_syndications": "9368eeb1846a6a07070f838e607b6b539b1cc4f76009d4d8213285b92af1cd0b",
+  "FRA_AFT_ADJUDICATIONS/historique_file_2026-08_hist_btf": "8487a3a890bc99acabec39733a07e474aaab9a1fab6b8a795c6093223b02c807",
+  "FRA_AFT_ADJUDICATIONS/historique_file_2026-08_hist_mlt": "b9d69f4d24c62fbdffd1e4dd1e7ffdcefa05d5d68f4a40a62a211fb2d0dbe930",
+  "FRA_AFT_ADJUDICATIONS/historique_file_26621_btf_1999_2018": "9a7ed6827b3ea77c7744ba9e61b04533d56ce5ac4bde99812e70ce469a4c1ded",
+  "FRA_AFT_ADJUDICATIONS/historique_file_26622_oat_btan_1999_2018": "fea8573a5fa30fcc2740dd9c6c5e37e376c71ffaab63aaeac2f686a9d38b2f28",
+  "FRA_AFT_ENCOURS/btf": "028f82ef823f4d88772361cdcd5e31913424bb58a9409f60918ea8bdb378fb5f",
+  "FRA_AFT_ENCOURS/btf_principaux_chiffres": "e4ea8baa97d318da1b9bdaed1846c235dbb977888b16392de7452648a9970a33",
+  "FRA_AFT_ENCOURS/chiffres_cles": "287a6d9220ae30997ce90d8bd6d7fe8438c33b17503f147d0213fc1ecc3b6600",
+  "FRA_AFT_ENCOURS/oat": "73dbc8c0879148666bee0ae3ad237bd4be15c65d6e26ce1246c9817579e60cda",
+  "FRA_AFT_ENCOURS/oatei": "351257e8d3e42188bfdc3084e53a1c8db9da7a9d8fbe8833061fa5bb4ae321dd",
+  "FRA_AFT_ENCOURS/oati": "2e8293f150646c7753fc90a6094b7d07952527e6b10c678911371e890591099e",
+  "FRA_AFT_ENCOURS/principaux_chiffres_dette": "73efa00422681148c01e5195b42fa3ba6b8f66a949cfb19c800cb30c52ec43d9",
+  "FRA_AFT_ENCOURS/principaux_chiffres_oat": "a0ce9e59e182dcfbccc245b41d0803dcf1e34972b3fe3f4c863e118acceda3c6",
+  "FRA_AFT_FINANCEMENT/bulletins_index": "092ce5fcdf5031f5745df775857703b166fbe06e8d235002c03063d1044e337a",
+  "FRA_AFT_FINANCEMENT/caisse_dette_publique": "e571d36952f1c29e47f6077ff21b293b07f98b147348c242ad2984e84b08bd15",
+  "FRA_AFT_FINANCEMENT/rapports": "ddcf5fcf1522a2e5d43f892016037eb979e7e60c920c343ce26b75d76cfcd185",
+  "FRA_AFT_INDEXATION/oatei_page": "38e09c5621eba9f2dbbff7065500d2834f64c6e584d2eae0dd42f9f5e610e05a",
+  "FRA_AFT_INDEXATION/oati_page": "2ad56ff2e119fdd7918e1735d0b7d629898461ba5c83ff92bba11cea9386fd79",
+  "FRA_AFT_INDEXATION/oati_page_file_2026-08_IPC": "e9459092fc724f35250b4e355425e5d1d801a8c497ae00318b28da9ab0ef138b",
+  "FRA_AFT_INDEXATION/oati_page_file_2026-08_IPCH": "7dc24f7c70c5e5b81b567eaea5952b6a0cd4cff3e4865261a38ea6a729950f40",
+  "FRA_AFT_INDEXATION/oati_page_file_2026-08_coef_oatei_octobre_2026": "2d7ef347b1770b424c0f87fe6dde13532fb5470ab54eb21fff68f310ab3c0092",
+  "FRA_AFT_INDEXATION/oati_page_file_2026-08_coef_oati-octobre26": "fa7300c95793397847bb1e1fa6c8244e16e67cffe1026a229af70d8f6562a50a",
+  "FRA_AFT_INDEXATION/oati_page_file_coef_oatEi_2001_2016": "28a298024bdaf18934a13cb1e0de3259a44c6ec64b974e0e0d3ef733e9a56538",
+  "FRA_AFT_INDEXATION/oati_page_file_coef_oati_histo_1998_2016": "04d7e1cadbfcdf212da490773ab5737f7beacd0ba45a4be3b6aedf7378af3424",
   "HMT_PESA/chapter-1": "0e88d4904e747460fbf254c358b0922f74898b8dd3d4364e0ca1ebe35e12e454",
   "IMF_GFS/cofog_DEU": "19f9a8081a881f9a6f83a8e358569849de1b7994e86c67d87a615ad368e40d55",
   "IMF_GFS/cofog_FRA": "e838ea8ab9f7a9b9a39164093adb74d2fbb1f7823bf9ec4f3f9172eaf19827f2",
@@ -408,8 +437,24 @@
   "ONS_GDP/ybha": "adfb145c482b0c847603a688459417d29bc05922019bfa32b99751667b973c59",
   "ONS_GG_RECEIPTS/current": "d5a92eb4bfbf203faad0cae0d20f25b8fa9fd09036b428efb754cea232594f48",
   "ONS_TAX_DETAIL/current": "53c7568534250c7a8576aa68add5e9094f32adfc0b2ca2a5b4df2a5a197b54b0",
-  "ONS_TAX_LIST/current": "70b05f778aaeca10f35725565c19310ecfdccafdabe39f0d1931839c3a2baa76"
+  "ONS_TAX_LIST/current": "70b05f778aaeca10f35725565c19310ecfdccafdabe39f0d1931839c3a2baa76",
+  "UK_DMO_BILLS/D2.2D": "2eefe4e6fad26a85e8649096877636e63d7187a9a7510f986ad80d0e3fbd84cf",
+  "UK_DMO_BILLS/D2.2E": "f89e181b6c88cef16ca3ecffa9e206ad206e17fdff2a966419e0f838a1fa1799",
+  "UK_DMO_BILLS/D2.2G": "dabc09438067706addfdb80aac0087c63cd5d115d701dd16f8b248127dc6f194",
+  "UK_DMO_GILTS/D10A": "fa8633a4eecab7d3abf513885c0bf97e19b6304c4e4477b68940333163aa40d3",
+  "UK_DMO_GILTS/D10C": "efe0e80abb89ad50c635151f1aefa22df4f2a3cfb6fda53d3ecacde27cb81b7d",
+  "UK_DMO_GILTS/D1A": "4e8e8cf963edc38b649ab59a7711509cb2948a0720c04de21454fe658bc4c3cc",
+  "UK_DMO_GILTS/D1A_xml": "70fb0348976a0318c09e1ccf779ad161aa98c2fcb6bd428564f71f7a17455761",
+  "UK_DMO_GILTS/D1C": "383e1514bf8118cec53cb3142cffc156626123db43004235aa574d77bd03fc4d",
+  "UK_DMO_GILTS/D2.1A": "1eb314d11d85f993f2f1e2d2bada6290444403abb4644e0ab9f7f3e982d5a0a6",
+  "UK_DMO_GILTS/D2.1E": "f61f103554c1120c8e23aaf62c7da153aa180d7b6be24daa78252b0ada5a2741",
+  "UK_DMO_GILTS/D2.1PROF7": "57d4a27ec3846b47fe1d88e8d68b301d7df0f8a5944b6a64e90dea97a9aab30c",
+  "UK_DMO_GILTS/D2.1PROF9": "382c3b2e12829efd9613d2e07f51e1cd0154769c71b66699b0c26ca53ecfd775",
+  "UK_DMO_GILTS/D4L": "63a1b4828147990d90febfe4852a86fd10a2a5a2dc2deac83e70c649f3ed358b",
+  "UK_DMO_GILTS/D8B": "5ca2b7401a61030c869530cc433d16b50b60ef1a50c5ca2f01fc1248a7a5f2af",
+  "UK_DMO_GILTS/igcalc": "c5eb6f9149c251b677e2759c7a2e162f3ed2c093d6a377aa7daeaf6a1d1a3a49",
+  "UK_DMO_GILTS/yldeqns": "f9ac67c13add6cc09faad53c57388f58f8d60d4a392f186b477f3b4ea7b8f09e"
  },
  "stage": 6,
- "written_at": "2026-09-08T09:39:15+00:00"
+ "written_at": "2026-09-11T00:06:46+00:00"
 }

@@ -121,6 +121,16 @@ def check_v6() -> list[Finding]:
         for (iso3, cls, line), g in fwd.groupby(["iso3", "classification", "line_code"]):
             g = g.sort_values("year")
             anchor = anchors[iso3][(cls, line)]["series"]
+            if anchor.empty:
+                # No anchor to chain from: the source's snapshot is absent on
+                # this machine. Report it as a finding — silently crashing on
+                # the empty series turns a harvest gap into a stack trace
+                # several layers from its cause.
+                out.append(Finding("V6", "ERROR", f"{iso3}/{line}",
+                                   "no anchor series — the anchor source has "
+                                   "no usable snapshot here; run `ggfiscal "
+                                   "fetch --all`"))
+                continue
             values = dict(zip(g.year, g.value_lcu_mn))
             values[int(anchor.index.max())] = float(anchor[anchor.index.max()])
             for _, r in g.iterrows():

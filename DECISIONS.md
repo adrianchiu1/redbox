@@ -1328,3 +1328,50 @@ suite is 16 failed / 106 passed with `tests/debt` at 33 failed / 21 errors
 15 being this work's new passing tests). The README here was regenerated
 by calling `report.readme.write()` directly, since `ggfiscal report` cannot
 complete.
+
+## D-S9-008 — `main` repaired: the append-only manifest and the per-machine raw store had come apart (serves §11.1, D8, D-S0-004; fixes the breakage flagged in D-S9-007)
+2026-09-11, session 6 (continued). The committee asked for the breakage on
+`main` to be dug into and resolved. It was not a merge conflict and not
+the debt work's fault; it was a latent defect in
+`standardise.readers.latest_snapshots` that only shows once two
+workstreams harvest on different machines.
+**The defect.** `snapshots.jsonl` is append-only and travels in git. The
+raw store does not (D-S0-004). `latest_snapshots` took the LAST manifest
+line per (source_id, part) and only then filtered for the file existing —
+so a newer pull made in another container shadowed an older, usable pull
+sitting on disk here, and the source came back unharvested. The debt
+workstream fetched on 2026-09-09; this container had the 2026-09-08 pulls.
+The two are byte-identical — same sha256, same size, only the fetch
+timestamp in the filename differs — and every fiscal anchor was being
+discarded over that. Fixed by selecting the last manifest line WHOSE FILE
+EXISTS: snapshots are content-addressed, so an older entry with the same
+hash is the same bytes, not a stale vintage.
+Effect: usable snapshots 57 -> 137, sources 10 -> 31; the non-debt suite
+goes from **16 failed / 106 passed to 137 passed, zero failures**, and
+`ggfiscal report` — which had been aborting with `KeyError: nan` — runs to
+completion. The rebuild that followed changed `run_id` and nothing else:
+every value in all four trees and the ledger is byte-identical, which is
+the proof that the 09-08 snapshots the fix now selects are the same data.
+**Three further defects found and fixed on the way:**
+  - `validate.stage3.check_v6` crashed with `KeyError: nan` on an empty
+    anchor (`anchor[anchor.index.max()]` with an empty series). A harvest
+    gap should report a Finding naming the source, not surface as a stack
+    trace four layers from its cause. That crash is what made the original
+    diagnosis expensive.
+  - `playwright` is imported by `debt/browser.py` but was declared nowhere
+    in `pyproject.toml`, so `ggfiscal debt fetch` could not run from a
+    clean install. Added as a `debt` extra.
+  - `debt/browser.py` raised a bare `RuntimeError` when a Cloudflare
+    challenge would not clear. `debt.fetch.fetch_all` catches
+    `FetchBlocked`/`FetchError` and skips past, so the bare error escaped
+    that net and **stranded every source queued behind the blocked host** —
+    which is why five German and French rate sources had no snapshot at
+    all. A challenge that will not clear IS the publisher refusing us, so
+    it now raises `FetchBlocked` and the harvest continues.
+**Debt suite**, after the fix plus a debt harvest in this container and
+installing the already-declared `pypdf`: **33 failed / 70 passed / 21
+errors -> 6 failed, 179 passed, 0 errors.** The 20 largest remaining
+failures were only `pypdf` missing from this image (declared in
+`pyproject` since the debt merge, but the environment predated it).
+Nothing in `deliverables/debt_*.csv` changed: `flatten` copies the debt
+canonical layer, and all twelve files are byte-identical after the rebuild.

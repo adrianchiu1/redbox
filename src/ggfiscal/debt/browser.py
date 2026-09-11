@@ -21,6 +21,8 @@ import threading
 import time
 from urllib.parse import urlsplit
 
+from ggfiscal.ingest.fetch import FetchBlocked
+
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 ARGS = ["--no-sandbox", "--disable-quic",
         "--disable-features=PostQuantumKyber,UseMLKEM,EncryptedClientHello",
@@ -89,7 +91,13 @@ class BrowserSession:
                 if not is_challenge(page.content()):
                     break
             else:
-                raise RuntimeError(f"challenge on {host} did not clear within 45 s")
+                # FetchBlocked, not RuntimeError: a challenge that will not
+                # clear is the publisher refusing us, which is exactly what
+                # `debt.fetch.fetch_all` records and skips past. Raised as a
+                # bare RuntimeError it escaped that net and stranded every
+                # source queued behind this one.
+                raise FetchBlocked(
+                    f"challenge on {host} did not clear within 45 s")
         finally:
             page.close()
         self._solved.add(host)
@@ -148,7 +156,8 @@ class BrowserSession:
                 continue
             print(f"[browser] {status} {len(body):>9} B  {ctype.split(';')[0]:<40} {url}", file=sys.stderr)
             return body, ctype, status
-        raise RuntimeError(f"still a challenge page after {retries + 1} attempts: {url}")
+        raise FetchBlocked(
+            f"still a challenge page after {retries + 1} attempts: {url}")
 
 
 class _Done(Exception):

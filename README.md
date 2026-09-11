@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-10 16:31 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-11 00:07 UTC, run 20260911T000629Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 

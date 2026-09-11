@@ -25,6 +25,10 @@ notebook = ["nbformat>=5.9", "nbclient>=0.9", "nbconvert>=7.0", "ipykernel>=6.25
 # Only needed for `ggfiscal statistical-forecasts`; the published CSV it
 # writes is read with pandas alone.
 forecast = ["pmdarima>=2.0", "statsmodels>=0.14", "prophet>=1.1", "scipy>=1.11"]
+# Only needed for `ggfiscal debt fetch`: several debt offices serve their
+# files only to a real browser session (ggfiscal/debt/browser.py). Building
+# and validating the debt tables from existing snapshots needs none of it.
+debt = ["playwright>=1.40"]
 
 [project.scripts]
 ggfiscal = "ggfiscal.cli:app"
