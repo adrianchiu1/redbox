@@ -1375,3 +1375,88 @@ failures were only `pypdf` missing from this image (declared in
 `pyproject` since the debt merge, but the environment predated it).
 Nothing in `deliverables/debt_*.csv` changed: `flatten` copies the debt
 canonical layer, and all twelve files are byte-identical after the rebuild.
+
+## D-S11-001 — The chartbook carries the forecasts: a panel of every category per country, one forecast per line (serves D-S9-002, consumes D-S9-007; costs the D-S9-004 size margin)
+2026-09-17, session 11. The six `forecasts_*.ipynb` books (D-S9-007) put
+seven charts under every granular line — levels, the share of GDP, and a
+fan for each of `auto.arima`, `ets`, `prophet`, `uc` and their
+combination. That is the right shape for interrogating one line and the
+wrong shape for the question "what is actually being forecast here?",
+which needs every category of a country on one page. The chartbook now
+answers that question first: each country section opens with §*x*.1
+**Forecast panel — every category at a glance**, and the per-series charts
+it already had follow as the evidence.
+**What is drawn, and the one rule that decides it.** Per line, as a share
+of GDP from 2000 to 2031:
+  - an **official projection exists** -> that projection, blue dashed, no
+    band. It is a published number, not a distribution, and where it exists
+    it is the answer; the statistical benchmark is not drawn against it.
+  - **none exists** -> the statistical `combination`, violet dashed, with
+    its 80% interval. The four underlying methods are never drawn here.
+    One line stands for all four, which is what `combination` is for
+    (mean of the four, variance = mean within-model variance + variance
+    across their point forecasts). The method-by-method comparison, and
+    the benchmark-against-official reading, stay in the forecast books.
+That splits 66 granular lines into 20 official and 46 statistical.
+**Three judgements inside the rule.**
+  1. *An official forecast that stops short of 2031 is not topped up.* The
+     UK's R01-R04 stop at 2030, GF02 at 2028, five lines at 2027. Carrying
+     them on with the statistical path would mean splicing a benchmark
+     anchored at the last **outturn** onto an official path that has
+     already moved away from it — a number that appears in no file. The
+     panel draws the official path to where it ends and the readout names
+     the year, so horizons differ across a panel and say so.
+  2. *The 95% band is drawn in the forecast books, not here.* At facet size
+     it swamps the y-axis of every statistical line and the panel stops
+     showing what it exists to show. The 80% band is drawn and labelled as
+     the 80% band; nothing is implied about the 95% one.
+  3. *`TE` and `TR` are out.* They are envelopes, not categories, and carry
+     no forecast path (`not_extended`), as in the forecast books.
+**The identity that does not close, said out loud.** `GF01 = GF01_7 +
+GF01_X` in the trees, but each of the three takes its forecast from
+whichever source it has. France is the case: official interest **+1.55 pp**
+and a statistical `GF01_X` of **+0.01** come to +1.56, against a
+statistical `GF01` of **-0.50** — a 2.07 pp gap, because a univariate fit
+of the whole knows nothing about the official projection of the interest
+line inside it. The caption under each ranked chart does that arithmetic
+from the data rather than asserting the identity holds.
+**A second figure per country, `changes(iso3)`**, ranks every line by the
+change it is forecast to make between its last outturn and its horizon,
+expenditure and revenue in separate blocks on one x-axis. Separate blocks
+deliberately: a rise is a rise in both, and it moves the balance in
+opposite directions, so one merged ranking would invite exactly that
+misreading. Bars are coloured by source, never by direction — direction is
+already carried by the side of zero, and D-S9-002's rule that a hue means
+an entity and nothing else holds. Under it, the same numbers as a printed
+table, because a bar length is not a value.
+**Palette.** VIOLET `#4a3aa7` joins the chartbook's fixed quantisation
+palette as slot 4 — the same violet the forecast books already use for the
+same thing. Appended **last** in `_palette()` on purpose: inserting it
+earlier renumbers every index and rewrites every figure in the book for no
+change in what any of them shows. Re-validated all-pairs against the
+surface: lightness, chroma and CVD separation pass; worst normal-vision
+adjacent pair is VIOLET/BLUE at dE 16.3, and line style repeats the
+distinction anyway.
+**Cost: the D-S9-004 size margin is spent.** Nine new figures (three per
+country) add 182 KB of PNG and take the chartbook from 0.94 MB to
+**1.19 MB**, past the 0.9 MB margin D-S9-004 judged — not measured — safe
+for GitHub's client-side notebook renderer. Confirmed there is no cheaper
+rendering: the figures are already palette-quantised and PIL-optimised
+(recompression at every level returns the same bytes to the byte), and 66
+facets cost 1.9 KB each against 5.4 KB for a full-size chart. The margin
+was a judgement, the panel is content, and the panel wins; the README now
+states the real size and points at D-S9-004's own fallback — split the
+chartbook one notebook per country — if GitHub declines it.
+**Nothing recomputed, nothing spliced.** Every path is anchored at its own
+line's last outturn, every value is read from `deliverables/`, and the
+window is applied to the DATA and not only to `set_xlim` (the D-S9-004
+lesson: FRA `GF07`/`GF09` run to 2070, and leaving those years in would
+flatten the visible history).
+Tests: two new — one re-derives every row of the printed table from the
+flat files and checks the official-beats-statistical rule line by line,
+the other pins that the panel's *code* names `combination` and no other
+method and draws `lo80`/`hi80` and never `lo95`/`hi95`; the axis/shading
+test learns the fourth chart family and that its window is applied to the
+data. `tests/deliverables` 49 passed (was 47); the full-suite failure set
+is byte-identical before and after (this container has an incomplete
+harvest, so the debt and stage gates fail either way).

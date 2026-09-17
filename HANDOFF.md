@@ -185,6 +185,43 @@ floating-rate gilts if a source appears (DD10).
   `--ssl-version-max=tls1.2`; never `pkill -f` a pattern that matches your
   own shell command line (it kills the session's shell).
 
+## Session 11 (D-S11-001): the forecasts are in the chartbook
+
+`notebooks/chartbook.ipynb` now opens every country section with a forecast
+panel — all 22 of that country's categories as a share of GDP from 2000 to
+2031, each carrying one forecast, plus a ranked chart of what each line is
+forecast to change and a printed table of the same numbers. Facts worth not
+rediscovering:
+
+- **The rule is official-beats-statistical, per line, with no top-up.** 20 of
+  the 66 granular lines carry an official projection and take it; the other 46
+  take the `combination` row of `deliverables/statistical_forecasts.csv`. An
+  official path that stops at 2027/2028/2030 stops there on the chart too —
+  continuing it with the statistical path would splice a benchmark anchored at
+  the last **outturn** onto an official path that has already left it, which is
+  a number in no file. Horizons therefore differ across a panel, and every
+  readout names its own year.
+- **`GF01 = GF01_7 + GF01_X` does not close in the panel, and must not be made
+  to.** The three lines can take their forecasts from different sources; for
+  France the components come to +1.56 pp against the whole's −0.50 pp. The
+  caption computes that gap from the data on every run.
+- **VIOLET is appended last in the setup cell's `_palette()`.** The palette is
+  positional — put a colour anywhere but the end and every index shifts and
+  every figure in the book is rewritten for no visible change. (PIL's
+  `optimize=True` drops unused entries when saving, which is why adding it cost
+  the existing 105 figures about a kilobyte in total rather than re-encoding
+  them.)
+- **The chartbook is 1.19 MB, past D-S9-004's 0.9 MB judged margin.** There is
+  no cheaper rendering left: figures are palette-quantised and PIL-optimised,
+  and recompressing every PNG in the notebook at any level returns the same
+  bytes. If GitHub ever declines to render it, take D-S9-004's own fallback and
+  split the chartbook one notebook per country — do not shrink the existing
+  charts to buy room.
+- Re-executing the chartbook in a clean container reproduces its figures
+  **byte for byte** (verified against the committed outputs before any edit),
+  so a diff in an existing figure means a real change, not a font or version
+  wobble.
+
 ## Parent package state carried from `main` (session 9, chartbook — D-S9-006)
 
 Kept verbatim from main's HANDOFF at the merge of 2026-09-10; the debt

@@ -9,6 +9,7 @@ flat file alone (the Gate 6 property, re-proved on the simplified shape).
 """
 
 import json
+import re
 
 import pandas as pd
 import pytest
@@ -510,7 +511,9 @@ def test_chartbook_charts_every_published_series():
 
     figures = [o for c in code for o in c["outputs"]
                if "data" in o and "image/png" in o["data"]]
-    assert len(figures) >= len(cat) + 15 + 9 + 3, "a chart is missing"
+    # every series, the 15 ledger charts, the 9 WEO ones, the 3 TE
+    # diagnostics, and the 9 forecast-panel figures (3 per country)
+    assert len(figures) >= len(cat) + 15 + 9 + 3 + 9, "a chart is missing"
     # the schema caveats are stated, not left for the reader to discover
     for topic in ("GF01_X", "outturn-only", "two different TE numbers",
                   "explained_share", "seam"):
@@ -545,9 +548,107 @@ def test_chartbook_shares_one_x_axis_per_country_and_shades_every_chart():
     assert body.count("axvspan(") == 3, "a chart family stopped shading"
     te = next(c for c in code if "def te_compare" in "".join(c["source"]))
     assert "axvspan(" in "".join(te["source"])
+    # the panel facets are the fourth family: their own 2000-2031 window, the
+    # same shading, and the window applied to the DATA and not only to
+    # set_xlim, or a 2070 value would flatten the history to nothing
+    facet = "".join(next(c for c in code
+                         if "def _facet(" in "".join(c["source"]))["source"])
+    assert "axvspan(" in facet
+    assert "PANEL_FROM = 2000" in facet and "XMAX + 0.8" in facet
+    assert "hist[hist.year >= PANEL_FROM]" in facet
     assert "if mx.year.max() > actual" not in body, "shading is still conditional"
     assert "ax.set_xlim(lo, hi)" in body and "ax.set_xlim(*XLIM[iso3])" in body
     assert "to 2031" in markdown
+
+
+PANEL_ROW = re.compile(
+    r"^(GF\S+|R\d\d)\s+.*?"
+    r"(-?\d+\.\d\d) \((\d{4})\)\s+(-?\d+\.\d\d) \((\d{4})\)\s+"
+    r"([-+\u00b1]\d+\.\d\d)\s+(official|statistical)")
+
+
+def test_chartbook_panels_quote_one_forecast_per_category():
+    """Each country section opens with a panel of every category forward, as a
+    share of GDP, carrying exactly one forecast per line: the official
+    projection where one is published and the statistical `combination` where
+    none is — never both, and never a single one of the four methods alone.
+
+    The printed table under `changes()` is the panel's table view, so it is
+    re-derived here from the flat files, row by row.
+    """
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    strict = tree.query("variant == 'strict'")
+    combination = read("statistical_forecasts.csv").query(
+        "method == 'combination'")
+
+    for iso3 in ("GBR", "FRA", "DEU"):
+        for what in ("expenditure", "revenue"):
+            assert f'panel("{iso3}", "{what}")' in source, (iso3, what)
+        assert f'changes("{iso3}")' in source, iso3
+
+        cell = next(c for c in code
+                    if "".join(c["source"]).strip() == f'changes("{iso3}")')
+        text = "".join("".join(o["text"]) for o in cell["outputs"]
+                       if o["output_type"] == "stream")
+        rows = {m.group(1): m for m in map(PANEL_ROW.match, text.splitlines())
+                if m}
+
+        granular = strict.query("iso3 == @iso3").dropna(subset=["pct_gdp"])
+        want = set(granular.line_code.unique()) - {"TE", "TR"}
+        assert set(rows) == want, (iso3, set(rows) ^ want)
+
+        for line, m in rows.items():
+            g = granular.query("line_code == @line")
+            actual = g[g.basis == "actual"].sort_values("year")
+            official = g[(g.basis == "forecast") & (g.year <= 2031)]
+
+            # the anchor: every path starts at that line's own last outturn
+            assert int(m.group(3)) == int(actual.year.max()), (iso3, line)
+            assert abs(float(m.group(2))
+                       - float(actual.pct_gdp.iloc[-1])) < 5e-3, (iso3, line)
+
+            if len(official):
+                source_kind, path = "official", official
+            else:
+                source_kind = "statistical"
+                path = combination.query("iso3 == @iso3 and line_code == @line")
+                assert len(path), (iso3, line)
+            assert m.group(7) == source_kind, (iso3, line)
+
+            end = path.sort_values("year").iloc[-1]
+            assert int(m.group(5)) == int(end.year), (iso3, line)
+            assert abs(float(m.group(4)) - float(end.pct_gdp)) < 5e-3, (iso3, line)
+            change = float(end.pct_gdp) - float(actual.pct_gdp.iloc[-1])
+            said = m.group(6)
+            # a change that rounds to nothing is printed ±0.00, never -0.00
+            if said.startswith("\u00b1"):
+                assert abs(round(change, 2)) == 0, (iso3, line, change)
+            else:
+                assert abs(float(said) - change) < 5e-3, (iso3, line)
+
+    # the rule, and the caveats it carries, are stated before any panel is drawn
+    for topic in ("How to read a forecast panel", "statistical combination",
+                  "last outturn level", "need not add up",
+                  "Nothing here is spliced or recomputed"):
+        assert topic in markdown, topic
+
+
+def test_chartbook_panel_never_draws_a_single_method_or_a_95_band():
+    """The panel carries the combination and nothing else: quoting one of the
+    four methods, or widening it to 95%, would be a different claim."""
+    _, code, source, _ = _notebook("chartbook.ipynb")
+    body = "".join(next(c for c in code
+                        if "def panel(" in "".join(c["source"]))["source"])
+    # the cell's prose names all four methods, which is the point of it; the
+    # code it runs must name only the one it draws
+    runs = "\n".join(ln for ln in body.splitlines()
+                     if not ln.lstrip().startswith("#"))
+    assert 'method == \'combination\'' in runs
+    for method in FORECAST_METHODS - {"combination"}:
+        assert method not in runs, method
+    assert "lo80" in runs and "hi80" in runs
+    assert "lo95" not in runs and "hi95" not in runs
 
 
 def test_chartbook_says_why_each_series_without_a_projection_has_none():

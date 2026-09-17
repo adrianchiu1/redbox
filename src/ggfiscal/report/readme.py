@@ -283,14 +283,22 @@ def write(path: Path | None = None) -> Path:
         "5. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
         "the same series plotted, one chart each, country by category by "
         "series, with seams and projection years marked, plus our totals "
-        "against the IMF WEO. For eyeballing construction quality.",
+        "against the IMF WEO. Each country section opens with a **forecast "
+        "panel**: every category as a share of GDP carrying the one forecast "
+        "this project would quote for it \u2014 the official projection where "
+        "one is published, the four-model combination where none is \u2014 and "
+        "a ranked chart of what each line is forecast to change. For "
+        "eyeballing construction quality, and for seeing the whole forecast "
+        "at once.",
         "",
         "The notebooks need only `pandas` and `matplotlib` to re-run: "
         "`pip install -e .[notebook] && jupyter nbconvert --execute "
         "--inplace notebooks/*.ipynb`. GitHub renders them in the browser "
-        "and gives up on large ones (the chartbook is kept under a "
-        "megabyte for exactly that reason); if a notebook ever shows "
-        "*Loading* forever, "
+        "and gives up on large ones; the chartbook is the biggest at about "
+        "1.2 MB, past the 0.9 MB margin D-S9-004 judged safe, and the "
+        "fallback D-S9-004 named \u2014 splitting it one notebook per country "
+        "\u2014 is what to reach for if GitHub declines it. If a notebook ever "
+        "shows *Loading* forever, "
         "[nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) "
         "renders it regardless of size.",
         "",
