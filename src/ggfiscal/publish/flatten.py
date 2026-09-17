@@ -675,6 +675,39 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
         "n_obs": "Number of outturn observations fitted.",
         "run_id": "Run that produced the forecasts.",
     })
+    _dict_rows("forecast_levels.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "line_code",
+                                   "line_label", "year", "currency", "notes")},
+        "classification": "COFOG or ESA_REV.",
+        "method": "auto.arima | ets | prophet | uc | combination — the same "
+                  "five as statistical_forecasts.csv, of which this file is "
+                  "the currency twin.",
+        "pct_gdp": "The forecast share of GDP, copied unchanged from "
+                   "statistical_forecasts.csv.",
+        "gdp_lcu_mn": "Nominal GDP on the path named by gdp_basis, millions "
+                      "of national currency.",
+        "value_lcu_mn": "pct_gdp / 100 * gdp_lcu_mn.",
+        "lo80_lcu_mn": "lo80 / 100 * gdp_lcu_mn. The GDP path is taken as "
+                       "given, so this is the RATIO's interval in currency "
+                       "and carries no uncertainty about GDP itself.",
+        "hi80_lcu_mn": "hi80 / 100 * gdp_lcu_mn, on the same footing.",
+        "lo95_lcu_mn": "lo95 / 100 * gdp_lcu_mn, on the same footing.",
+        "hi95_lcu_mn": "hi95 / 100 * gdp_lcu_mn, on the same footing.",
+        "gdp_basis": "How the GDP path was built. "
+                     "anchored_outturn_chained_on_weo_ngdp = the tree's own "
+                     "outturn GDP to gdp_anchor_year, then chained on the "
+                     "growth of the named WEO series — never the WEO level "
+                     "itself, which sits up to 1% off our anchor and would "
+                     "step every forecast level at the join.",
+        "gdp_anchor_year": "Last year every line's GDP denominator agrees; "
+                           "the year the chain starts from. At the last "
+                           "outturn the denominator forks by source, so the "
+                           "anchor is a year earlier.",
+        "gdp_anchor_lcu_mn": "GDP at gdp_anchor_year.",
+        "gdp_growth_source": "Source of the growth rates after the anchor.",
+        "gdp_growth_vintage": "That source's vintage.",
+        "run_id": "Run that produced the levels.",
+    })
     _dict_rows("benchmark_balance.csv", {
         **{k: _SHARED[k] for k in ("iso3", "country", "year", "line_code",
                                    "line_label", "notes")},
@@ -838,6 +871,10 @@ DESCRIPTIONS = {
         "benchmark forecasts of each granular line as a share of GDP to 2031 "
         "— auto.arima, ets, prophet, an unobserved-components model and their "
         "combination, fitted on outturn only",
+    "forecast_levels.csv":
+        "the same benchmark forecasts in currency \u2014 each line's share of "
+        "GDP on one nominal GDP path per country, our outturn anchored and "
+        "chained on the IMF WEO's NGDP growth",
     "benchmark_balance.csv":
         "those line forecasts summed back into a net lending/borrowing path "
         "to 2031 \u2014 per line, per side and as the balance itself, with an "

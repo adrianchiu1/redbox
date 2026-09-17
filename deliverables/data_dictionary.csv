@@ -160,6 +160,28 @@ statistical_forecasts.csv,fit_first_year,First year of the estimation sample.
 statistical_forecasts.csv,fit_last_year,"Last year of the estimation sample — the last OUTTURN, never the last official forecast, so a line's official projection can be read against the model on the same axes."
 statistical_forecasts.csv,n_obs,Number of outturn observations fitted.
 statistical_forecasts.csv,run_id,Run that produced the forecasts.
+forecast_levels.csv,iso3,"Country (GBR, FRA, DEU)."
+forecast_levels.csv,country,"Country name, for readability."
+forecast_levels.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+forecast_levels.csv,line_label,Human-readable name of the line.
+forecast_levels.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+forecast_levels.csv,currency,"GBP for GBR, EUR for FRA and DEU."
+forecast_levels.csv,notes,The concept caveat recorded with the observation at build time.
+forecast_levels.csv,classification,COFOG or ESA_REV.
+forecast_levels.csv,method,"auto.arima | ets | prophet | uc | combination — the same five as statistical_forecasts.csv, of which this file is the currency twin."
+forecast_levels.csv,pct_gdp,"The forecast share of GDP, copied unchanged from statistical_forecasts.csv."
+forecast_levels.csv,gdp_lcu_mn,"Nominal GDP on the path named by gdp_basis, millions of national currency."
+forecast_levels.csv,value_lcu_mn,pct_gdp / 100 * gdp_lcu_mn.
+forecast_levels.csv,lo80_lcu_mn,"lo80 / 100 * gdp_lcu_mn. The GDP path is taken as given, so this is the RATIO's interval in currency and carries no uncertainty about GDP itself."
+forecast_levels.csv,hi80_lcu_mn,"hi80 / 100 * gdp_lcu_mn, on the same footing."
+forecast_levels.csv,lo95_lcu_mn,"lo95 / 100 * gdp_lcu_mn, on the same footing."
+forecast_levels.csv,hi95_lcu_mn,"hi95 / 100 * gdp_lcu_mn, on the same footing."
+forecast_levels.csv,gdp_basis,"How the GDP path was built. anchored_outturn_chained_on_weo_ngdp = the tree's own outturn GDP to gdp_anchor_year, then chained on the growth of the named WEO series — never the WEO level itself, which sits up to 1% off our anchor and would step every forecast level at the join."
+forecast_levels.csv,gdp_anchor_year,"Last year every line's GDP denominator agrees; the year the chain starts from. At the last outturn the denominator forks by source, so the anchor is a year earlier."
+forecast_levels.csv,gdp_anchor_lcu_mn,GDP at gdp_anchor_year.
+forecast_levels.csv,gdp_growth_source,Source of the growth rates after the anchor.
+forecast_levels.csv,gdp_growth_vintage,That source's vintage.
+forecast_levels.csv,run_id,Run that produced the levels.
 benchmark_balance.csv,iso3,"Country (GBR, FRA, DEU)."
 benchmark_balance.csv,country,"Country name, for readability."
 benchmark_balance.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.

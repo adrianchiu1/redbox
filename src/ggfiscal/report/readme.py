@@ -289,9 +289,10 @@ def write(path: Path | None = None) -> Path:
         "one is published, the four-model combination where none is \u2014 and "
         "a ranked chart of what each line is forecast to change. For "
         "eyeballing construction quality, and for seeing the whole forecast "
-        "at once. \u00a74.5 reads the line forecasts back as a benchmark "
-        "deficit path to 2031, with the cone their own standard errors "
-        "imply.",
+        "at once. The levels charts themselves carry the benchmark forward "
+        "in currency wherever nobody publishes a forecast of the line. "
+        "\u00a74.5 reads the line forecasts back as a benchmark deficit path "
+        "to 2031, with the cone their own standard errors imply.",
         "",
         "The notebooks need only `pandas` and `matplotlib` to re-run: "
         "`pip install -e .[notebook] && jupyter nbconvert --execute "
@@ -317,6 +318,7 @@ def write(path: Path | None = None) -> Path:
         "ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)",
         "ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)",
         "ggfiscal statistical-forecasts   # benchmark forecasts to 2031 -> deliverables/statistical_forecasts.csv (needs .[forecast])",
+        "ggfiscal forecast-levels        # the same forecasts in currency -> deliverables/forecast_levels.csv",
         "ggfiscal benchmark-balance      # those lines summed into an NLB path -> deliverables/benchmark_balance.csv",
         "ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md",
         "pytest                      # per-stage gate tests",

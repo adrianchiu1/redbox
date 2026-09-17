@@ -413,6 +413,122 @@ def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
     assert (comb.se ** 2 >= within - 1e-12).all()
 
 
+# ------------------------------------------- the forecasts in currency
+
+def _weo_available() -> bool:
+    from ggfiscal.standardise.readers import weo_series
+    from ggfiscal.forecast.levels import latest_vintage, GROWTH_INDICATOR
+    try:
+        return not weo_series(latest_vintage(), "GBR", GROWTH_INDICATOR).empty
+    except Exception:                           # pragma: no cover - guard
+        return False
+
+
+needs_weo = pytest.mark.skipif(
+    not _weo_available(),
+    reason="the WEO snapshot is not harvested in this environment")
+
+
+def test_forecast_levels_is_the_ratio_times_one_gdp_path_per_country():
+    """A level here is pct_gdp x GDP and nothing else, and every line of a
+    country is multiplied by the SAME path — the whole reason the file
+    exists, since the trees' own forecast denominators are per-source."""
+    lv = read("forecast_levels.csv")
+    for out, src in (("value_lcu_mn", "pct_gdp"),
+                     ("lo80_lcu_mn", "lo80"), ("hi80_lcu_mn", "hi80"),
+                     ("lo95_lcu_mn", "lo95"), ("hi95_lcu_mn", "hi95")):
+        if src not in lv.columns:               # the ratio columns are joined
+            continue                            # pragma: no cover
+        assert (lv[out] - lv[src] / 100 * lv.gdp_lcu_mn).abs().max() < 1e-6
+
+    fc = read("statistical_forecasts.csv")
+    key = ["iso3", "line_code", "method", "year"]
+    merged = lv.merge(fc[key + ["pct_gdp", "lo80", "hi80", "lo95", "hi95"]],
+                      on=key, suffixes=("", "_fc"))
+    assert len(merged) == len(lv) == len(fc), "the currency twin lost rows"
+    assert (merged.pct_gdp - merged.pct_gdp_fc).abs().max() == 0
+    for out, src in (("value_lcu_mn", "pct_gdp_fc"), ("lo80_lcu_mn", "lo80"),
+                     ("hi80_lcu_mn", "hi80"), ("lo95_lcu_mn", "lo95"),
+                     ("hi95_lcu_mn", "hi95")):
+        assert (merged[out] - merged[src] / 100
+                * merged.gdp_lcu_mn).abs().max() < 1e-6, out
+
+    # one path per country-year, shared by every line and every method
+    assert (lv.groupby(["iso3", "year"]).gdp_lcu_mn.nunique() == 1).all()
+    assert (lv.groupby("iso3").gdp_basis.nunique() == 1).all()
+    assert (lv.gdp_lcu_mn > 0).all()
+
+
+def test_forecast_levels_anchors_on_our_own_gdp_and_grows_from_there():
+    """The anchor is the tree's own outturn GDP at the last year every line
+    agrees on it — a year before the last outturn, where the denominator
+    forks by source. The WEO supplies growth after that, never the level."""
+    lv = read("forecast_levels.csv")
+    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    actual = tree.query("variant == 'strict' and basis == 'actual'").dropna(
+        subset=["gdp_lcu_mn"])
+
+    for iso3, g in lv.groupby("iso3"):
+        anchor_year = int(g.gdp_anchor_year.iloc[0])
+        ours = actual.query("iso3 == @iso3").groupby("year").gdp_lcu_mn
+        agreed = ours.nunique()
+        assert anchor_year == int(agreed[agreed == 1].index.max()), iso3
+        # the last outturn really is ambiguous — that is why the anchor is
+        # a year earlier, and a test that never sees it would not notice
+        assert int(agreed.index.max()) > anchor_year, iso3
+        assert agreed.loc[int(agreed.index.max())] > 1, iso3
+
+        assert abs(float(g.gdp_anchor_lcu_mn.iloc[0])
+                   - float(ours.first().loc[anchor_year])) < 1e-6, iso3
+        path = g.drop_duplicates("year").set_index("year").gdp_lcu_mn.sort_index()
+        assert path.index.min() > anchor_year
+        assert (path.diff().dropna() > 0).all(), iso3   # nominal, so rising
+        assert g.gdp_growth_source.eq("IMF_WEO").all()
+        assert g.gdp_growth_vintage.nunique() == 1
+
+
+@needs_weo
+def test_forecast_levels_chains_weo_growth_and_never_its_level():
+    """The distinction that keeps a German chart from stepping at the join:
+    the WEO's growth is used, its level is not."""
+    from ggfiscal.standardise.readers import weo_series
+    from ggfiscal.forecast.levels import GROWTH_INDICATOR
+
+    lv = read("forecast_levels.csv")
+    for iso3, g in lv.groupby("iso3"):
+        vintage = g.gdp_growth_vintage.iloc[0]
+        weo = weo_series(vintage, iso3, GROWTH_INDICATOR).dropna() / 1e6
+        anchor_year = int(g.gdp_anchor_year.iloc[0])
+        path = g.drop_duplicates("year").set_index("year").gdp_lcu_mn.sort_index()
+        before = float(g.gdp_anchor_lcu_mn.iloc[0])
+        for year, value in path.items():
+            growth = float(weo[year]) / float(weo[year - 1])
+            assert abs(value - before * growth) < 1e-6, (iso3, year)
+            before = value
+        # and it is NOT the WEO level: for at least one country the two
+        # differ materially, which is the whole point of chaining
+    diffs = []
+    for iso3, g in lv.groupby("iso3"):
+        vintage = g.gdp_growth_vintage.iloc[0]
+        weo = weo_series(vintage, iso3, GROWTH_INDICATOR).dropna() / 1e6
+        path = g.drop_duplicates("year").set_index("year").gdp_lcu_mn
+        diffs.append(max(abs(v - float(weo[y])) / float(weo[y])
+                         for y, v in path.items()))
+    assert max(diffs) > 1e-3, "chained path is indistinguishable from the level"
+
+
+@needs_weo
+def test_forecast_levels_is_reproducible_from_the_bundle_and_the_snapshot():
+    from ggfiscal.forecast import levels
+
+    published = read("forecast_levels.csv")
+    again, notes = levels.compute(str(published.run_id.iloc[0]))
+    pd.testing.assert_frame_equal(
+        published.reset_index(drop=True), again.reset_index(drop=True),
+        check_dtype=False, atol=0, rtol=1e-12)
+    assert all("chained on IMF_WEO" in n for n in notes)
+
+
 # ------------------------------------------------- the benchmark balance
 
 BAL_EXP = ["GF01_7", "GF01_X"] + [f"GF{i:02d}" for i in range(2, 11)]
@@ -780,6 +896,57 @@ def test_chartbook_panels_quote_one_forecast_per_category():
     for topic in ("How to read a forecast panel", "statistical combination",
                   "last outturn level", "need not add up",
                   "Nothing here is spliced or recomputed"):
+        assert topic in markdown, topic
+
+
+def test_chartbook_levels_charts_carry_the_benchmark_where_nothing_is_published():
+    """The levels charts gain a violet leg in currency — but only where the
+    strict series carries no official forecast. Where one exists the
+    published number is the answer, exactly as in the forecast panels.
+
+    Checked against the executed captions, so this is what the book actually
+    printed and not what the code looks like it would print.
+    """
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    assert 'load("forecast_levels")' in source
+    setup = "".join(next(c for c in code
+                         if "def chart(" in "".join(c["source"]))["source"])
+    # the leg is keyed on strict and anchored on strict's own last outturn
+    assert 'method == \'combination\'' in setup
+    assert "int(strict.year.max()) <= actual" in setup
+    assert "lo80_lcu_mn" in setup and "lo95_lcu_mn" not in setup
+
+    cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
+    levels = read("forecast_levels.csv").query("method == 'combination'")
+    have = set(map(tuple, levels[["iso3", "line_code"]].drop_duplicates().values))
+
+    drawn = 0
+    for cell in code:
+        call = "".join(cell["source"]).strip()
+        if not call.startswith("chart(") or not call.endswith(")"):
+            continue
+        iso3, line = [t.strip().strip('"') for t in
+                      call[len("chart("):-1].split(",")]
+        text = "".join("".join(o["text"]) for o in cell["outputs"]
+                       if o["output_type"] == "stream")
+        row = cat.loc[(iso3, line)]
+        expected = (row.final_strict_year <= row.final_actual_year
+                    and (iso3, line) in have)
+        assert ("benchmark:" in text) == bool(expected), (iso3, line)
+        if expected:
+            drawn += 1
+            # the caption names the horizon, the band and the GDP path, so a
+            # reader never has to guess which of the two objects they are on
+            said = next(ln for ln in text.splitlines()
+                        if ln.startswith("benchmark:"))
+            assert "80%" in said
+            assert "not a published forecast" in text
+            assert "anchored_outturn_chained_on_weo_ngdp" in text
+    assert drawn == 46, drawn
+
+    # and the reading guide says what the new leg is and what its band is not
+    for topic in ("statistical benchmark", "80% interval of the *ratio*",
+                  "taken as given", "no official forecast"):
         assert topic in markdown, topic
 
 

@@ -263,6 +263,44 @@ chartbook §4.5 plots it. Facts worth not rediscovering:
   dictionary, which `test_data_dictionary_covers_every_column_of_every_file`
   requires of every CSV in `deliverables/`.
 
+## Session 11, third part (D-S11-003): the levels charts carry the benchmark
+
+`ggfiscal forecast-levels` puts the statistical forecasts into currency
+(`forecast/levels.py` → `deliverables/forecast_levels.csv`) and `chart()` draws
+them. Facts worth not rediscovering:
+
+- **api.imf.org IS reachable from the build environment.** D-S11-002 recorded
+  otherwise. The 46 `IMF_WEO*` pulls fetch in about a minute, and 48 of the 49
+  (source, part) keys came back byte-identical to the earlier harvest — only the
+  dataflow `catalog` churns. Re-fetching the WEO is therefore safe and does not
+  revise anything.
+- **Do not run `ggfiscal reconcile` in a fresh container.** It needs the ONS and
+  Eurostat snapshots too — `bridge.anchor_aggregates` reads them, not the
+  canonical layer — and without them it writes the reconciliation files back
+  EMPTY. Restore with `git checkout -- data/canonical` if it happens.
+- **The GDP anchor is 2024, not 2025.** At the last outturn the denominator
+  forks by source (GBR three values, DEU two, 1.34% apart), so the anchor is the
+  last year every line agrees. A test asserts the fork still exists, so if the
+  trees ever agree at the last outturn the anchor should move and the test will
+  say so.
+- **Chain the WEO's growth, never its level.** NGDP runs 0.97% below our German
+  GDP anchor over 2021-2025; substituting the level would step every German
+  forecast at the join. This is the same anchor-and-chain rule as every stitched
+  series in the project.
+- **The band is the ratio's, not the level's.** The GDP path is taken as given,
+  so the interval carries no GDP uncertainty. Do not present it as a level
+  interval.
+- **The chart leg is keyed on `strict`, and anchored on strict's own last
+  outturn** — not on `chart()`'s `actual`, which comes from both variants and
+  can be a year later where `maximum_extension` carries a stitched 2025. The
+  first version raised `IndexError` on GBR GF10 for exactly that reason.
+- `forecast_levels.csv` needs the WEO snapshot to regenerate, unlike
+  `benchmark_balance.csv` which is a pure function of the bundle. Its
+  reproducibility test carries a `needs_weo` skip.
+- `no projection published` is now only the six `TE`/`TR` charts. Two schema
+  notes were rewritten to match; `GF01_X`'s chart no longer stops at the last
+  outturn.
+
 ## Parent package state carried from `main` (session 9, chartbook — D-S9-006)
 
 Kept verbatim from main's HANDOFF at the merge of 2026-09-10; the debt

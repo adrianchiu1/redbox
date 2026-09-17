@@ -1,6 +1,6 @@
 """ggfiscal CLI (§11.2): fetch | standardise | build | reconcile | validate |
-report | flatten | statistical-forecasts | benchmark-balance |
-detect-vintages, plus
+report | flatten | statistical-forecasts | forecast-levels |
+benchmark-balance | detect-vintages, plus
 register/coverage helpers."""
 
 from __future__ import annotations
@@ -200,6 +200,28 @@ def statistical_forecasts():
                f"{frame.method.nunique()} methods)")
     from ggfiscal import manifest as M
     M.update_flat_files()
+
+
+@app.command("forecast-levels")
+def forecast_levels(vintage: str = typer.Option(
+        "", help="WEO vintage for the GDP growth path (default: latest)")):
+    """Put the statistical forecasts into currency for the chartbook's levels
+    charts. One nominal GDP path per country — the tree's own outturn at the
+    last year every line agrees on it, chained forward on the IMF WEO's NGDP
+    growth — because the trees' own forecast denominators are per-source and
+    disagree. Writes deliverables/forecast_levels.csv; needs the WEO snapshot
+    and the published bundle, nothing else."""
+    from ggfiscal.build import build_run_id
+    from ggfiscal.forecast.levels import write
+
+    dest, notes = write(build_run_id(), vintage)
+    for note in notes:
+        typer.echo(f"  {note}")
+    import pandas as pd
+    frame = pd.read_csv(dest)
+    typer.echo(f"\nwrote {dest}  ({len(frame)} rows, "
+               f"{frame.groupby(['iso3', 'line_code']).ngroups} series x "
+               f"{frame.method.nunique()} methods to {int(frame.year.max())})")
 
 
 @app.command("benchmark-balance")

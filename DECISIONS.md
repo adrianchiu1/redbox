@@ -1544,3 +1544,75 @@ year and its ledger anchor, and the cone re-derived from the published
 per-line errors and correlations. A seventh pins §4.5's prose and that §4.4
 now points at it instead of being quietly contradicted. `tests/deliverables`
 56 passed (was 49); the full-suite failure set is unchanged.
+
+## D-S11-003 — The levels charts carry the benchmark: one nominal GDP path per country, our outturn anchored and chained on WEO NGDP growth (serves D-S9-002, D-S11-001; new deliverable `forecast_levels.csv`; answers the gap left open by D-S11-002)
+2026-09-17, session 11. The chartbook's per-series charts are levels in
+millions of national currency; the statistical forecasts are shares of GDP.
+Putting one on the other needs a nominal GDP path, and D-S11-002 recorded
+that the bundle has none — each forecast row in the trees carries the
+denominator that came with *that line's* source, and the sources disagree
+(DEU 2030 spans 5.205 / 5.240 / 5.339 tn, a 2.57% spread worth EUR 27bn on
+GF10 alone; GBR has no forecast GDP at 2031 at all). That is now closed.
+**The blocker was smaller than recorded.** D-S11-002 said this needed a
+container with the WEO harvest. `api.imf.org` is in fact reachable from the
+build environment: the 46 `IMF_WEO*` pulls were fetched here and **48 of the
+49 (source, part) keys came back byte-identical to the earlier harvest** —
+only the dataflow `catalog` part churned, which is a listing and not data.
+So the NGDP used here is exactly the series the committed bundle was
+reconciled against; there is no vintage drift to reason about.
+**The construction: anchor an outturn, chain a growth rate** — the same rule
+as every stitched series in the project (§7, D-S4-002), not a substitution.
+  - *anchor*: the tree's own GDP at the last year on which every line's
+    denominator agrees. That is **2024**, a year before the last outturn: at
+    2025 the denominator forks by source (GBR three values, DEU two at a
+    1.34% spread), and picking one would be arbitrary.
+  - *growth*: IMF WEO `NGDP`, one vintage, the series §4 already reconciles
+    our totals against.
+  Chaining rather than substituting is the whole point. Over 2021-2025 the
+  WEO's NGDP runs **0.97% below our GDP anchor for Germany**, so multiplying
+  a ratio by the raw level would step every German forecast level about a
+  point below what its own history implies — a seam that is an artefact of
+  the denominator and nothing else. Growth rates carry no level difference.
+  Cross-check: the chained 2025 lands within 0.001-0.61% of the published
+  2025 denominators it deliberately does not choose between.
+**What this does NOT do is add uncertainty about GDP.** The interval is the
+line's own interval times a single path, so it is the uncertainty of the
+RATIO with the path taken as given. A level in this file is a joint
+statement — this ratio, on that path — and the columns name the path so it
+can be replaced. Said on the chart, in the caption and in the dictionary.
+**In the chartbook**, `chart()` gains a violet dashed leg and its 80% band
+(the 95% swamps a levels axis and stays in the forecast books), drawn on
+**46 of the 72** charts. The rule is D-S11-001's: only where the **strict**
+series carries no official forecast — where one exists the published number
+is the answer. Two details that bit:
+  - keyed on strict, not on the furthest variant. GBR GF10's
+    `maximum_extension` carries a proxy leg to 2027 while strict stops at
+    2024; a proxy extension is not an official forecast, so that chart gets
+    the benchmark as well as the orange leg.
+  - anchored on **strict's own last outturn**, not on the chart's `actual`,
+    which comes from both variants and is a year later wherever
+    maximum_extension carries a stitched 2025 the strict series does not.
+    The first version crashed on exactly that.
+  `no projection published` now appears on **six** charts — the `TE`/`TR`
+totals, the only ones left with nothing in the projection region — so the
+reading guide and two of the schema notes were rewritten rather than left
+quietly false (`GF01_X`'s chart no longer "always stops at the last
+outturn").
+**Where it lives.** `forecast/levels.py`, `ggfiscal forecast-levels`,
+`deliverables/forecast_levels.csv` — the currency twin of
+`statistical_forecasts.csv`, same key, all five methods. A forecast-layer
+side-car like its two neighbours: outside `M.FLAT_FILES` and the run
+manifest, inside the data dictionary. Unlike `benchmark_balance.csv` it is
+**not** a pure function of the published bundle — it needs the WEO snapshot
+— so its reproducibility test is skipped where that snapshot is absent.
+Cost: the chartbook goes 1.30 -> 1.34 MB (+48 KB), already past the
+D-S9-004 margin.
+Tests: five new — the level is the ratio times the path and nothing else and
+the path is shared by every line of a country; the anchor is our own outturn
+at the last agreed year AND that the last outturn really is ambiguous (a
+test that never saw the fork would not notice if the anchor moved); the
+chain is WEO growth and is measurably not the WEO level; the file
+reproduces from the bundle plus the snapshot; and the chartbook draws the
+leg on exactly the 46 charts where nothing is published, checked against the
+executed captions rather than the source. `tests/deliverables` 61 passed
+(was 56).
