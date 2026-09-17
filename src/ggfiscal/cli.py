@@ -1,6 +1,7 @@
 """ggfiscal CLI (§11.2): fetch | standardise | build | reconcile | validate |
 report | flatten | statistical-forecasts | forecast-levels |
-benchmark-balance | detect-vintages, plus
+benchmark-balance |
+benchmark-vs-weo | detect-vintages, plus
 register/coverage helpers."""
 
 from __future__ import annotations
@@ -244,6 +245,27 @@ def benchmark_balance():
     typer.echo(f"\nwrote {dest}  ({len(frame)} rows, "
                f"{balance.iso3.nunique()} countries x {len(balance) // max(balance.iso3.nunique(), 1)} "
                f"years to {int(frame.year.max())})")
+
+
+@app.command("benchmark-vs-weo")
+def benchmark_vs_weo(vintage: str = typer.Option(
+        "", help="WEO vintage to compare against (default: latest)")):
+    """Put the benchmark balance beside the IMF WEO's own GGXCNL projection
+    and decompose the difference: revenue side, expenditure side, and the
+    WEO's own internal wedge, on changes since the base year so a stable
+    perimeter difference cancels. Writes deliverables/benchmark_vs_weo.csv."""
+    from ggfiscal.build import build_run_id
+    from ggfiscal.forecast.weo_compare import write
+
+    dest, notes = write(build_run_id(), vintage)
+    for note in notes:
+        typer.echo(f"  {note}")
+    import pandas as pd
+    frame = pd.read_csv(dest)
+    bal = frame[frame.kind == "balance"]
+    typer.echo(f"\nwrote {dest}  ({len(frame)} rows; the WEO sits inside the "
+               f"benchmark's 80% interval in {int(bal.weo_inside_80.sum())} "
+               f"of {len(bal)} country-years)")
 
 
 @app.command("detect-vintages")

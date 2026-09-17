@@ -758,6 +758,48 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
         "n_statistical": "Lines on a statistical path.",
         "run_id": "Run that produced the balance.",
     })
+    _dict_rows("benchmark_vs_weo.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "year", "notes")},
+        "weo_vintage": "WEO edition compared against.",
+        "base_year": "Year the changes are measured from — the benchmark "
+                     "balance's own base.",
+        "horizon": "year - base_year.",
+        "kind": "balance | revenue | expenditure | weo_internal_wedge.",
+        "side": "balance | revenue | expenditure | memo.",
+        "ours_pct_gdp": "Our benchmark level as a percentage of GDP.",
+        "weo_pct_gdp": "The WEO's own GGXCNL, GGR or GGX over its NGDP.",
+        "level_gap_pp": "ours_pct_gdp - weo_pct_gdp. On a side row this "
+                        "carries the perimeter difference; compare changes, "
+                        "not levels, where perimeter_gap_pp is large.",
+        "ours_change_pp": "Our change since base_year, signed so revenue and "
+                          "expenditure sum to the change in the balance.",
+        "weo_change_pp": "The WEO's change since base_year, signed the same "
+                         "way. On the wedge row, the WEO's own change in "
+                         "(GGR - GGX - GGXCNL)/NGDP.",
+        "change_gap_pp": "ours_change_pp - weo_change_pp, and -wedge on the "
+                         "wedge row, so revenue + expenditure + wedge equal "
+                         "the balance row exactly.",
+        "se": "The benchmark balance's standard error (balance rows).",
+        "lo80": "Benchmark 80% lower bound.",
+        "hi80": "Benchmark 80% upper bound.",
+        "lo95": "Benchmark 95% lower bound.",
+        "hi95": "Benchmark 95% upper bound.",
+        "weo_inside_80": "Whether the WEO's projection falls inside the "
+                         "benchmark's 80% interval that year.",
+        "weo_inside_95": "The same for the 95% interval.",
+        "weo_z": "How many of the benchmark's own standard errors the WEO "
+                 "sits away from it, signed: positive means the WEO is the "
+                 "smaller deficit.",
+        "perimeter_gap_pp": "Base-year difference between our total and the "
+                            "WEO's on that side, in pp of GDP. Large on the "
+                            "UK's two sides, and it cancels in the balance.",
+        "perimeter_gap_sd_pp": "Standard deviation of that gap over the last "
+                               "ten overlap years — how safe it is to treat "
+                               "it as cancelling in a change.",
+        "perimeter_classification": "How §8.2 classified the history gap: "
+                                    "perimeter, revision or unexplained.",
+        "run_id": "Run that produced the comparison.",
+    })
     _dict_rows("data_dictionary.csv", {
         "file": "Flat file the column belongs to.",
         "column": "Name of the column, as it appears in that file's header.",
@@ -875,6 +917,10 @@ DESCRIPTIONS = {
         "the same benchmark forecasts in currency \u2014 each line's share of "
         "GDP on one nominal GDP path per country, our outturn anchored and "
         "chained on the IMF WEO's NGDP growth",
+    "benchmark_vs_weo.csv":
+        "that benchmark balance beside the IMF WEO's own deficit projection, "
+        "with the difference decomposed by side on changes since the base "
+        "year",
     "benchmark_balance.csv":
         "those line forecasts summed back into a net lending/borrowing path "
         "to 2031 \u2014 per line, per side and as the balance itself, with an "

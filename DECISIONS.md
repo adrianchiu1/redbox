@@ -1616,3 +1616,67 @@ reproduces from the bundle plus the snapshot; and the chartbook draws the
 leg on exactly the 46 charts where nothing is published, checked against the
 executed captions rather than the source. `tests/deliverables` 61 passed
 (was 56).
+
+## D-S11-004 — The benchmark balance read against the WEO's own deficit projection, and the difference decomposed (serves §8.3, D-S9-006, D-S11-002; new deliverable `benchmark_vs_weo.csv`)
+2026-09-17, session 11. §4.1-4.3 compare our totals with the WEO's over the
+overlap years and stop at the last outturn. D-S11-002 carried a benchmark
+balance to 2031 and the WEO publishes GGXCNL over exactly that horizon, so
+the comparison §4 could never make is now available. New
+`forecast/weo_compare.py`, `ggfiscal benchmark-vs-weo`,
+`deliverables/benchmark_vs_weo.csv`, chartbook §4.6.
+**The comparison is clean at the base year.** Balance gap at 2024: GBR
+**+0.017 pp** of GDP, FRA -0.001, DEU +0.000. Nothing in the section is a
+definitional wedge in disguise, which is what makes the rest worth reading.
+**By side it is not, and that drove the design.** The UK's TR and TE are each
+about **2.6 pp of GDP larger** than the WEO's (revenue +2.60, expenditure
++2.58) — a stable perimeter difference, sd 0.21-0.25 pp over ten overlap
+years, classified `perimeter` in §8.2, which cancels in the balance because
+it sits on both sides. So the side comparison is made on **changes since the
+base year**, where a stable wedge cancels, and `perimeter_gap_pp` and its
+standard deviation are published on every row rather than left to be
+discovered by whoever first compares two levels.
+**The decomposition closes exactly**, and is tested to 1e-6:
+    balance gap = revenue gap + expenditure gap - weo_internal_wedge
+The wedge is the WEO's own Δ((GGR - GGX - GGXCNL)/NGDP). It is **zero to four
+decimals on the 2026-04 vintage** and is carried anyway: the HANDOFF note
+from session 9 says it is reported and never absorbed, and a row that is
+usually zero is the cheapest way to keep that true.
+**What it says.** At 2031, in % of GDP:
+  - **GBR** benchmark -7.27 against WEO -1.60, **-5.67 pp apart**. Almost all
+    of it is revenue: the WEO has GGR going 37.6% -> 42.1% of GDP, a 4.5 pp
+    rise, with spending flat. Split: revenue -3.28, expenditure -2.40.
+  - **FRA** -6.13 against -2.89, -3.23 pp. Revenue nearly agrees (+0.23); the
+    story is spending, which the WEO has FALLING 1.2 pp while the benchmark
+    has it rising 2.3. Split: revenue +0.23, expenditure -3.49.
+  - **DEU** -2.47 against -3.66, **+1.19 pp the other way** — the only country
+    where the benchmark is less pessimistic, because the WEO embeds the
+    announced defence and infrastructure expansion (GGX 49.4% -> 51.6%) and a
+    model fitted on history does not. Split: revenue +0.53, expenditure +0.62.
+**And the statistic that reframes all of it:** the WEO sits inside the
+benchmark's 80% interval in **21 of 21 country-years**, never more than
+**0.97** of the benchmark's own standard errors away. A five-point gap sounds
+like a disagreement; on this cone it is not one. That is a statement about
+how wide six-year fiscal uncertainty is, not about how close the two
+forecasts are, and the section says so in those words.
+**What it deliberately does not do is judge.** The benchmark knows only each
+line's own history; the WEO's projection embeds announced policy. Where they
+part company the difference IS the policy. The file reports how far apart
+they are and whether the WEO is inside the interval — never which one is
+right — and §4.6's prose and the chart captions both say so.
+**Charts.** Two, in the book's existing palette with no new hue: aqua is the
+IMF WEO as everywhere else, violet the benchmark, blue the published balance.
+§4.6's first figure is the three paths on one shared axis with the
+benchmark's 80/95 cone; the second is the side decomposition as six panels
+(two sides x three countries) of cumulative change since the base year, ours
+against the WEO's, with the gap shaded between the two lines. Aqua is below
+3:1 on this surface, so the WEO line carries a direct text label as it does
+in §4.1-4.3 — the relief the palette validator requires, not an afterthought.
+Cost: the chartbook goes 1.34 -> 1.39 MB.
+Tests: five new — the decomposition closes on the balance for every
+country-year; the `ours` side is the published benchmark rather than a
+recomputation, and the interval flags and `weo_z` are re-derived; the
+perimeter gap is published, is large on the UK's two sides, is ~0 on the
+balance, and is absent only on the wedge memo; the WEO side quotes the
+snapshot unchanged and the file reproduces from the bundle; and §4.6's prose
+claim that the WEO is always inside the 80% interval is checked against the
+data rather than taken on trust. `tests/deliverables` 66 passed (was 61).

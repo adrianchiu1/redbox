@@ -211,6 +211,33 @@ benchmark_balance.csv,n_history_obs,Overlapping h-year moves behind history_sd_p
 benchmark_balance.csv,n_official,"Lines on an official path, which contribute no variance to the interval."
 benchmark_balance.csv,n_statistical,Lines on a statistical path.
 benchmark_balance.csv,run_id,Run that produced the balance.
+benchmark_vs_weo.csv,iso3,"Country (GBR, FRA, DEU)."
+benchmark_vs_weo.csv,country,"Country name, for readability."
+benchmark_vs_weo.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+benchmark_vs_weo.csv,notes,The concept caveat recorded with the observation at build time.
+benchmark_vs_weo.csv,weo_vintage,WEO edition compared against.
+benchmark_vs_weo.csv,base_year,Year the changes are measured from — the benchmark balance's own base.
+benchmark_vs_weo.csv,horizon,year - base_year.
+benchmark_vs_weo.csv,kind,balance | revenue | expenditure | weo_internal_wedge.
+benchmark_vs_weo.csv,side,balance | revenue | expenditure | memo.
+benchmark_vs_weo.csv,ours_pct_gdp,Our benchmark level as a percentage of GDP.
+benchmark_vs_weo.csv,weo_pct_gdp,"The WEO's own GGXCNL, GGR or GGX over its NGDP."
+benchmark_vs_weo.csv,level_gap_pp,"ours_pct_gdp - weo_pct_gdp. On a side row this carries the perimeter difference; compare changes, not levels, where perimeter_gap_pp is large."
+benchmark_vs_weo.csv,ours_change_pp,"Our change since base_year, signed so revenue and expenditure sum to the change in the balance."
+benchmark_vs_weo.csv,weo_change_pp,"The WEO's change since base_year, signed the same way. On the wedge row, the WEO's own change in (GGR - GGX - GGXCNL)/NGDP."
+benchmark_vs_weo.csv,change_gap_pp,"ours_change_pp - weo_change_pp, and -wedge on the wedge row, so revenue + expenditure + wedge equal the balance row exactly."
+benchmark_vs_weo.csv,se,The benchmark balance's standard error (balance rows).
+benchmark_vs_weo.csv,lo80,Benchmark 80% lower bound.
+benchmark_vs_weo.csv,hi80,Benchmark 80% upper bound.
+benchmark_vs_weo.csv,lo95,Benchmark 95% lower bound.
+benchmark_vs_weo.csv,hi95,Benchmark 95% upper bound.
+benchmark_vs_weo.csv,weo_inside_80,Whether the WEO's projection falls inside the benchmark's 80% interval that year.
+benchmark_vs_weo.csv,weo_inside_95,The same for the 95% interval.
+benchmark_vs_weo.csv,weo_z,"How many of the benchmark's own standard errors the WEO sits away from it, signed: positive means the WEO is the smaller deficit."
+benchmark_vs_weo.csv,perimeter_gap_pp,"Base-year difference between our total and the WEO's on that side, in pp of GDP. Large on the UK's two sides, and it cancels in the balance."
+benchmark_vs_weo.csv,perimeter_gap_sd_pp,Standard deviation of that gap over the last ten overlap years — how safe it is to treat it as cancelling in a change.
+benchmark_vs_weo.csv,perimeter_classification,"How §8.2 classified the history gap: perimeter, revision or unexplained."
+benchmark_vs_weo.csv,run_id,Run that produced the comparison.
 data_dictionary.csv,file,Flat file the column belongs to.
 data_dictionary.csv,column,"Name of the column, as it appears in that file's header."
 data_dictionary.csv,description,What the column holds.

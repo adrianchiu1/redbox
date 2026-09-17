@@ -301,6 +301,36 @@ them. Facts worth not rediscovering:
   notes were rewritten to match; `GF01_X`'s chart no longer stops at the last
   outturn.
 
+## Session 11, fourth part (D-S11-004): the benchmark against the WEO
+
+`ggfiscal benchmark-vs-weo` (`forecast/weo_compare.py` →
+`deliverables/benchmark_vs_weo.csv`) and chartbook §4.6. Facts worth not
+rediscovering:
+
+- **Compare CHANGES by side, never levels.** The UK's TR and TE are each ~2.6 pp
+  of GDP larger than the WEO's and the balance gap is +0.017 pp — the wedge
+  sits on both sides and cancels. It is stable (sd 0.21–0.25 pp over ten years,
+  classified `perimeter`), which is what licenses the change comparison, and
+  `perimeter_gap_pp` plus its sd are on every row so nobody has to rediscover
+  this by comparing two levels.
+- **The decomposition includes the WEO's own internal wedge**, Δ((GGR − GGX −
+  GGXCNL)/NGDP). It is zero to four decimals on the 2026-04 vintage. Keep the
+  row: session 9's note says the wedge is reported and never absorbed, and a
+  usually-zero row is the cheap way to keep that true. The identity closes to
+  1e-6, not 1e-9 — that is float accumulation on values around 5e12, not a bug.
+- **The WEO is inside the benchmark's 80% interval in 21 of 21 country-years**,
+  max |z| 0.97. Do not present the gap as a disagreement; it is a statement
+  about how wide six-year fiscal uncertainty is.
+- **The gaps at 2031**: GBR −5.67 pp (revenue −3.28, expenditure −2.40), FRA
+  −3.23 (+0.23 / −3.49), DEU +1.19 (+0.53 / +0.62). Germany is the one country
+  where the benchmark is less pessimistic, because the WEO embeds the announced
+  spending expansion.
+- **The section must not judge.** The benchmark knows only history, the WEO
+  embeds policy; where they differ the difference is the policy. A test pins
+  that the prose says so.
+- Aqua stays the IMF WEO and carries a direct text label, because it is below
+  3:1 on this surface. Do not solve that by changing the hue.
+
 ## Parent package state carried from `main` (session 9, chartbook — D-S9-006)
 
 Kept verbatim from main's HANDOFF at the merge of 2026-09-10; the debt

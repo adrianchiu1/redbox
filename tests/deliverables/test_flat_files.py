@@ -678,6 +678,101 @@ def test_benchmark_balance_interval_is_the_lines_own_errors_propagated():
     assert (rows.n_history_obs > 10).all()
 
 
+# --------------------------------------- the benchmark against the WEO
+
+def test_benchmark_vs_weo_decomposition_closes_on_the_balance():
+    """revenue + expenditure + the WEO's own internal wedge = the balance gap,
+    exactly. If it ever does not, the section is claiming an attribution it
+    does not have."""
+    vs = read("benchmark_vs_weo.csv")
+    for (iso3, year), g in vs.groupby(["iso3", "year"]):
+        k = g.set_index("kind")
+        assert set(k.index) == {"balance", "revenue", "expenditure",
+                                "weo_internal_wedge"}, (iso3, year)
+        parts = sum(float(k.loc[n, "change_gap_pp"])
+                    for n in ("revenue", "expenditure", "weo_internal_wedge"))
+        assert abs(parts - float(k.loc["balance", "change_gap_pp"])) < 1e-6
+        # and the same split holds on each side's own arithmetic
+        for side in ("revenue", "expenditure"):
+            r = k.loc[side]
+            assert abs(float(r.change_gap_pp) - float(r.ours_change_pp)
+                       + float(r.weo_change_pp)) < 1e-9, (iso3, year, side)
+
+
+def test_benchmark_vs_weo_quotes_our_own_published_balance():
+    """The `ours` side is the published benchmark, not a recomputation."""
+    vs = read("benchmark_vs_weo.csv")
+    bal = read("benchmark_balance.csv")
+    ours = bal[bal.kind == "balance"].set_index(["iso3", "year"])
+    for r in vs[vs.kind == "balance"].itertuples():
+        b = ours.loc[(r.iso3, r.year)]
+        for mine, theirs in (("ours_pct_gdp", "pct_gdp"),
+                             ("ours_change_pp", "contribution_pp"),
+                             ("se", "se"), ("lo80", "lo80"), ("hi80", "hi80"),
+                             ("lo95", "lo95"), ("hi95", "hi95")):
+            assert abs(getattr(r, mine) - b[theirs]) < 1e-9, (r.iso3, r.year, mine)
+        assert abs(r.level_gap_pp - (r.ours_pct_gdp - r.weo_pct_gdp)) < 1e-9
+        assert r.weo_inside_80 == bool(r.lo80 <= r.weo_pct_gdp <= r.hi80)
+        assert r.weo_inside_95 == bool(r.lo95 <= r.weo_pct_gdp <= r.hi95)
+        assert abs(r.weo_z - (r.weo_pct_gdp - r.ours_pct_gdp) / r.se) < 1e-9
+        # an 80% interval that contains everything would make the flag
+        # meaningless, so check the interval is the one it claims to be
+        assert abs(r.hi80 - r.ours_pct_gdp - 1.281552 * r.se) < 1e-9
+    for kind, side in (("revenue", "revenue"), ("expenditure", "expenditure")):
+        sub = vs[vs.kind == kind]
+        got = bal[bal.kind == f"{side}_total"].set_index(["iso3", "year"])
+        for r in sub.itertuples():
+            b = got.loc[(r.iso3, r.year)]
+            assert abs(r.ours_pct_gdp - b.pct_gdp) < 1e-9
+            assert abs(r.ours_change_pp - b.contribution_pp) < 1e-9
+
+
+def test_benchmark_vs_weo_publishes_the_perimeter_gap_it_cannot_remove():
+    """The UK's two sides are each about 2.6 pp of GDP apart from the WEO's
+    and the balance is not. That is why the comparison is of changes, and the
+    file has to say so on every row rather than leave it to be discovered."""
+    vs = read("benchmark_vs_weo.csv")
+    gbr = vs.query("iso3 == 'GBR'")
+    assert abs(gbr.query("kind == 'balance'").perimeter_gap_pp.iloc[0]) < 0.1
+    for side in ("revenue", "expenditure"):
+        assert gbr.query("kind == @side").perimeter_gap_pp.abs().min() > 2.0
+    # stable enough to cancel in a change — which is the claim being made
+    assert gbr.perimeter_gap_sd_pp.max() < 0.5
+    # every row that compares something carries it; the wedge memo has no
+    # side and therefore no perimeter of its own
+    real = vs[vs.kind != "weo_internal_wedge"]
+    assert real.perimeter_gap_pp.notna().all()
+    assert real.perimeter_gap_sd_pp.notna().all()
+    assert vs.perimeter_classification.notna().all()
+    assert vs[vs.kind == "weo_internal_wedge"].perimeter_gap_pp.isna().all()
+    for iso3 in ("FRA", "DEU"):
+        g = vs.query("iso3 == @iso3 and kind != 'weo_internal_wedge'")
+        assert g.perimeter_gap_pp.abs().max() < 0.1, iso3
+
+
+@needs_weo
+def test_benchmark_vs_weo_quotes_the_weo_unchanged_and_reproduces():
+    from ggfiscal.forecast import weo_compare
+    from ggfiscal.standardise.readers import weo_series
+
+    vs = read("benchmark_vs_weo.csv")
+    for kind, subject in (("balance", "GGXCNL"), ("revenue", "GGR"),
+                          ("expenditure", "GGX")):
+        for iso3, g in vs[vs.kind == kind].groupby("iso3"):
+            vintage = g.weo_vintage.iloc[0]
+            ngdp = weo_series(vintage, iso3, "NGDP").dropna()
+            s = weo_series(vintage, iso3, subject).dropna()
+            for r in g.itertuples():
+                want = 100.0 * float(s[r.year]) / float(ngdp[r.year])
+                assert abs(r.weo_pct_gdp - want) < 1e-9, (iso3, r.year, kind)
+
+    again, notes = weo_compare.compute(str(vs.run_id.iloc[0]))
+    pd.testing.assert_frame_equal(
+        vs.reset_index(drop=True), again.reset_index(drop=True),
+        check_dtype=False, atol=0, rtol=1e-12)
+    assert any("perimeter gap" in n for n in notes)
+
+
 # ----------------------------------------------------------------- notebooks
 
 FORECAST_NOTEBOOKS = tuple(
@@ -778,7 +873,7 @@ def test_chartbook_charts_every_published_series():
                if "data" in o and "image/png" in o["data"]]
     # every series, the 15 ledger charts, the 9 WEO ones, the 3 TE
     # diagnostics, and the 9 forecast-panel figures (3 per country)
-    assert len(figures) >= len(cat) + 15 + 9 + 3 + 9 + 2, "a chart is missing"
+    assert len(figures) >= len(cat) + 15 + 9 + 3 + 9 + 4, "a chart is missing"
     # the schema caveats are stated, not left for the reader to discover
     for topic in ("GF01_X", "outturn-only", "two different TE numbers",
                   "explained_share", "seam"):
@@ -948,6 +1043,36 @@ def test_chartbook_levels_charts_carry_the_benchmark_where_nothing_is_published(
     for topic in ("statistical benchmark", "80% interval of the *ratio*",
                   "taken as given", "no official forecast"):
         assert topic in markdown, topic
+
+
+def test_chartbook_puts_the_benchmark_beside_the_weo_with_its_cone():
+    """§4.6 draws both paths on one axis with the benchmark's interval, and
+    splits the difference by side. It must read the published comparison, not
+    recompute it, and must not claim either forecast is right."""
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    assert 'load("benchmark_vs_weo")' in source
+    assert "weo_compare_path()" in source and "weo_compare_split()" in source
+
+    body = "".join(next(c for c in code
+                        if "def weo_compare_path(" in "".join(c["source"]))["source"])
+    for needed in ("lo80", "hi80", "lo95", "hi95", "weo_pct_gdp", "AQUA",
+                   "weo_z", "perimeter_gap_pp", "change_gap_pp"):
+        assert needed in body, needed
+    # aqua is below 3:1 on this surface, so the WEO carries a direct label
+    assert 'annotate("WEO"' in body
+    # the split is the published decomposition, not a difference taken here
+    assert "ours_change_pp" in body and "weo_change_pp" in body
+
+    for topic in ("the difference is policy", "never which one is right",
+                  "80% interval in every year", "cancels in the balance",
+                  "internal wedge"):
+        assert topic in markdown, topic
+
+    # the headline claim is checked against the data, not just the prose
+    vs = read("benchmark_vs_weo.csv")
+    bal = vs[vs.kind == "balance"]
+    assert bal.weo_inside_80.all(), "the prose says the WEO is always inside"
+    assert bal.weo_z.abs().max() < 1.0
 
 
 def test_chartbook_states_the_benchmark_balance_and_what_it_is_not():
