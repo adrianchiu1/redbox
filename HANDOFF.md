@@ -222,6 +222,47 @@ rediscovering:
   so a diff in an existing figure means a real change, not a font or version
   wobble.
 
+## Session 11, second part (D-S11-002): the benchmark balance
+
+`ggfiscal benchmark-balance` sums the line forecasts back into an NLB path to
+2031 (`forecast/balance.py` → `deliverables/benchmark_balance.csv`), and
+chartbook §4.5 plots it. Facts worth not rediscovering:
+
+- **It reads `deliverables/` and nothing else.** Two trees, the ledger, the
+  statistical forecasts. No harvest, no canonical layer — so it runs in any
+  container that has the bundle, and a test re-derives the committed file from
+  the committed bundle.
+- **Expenditure is the interest split, never the Level I set.** `GF01_7 +
+  GF01_X + GF02..GF10`. Identical to `GF01..GF10` in history to the last
+  digit; in forecast it is worth 2.25 pp of GDP for France, because `GF01`'s
+  own fit knows nothing about the official interest projection inside it.
+  `reconcile/explanation.py` keeps the Level I set for the history
+  decomposition — that is correct there and must not be "made consistent".
+- **The balance rule is not the panel rule.** §4.5 uses an official projection
+  only where it reaches 2031; §*x*.1 prefers one at any horizon. Both are
+  deliberate and the file's `source` column names every line where they part.
+  Do not splice a statistical tail onto a truncated official path.
+- **ρ_within ≈ +0.15, ρ_between ≈ +0.02, estimated per country and horizon**
+  from the lines' h-year ratio changes. The cross-side term enters the
+  variance with a minus sign, so a larger ρ_between narrows the cone; the
+  measured value is near zero, which is why the cone stays wide.
+- **The cone is wide and calibrated.** Every row carries the SD of h-year
+  moves in that country's own ledger NLB/GDP as a yardstick. At h=7 the model
+  band is a little wider than history (UK 6.16 vs 4.74). Do not "fix" it.
+- **The 2025 row is a free backtest** — the revenue tree runs a year past the
+  expenditure tree, so the first forecast year already has a published balance
+  beside it. Misses: UK -1.16, FRA -0.58, DEU +1.30 pp.
+- **Still not published: a single nominal GDP forecast.** WEO `NGDP` is
+  ingested and used at every forecast horizon, but `weo_levels_bridge.csv`
+  emits `gdp_weo_mn` on history rows only. The trees' own forecast-year
+  `gdp_lcu_mn` is per-source and the sources disagree (DEU 2030 spans 2.6%),
+  so there is no single path to multiply a %-of-GDP forecast by. A currency
+  version of §4.5 needs that decision made first.
+- `benchmark_balance.csv` is a side-car like `statistical_forecasts.csv`: not
+  in `M.FLAT_FILES` (so not in the run manifest), but it **is** in the data
+  dictionary, which `test_data_dictionary_covers_every_column_of_every_file`
+  requires of every CSV in `deliverables/`.
+
 ## Parent package state carried from `main` (session 9, chartbook — D-S9-006)
 
 Kept verbatim from main's HANDOFF at the merge of 2026-09-10; the debt

@@ -1460,3 +1460,87 @@ test learns the fourth chart family and that its window is applied to the
 data. `tests/deliverables` 49 passed (was 47); the full-suite failure set
 is byte-identical before and after (this container has an incomplete
 harvest, so the debt and stage gates fail either way).
+
+## D-S11-002 — The benchmark balance: the line forecasts summed back into an NLB path to 2031, with the cone their own errors imply (serves §4.3, §8.3, D-S9-006; consumes D-S9-007, D-S11-001; new deliverable `benchmark_balance.csv`)
+2026-09-17, session 11. D-S9-006 settled that there is no forward "our NLB"
+because **a level needs every component and a change does not**, and 44 of
+72 series carried no forecast at all. The first half of that is unchanged.
+The second half is not: D-S9-007's benchmark reaches every granular line to
+2031, so a balance can now be summed with `resid_coverage` **zero by
+construction** — the hole the argument turned on is closed. New module
+`forecast/balance.py`, new command `ggfiscal benchmark-balance`, new file
+`deliverables/benchmark_balance.csv`, new chartbook §4.5. It is a
+**benchmark** balance on exactly the footing of the lines it is built from:
+not in the canonical layer, not in the trees, and never the number where an
+official projection of the balance exists.
+**Four choices, each recoverable from the file.**
+  1. *Base year = the last year EVERY line has an outturn.* The expenditure
+     tree ends a year before the revenue tree, so that is 2024, not the
+     ledger's 2025. The path starts from the balance ledger's own published
+     NLB/GDP at that year — a published balance, not a sum of lines.
+  2. *Expenditure is `GF01_7 + GF01_X + GF02..GF10`, never the Level I set.*
+     Identical in history (checked: Σ = TE to the last digit in every
+     outturn year, all three countries). Not identical in forecast, because
+     the Level I set hides interest inside `GF01`, whose univariate fit knows
+     nothing about the official interest projection inside it. France 2031:
+     **-6.13% of GDP on the split against -3.85% on `GF01`** — a 2.25 pp
+     difference, and the largest single judgement in the section. Germany
+     1.31 pp, the UK 0.63 pp. `reconcile/explanation.py` keeps the Level I
+     set for the history decomposition, where the two agree; this is the one
+     place they do not.
+  3. *An official projection is used only where it covers the whole horizon.*
+     Deliberately NOT the D-S11-001 panel rule, which prefers an official
+     projection at any horizon. A total needs every line in every year, and
+     splicing a benchmark anchored at the last outturn onto an official path
+     that has already left it would invent a number in no file. Seven UK
+     lines, five German and two French take their statistical path here and
+     show official in the panel above; the `source` column names them and
+     `compute()` reports them as notes.
+  4. *The cone is the lines' own published standard errors, propagated* under
+     one average correlation within a side and one across the two, both
+     ESTIMATED from the outturn history of the same lines (h-year changes in
+     ratio, per country and horizon). Estimated, not assumed: independence
+     would understate a set of lines that move with the cycle together, and
+     the cross-side term enters with a minus sign, so it is what lets a
+     revenue miss and a spending miss cancel. Measured at ρ_within ≈ +0.11 to
+     +0.19, ρ_between ≈ 0.00 to +0.06 — low, which is itself the finding:
+     these lines do not cancel much. Lines on an official path contribute
+     **no** variance (a published projection is not a distribution), so the
+     cone understates wherever a country has official legs; `n_official` is
+     on every row.
+**The cone is wide and that is the answer, not a defect.** UK 2031:
+-7.27% of GDP, 80% -15.2 to +0.6. Every row carries, beside it, the standard
+deviation of h-year moves in that country's own ledger NLB/GDP across the
+whole outturn record — a yardstick, never used to build the interval. At
+h=7 the model band is 6.16 pp against history's 4.74 (UK), 4.17 against 2.28
+(FRA), 4.83 against 3.05 (DEU): the same order, a little wider. A balance
+six years out is genuinely this uncertain, and 2009 and 2020 are both inside
+the record the yardstick is measured on.
+**One free mark.** Because the revenue tree runs a year past the expenditure
+tree, the first forecast year already has a published balance beside it —
+the only outturn this construction can so far be scored against. Benchmark
+vs ledger at 2025: UK -6.34 against -5.18, France -5.70 against -5.12,
+Germany -1.36 against -2.67. Misses of -1.16, -0.58 and +1.30 pp, all well
+inside the one-year band, and all reported in the section's caption.
+**Where it runs.** The module reads `deliverables/` and nothing else — the
+two trees, the ledger and the statistical forecasts — so it needs no
+harvest and no canonical layer, and the file is a pure function of the
+published bundle. It is a side-car like `statistical_forecasts.csv`: not in
+`M.FLAT_FILES`, so it does not enter the run manifest, but it IS in the data
+dictionary, which the coverage test requires of every CSV in the directory.
+**What was NOT done.** A single nominal GDP path is still not published. The
+WEO's `NGDP` is ingested and used at every forecast horizon by
+`reconcile/explanation.py`, but `weo_levels_bridge.csv` emits `gdp_weo_mn`
+only on history rows, so a currency-level version of this path cannot be
+built from the bundle. Deliberately deferred: this section needs no GDP
+forecast, because the components are ratios and a balance is a difference of
+ratios. The per-source denominators that ARE in the trees disagree — Germany
+2030 carries 5.205 / 5.240 / 5.339 tn from three sources, a 2.6% spread —
+so publishing "a" GDP path is a choice that needs making, not a copy.
+Tests: six new — reproducibility of the file from the published bundle,
+the three-way sum identity (lines, sides, balance), the interest split and
+the absence of `GF01`, the official-only-where-it-reaches rule, the base
+year and its ledger anchor, and the cone re-derived from the published
+per-line errors and correlations. A seventh pins §4.5's prose and that §4.4
+now points at it instead of being quietly contradicted. `tests/deliverables`
+56 passed (was 49); the full-suite failure set is unchanged.

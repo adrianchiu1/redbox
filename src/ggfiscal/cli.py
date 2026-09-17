@@ -1,5 +1,6 @@
 """ggfiscal CLI (§11.2): fetch | standardise | build | reconcile | validate |
-report | flatten | statistical-forecasts | detect-vintages, plus
+report | flatten | statistical-forecasts | benchmark-balance |
+detect-vintages, plus
 register/coverage helpers."""
 
 from __future__ import annotations
@@ -199,6 +200,28 @@ def statistical_forecasts():
                f"{frame.method.nunique()} methods)")
     from ggfiscal import manifest as M
     M.update_flat_files()
+
+
+@app.command("benchmark-balance")
+def benchmark_balance():
+    """Sum the line forecasts back into a net lending/borrowing path to 2031,
+    with an interval propagated from the lines' own standard errors under a
+    correlation structure estimated from their history. A benchmark balance,
+    never a rival to an official projection. Writes
+    deliverables/benchmark_balance.csv; reads only the published bundle, so
+    it needs no harvest and no canonical layer."""
+    from ggfiscal.build import build_run_id
+    from ggfiscal.forecast.balance import write
+
+    dest, notes = write(build_run_id())
+    for note in notes:
+        typer.echo(f"  {note}")
+    import pandas as pd
+    frame = pd.read_csv(dest)
+    balance = frame[frame.kind == "balance"]
+    typer.echo(f"\nwrote {dest}  ({len(frame)} rows, "
+               f"{balance.iso3.nunique()} countries x {len(balance) // max(balance.iso3.nunique(), 1)} "
+               f"years to {int(frame.year.max())})")
 
 
 @app.command("detect-vintages")

@@ -160,6 +160,35 @@ statistical_forecasts.csv,fit_first_year,First year of the estimation sample.
 statistical_forecasts.csv,fit_last_year,"Last year of the estimation sample — the last OUTTURN, never the last official forecast, so a line's official projection can be read against the model on the same axes."
 statistical_forecasts.csv,n_obs,Number of outturn observations fitted.
 statistical_forecasts.csv,run_id,Run that produced the forecasts.
+benchmark_balance.csv,iso3,"Country (GBR, FRA, DEU)."
+benchmark_balance.csv,country,"Country name, for readability."
+benchmark_balance.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+benchmark_balance.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+benchmark_balance.csv,line_label,Human-readable name of the line.
+benchmark_balance.csv,notes,The concept caveat recorded with the observation at build time.
+benchmark_balance.csv,base_year,"Year the path starts from: the latest year in which EVERY line has an outturn, which the expenditure tree sets a year before the revenue tree."
+benchmark_balance.csv,horizon,year - base_year.
+benchmark_balance.csv,kind,line = one granular line; expenditure_total / revenue_total = the sum of that side's lines; balance = the benchmark NLB/GDP path itself.
+benchmark_balance.csv,side,revenue | expenditure | balance.
+benchmark_balance.csv,anchor_year,Last outturn year of that line (base_year on the aggregate rows).
+benchmark_balance.csv,anchor_pct_gdp,"The line's value at base_year; on a balance row, the ledger's own NLB/GDP at base_year."
+benchmark_balance.csv,pct_gdp,"Level at year, as a percentage of GDP."
+benchmark_balance.csv,contribution_pp,"Change since base_year in percentage points of GDP, signed so the line rows sum to the balance row's own change: positive for revenue, negative for expenditure."
+benchmark_balance.csv,se,"Standard error. On a line row, the line's own published standard error, zero where the path is an official projection or still an outturn. On a balance row, those propagated under rho_within and rho_between."
+benchmark_balance.csv,lo80,pct_gdp - 1.2816 * se (balance rows).
+benchmark_balance.csv,hi80,pct_gdp + 1.2816 * se (balance rows).
+benchmark_balance.csv,lo95,pct_gdp - 1.9600 * se (balance rows).
+benchmark_balance.csv,hi95,pct_gdp + 1.9600 * se (balance rows).
+benchmark_balance.csv,source,"outturn | official | statistical on a line row; benchmark on a balance row. An official projection is used only where it covers the whole horizon, so this need not match the source the chartbook panel shows for the same line."
+benchmark_balance.csv,source_runs_to,Last year that line's chosen source reaches.
+benchmark_balance.csv,rho_within,"Average pairwise correlation of the lines' h-year changes in ratio within a side, estimated from the outturn history."
+benchmark_balance.csv,rho_between,"The same across the two sides. It enters the balance variance with a minus sign, so a positive value narrows the interval."
+benchmark_balance.csv,n_corr_obs,Overlapping h-year changes behind those estimates.
+benchmark_balance.csv,history_sd_pp,"Standard deviation of h-year moves in the ledger's own NLB/GDP over the whole outturn record. A calibration reference, not an interval, and never used to build one."
+benchmark_balance.csv,n_history_obs,Overlapping h-year moves behind history_sd_pp.
+benchmark_balance.csv,n_official,"Lines on an official path, which contribute no variance to the interval."
+benchmark_balance.csv,n_statistical,Lines on a statistical path.
+benchmark_balance.csv,run_id,Run that produced the balance.
 data_dictionary.csv,file,Flat file the column belongs to.
 data_dictionary.csv,column,"Name of the column, as it appears in that file's header."
 data_dictionary.csv,description,What the column holds.

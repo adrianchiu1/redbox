@@ -675,6 +675,56 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
         "n_obs": "Number of outturn observations fitted.",
         "run_id": "Run that produced the forecasts.",
     })
+    _dict_rows("benchmark_balance.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "year", "line_code",
+                                   "line_label", "notes")},
+        "base_year": "Year the path starts from: the latest year in which "
+                     "EVERY line has an outturn, which the expenditure tree "
+                     "sets a year before the revenue tree.",
+        "horizon": "year - base_year.",
+        "kind": "line = one granular line; expenditure_total / revenue_total "
+                "= the sum of that side's lines; balance = the benchmark "
+                "NLB/GDP path itself.",
+        "side": "revenue | expenditure | balance.",
+        "anchor_year": "Last outturn year of that line (base_year on the "
+                       "aggregate rows).",
+        "anchor_pct_gdp": "The line's value at base_year; on a balance row, "
+                          "the ledger's own NLB/GDP at base_year.",
+        "pct_gdp": "Level at year, as a percentage of GDP.",
+        "contribution_pp": "Change since base_year in percentage points of "
+                           "GDP, signed so the line rows sum to the balance "
+                           "row's own change: positive for revenue, negative "
+                           "for expenditure.",
+        "se": "Standard error. On a line row, the line's own published "
+              "standard error, zero where the path is an official projection "
+              "or still an outturn. On a balance row, those propagated under "
+              "rho_within and rho_between.",
+        "lo80": "pct_gdp - 1.2816 * se (balance rows).",
+        "hi80": "pct_gdp + 1.2816 * se (balance rows).",
+        "lo95": "pct_gdp - 1.9600 * se (balance rows).",
+        "hi95": "pct_gdp + 1.9600 * se (balance rows).",
+        "source": "outturn | official | statistical on a line row; benchmark "
+                  "on a balance row. An official projection is used only "
+                  "where it covers the whole horizon, so this need not match "
+                  "the source the chartbook panel shows for the same line.",
+        "source_runs_to": "Last year that line's chosen source reaches.",
+        "rho_within": "Average pairwise correlation of the lines' h-year "
+                      "changes in ratio within a side, estimated from the "
+                      "outturn history.",
+        "rho_between": "The same across the two sides. It enters the balance "
+                       "variance with a minus sign, so a positive value "
+                       "narrows the interval.",
+        "n_corr_obs": "Overlapping h-year changes behind those estimates.",
+        "history_sd_pp": "Standard deviation of h-year moves in the ledger's "
+                         "own NLB/GDP over the whole outturn record. A "
+                         "calibration reference, not an interval, and never "
+                         "used to build one.",
+        "n_history_obs": "Overlapping h-year moves behind history_sd_pp.",
+        "n_official": "Lines on an official path, which contribute no "
+                      "variance to the interval.",
+        "n_statistical": "Lines on a statistical path.",
+        "run_id": "Run that produced the balance.",
+    })
     _dict_rows("data_dictionary.csv", {
         "file": "Flat file the column belongs to.",
         "column": "Name of the column, as it appears in that file's header.",
@@ -788,6 +838,10 @@ DESCRIPTIONS = {
         "benchmark forecasts of each granular line as a share of GDP to 2031 "
         "— auto.arima, ets, prophet, an unobserved-components model and their "
         "combination, fitted on outturn only",
+    "benchmark_balance.csv":
+        "those line forecasts summed back into a net lending/borrowing path "
+        "to 2031 \u2014 per line, per side and as the balance itself, with an "
+        "interval propagated from the lines' own standard errors",
     **{f"strict_{iso3}.csv":
        f"{name}, strict variant only: one column per series, one row per "
        "year — the same series the chartbook plots, in the shape you model "

@@ -289,13 +289,15 @@ def write(path: Path | None = None) -> Path:
         "one is published, the four-model combination where none is \u2014 and "
         "a ranked chart of what each line is forecast to change. For "
         "eyeballing construction quality, and for seeing the whole forecast "
-        "at once.",
+        "at once. \u00a74.5 reads the line forecasts back as a benchmark "
+        "deficit path to 2031, with the cone their own standard errors "
+        "imply.",
         "",
         "The notebooks need only `pandas` and `matplotlib` to re-run: "
         "`pip install -e .[notebook] && jupyter nbconvert --execute "
         "--inplace notebooks/*.ipynb`. GitHub renders them in the browser "
         "and gives up on large ones; the chartbook is the biggest at about "
-        "1.2 MB, past the 0.9 MB margin D-S9-004 judged safe, and the "
+        "1.3 MB, past the 0.9 MB margin D-S9-004 judged safe, and the "
         "fallback D-S9-004 named \u2014 splitting it one notebook per country "
         "\u2014 is what to reach for if GitHub declines it. If a notebook ever "
         "shows *Loading* forever, "
@@ -315,6 +317,7 @@ def write(path: Path | None = None) -> Path:
         "ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)",
         "ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)",
         "ggfiscal statistical-forecasts   # benchmark forecasts to 2031 -> deliverables/statistical_forecasts.csv (needs .[forecast])",
+        "ggfiscal benchmark-balance      # those lines summed into an NLB path -> deliverables/benchmark_balance.csv",
         "ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md",
         "pytest                      # per-stage gate tests",
         "```",

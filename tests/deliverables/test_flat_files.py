@@ -413,6 +413,155 @@ def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
     assert (comb.se ** 2 >= within - 1e-12).all()
 
 
+# ------------------------------------------------- the benchmark balance
+
+BAL_EXP = ["GF01_7", "GF01_X"] + [f"GF{i:02d}" for i in range(2, 11)]
+BAL_REV = [f"R{i:02d}" for i in range(1, 11)]
+
+
+def test_benchmark_balance_is_reproducible_from_the_published_bundle():
+    """The file is a function of `deliverables/` and nothing else — no
+    harvest, no canonical layer, no wall clock. Recomputing it from the
+    committed bundle has to give the committed bytes back."""
+    from ggfiscal.forecast import balance
+
+    published = read("benchmark_balance.csv")
+    again, notes = balance.compute(str(published.run_id.iloc[0]))
+    pd.testing.assert_frame_equal(
+        published.reset_index(drop=True), again.reset_index(drop=True),
+        check_dtype=False, atol=0, rtol=1e-12)
+    # the rule it had to bend is reported rather than left for the reader
+    assert any("stops short" in n for n in notes)
+
+
+def test_benchmark_balance_sums_the_lines_back_into_the_balance():
+    """Every line's signed contribution, the two side totals and the balance
+    are the same arithmetic three ways. If they ever disagree the section is
+    claiming a decomposition it does not have."""
+    bal = read("benchmark_balance.csv")
+    for (iso3, year), g in bal.groupby(["iso3", "year"]):
+        lines = g[g.kind == "line"]
+        sides = g[g.kind.isin(["revenue_total", "expenditure_total"])]
+        row = g[g.kind == "balance"]
+        assert len(row) == 1 and len(sides) == 2, (iso3, year)
+        row = row.iloc[0]
+
+        assert abs(lines.contribution_pp.sum() - row.contribution_pp) < 1e-9
+        assert abs(sides.contribution_pp.sum() - row.contribution_pp) < 1e-9
+        assert abs(row.pct_gdp - row.anchor_pct_gdp
+                   - row.contribution_pp) < 1e-9
+        # a side total is the level of its lines, and the signs are the ones
+        # that make a rise in revenue narrow the deficit
+        for kind, names, sign in (("revenue_total", BAL_REV, 1.0),
+                                  ("expenditure_total", BAL_EXP, -1.0)):
+            side = lines[lines.line_code.isin(names)]
+            total = sides[sides.kind == kind].iloc[0]
+            assert abs(side.pct_gdp.sum() - total.pct_gdp) < 1e-9, (iso3, year)
+            assert abs(side.contribution_pp.sum()
+                       - total.contribution_pp) < 1e-9
+            # and the sign is the one that makes a rise in revenue narrow the
+            # deficit and a rise in spending widen it
+            moved = sign * (side.pct_gdp - side.anchor_pct_gdp)
+            assert (side.contribution_pp - moved).abs().max() < 1e-9
+
+
+def test_benchmark_balance_takes_the_interest_split_not_the_level_i_set():
+    """Expenditure is GF01_7 + GF01_X + GF02..GF10. GF01 must be absent: it
+    is their sum, and its own univariate fit knows nothing about the official
+    interest projection inside it."""
+    bal = read("benchmark_balance.csv")
+    lines = bal[bal.kind == "line"]
+    for iso3, g in lines.groupby("iso3"):
+        codes = set(g.line_code)
+        assert codes == set(BAL_EXP + BAL_REV), (iso3, codes)
+        assert "GF01" not in codes and not codes & {"TE", "TR"}, iso3
+    assert set(lines.source) <= {"outturn", "official", "statistical"}
+
+
+def test_benchmark_balance_only_takes_an_official_path_that_reaches_the_end():
+    """A total needs every line in every year, so an official projection that
+    stops short is not used at all — never spliced onto a statistical tail."""
+    bal = read("benchmark_balance.csv")
+    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    strict = tree.query("variant == 'strict'").dropna(subset=["pct_gdp"])
+    horizon = int(bal.year.max())
+
+    for (iso3, line), g in bal[bal.kind == "line"].groupby(
+            ["iso3", "line_code"]):
+        official = strict.query("iso3 == @iso3 and line_code == @line and "
+                                "basis == 'forecast'")
+        covers = len(official) and official.year.max() >= horizon
+        chosen = set(g.source) - {"outturn"}
+        assert chosen == {"official" if covers else "statistical"}, (iso3, line)
+        # an outturn year is an outturn on every line that still has one
+        actual = strict.query("iso3 == @iso3 and line_code == @line and "
+                              "basis == 'actual'")
+        years = set(actual.year.astype(int))
+        for row in g.itertuples():
+            assert (row.source == "outturn") == (int(row.year) in years)
+
+
+def test_benchmark_balance_base_year_is_the_last_year_every_line_has_one():
+    """The expenditure tree ends a year before the revenue tree, so the base
+    is the expenditure tree's last actual — and the path starts from the
+    ledger's own published balance there, not from a sum of lines."""
+    bal = read("benchmark_balance.csv")
+    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    strict = tree.query("variant == 'strict' and basis == 'actual'").dropna(
+        subset=["pct_gdp"])
+    ledger = read("balance_ledger.csv").query("variant == 'strict'")
+
+    for iso3, g in bal.groupby("iso3"):
+        base = int(g.base_year.iloc[0])
+        ends = (strict.query("iso3 == @iso3")
+                .query("line_code in @BAL_EXP or line_code in @BAL_REV")
+                .groupby("line_code").year.max())
+        assert base == int(ends.min()), (iso3, base, ends.min())
+        assert sorted(g.year.unique()) == list(range(base + 1,
+                                                     int(bal.year.max()) + 1))
+
+        led = ledger.query("iso3 == @iso3 and year == @base").iloc[0]
+        anchor = 100.0 * led.nlb_lcu_mn / led.gdp_lcu_mn
+        row = g[g.kind == "balance"].iloc[0]
+        assert abs(row.anchor_pct_gdp - anchor) < 1e-9, iso3
+
+
+def test_benchmark_balance_interval_is_the_lines_own_errors_propagated():
+    """The cone is re-derived here from the published per-line standard
+    errors and the published correlations — it is not a number the file gets
+    to assert about itself."""
+    from ggfiscal.forecast.balance import _balance_se
+
+    bal = read("benchmark_balance.csv")
+    rows = bal[bal.kind == "balance"]
+    assert (rows.se > 0).all()
+    assert (rows.lo95 < rows.lo80).all() and (rows.lo80 < rows.pct_gdp).all()
+    assert (rows.pct_gdp < rows.hi80).all() and (rows.hi80 < rows.hi95).all()
+    assert (rows.hi95 - rows.pct_gdp - 1.959964 * rows.se).abs().max() < 1e-9
+    assert (rows.pct_gdp - rows.lo80 - 1.281552 * rows.se).abs().max() < 1e-9
+
+    for row in rows.itertuples():
+        lines = bal[(bal.kind == "line") & (bal.iso3 == row.iso3)
+                    & (bal.year == row.year)]
+        se = lines.set_index("line_code").se
+        assert abs(_balance_se(se, row.rho_within, row.rho_between)
+                   - row.se) < 1e-9, (row.iso3, row.year)
+        # a line on an official path or still an outturn carries no variance,
+        # and the count of those is published so the reader can discount it
+        assert (lines[lines.source != "statistical"].se == 0).all()
+        # n_official counts the country's official LEGS, which is a property
+        # of the line and not of the year: in an early year such a line can
+        # still be showing an outturn
+        ever = bal[(bal.kind == "line") & (bal.iso3 == row.iso3)
+                   & (bal.source == "official")].line_code.nunique()
+        assert row.n_official == ever, row.iso3
+        assert row.n_statistical + row.n_official == len(lines)
+
+    # the calibration reference is present and is not the interval
+    assert rows.history_sd_pp.notna().all()
+    assert (rows.n_history_obs > 10).all()
+
+
 # ----------------------------------------------------------------- notebooks
 
 FORECAST_NOTEBOOKS = tuple(
@@ -513,7 +662,7 @@ def test_chartbook_charts_every_published_series():
                if "data" in o and "image/png" in o["data"]]
     # every series, the 15 ledger charts, the 9 WEO ones, the 3 TE
     # diagnostics, and the 9 forecast-panel figures (3 per country)
-    assert len(figures) >= len(cat) + 15 + 9 + 3 + 9, "a chart is missing"
+    assert len(figures) >= len(cat) + 15 + 9 + 3 + 9 + 2, "a chart is missing"
     # the schema caveats are stated, not left for the reader to discover
     for topic in ("GF01_X", "outturn-only", "two different TE numbers",
                   "explained_share", "seam"):
@@ -632,6 +781,34 @@ def test_chartbook_panels_quote_one_forecast_per_category():
                   "last outturn level", "need not add up",
                   "Nothing here is spliced or recomputed"):
         assert topic in markdown, topic
+
+
+def test_chartbook_states_the_benchmark_balance_and_what_it_is_not():
+    """§4.5 draws the balance the line forecasts imply. It has to read the
+    published file rather than sum the lines itself, carry the cone, and say
+    plainly that a benchmark is not a forecast of the deficit."""
+    _, code, source, markdown = _notebook("chartbook.ipynb")
+    assert 'load("benchmark_balance")' in source
+    assert "balance_path()" in source and "balance_contributions()" in source
+
+    body = "".join(next(c for c in code
+                        if "def balance_path(" in "".join(c["source"]))["source"])
+    for needed in ("lo80", "hi80", "lo95", "hi95", "history_sd_pp",
+                   "axvspan("):
+        assert needed in body, needed
+    # the cone comes out of the file; the notebook does not build one
+    assert "rho_within" in body and "_balance_se" not in body
+
+    for topic in ("benchmark", "not our forecast of the deficit",
+                  "zero by construction", "GF01_7 + GF01_X + GF02",
+                  "covers the whole horizon",
+                  "contribute **no** variance"):
+        assert topic in markdown, topic
+
+    # §4.4 said there is no forward balance; it must now point at §4.5 rather
+    # than be quietly contradicted by it
+    assert "a level needs every component and a change does not" in markdown
+    assert "§4.5" in markdown
 
 
 def test_chartbook_panel_never_draws_a_single_method_or_a_95_band():
