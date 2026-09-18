@@ -1,0 +1,331 @@
+<title>Meeting the AFT</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#fbfbf9; --paper-2:#f1f1ec; --ink:#1c1f24; --ink-2:#4b5058; --muted:#7a7f87; --rule:#d9d9d2;
+  --accent:#2a78d6; --accent-ink:#1d5aa6; --risk:#d64550; --risk-soft:#fbe9ea; --warn:#eb6834; --ok:#1baf7a;
+  --tile:#ffffff; --shadow:0 1px 0 rgba(28,31,36,.06);
+  --sans:"IBM Plex Sans Condensed","Helvetica Neue",Arial,sans-serif;
+  --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15171b; --paper-2:#1e2126; --ink:#e8e8e3; --ink-2:#c2c4c9; --muted:#8e939b; --rule:#33373e;
+    --accent:#5a9bea; --accent-ink:#8fbcf3; --risk:#ef6b74; --risk-soft:#3a2225; --warn:#f08a5b; --ok:#3fc78f;
+    --tile:#1b1e23; --shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15171b; --paper-2:#1e2126; --ink:#e8e8e3; --ink-2:#c2c4c9; --muted:#8e939b; --rule:#33373e;
+  --accent:#5a9bea; --accent-ink:#8fbcf3; --risk:#ef6b74; --risk-soft:#3a2225; --warn:#f08a5b; --ok:#3fc78f;
+  --tile:#1b1e23; --shadow:0 1px 0 rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:900px;margin:0 auto}
+.prose{max-width:720px}
+h1,h2,h3,h4{font-family:var(--sans);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:2.35rem;font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:700;margin-top:3rem;padding-top:1.1rem;border-top:2px solid var(--ink)}
+h2 .num{color:var(--accent);margin-right:.5rem;font-variant-numeric:tabular-nums}
+h3{font-size:1.08rem;font-weight:600;margin-top:1.8rem;color:var(--ink)}
+p{margin:.8rem 0;overflow-wrap:break-word}
+code{font-family:var(--mono);font-size:.86em;overflow-wrap:anywhere}
+li{overflow-wrap:break-word}
+a{color:var(--accent-ink)}
+.eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;color:var(--muted);font-weight:600}
+header{padding-block:40px 24px;border-bottom:1px solid var(--rule)}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 28px;margin-top:22px;font-family:var(--sans);font-size:.92rem}
+.meta div span{display:block;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+.lede{font-size:1.12rem;color:var(--ink-2);margin-top:14px;max-width:760px}
+.bottom{margin-top:28px;padding:20px 22px;background:var(--paper-2);border-left:4px solid var(--accent)}
+.bottom h2{border:0;margin:0;padding:0;font-size:1.05rem;text-transform:uppercase;letter-spacing:.08em}
+.bottom ol{margin:.6rem 0 0;padding-left:1.2rem}
+.bottom li{margin:.45rem 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:26px}
+.tile{background:var(--tile);border:1px solid var(--rule);padding:12px 14px;box-shadow:var(--shadow)}
+.tile .k{font-family:var(--sans);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.tile .v{font-family:var(--mono);font-size:1.45rem;font-weight:500;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile .s{font-family:var(--sans);font-size:.78rem;color:var(--ink-2);margin-top:2px}
+.tile.risk .v{color:var(--risk)}
+figure{margin:1.6rem 0 1.9rem}
+figure img{display:block;width:100%;max-width:100%;height:auto;border:1px solid var(--rule);background:#fcfcfb}
+figcaption{font-family:var(--sans);font-size:.85rem;color:var(--ink-2);margin-top:8px;max-width:820px}
+figcaption b{color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:720px){.two{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:.88rem;margin:1rem 0}
+.tablewrap{overflow-x:auto;margin:1rem 0}
+th,td{padding:7px 9px;border-bottom:1px solid var(--rule);text-align:right;vertical-align:top;font-variant-numeric:tabular-nums}
+th{font-weight:600;color:var(--ink-2);border-bottom:2px solid var(--ink);text-align:right}
+th:first-child,td:first-child{text-align:left}
+td.l,th.l{text-align:left}
+tr.hl td{background:var(--paper-2);font-weight:600}
+.src{font-family:var(--sans);font-size:.78rem;color:var(--muted)}
+.ask{margin:1.4rem 0;padding:14px 18px;border:1px solid var(--rule);border-left:4px solid var(--warn);background:var(--tile)}
+.ask h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--warn);margin-bottom:6px}
+.ask ol{margin:0;padding-left:1.2rem}
+.ask li{margin:.35rem 0}
+.risk-box{margin:1.4rem 0;padding:14px 18px;background:var(--risk-soft);border-left:4px solid var(--risk)}
+.note{font-family:var(--sans);font-size:.86rem;color:var(--ink-2);padding:10px 14px;background:var(--paper-2);border-radius:2px}
+.tag{font-family:var(--sans);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border:1px solid var(--rule);border-radius:2px;color:var(--muted);vertical-align:middle;margin-left:4px}
+.tag.ext{color:var(--warn);border-color:var(--warn)}
+.tag.rb{color:var(--accent-ink);border-color:var(--accent)}
+.loop{margin:1.4rem 0}
+.loop svg{width:100%;max-width:720px;height:auto;display:block}
+.toc{font-family:var(--sans);font-size:.9rem;columns:2;column-gap:28px;margin-top:20px}
+.toc a{text-decoration:none;color:var(--ink-2)}
+.toc li{margin:3px 0;break-inside:avoid}
+@media (max-width:600px){.toc{columns:1}}
+dl.assump{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-family:var(--sans);font-size:.9rem}
+dl.assump dt{color:var(--muted)}
+dl.assump dd{margin:0}
+.footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--rule);font-family:var(--sans);font-size:.8rem;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Briefing note · Redbox debt book · France</div>
+  <h1>French sovereign debt before the meeting with the AFT Chief Economist</h1>
+  <p class="lede">The interest bill, the shortening stock, and who bears the rate risk: what the per-security register says now, and what four 2027 political configurations do to it.</p>
+  <div class="meta">
+    <div><span>For</span>Chief Investment Strategist</div>
+    <div><span>Meeting</span>Agence France Trésor, Chief Economist</div>
+    <div><span>Date</span>18 September 2026</div>
+    <div><span>Data</span>Redbox run 20260911; AFT register snapshot 10 Sep 2026; 1,603 French securities</div>
+  </div>
+  <ul class="toc">
+    <li><a href="#s0">Bottom line and key figures</a></li>
+    <li><a href="#s1">1 · Where the stock stands</a></li>
+    <li><a href="#s2">2 · The interest bill and the wrong-way loop</a></li>
+    <li><a href="#s3">3 · The shortening stock</a></li>
+    <li><a href="#s4">4 · Who holds it, and how rate-sensitive they are</a></li>
+    <li><a href="#s5">5 · The 2027 map: Le Pen, Philippe, majority or hung</a></li>
+    <li><a href="#s6">6 · Other things that matter in the room</a></li>
+    <li><a href="#s7">7 · Questions to put to the AFT</a></li>
+    <li><a href="#s8">8 · Method, sources and caveats</a></li>
+  </ul>
+</header>
+
+<section id="s0">
+<div class="bottom">
+  <h2>Bottom line</h2>
+  <ol>
+    <li><b>The interest bill is no longer a rate story, it is a stock story.</b> The fixed-rate OAT stock still carries an average coupon of 2.14% against a marginal 10-year yield near 4.2–4.4%. In 2027 alone the AFT refinances €301bn of maturing paper (bills included) and adds €140–180bn of net supply, all at the marginal rate. On the register alone that pushes general-government interest from 2.2% of GDP (2025) to 3.5% in 2030 and 4.2% in 2035 with no political shock at all, which is within a few billion of the EC Debt Sustainability Monitor path already in the strict file.</li>
+    <li><b>Politics adds €10–19bn a year by 2030 and €34–62bn by 2035 in the Le Pen configurations</b>, of which roughly two-thirds is the spread and one-third the primary balance. A Philippe majority saves only €16bn a year by 2035: consolidation cannot outrun the coupon roll. The asymmetry is the point for a holder: the downside cases are far larger than the upside case.</li>
+    <li><b>The wrong-way loop is real but slow.</b> Feeding the spread back through the deficit into issuance adds under €2bn a year by 2035 even in the Le Pen-majority case. The loop is mostly a market-pricing loop (spread, ratings, index eligibility), not a fiscal-arithmetic loop, at least out to 2030. That is where to press the AFT: what stops the pricing loop, not the arithmetic.</li>
+    <li><b>The stock is shortening at the margin, not yet in aggregate.</b> Average residual maturity of the register peaked at 8.5 years in 2022 and is 8.3 years at end-2025 (the AFT's own figure: 8 years 142 days at 31 August 2026). Maturity at issue of fixed-rate paper has fallen from 12.6 years (2021) to 10.3 years (2026 to date), and 32% of the stock matures inside three years: €181bn in the rest of 2026, €301bn in 2027, €246bn in 2028.</li>
+    <li><b>Rate sensitivity sits with holders who can leave.</b> The OAT stock has a modified duration of 6.2 years and loses about €151bn of market value per 100 bp. Non-residents hold 57.5% of negotiable debt, the Eurosystem has run its French holdings down from €546bn to €488bn in six months and is still shrinking, and French life insurers (9.6%) are absorbing supply on record inflows that reverse when rates rise. The marginal buyer of 2027–2028 is not the buyer of 2015–2021.</li>
+  </ol>
+</div>
+
+<div class="tiles">
+  <div class="tile"><div class="k">Register stock, 10 Sep 2026</div><div class="v">€2,937bn</div><div class="s">uplifted; AFT total €2,904bn at 31 Aug</div></div>
+  <div class="tile"><div class="k">Avg coupon, fixed stock</div><div class="v">2.14%</div><div class="s">vs 10y OAT ≈ 4.2–4.4%</div></div>
+  <div class="tile risk"><div class="k">GG interest 2025 → 2030 (current path)</div><div class="v">2.2 → 3.5%</div><div class="s">€65bn → €121bn</div></div>
+  <div class="tile"><div class="k">Maturing within 3 years</div><div class="v">32%</div><div class="s">€928bn of the register</div></div>
+  <div class="tile"><div class="k">OAT–Bund 10y</div><div class="v">≈ 90 bp</div><div class="s">widest since 2012; 2021 avg 38 bp</div></div>
+  <div class="tile risk"><div class="k">Value at risk per 100 bp</div><div class="v">€151bn</div><div class="s">4.9% of GDP, on €2,419bn of OATs</div></div>
+</div>
+</section>
+
+<section id="s1" class="prose">
+<h2><span class="num">1</span>Where the stock stands</h2>
+<p>The Redbox register holds every OAT, BTAN, OATi, OAT€i and BTF the AFT has listed since January 1999: 1,603 securities, positions rolled back from the AFT's encours pages through its auction histories, with the office's own daily indexation coefficients for the 35 linkers (D-S10-007). At the 10 September 2026 snapshot the register carries €2,862bn nominal, €2,937bn once linkers are uplifted: bills €218bn, fixed-rate €2,404bn, linkers €241bn nominal (€315bn uplifted). The AFT's own total was €2,903.8bn at 31 August <span class="tag ext">ext</span>. The register runs 1–4% above the AFT on the fixed lines because the AFT publishes buybacks only in aggregate, so lines near maturity are overstated; Σ BTF reproduced the AFT total to the euro over 2009–2020 and linkers are within 3%.</p>
+<figure><img src="figures/stock_by_class.png" alt="stock_by_class" loading="lazy"><figcaption><b>Figure 1.</b> The register's 31 December positions by class against the AFT's dette négociable and Eurostat's S.1311 securities (F.31 + F.32, which include CADES and the other central bodies). Linkers at unindexed nominal, which is why the register sits at or just under the AFT line. <span class="src">Redbox: debt_positions × debt_securities; debt_class_aggregates.</span></figcaption></figure>
+<p>Two features of the composition matter for what follows. First, the bill stock: BTF outstanding was €107bn at end-2019, €190bn at end-2025, and the AFT plans to hold it near €215–220bn through 2026 <span class="tag ext">ext</span>. A bill stock of that size is a rolling €200bn+ of one-year-or-less funding at the €STR-linked rate, which the engine below prices at the short end of the OAT curve. Second, linkers: 8% of the stock at nominal, 11% uplifted. Their uplift accrues as interest in the national accounts (ESA 2010 §4.46), so with inflation at 2% they contribute roughly €6bn a year to D.41 before any coupon; in 2022–2023 that was €5–8bn (Figure 8).</p>
+<figure><img src="figures/maturity_profile.png" alt="maturity_profile" loading="lazy"><figcaption><b>Figure 2.</b> Nominal outstanding by residual-maturity bucket at 10 September 2026 (DD7 buckets, right-closed). The 0–1 bucket is €380bn, the 1–2 bucket €237bn, the 2–3 bucket €311bn. <span class="src">Redbox: debt_maturity_profile.</span></figcaption></figure>
+<figure><img src="figures/redemption_calendar.png" alt="redemption_calendar" loading="lazy"><figcaption><b>Figure 3.</b> The same stock as a calendar: what matures in each year, by class, from the register's maturity dates. 2027 is the heavy year, €301bn including €98bn of bills already issued, because the 2020–2021 pandemic issuance was concentrated in the 5- to 7-year sector. Beyond 2032 the calendar thins to €110–150bn a year until the 2050–2072 ultra-longs. <span class="src">Redbox: debt_positions × debt_securities.</span></figcaption></figure>
+</section>
+
+<section id="s2" class="prose">
+<h2><span class="num">2</span>The interest bill and the wrong-way loop</h2>
+<h3>Where it has come from</h3>
+<p>General-government interest (COFOG 01.7, the package's <code>GF01_7</code>) fell from 3.8% of GDP in 1996 to 1.4% in 2020, on a falling average coupon rather than a falling stock: the stock rose the whole time. It was 2.0% in 2024 (€59bn) and about 2.2% in 2025 (€65bn, the AMECO-stitched value; the Eurostat outturn arrives in October). Net interest was already 1.8% of GDP in 2024 against a primary deficit of 3.9%, so the primary balance, not interest, made the 2024 deficit. That ordering is about to flip.</p>
+<figure><img src="figures/interest_gg.png" alt="interest_gg" loading="lazy"><figcaption><b>Figure 4.</b> The strict series: Eurostat outturn to 2024, EC AMECO for 2025–2027, the EC Debt Sustainability Monitor for 2028–2036, chained on growth rates (grade B, D-S8-001). The DSM's no-policy-change path reaches 5.2% of GDP (€211bn) in 2036. <span class="src">Redbox: strict_FRA / expenditure_cofog.</span></figcaption></figure>
+<figure><img src="figures/ledger.png" alt="ledger" loading="lazy"><figcaption><b>Figure 5.</b> The balance ledger: net lending, the primary balance and net interest, all as % of GDP, Eurostat outturns. France has run a primary deficit in every year since 2008; interest has been the smaller half of the deficit since 2009. <span class="src">Redbox: balance_ledger.</span></figcaption></figure>
+<h3>Why it rises whatever happens next</h3>
+<p>The register makes the mechanism concrete. The nominal-weighted average coupon on the fixed-rate stock bottomed at 1.54% at end-2022, was 1.97% at end-2025 and is 2.14% at the September snapshot (Figure 6). The lines maturing in 2027–2028 carry coupons of 0–1% (the 0% November 2029/2030/2031 and 0.5–1.25% lines of 2019–2022 issuance); they are replaced at 3.5–4.4%. The AFT's own new-issuance rate has climbed from 3.45% in February 2026 to 4.23% at the 3 September auction <span class="tag ext">ext</span>. Nothing a government does in 2027 changes the coupons on the €301bn that matures that year; policy only changes the rate on the replacement and the size of the addition.</p>
+<figure><img src="figures/coupon_vs_yield.png" alt="coupon_vs_yield" loading="lazy"><figcaption><b>Figure 6.</b> Average coupon on the fixed-rate stock (register, nominal-weighted) against the annual-average 10-year yield and the euro-area 3-month rate. The gap between the orange and blue lines is the refinancing drag that the next decade of redemptions converts into cash. <span class="src">Redbox: debt_positions × debt_securities; debt_reference_series (OECD FR_LT10, EA_MM_3M).</span></figcaption></figure>
+<figure><img src="figures/interest_by_security.png" alt="interest_by_security" loading="lazy"><figcaption><b>Figure 7.</b> Interest computed security by security on the cash basis (coupons, bill discount, uplift paid at redemption) against the two official totals the chain reconciles to: S.1311 D.41 and GF01_7. The register meets D.41 within ±€6bn since 2012; the wedge to GF01_7 (€10.1bn in 2025) is local-government and social-security interest plus the cash-to-accrual difference, and is held at 0.34% of GDP in the simulation. 2026 is existing positions only. <span class="src">Redbox: debt_interest_by_security; debt_official_totals.</span></figcaption></figure>
+<h3>The loop, priced</h3>
+<p>Redbox now rolls the register forward (module <code>ggfiscal.debt.simulate</code>, new in this session). Each year the engine matures what the register says matures, pays the coupons it says are owed, accrues uplift on the linkers at 2%, prices the bill stock at the short end, finances the general-government deficit (primary balance declared, interest endogenous) at the marginal OAT yield in the AFT's 2025 mix of tenors, and feeds the interest back into next year's deficit. The Bund curve is held flat at today's levels (3-month 2.5%, 10-year 3.4%); everything that differs between scenarios is the primary balance, the spread, the bill stock and the tenor mix. The current path is not the government's trajectory, which promises 3% by 2029; it is consolidation at 0.4 pp of GDP a year, roughly what has been delivered on average since the EDP opened, with a spread easing from 85 bp to 70 bp. Every number is declared in the assumptions table in section 8.</p>
+<figure><img src="figures/scen_interest.png" alt="scen_interest" loading="lazy"><figcaption><b>Figure 8.</b> General-government interest as % of GDP: outturn, the EC path from the strict file, and six register-based paths. On the current path interest is €98bn (3.0%) in 2028, €121bn (3.5%) in 2030 and €169bn (4.2%) in 2035. <span class="src">Redbox: ggfiscal.debt.simulate.</span></figcaption></figure>
+<div class="loop">
+<svg viewBox="0 0 720 230" role="img" aria-label="The wrong-way loop: worse politics raises the OAT spread, which raises the interest bill, which reduces fiscal space, which worsens politics. Two exits: the spread channel and the primary-balance channel.">
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7a7f87"/></marker></defs>
+  <g font-family="IBM Plex Sans Condensed, Arial, sans-serif" font-size="14" fill="#1c1f24" text-anchor="middle">
+    <rect x="20" y="85" width="150" height="60" rx="3" fill="#f1f1ec" stroke="#d9d9d2"/><text x="95" y="111">Political shock</text><text x="95" y="130" font-size="11" fill="#7a7f87">dissolution, censure, 2027</text>
+    <rect x="215" y="85" width="150" height="60" rx="3" fill="#fbe9ea" stroke="#d64550"/><text x="290" y="111">OAT–Bund spread</text><text x="290" y="130" font-size="11" fill="#7a7f87">+10 bp ≈ +€0.4bn/yr per year</text>
+    <rect x="410" y="85" width="150" height="60" rx="3" fill="#f1f1ec" stroke="#d9d9d2"/><text x="485" y="111">Interest bill</text><text x="485" y="130" font-size="11" fill="#7a7f87">coupon roll + spread</text>
+    <rect x="410" y="165" width="150" height="55" rx="3" fill="#f1f1ec" stroke="#d9d9d2"/><text x="485" y="188">Less fiscal space</text><text x="485" y="206" font-size="11" fill="#7a7f87">deficit, EDP, ratings</text>
+    <rect x="215" y="165" width="150" height="55" rx="3" fill="#f1f1ec" stroke="#d9d9d2"/><text x="290" y="188">Worse politics</text><text x="290" y="206" font-size="11" fill="#7a7f87">no majority for cuts</text>
+    <rect x="215" y="10" width="150" height="50" rx="3" fill="#fff" stroke="#1baf7a"/><text x="290" y="31" fill="#1baf7a">Exit A · price</text><text x="290" y="48" font-size="11" fill="#7a7f87">ECB TPI, ratings floor, index demand</text>
+    <rect x="410" y="10" width="150" height="50" rx="3" fill="#fff" stroke="#1baf7a"/><text x="485" y="31" fill="#1baf7a">Exit B · volume</text><text x="485" y="48" font-size="11" fill="#7a7f87">primary balance, maturity, buybacks</text>
+  </g>
+  <g stroke="#7a7f87" stroke-width="1.6" fill="none" marker-end="url(#arr)">
+    <path d="M170 115H213"/><path d="M365 115H408"/><path d="M485 145V163"/><path d="M410 192H367"/><path d="M290 165V147"/>
+    <path d="M290 60V83" stroke="#1baf7a"/><path d="M485 60V83" stroke="#1baf7a"/>
+  </g>
+</svg>
+</div>
+<p>How big is the loop? Figure 9 splits each scenario's 2030 interest gap to the current path into the spread (re-run the scenario with its spread but the current path's primary balance), the volume (its primary balance and issuance strategy with the current path's spread), and the interaction, which is the loop proper: the extra issuance that the extra interest itself requires, priced at the wider spread. In the Le Pen-majority case the 2030 gap is €10bn, of which €8bn is spread, €2bn is volume and the interaction is under €1bn; by 2035 the gap is €34bn with €1.4bn of interaction. The arithmetic loop is small on a ten-year view because interest is a flow of a few per cent of a stock that turns over slowly. The pricing loop is what moves quickly, and it has already moved: the spread's annual average has risen every year since 2021 (38 → 76 bp) and is near 90 bp now, the widest since 2012, with three downgrades in 2025 (Fitch, S&P, DBRS) and negative outlooks at Moody's and Scope <span class="tag ext">ext</span>.</p>
+<figure><img src="figures/scen_decomposition.png" alt="scen_decomposition" loading="lazy"><figcaption><b>Figure 9.</b> The 2030 interest gap to the current path, decomposed. Orange is the price of new debt (spread), blue is the volume of new debt (primary balance, bills, tenor), grey is their interaction. <span class="src">Redbox: ggfiscal.debt.simulate.decompose_gap.</span></figcaption></figure>
+<div class="risk-box"><b>What to take into the room.</b> The AFT will say, correctly, that the average cost of the stock adjusts slowly (3.16% on the OAT stock in 2025 by its own measure <span class="tag ext">ext</span>) and that an 8.4-year average maturity buys time. Both are true and both are why the current path already gets to 3.5% of GDP by 2030: slow adjustment works against France now that the marginal rate is above the average. The question that matters is not the level of the spread but whether anything below the ECB caps it. Press on the three exits: the TPI conditions (France is in an EDP and off its path, so eligibility is not automatic), the index and ratings floor (a fourth agency below AA- changes some mandates), and what the AFT itself can do on volume (buybacks, tenor, the bill stock) when the spread is the problem rather than the curve.</div>
+<div class="ask"><h4>To ask the AFT on the interest bill</h4><ol>
+<li>What average cost on the stock and what interest charge does the PLF 2027 assume for 2027 and 2028, and at what 10-year rate? Our register-based current path gives €87bn and €98bn of general-government interest.</li>
+<li>How much of the 2027 redemptions has already been bought back, line by line? The register carries €301bn maturing in 2027 gross of buybacks; the AFT's 2026 programme implied €175.8bn of medium/long-term redemptions for 2026.</li>
+<li>Does the AFT model a spread feedback in its own debt-service projections, or hold the spread at the current forward?</li>
+</ol></div>
+</section>
+
+<section id="s3" class="prose">
+<h2><span class="num">3</span>The shortening stock</h2>
+<p>The register's average residual maturity rose from 6.5 years (2009) to a peak of 8.5 years at end-2022 as the AFT sold 30- and 50-year paper into negative real yields; it is 8.3 years at end-2025 and the AFT reports 8 years 142 days at 31 August 2026, down from 8 years 180 days in June <span class="tag ext">ext</span>. The aggregate has barely moved. What has moved is the flow: the average maturity at issue of fixed-rate paper was 12.6 years in 2021, 11.2 in 2024, 10.4 in 2025 and 10.3 so far in 2026 (Figure 10, right). The 20–30 and 30+ buckets that took 15% of gross issuance in 2021 took 10% in 2025 (Figure 11).</p>
+<figure><img src="figures/maturity_trend.png" alt="maturity_trend" loading="lazy"><figcaption><b>Figure 10.</b> Left: nominal-weighted average residual maturity of the register stock, all classes and fixed-rate only, with the bill share of the stock on the right axis. Right: gross fixed-rate issuance and its average maturity at issue. <span class="src">Redbox: debt_maturity_profile; debt_issuance_by_bucket.</span></figcaption></figure>
+<figure><img src="figures/issuance_by_bucket.png" alt="issuance_by_bucket" loading="lazy"><figcaption><b>Figure 11.</b> Gross issuance by residual-maturity bucket at settlement, all classes. Bills (0–1) are the large dark block; the visible change is in the 10–15 and 20–30 buckets after 2022. <span class="src">Redbox: debt_issuance_by_bucket.</span></figcaption></figure>
+<p>Three readings of this, and the AFT will offer the first. (i) It is demand-led: the long end has lost the Dutch and German pension bid and the Japanese carry bid, so the AFT issues where the book is, which is 3–10 years. (ii) It is cost-led: with a curve that steepened 2024–2026 and a spread that is largest at the long end, the AFT is paying up least at 5–7 years and the maturity mix follows. (iii) It is a choice about roll-over risk that the AFT would rather not make explicit: every year of average maturity given up raises the share of the stock that reprices inside the next presidential term. On the register, 32% of the stock matures within three years, and the 2027 redemption year is the heaviest on record. In the Le Pen scenarios the engine assumes the AFT does what debt offices under pressure do, which is lean on bills (+€45–85bn) and shorten the tenor mix by one to three years; that is cheaper in year one and is the mechanism by which a spread shock in 2028 becomes a permanent feature of the average cost by 2032.</p>
+<p>The bill stock deserves its own line. BTF outstanding was 5.8% of the stock in 2019, 6.9% at end-2025, and the AFT's plan holds it near €215–220bn through 2026. At 2.5–2.7% that costs €5–6bn a year and is the one part of the stock that reprices to the ECB within a year: a 100 bp policy move is €2bn of annual interest with no lag, and the same figure is what a 40 bp widening of the BTF spread to €STR would cost in a stress.</p>
+<div class="ask"><h4>To ask the AFT on maturity</h4><ol>
+<li>Is the fall in maturity at issue a demand observation or a policy? What would bring the 20–30 year bucket back to 15% of issuance, and is there an average-maturity floor the AFT would defend?</li>
+<li>The 2027 redemption wall: how much of it does the AFT intend to pre-fund in Q4 2026 and how much to buy back, and does the PLF 2027 programme anticipate more or less than the 2026 €310bn?</li>
+<li>Under a spread shock, is the bill stock the shock absorber (as in 2008–2009, when it doubled to €214bn), or is there a ceiling?</li>
+</ol></div>
+</section>
+
+<section id="s4" class="prose">
+<h2><span class="num">4</span>Who holds it, and how rate-sensitive they are</h2>
+<p>Redbox does not yet carry a holdings overlay for France (DD11 is built for the UK's APF only), so the holder split below is the Banque de France's quarterly survey as reported for end-March 2026 <span class="tag ext">ext</span>, and should be checked against the AFT's bulletin before it is quoted back to them. What Redbox does carry is the rate sensitivity of the instrument each holder owns: the table prices every OAT in the register at today's curve and gives its modified duration.</p>
+<div class="tablewrap"><table>
+<tr><th class="l">Holder (end-Q1 2026)</th><th>Share of negotiable debt</th><th>≈ EUR bn</th><th>MTM loss per 100 bp, EUR bn</th><th class="l">Behaviour when rates rise</th></tr>
+<tr><td class='l'>Non-residents</td><td>57.5%</td><td>1,670</td><td>87</td><td class='l'>About half euro-area. The non-euro half (Japan, Asian reserve managers) sold €30bn in 2024 and is the swing buyer now; the group that leaves first and returns last.</td></tr>
+<tr><td class='l'>Other French residents, incl. Banque de France (Eurosystem: €488bn at end-June 2026)</td><td>20.6%</td><td>598</td><td>31</td><td class='l'>The Eurosystem is a passive seller: ≈€10bn a month of run-off, no reinvestment. The TPI is the only conditional buyer.</td></tr>
+<tr><td class='l'>French banks</td><td>10.5%</td><td>305</td><td>16</td><td class='l'>Mostly amortised cost, held for liquidity ratios; insensitive to mark-to-market, sensitive to ratings, repo haircuts and the sovereign-bank loop.</td></tr>
+<tr><td class='l'>French insurers</td><td>9.6%</td><td>279</td><td>14</td><td class='l'>Euro-fund books, long duration (above-average loss). Buy on inflows; inflows reverse with rates and with any assurance-vie or wealth-tax proposal.</td></tr>
+<tr><td class='l'>French funds (OPCVM)</td><td>1.8%</td><td>52</td><td>3</td><td class='l'>Money-market funds in bills; price-insensitive, size-limited.</td></tr>
+</table></div>
+<p class="src">Shares: Banque de France / AFT survey, end-March 2026, as reproduced in the AFT bulletin (external, unverified against the primary table). Loss per 100 bp: share × the register's €151bn (bonds only, bills excluded), an approximation that assumes each holder owns the average duration; insurers and the Eurosystem are longer than average, banks shorter.</p>
+<figure><img src="figures/duration.png" alt="duration" loading="lazy"><figcaption><b>Figure 12.</b> Market value per 100 bp by residual-maturity bucket, from pricing every bond in the register at the Bund curve plus 90 bp (linkers on real yields). Half of the rate risk sits in the 7- to 30-year buckets that insurers and the Eurosystem hold; the €2,419bn market value is below the €2,719bn nominal because the average coupon is far below the yield. <span class="src">Redbox: ggfiscal.debt.simulate.duration_table.</span></figcaption></figure>
+<h3>Three holder groups, three different sensitivities</h3>
+<p><b>The Eurosystem</b> is the one holder whose behaviour is known: it is leaving. French holdings under PSPP and PEPP fell from €546bn at end-2025 to €488bn at end-June 2026, about €10bn a month, with no reinvestment since PEPP ended in January 2025 <span class="tag ext">ext</span>. That is €110–120bn a year of extra net supply the market must absorb on top of the deficit, before any 2027 shock. The TPI is the counterweight, and its conditions (compliance with the EU fiscal framework, no severe imbalances, sustainability) are exactly the ones France is furthest from. Whether the Governing Council would treat a post-election OAT sell-off as "unwarranted, disorderly dynamics" is the single most important unknown in the Le Pen cases, and the AFT will not answer it, but its view of what the ECB has told the Trésor is worth having.</p>
+<p><b>Non-residents</b> hold 57.5%, the highest share among the G7, about half of them in the euro area. The non-euro half is the rate-sensitive part: the Japanese sold more than €20bn of OATs between June and November 2024 and about €30bn over the year as the yen carry trade lost its logic <span class="tag ext">ext</span>; the same group is now the swing buyer when OATs yield more than BTPs. The OAT–BTP 10-year spread inverted in August 2026 (OATs 5 bp over BTPs at one point, France the highest-yielding sovereign in the euro area) <span class="tag ext">ext</span>. For a holder of our size the relevant question is not whether non-residents sell in a shock but whether they are still there to buy the €350–450bn of gross issuance a year that Figure 15 implies.</p>
+<p><b>French insurers and banks</b> (9.6% and 10.5%) are the domestic backstop, and both have limits. Life insurers took a record €44bn of net inflows in 2025 <span class="tag ext">ext</span>, largely into euro funds that buy OATs; those inflows are a function of the OAT yield versus regulated savings (Livret A) and reverse when policy rates rise or when a wealth-tax or assurance-vie tax proposal appears in a budget, which is a live possibility in either 2027 outcome. Their sovereign book is only about 19% of assets after look-through, so the capacity to add is finite. Banks hold OATs largely at amortised cost for liquidity purposes and are therefore insensitive to mark-to-market but sensitive to the sovereign-bank loop through ratings and repo haircuts. Neither group is the buyer of a 2027 supply surge; that is the point of the €151bn figure: it is mostly on the books of holders who can and do leave.</p>
+<div class="ask"><h4>To ask the AFT on holders</h4><ol>
+<li>Where does the AFT see the marginal buyer of 2027 OAT supply, and how much of the Eurosystem run-off is being absorbed by domestic banks' liquidity books versus non-residents?</li>
+<li>Has the Trésor had any indication of how the ECB would read the TPI conditions for France while the EDP is open and off-path?</li>
+<li>Does the AFT track the country split of non-resident holders (it does not publish it), and what happened to the Japanese and Asian central-bank bid during the September 2026 widening?</li>
+</ol></div>
+</section>
+
+<section id="s5" class="prose">
+<h2><span class="num">5</span>The 2027 map: Le Pen, Philippe, majority or hung</h2>
+<p>The first round is on 18 April 2027 and the second on 2 May; legislative elections follow in June. Marine Le Pen is eligible: the Paris Court of Appeal on 7 July 2026 upheld the conviction but cut the ineligibility to 45 months with 30 suspended, and the firm part had already run <span class="tag ext">ext</span>. The polling average in September has Bardella and Le Pen at 34% and 33.5% in the first round and Philippe at 17.5% when he runs without Attal <span class="tag ext">ext</span>. The four configurations the committee asked for are therefore not symmetric probabilities; they are the two candidates most likely to face each other and the two Assembly outcomes each could get. The scenario assumptions are declared in full in section 8; the short version:</p>
+<dl class="assump">
+<dt>Philippe, majority</dt><dd>Pension age towards 65 phased from 2028, spending review; primary balance 1.0 pp of GDP better than the current path by 2031; spread to 45 bp; issuance mix unchanged.</dd>
+<dt>Philippe, hung</dt><dd>Budgets by 49.3 with concessions; primary balance 0.4 pp worse than the current path by 2031; spread stays at 75–80 bp.</dd>
+<dt>Le Pen, hung</dt><dd>Paralysis, not programme: no consolidation and partial giveaways, primary balance 1.0 pp worse by 2030; spread 100 → 120 bp; bills +€25bn, tenor mix one year shorter.</dd>
+<dt>Le Pen, majority</dt><dd>VAT on energy to 5.5% (≈0.5% of GDP), 2023 pension reform rolled back (≈0.5–0.8% of GDP by 2030), partial offsets: primary balance 1.5 pp worse by 2029; spread 110 → 150 → 130 bp; bills +€55bn, tenor mix two years shorter.</dd>
+<dt>Le Pen, rupture (stress)</dt><dd>Open conflict with the Commission over the EDP, TPI in doubt: primary balance 2.0 pp worse, spread 250 bp in 2028, bills +€105bn, tenor mix three years shorter. A stress, not a central case.</dd>
+</dl>
+<p>All scenarios add a feedback of 3 bp of spread per point of GDP by which the debt ratio exceeds the current path. The Bund curve is the same everywhere. Growth is the same everywhere, which flatters the Le Pen cases (the RN programme is expansionary in year one) and the Philippe majority (consolidation costs growth in year one); neither effect changes the ordering.</p>
+<div class="tablewrap"><table>
+<tr><th class="l">Scenario</th><th>Spread 2030, bp</th><th>10y OAT 2030</th><th>GG interest 2028, €bn</th><th>2030, €bn</th><th>2030, % GDP</th><th>2035, €bn</th><th>2035, % GDP</th><th>Deficit 2030, % GDP</th><th>Debt 2030, % GDP</th><th>Debt 2035, % GDP</th><th>Gross OAT issuance 2030, €bn</th></tr>
+<tr class='hl'><td class='l'>Current path</td><td>70</td><td>4.1%</td><td>98</td><td>121</td><td>3.5</td><td>169</td><td>4.2</td><td>4.6</td><td>123</td><td>127</td><td>393</td></tr>
+<tr><td class='l'>Philippe, majority</td><td>45</td><td>3.9%</td><td>98</td><td>117</td><td>3.4</td><td>153</td><td>3.8</td><td>3.6</td><td>121</td><td>119</td><td>362</td></tr>
+<tr><td class='l'>Philippe, hung Assembly</td><td>76</td><td>4.2%</td><td>98</td><td>122</td><td>3.5</td><td>175</td><td>4.4</td><td>4.9</td><td>124</td><td>130</td><td>403</td></tr>
+<tr><td class='l'>Le Pen, majority</td><td>139</td><td>4.8%</td><td>100</td><td>131</td><td>3.8</td><td>209</td><td>5.2</td><td>6.4</td><td>128</td><td>142</td><td>457</td></tr>
+<tr><td class='l'>Le Pen, hung Assembly</td><td>120</td><td>4.6%</td><td>99</td><td>128</td><td>3.7</td><td>196</td><td>4.9</td><td>5.8</td><td>126</td><td>136</td><td>434</td></tr>
+<tr><td class='l'>Le Pen, majority, rupture (stress)</td><td>212</td><td>5.5%</td><td>102</td><td>140</td><td>4.1</td><td>241</td><td>6.0</td><td>7.2</td><td>129</td><td>148</td><td>489</td></tr>
+</table></div>
+<p class="src">Redbox: ggfiscal.debt.simulate, run at the 10 September 2026 register. Interest is general government on the accrual basis (GF01_7 concept). Gross issuance is medium/long-term including the buybacks the register cannot see, so it overstates the AFT's programme definition by roughly the buyback volume (€25–40bn a year).</p>
+<figure><img src="figures/scen_spread.png" alt="scen_spread" loading="lazy"><figcaption><b>Figure 13.</b> The OAT–Bund spread, monthly since 2019, and the annual path each scenario declares (with the debt feedback). The dotted stress line is the 2011–2012 peak revisited; the Le Pen-majority line is the 2012 average sustained. <span class="src">Redbox: debt_reference_series; ggfiscal.debt.simulate.</span></figcaption></figure>
+<div class="two">
+<figure><img src="figures/scen_deficit.png" alt="scen_deficit" loading="lazy"><figcaption><b>Figure 14a.</b> The general-government deficit each scenario implies. Only a Philippe majority gets below 4% by 2030; no scenario reaches 3% by 2029, the EDP deadline. <span class="src">Redbox simulate.</span></figcaption></figure>
+<figure><img src="figures/scen_debt.png" alt="scen_debt" loading="lazy"><figcaption><b>Figure 14b.</b> The debt ratio. The current path drifts to 127% by 2035; the Le Pen majority reaches 142%; a Philippe majority stabilises near 119%. <span class="src">Redbox simulate.</span></figcaption></figure>
+</div>
+<figure><img src="figures/scen_issuance.png" alt="scen_issuance" loading="lazy"><figcaption><b>Figure 15.</b> Gross medium/long-term issuance the register implies: redemptions plus net financing less the change in the bill stock. Even the current path needs €390–460bn a year from 2028, against a 2026 programme of €310bn net of buybacks; the difference is mostly the 2027–2029 redemption wall and the register's gross-of-buybacks positions. <span class="src">Redbox simulate.</span></figcaption></figure>
+<figure><img src="figures/scen_coupon.png" alt="scen_coupon" loading="lazy"><figcaption><b>Figure 16.</b> The average coupon on the fixed-rate stock, history and paths, with the 10-year yield each scenario implies as thin lines. The coupon rises by about 30 bp a year on every path until the mid-2030s; the scenarios change the destination (3.6% versus 4.3% by 2035), not the direction. <span class="src">Redbox simulate.</span></figcaption></figure>
+<h3>Reading the map as a holder</h3>
+<p>Three things follow. First, the distribution of outcomes for the interest bill is skewed: the best case saves €16bn a year by 2035 against the current path, the two Le Pen cases cost €23–34bn and the stress €62bn. A position sized on the current path is short a put on French politics. Second, the hung-Assembly outcomes are closer to the current path than to their majority counterparts on interest, but not on issuance: a hung Assembly under either president means budgets by 49.3, no consolidation, and a spread that stays where 2025–2026 put it. The market has already priced "hung", which is why 85–90 bp is the current level; it has not priced "Le Pen majority", which the engine puts at 150 bp on the 2012 precedent. Third, the Le Pen-majority case is not a solvency case on this arithmetic: debt at 142% of GDP in 2035 with interest at 5.2% is Italy in 2012, not Greece. It becomes one only if the pricing loop runs faster than the fiscal loop, which is a question about the ECB and the marginal buyer, not about French arithmetic. That is why the questions in section 7 are about exits, not about levels.</p>
+</section>
+
+<section id="s6" class="prose">
+<h2><span class="num">6</span>Other things that matter in the room</h2>
+<p><b>Ratings and the crossover.</b> France is A+ stable at S&P (October 2025) and Fitch (September 2025), AA at DBRS, Aa3 negative at Moody's and AA- negative at Scope <span class="tag ext">ext</span>. Italy is on an upgrade path. A Moody's downgrade to A1 would put France at single-A at three of the four agencies that matter for index weights and repo schedules, and the OAT–BTP inversion of August 2026 says the market has already priced that crossover; some analysts have the OAT–Bund spread at 105 bp by end-Q1 2027 on it <span class="tag ext">ext</span>. Worth asking the AFT what feedback it has had from index providers and from the ECB collateral desk on the single-A question.</p>
+<p><b>The EDP and the Commission.</b> The procedure opened in July 2024; the January 2025 Council recommendation caps net expenditure growth at 0.8% (2025) and 1.2% (2026–2028) with correction by 2029, and the Commission's spring 2026 forecast (deficit 5.1% in 2026, debt 118.1% at end-2026) has France off the path <span class="tag ext">ext</span>. No scenario in section 5 corrects by 2029. The interaction with the TPI conditions is the reason this is more than a compliance question.</p>
+<p><b>The PLF 2027.</b> The 2026 budget passed on 2 February 2026 by 49.3 after two censure motions failed, at a 5.0% deficit (from 4.6% planned) with concessions to the PS and €6.5bn more for defence <span class="tag ext">ext</span>. The PLF 2027 is presented within weeks and is the last budget before the election: the AFT's 2027 financing programme (published in December) will be built on it. The AFT's Chief Economist will know the assumed 2027 deficit and the debt-service line; they are the numbers to get.</p>
+<p><b>Data the AFT could give and does not.</b> Redbox's French chains are blocked at step A because the État's own cash interest and financing tables (PLF programme 117, the tableau de financement) are not machine-readable to us (OQ-8), and the register is gross of buybacks because rachats are published only in aggregate. Per-line buyback volumes and the programme-117 tables would close the French interest chain to the euro. A request in the room costs nothing.</p>
+<p><b>The CADES and the social perimeter.</b> Eurostat's S.1311 securities run €43bn above the AFT's État total at end-2025 (Figure 1): CADES and the other central bodies. CADES' amortisation schedule (to 2033) is a hidden source of negotiable-debt demand replacement in the late 2020s, and a Le Pen pension rollback would reopen the question of who funds the social deficit.</p>
+</section>
+
+<section id="s7" class="prose">
+<h2><span class="num">7</span>Questions to put to the AFT</h2>
+<ol>
+<li>What interest charge and average cost of the stock does the PLF 2027 assume for 2027 and 2028, and at what 10-year OAT and what spread? (Our register-based current path: €87bn and €98bn of general-government interest.)</li>
+<li>Of the €301bn the register shows maturing in 2027, how much has already been bought back, and will the AFT publish rachats by line?</li>
+<li>Is the 2026 fall in maturity at issue (10.3 years against 12.6 in 2021) a demand observation or a policy, and is there an average-maturity floor?</li>
+<li>Under a spread shock, is the bill stock the shock absorber or is there a ceiling? What is the 2027 BTF target?</li>
+<li>Who is the marginal buyer of 2027 supply given €110–120bn a year of Eurosystem run-off, and how much of that run-off is domestic bank liquidity books versus non-residents?</li>
+<li>Has the Trésor had any indication of how the ECB reads the TPI conditions for a country in an open, off-path EDP?</li>
+<li>What has the AFT heard from index providers and the ECB collateral desk on the single-A question, and did the August 2026 OAT–BTP inversion change the investor base?</li>
+<li>What happened to the non-euro (Japanese, Asian official) bid in the September 2026 widening, and does the AFT track the country split it does not publish?</li>
+<li>Would the AFT consider a formal spread-feedback assumption in its debt-service projections, as the Cour des comptes has urged?</li>
+<li>Are the linker programme (8% of the stock, 11% uplifted) and the green OAT programme being scaled back as the long end thins?</li>
+<li>If a 2027 government asked for a longer average maturity to lock in rates before a spread shock, what would the AFT say about the cost, and has it been asked?</li>
+<li>Will the État's programme-117 tables and the tableau de financement be published in a machine-readable form?</li>
+</ol>
+</section>
+
+<section id="s8" class="prose">
+<h2><span class="num">8</span>Method, sources and caveats</h2>
+<h3>What is Redbox and what is external</h3>
+<p>Everything marked <span class="tag rb">Redbox</span> or unmarked in a figure source line is read from the flat files in <code>deliverables/</code> of run 20260911T000629Z: the per-security register (D-S10-007), the reconciliation chains, the balance ledger and the strict matrix. Everything marked <span class="tag ext">ext</span> is from a web search on 18 September 2026 by a research agent; the AFT's own site was unreachable to it (HTTP 503 on every fetch), so AFT-attributed figures come from press and parliamentary reproductions of AFT releases and should be verified on aft.gouv.fr before being quoted to the AFT. The scenario engine and its charts are new in this session (D-S11-001): <code>src/ggfiscal/debt/simulate.py</code>, <code>src/ggfiscal/report/briefing_fra.py</code>, <code>src/ggfiscal/report/briefing_fra_scenarios.py</code>, the notebook <code>notebooks/briefing_FRA_AFT.ipynb</code>, and the outputs under <code>reports/briefing_FRA_AFT_2026-09/</code>.</p>
+<h3>The engine's declared assumptions</h3>
+<div class="tablewrap"><table>
+<tr><th class="l">Item</th><th class="l">Value</th><th class="l">Source or reason</th></tr>
+<tr><td class="l">Register</td><td class="l">Positions at 10 Sep 2026, 106 bonds and 30 bill lines outstanding</td><td class="l">debt_positions (office snapshot)</td></tr>
+<tr><td class="l">Nominal GDP</td><td class="l">2025 €2,979bn; 2026 €3,056bn; 2027 €3,151bn; then +3.0% a year</td><td class="l">ledger; strict_FRA (EC AMECO); declared</td></tr>
+<tr><td class="l">Primary balance, current path</td><td class="l">−3.1 (2025), −2.7, −2.5, −2.1, −1.7, −1.3, −0.9, −0.6, −0.5 % of GDP</td><td class="l">declared: 0.4 pp a year</td></tr>
+<tr><td class="l">Bund curve</td><td class="l">3m 2.50, 2y 2.90, 5y 3.15, 10y 3.40, 30y 3.75 %, flat through 2035</td><td class="l">EA_MM_3M Aug 2026, DE_BUND_YIELD_10Y 7 Sep 2026; 2y/5y/30y declared</td></tr>
+<tr><td class="l">Spread term structure</td><td class="l">0.15 / 0.45 / 0.75 / 1.00 / 1.15 × the 10y spread at 3m / 2y / 5y / 10y / 30y</td><td class="l">declared</td></tr>
+<tr><td class="l">Issuance mix</td><td class="l">AFT 2025 shares by bucket, with the AFT's own residual maturity at issue per bucket</td><td class="l">debt_issuance_by_bucket</td></tr>
+<tr><td class="l">Inflation (uplift)</td><td class="l">2.0% a year, linkers 7% of new issuance at the real yield</td><td class="l">declared</td></tr>
+<tr><td class="l">Deficit financed by negotiable debt</td><td class="l">0.90</td><td class="l">Δ(F.31+F.32) / −NLB, 2015–2025, from the bundle</td></tr>
+<tr><td class="l">Wedge to GF01_7</td><td class="l">0.34% of GDP (€10.1bn in 2025)</td><td class="l">GF01_7 less register cash interest, 2025</td></tr>
+<tr><td class="l">Maastricht debt, end-2025</td><td class="l">115.6% of GDP; accumulates the deficit, no stock-flow adjustment</td><td class="l">INSEE 27 Mar 2026 (ext); declared</td></tr>
+<tr><td class="l">Spread feedback</td><td class="l">+3 bp per pp of GDP of debt-ratio deviation from the current path</td><td class="l">declared</td></tr>
+<tr><td class="l">2026</td><td class="l">Bridge year: interest = strict file (€77.7bn, AMECO); only the remaining 31% of the year is financed</td><td class="l">the register already holds the issuance to 10 Sep</td></tr>
+</table></div>
+<div class="tablewrap"><table>
+<tr><th class="l">Scenario</th><th class="l">Primary-balance deviation, pp GDP</th><th class="l">10y spread, bp</th><th class="l">Bill stock, €bn</th><th>Tenor tilt λ</th><th>Avg maturity at issue</th><th class="l">Narrative</th></tr>
+<tr><td class='l'>Current path</td><td class='l'>2026 +0.0</td><td class='l'>2026 85, 2027 85, 2028 80, 2029 75, 2030 70</td><td class='l'>2026 +215.0</td><td>0.00</td><td>10.6y</td><td class='l'>Minority governments continue to pass budgets by 49.3 with concessions; consolidation at 0.4 pp a year; spread drifts back towards its 2025 average.</td></tr>
+<tr><td class='l'>Philippe, majority</td><td class='l'>2027 +0.0, 2028 +0.3, 2029 +0.6, 2030 +0.9, 2031 +1.0</td><td class='l'>2026 85, 2027 80, 2028 60, 2029 50, 2030 45</td><td class='l'>2026 +215.0</td><td>0.00</td><td>10.6y</td><td class='l'>Pension age towards 65 phased from 2028, spending review, EDP path met by 2030; spread compresses towards the 2015–2021 range (35–50 bp).</td></tr>
+<tr><td class='l'>Philippe, hung Assembly</td><td class='l'>2027 +0.0, 2028 -0.1, 2029 -0.2, 2030 -0.3, 2031 -0.4</td><td class='l'>2026 85, 2027 85, 2028 80, 2029 80, 2030 75</td><td class='l'>2026 +215.0</td><td>0.00</td><td>10.6y</td><td class='l'>A president without a majority: budgets by 49.3, consolidation slower than the current path; spread stays where 2025–2026 put it.</td></tr>
+<tr><td class='l'>Le Pen, majority</td><td class='l'>2027 +0.0, 2028 -1.2, 2029 -1.5, 2030 -1.5</td><td class='l'>2026 85, 2027 110, 2028 150, 2029 140, 2030 130</td><td class='l'>2026 +215.0, 2027 +230.0, 2028 +260.0, 2029 +270.0</td><td>0.04</td><td>8.8y</td><td class='l'>RN programme enacted: VAT on energy to 5.5% (≈0.5% of GDP), 2023 pension reform rolled back (≈0.5–0.8% of GDP by 2030), partial offsets; spread re-prices to the 2012 peak and stays; AFT leans on bills and shorter tenors.</td></tr>
+<tr><td class='l'>Le Pen, hung Assembly</td><td class='l'>2027 +0.0, 2028 -0.6, 2029 -0.8, 2030 -1.0</td><td class='l'>2026 85, 2027 100, 2028 120, 2029 120, 2030 115</td><td class='l'>2026 +215.0, 2027 +225.0, 2028 +240.0</td><td>0.02</td><td>9.6y</td><td class='l'>RN president, no majority: paralysis rather than programme; no consolidation, partial giveaways; spread above the current path but short of the 2012 peak.</td></tr>
+<tr><td class='l'>Le Pen, majority, rupture (stress)</td><td class='l'>2027 +0.0, 2028 -1.5, 2029 -2.0, 2030 -2.0</td><td class='l'>2026 85, 2027 130, 2028 250, 2029 220, 2030 200</td><td class='l'>2026 +215.0, 2027 +240.0, 2028 +300.0, 2029 +320.0</td><td>0.08</td><td>7.6y</td><td class='l'>Stress, not a central case: open conflict with the Commission over the EDP, TPI eligibility in doubt, spread at 250 bp; the AFT funds a growing share at the short end.</td></tr>
+</table></div>
+<h3>Caveats</h3>
+<ul>
+<li>The register is gross of buybacks on the fixed lines (1–4% above the AFT); redemptions and gross issuance in the engine are correspondingly high. Net issuance and interest are barely affected.</li>
+<li>Interest is on the accrual basis and general government; the État's budgetary "charge de la dette" (about €58bn in 2026 <span class="tag ext">ext</span>) is a narrower, cash concept and will always be lower.</li>
+<li>Growth, inflation and the Bund curve are common to all scenarios; the engine is an arithmetic of the register, not a macro model. A recession or an ECB easing cycle would move every line.</li>
+<li>The strict file's 2025 interest is an AMECO-stitched value (grade B); the Eurostat outturn arrives in October 2026.</li>
+<li>Holder shares and every political and market fact marked <span class="tag ext">ext</span> are unverified against primary sources; the sources are listed below.</li>
+</ul>
+<h3>External sources consulted (18 September 2026)</h3>
+<ul class="src" style="font-size:.8rem">
+<li>AFT, indicative State financing programme for 2026 (30 Dec 2025); AFT, French State funding for 2026 and update for 2025 (14 Oct 2025); AFT monthly bulletin July 2026 (holder survey Q1 2026, average maturity, BTF stock).</li>
+<li>Banque de France, Émission et détention de titres français, 2026-Q1; Banque de France statements on APP/PEPP run-off (2026).</li>
+<li>INSEE, Informations rapides n°78 (27 Mar 2026: 2025 deficit 5.1%, debt 115.6%); INSEE, debt at end-Q1 2026 (117.5%).</li>
+<li>Council of the EU, EDP recommendations (21 Jan 2025); European Commission spring 2026 forecast as reported.</li>
+<li>S&P (17–18 Oct 2025), Moody's (24 Oct 2025; 13 Dec 2024), Fitch (12 Sep 2025), DBRS (2025), Scope (26 Sep 2025) rating actions.</li>
+<li>OMFIF (Oct 2025) and MNI on the spread history; Morningstar and market commentary on the August–September 2026 sell-off and the OAT–BTP inversion.</li>
+<li>Sénat, PLF 2026 rapport Engagements financiers de l'État; Cour des comptes / HCFP interest projections as summarised by IFRAP and Rexecode.</li>
+<li>LCP / info.gouv.fr on the 2027 election dates; Ipsos polling average (10 Sep 2026); Touteleurope and Le Club des Juristes on the 7 July 2026 appeal ruling; Bloomberg (6 Sep 2026) on the RN's budget position; ACPR n°179 on life insurance in 2025; BFM Bourse and Revue Banque on Japanese OAT sales in 2024.</li>
+</ul>
+</section>
+
+<div class="footer">Prepared from the Redbox gg-fiscal repository, branch claude/french-debt-aft-briefing-cg37e0. Charts and tables regenerate with <code>python3 -m ggfiscal.report.briefing_fra && python3 -m ggfiscal.report.briefing_fra_scenarios && python3 tools/build_briefing_fra.py</code>.</div>
+</div>
