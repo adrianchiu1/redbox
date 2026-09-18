@@ -74,9 +74,9 @@ def show(key, colours=48, width=880):
 
 print(f"{len(FIGS)} charts rendered into {OUT.relative_to(ROOT)}")"""))
 
-cells.append(nbf.v4.new_markdown_cell("## 1. Where the stock stands\n\nThe register at the AFT's latest snapshot (10 September 2026) against the office's own totals, then the maturity profile and the redemption calendar."))
+cells.append(nbf.v4.new_markdown_cell("## 1. Where the stock stands\n\nThe register at the AFT's latest snapshot (10 September 2026) against the office's own totals, then the maturity profile, the redemption calendar, and what fell due each year since 2000 (`refinancing_by_year.csv`) to put the 2027–2029 redemptions in context."))
 cells.append(nbf.v4.new_code_cell("pd.read_csv(OUT / 'key_figures.csv').set_index('metric').value.round(3).to_frame().T.T"))
-for k in ("stock_by_class", "maturity_profile", "redemption_calendar"):
+for k in ("stock_by_class", "maturity_profile", "redemption_calendar", "refinancing_history"):
     cells.append(nbf.v4.new_code_cell(f"show('{k}')"))
 
 cells.append(nbf.v4.new_markdown_cell("## 2. The interest bill\n\nGeneral-government interest (the strict `GF01_7`, with its EC AMECO / DSM leg), the ledger, the average coupon against the marginal yield, and interest by security against the official totals."))

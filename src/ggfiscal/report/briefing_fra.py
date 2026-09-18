@@ -297,6 +297,102 @@ def _chart_redemption_calendar(out: Path) -> Path:
 
 
 # ---------------------------------------------------------------------------
+# 5b. refinancing_history — what fell due each year, 2000 to 2035
+# ---------------------------------------------------------------------------
+def _refinancing_by_year() -> pd.DataFrame:
+    """Medium/long-term redemptions per calendar year: the register's own
+    redemption flows for 2000–2026 (lines redeemed at maturity, gross of the
+    buybacks the AFT publishes only in aggregate, linkers at unindexed
+    nominal), then the maturity dates of the positions at the snapshot for
+    2026 onwards. Beside them the bill stock at the previous year-end (which
+    rolls entirely within the year), the negotiable stock at the previous
+    year-end and nominal GDP (strict file to 2027, +3% a year after, the
+    engine's declared path)."""
+    flows = _load("debt_flows")
+    flows = flows[flows.iso3 == ISO3]
+    sec = _load("debt_securities")
+    sec = sec[sec.iso3 == ISO3][["security_id", "instrument_class", "maturity_date"]]
+    flows = flows.merge(sec, on="security_id")
+    flows["year"] = flows.settlement_date.str[:4].astype(int)
+    hist = (flows[(flows.flow_type == "redemption") & (flows.instrument_class != "bill")]
+            .pivot_table(index="year", columns="instrument_class",
+                         values="nominal_lcu_mn", aggfunc="sum").fillna(0.0) / 1000)
+    hist = hist.loc[2000:2026]          # 2026 from the flows: full year, matured lines included
+    snap = _redemption_by_year()
+    snap["maturity_year"] = pd.to_datetime(snap.maturity_date).dt.year
+    fwd = (snap[snap.instrument_class != "bill"]
+           .pivot_table(index="maturity_year", columns="instrument_class",
+                        values="nominal_lcu_mn", aggfunc="sum").fillna(0.0) / 1000)
+    # stop at 2030: paper not yet issued (2- to 3-year tranches of 2027-28) would
+    # already be missing from later years
+    fwd = fwd.loc[2027:2030]
+    fwd.index.name = "year"
+    out = pd.concat([hist.assign(basis="register flows"), fwd.assign(basis="positions at snapshot")])
+    out["mlt"] = out.fixed_bullet + out.inflation_linked
+    pos = _positions_fra()
+    ye = pos[pos.as_of.str.endswith("12-31")].copy()
+    ye["y"] = ye.as_of.str[:4].astype(int)
+    stock = ye.groupby("y").nominal_lcu_mn.sum() / 1000
+    btf = ye[ye.instrument_class == "bill"].groupby("y").nominal_lcu_mn.sum() / 1000
+    out["stock_prev"] = stock.shift(1).reindex(out.index)
+    out["btf_prev"] = btf.shift(1).reindex(out.index)
+    # forward: carry the last year-end stock, grown by the current path's
+    # negotiable stock in the scenario file when present, else flat
+    scen = ROOT / "reports" / "briefing_FRA_AFT_2026-09" / "figures" / "scenarios_FRA.csv"
+    if scen.exists():
+        cur = pd.read_csv(scen).query("scenario == 'current'").set_index("year")
+        for y in out.index[out.stock_prev.isna()]:
+            if y - 1 in cur.index:
+                out.loc[y, "stock_prev"] = cur.loc[y - 1, "negotiable_stock_bn"]
+                out.loc[y, "btf_prev"] = cur.loc[y - 1, "btf_stock"]
+    out["stock_prev"] = out.stock_prev.ffill()
+    out["btf_prev"] = out.btf_prev.ffill()
+    strict = pd.read_csv(DELIV / "strict_FRA.csv").set_index("year")
+    gdp = strict["GDP - Gross domestic product at current market prices"] / 1000
+    g = gdp.reindex(range(2000, 2031))
+    for y in range(2028, 2031):
+        g[y] = g[y - 1] * 1.03
+    out["gdp"] = g.reindex(out.index)
+    out["pct_stock"] = 100 * out.mlt / out.stock_prev
+    out["pct_gdp"] = 100 * out.mlt / out.gdp
+    return out
+
+
+def _chart_refinancing_history(out: Path) -> Path:
+    d = _refinancing_by_year()
+    d.to_csv(out.parent / "refinancing_by_year.csv")
+    fig, (ax, bx) = plt.subplots(2, 1, figsize=(7.2, 5.2), sharex=True,
+                                 height_ratios=[2.2, 1])
+    ax.axvspan(2026.5, 2030.5, color=SHADE, lw=0, zorder=0)
+    bx.axvspan(2026.5, 2030.5, color=SHADE, lw=0, zorder=0)
+    ax.bar(d.index, d.fixed_bullet, color=BLUE, width=0.75, label="OAT/BTAN fixed-rate")
+    ax.bar(d.index, d.inflation_linked, bottom=d.fixed_bullet, color=GREEN, width=0.75,
+           label="OATi/OAT€i (unindexed nominal)")
+    ax.plot(d.index, d.btf_prev, color=ORANGE, ls="--", lw=1.4,
+            label="bill stock at previous year-end (rolls within the year)")
+    ax.scatter([2026], [175.8], color=INK, zorder=5, s=18)
+    ax.annotate("AFT 2026 programme:\n€175.8bn (ext)", (2026, 175.8), xytext=(-62, -62),
+                textcoords="offset points", fontsize=7.5, color=INK,
+                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.7))
+    for y in (2015, 2020, 2025, 2027, 2028, 2029, 2030):
+        ax.text(y, d.loc[y, "mlt"] + 6, f"{d.loc[y, 'mlt']:.0f}", ha="center", fontsize=7.5,
+                color=INK, fontweight="bold" if y >= 2027 else "normal")
+    ax.set_ylabel("EUR bn falling due in the year")
+    _thousands(ax)
+    ax.set_title("France · medium/long-term redemptions each year, 2000–2030")
+    ax.legend(loc="upper left", fontsize=7.5)
+    bx.plot(d.index, d.pct_stock, color=BLUE, lw=1.8, label="% of negotiable stock at previous year-end")
+    bx.plot(d.index, d.pct_gdp, color=PURPLE, lw=1.6, ls="--", label="% of GDP")
+    bx.set_ylabel("%")
+    bx.legend(loc="upper center", bbox_to_anchor=(0.5, -0.28), fontsize=7.5, ncol=2)
+    bx.set_xlim(1999.3, 2030.7)
+    bx.set_xticks(range(2000, 2031, 5))
+    _source(fig, "deliverables/debt_flows.csv (redemptions 2000-2026, gross of aggregate-only buybacks) and "
+                  "debt_positions.csv at 2026-09-10 (2027-2030, by maturity date); bills excluded from the bars")
+    return _save(fig, out)
+
+
+# ---------------------------------------------------------------------------
 # 6. maturity_trend
 # ---------------------------------------------------------------------------
 def _chart_maturity_trend(out: Path) -> Path:
@@ -573,6 +669,19 @@ def _key_figures(out_dir: Path) -> Path:
         v = snap_calendar[snap_calendar.maturity_year == y].nominal_lcu_mn.sum()
         rows.append((f"redemptions_{y}_eur_bn", round(v / 1000, 1)))
 
+    refi = _refinancing_by_year()
+    for y in (2015, 2020, 2025, 2026, 2027, 2028, 2029, 2030):
+        rows.append((f"mlt_redemptions_{y}_eur_bn", round(float(refi.loc[y, "mlt"]), 1)))
+        rows.append((f"mlt_redemptions_{y}_pct_stock", round(float(refi.loc[y, "pct_stock"]), 2)))
+        rows.append((f"mlt_redemptions_{y}_pct_gdp", round(float(refi.loc[y, "pct_gdp"]), 2)))
+    h = refi.loc[2000:2025]
+    rows.append(("mlt_redemptions_history_peak_pct_stock", round(float(h.pct_stock.max()), 2)))
+    rows.append(("mlt_redemptions_history_peak_pct_stock_year", int(h.pct_stock.idxmax())))
+    rows.append(("mlt_redemptions_history_peak_pct_gdp", round(float(h.pct_gdp.max()), 2)))
+    rows.append(("mlt_redemptions_history_peak_pct_gdp_year", int(h.pct_gdp.idxmax())))
+    bills_2027 = snap_calendar[(snap_calendar.maturity_year == 2027) & (snap_calendar.instrument_class == "bill")].nominal_lcu_mn.sum()
+    rows.append(("bills_maturing_2027_eur_bn", round(bills_2027 / 1000, 1)))
+
     fr10 = _annual_mean("FR_LT10")
     de10 = _annual_mean("DE_LT10")
     for y in range(2021, 2027):
@@ -610,6 +719,7 @@ CHARTS = {
     "stock_by_class": _chart_stock_by_class,
     "maturity_profile": _chart_maturity_profile,
     "redemption_calendar": _chart_redemption_calendar,
+    "refinancing_history": _chart_refinancing_history,
     "maturity_trend": _chart_maturity_trend,
     "coupon_vs_yield": _chart_coupon_vs_yield,
     "interest_by_security": _chart_interest_by_security,
