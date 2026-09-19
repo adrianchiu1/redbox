@@ -1,0 +1,57 @@
+source,vintage,series_code,concept,granularity,country,first_year,last_year,n_obs,unit,cofog_split,esa_revenue_split
+EC_AMECO,Spring 2026 (2026-06-03),UBLGAP,"Cyclically adjusted net lending/borrowing, GG (potential-GDP based)",balance,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGAP,"Cyclically adjusted net lending/borrowing, GG (potential-GDP based)",balance,FRA,1965,2027,63,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGAP,"Cyclically adjusted net lending/borrowing, GG (potential-GDP based)",balance,GBR,1987,2027,41,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGAPS,"Structural balance, GG (potential-GDP based)",balance,DEU,2010,2027,18,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGAPS,"Structural balance, GG (potential-GDP based)",balance,FRA,2010,2027,18,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGBP,"Cyclically adjusted primary balance, GG",balance,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGBP,"Cyclically adjusted primary balance, GG",balance,FRA,1978,2027,50,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGBP,"Cyclically adjusted primary balance, GG",balance,GBR,1987,2027,41,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGCP,Cyclical component of GG net lending/borrowing,balance,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGCP,Cyclical component of GG net lending/borrowing,balance,FRA,1965,2027,63,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UBLGCP,Cyclical component of GG net lending/borrowing,balance,GBR,1971,2027,57,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),URTGAP,"Cyclically adjusted TOTAL revenue, GG",revenue_total,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),URTGAP,"Cyclically adjusted TOTAL revenue, GG",revenue_total,FRA,1978,2027,50,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),URTGAP,"Cyclically adjusted TOTAL revenue, GG",revenue_total,GBR,2026,2027,2,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UTCGCP,Cyclical component of GG revenue,revenue_total,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UTCGCP,Cyclical component of GG revenue,revenue_total,FRA,1965,2027,63,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UTCGCP,Cyclical component of GG revenue,revenue_total,GBR,1971,2027,57,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUCGCP,Cyclical component of GG expenditure,expenditure_total,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUCGCP,Cyclical component of GG expenditure,expenditure_total,FRA,1965,2027,63,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUCGCP,Cyclical component of GG expenditure,expenditure_total,GBR,1971,2027,57,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUTGAP,"Cyclically adjusted TOTAL expenditure, GG",expenditure_total,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUTGAP,"Cyclically adjusted TOTAL expenditure, GG",expenditure_total,FRA,1978,2027,50,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUTGAP,"Cyclically adjusted TOTAL expenditure, GG",expenditure_total,GBR,2026,2027,2,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUTGBP,"Cyclically adjusted primary expenditure, GG",expenditure_total,DEU,1991,2027,37,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUTGBP,"Cyclically adjusted primary expenditure, GG",expenditure_total,FRA,1978,2027,50,% of potential GDP,no,no
+EC_AMECO,Spring 2026 (2026-06-03),UUTGBP,"Cyclically adjusted primary expenditure, GG",expenditure_total,GBR,2026,2027,2,% of potential GDP,no,no
+IMF_WEO,WEO 2026-04 (dataflow 9.0.0),GGSB_NPGDP,"Structural balance, GG",balance,DEU,1991,2031,41,% of potential GDP,no,no
+IMF_WEO,WEO 2026-04 (dataflow 9.0.0),GGSB_NPGDP,"Structural balance, GG",balance,FRA,1980,2031,52,% of potential GDP,no,no
+IMF_WEO,WEO 2026-04 (dataflow 9.0.0),GGSB_NPGDP,"Structural balance, GG",balance,GBR,1981,2031,51,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",GAP,Output gap as % of potential GDP,other,DEU,1991,2027,37,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",GAP,Output gap as % of potential GDP,other,FRA,1985,2027,43,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",GAP,Output gap as % of potential GDP,other,GBR,1985,2027,43,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",NLGQA,Cyclically adjusted GG net lending,balance,DEU,1991,2027,37,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",NLGQA,Cyclically adjusted GG net lending,balance,FRA,1995,2027,33,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",NLGQA,Cyclically adjusted GG net lending,balance,GBR,1971,2027,57,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",SSRGA,Cyclically adjusted social security contributions received,revenue_component,DEU,1991,2027,37,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",SSRGA,Cyclically adjusted social security contributions received,revenue_component,FRA,1985,2027,43,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",SSRGA,Cyclically adjusted social security contributions received,revenue_component,GBR,1971,2027,57,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TINDA,Cyclically adjusted taxes on production and imports,revenue_component,DEU,1991,2027,37,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TINDA,Cyclically adjusted taxes on production and imports,revenue_component,FRA,1985,2027,43,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TINDA,Cyclically adjusted taxes on production and imports,revenue_component,GBR,1971,2027,57,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TYBA,Cyclically adjusted direct taxes on business,revenue_component,DEU,1991,2027,37,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TYBA,Cyclically adjusted direct taxes on business,revenue_component,FRA,1985,2027,43,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TYBA,Cyclically adjusted direct taxes on business,revenue_component,GBR,1971,2027,57,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TYHA,Cyclically adjusted direct taxes on households,revenue_component,DEU,1991,2027,37,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TYHA,Cyclically adjusted direct taxes on households,revenue_component,FRA,1985,2027,43,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",TYHA,Cyclically adjusted direct taxes on households,revenue_component,GBR,1985,2027,43,national currency,no,partial
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YPGQA,"Cyclically adjusted current disbursements, GG",expenditure_total,DEU,1991,2027,37,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YPGQA,"Cyclically adjusted current disbursements, GG",expenditure_total,FRA,1985,2027,43,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YPGQA,"Cyclically adjusted current disbursements, GG",expenditure_total,GBR,1985,2027,43,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YPGXQA,"Cyclically adjusted current disbursements excl. gross interest, GG",expenditure_total,DEU,1991,2027,37,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YPGXQA,"Cyclically adjusted current disbursements excl. gross interest, GG",expenditure_total,FRA,1985,2027,43,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YPGXQA,"Cyclically adjusted current disbursements excl. gross interest, GG",expenditure_total,GBR,1985,2027,43,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YRGQA,"Cyclically adjusted current receipts, GG",revenue_total,DEU,1991,2027,37,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YRGQA,"Cyclically adjusted current receipts, GG",revenue_total,FRA,1985,2027,43,% of potential GDP,no,no
+OECD_EO,"OECD Economic Outlook (live SDMX, retrieved 2026-09-10)",YRGQA,"Cyclically adjusted current receipts, GG",revenue_total,GBR,1985,2027,43,% of potential GDP,no,no
