@@ -26,8 +26,20 @@ ISO3_TO_GEO = {"FRA": "FR", "DEU": "DE"}
 
 
 def latest_snapshots() -> dict[tuple[str, str], dict]:
-    """Latest manifest entry per (source_id, part); verifies the file exists."""
+    """Latest manifest entry per (source_id, part) whose bytes are on THIS
+    machine.
+
+    The manifest is append-only and travels in git; the raw store does not
+    (D-S0-004). So the newest recorded pull for a source is routinely one
+    made in another container — its path does not exist here, while an
+    older, often byte-identical pull sits on disk. Taking the newest entry
+    and only then filtering it out for not existing hides that usable copy
+    and leaves the source looking unharvested; taking the newest entry that
+    DOES exist uses it. Snapshots are content-addressed, so an older entry
+    carrying the same sha256 is the same bytes, not a stale vintage.
+    """
     manifest = config.repo_root() / "data" / "manifest" / "snapshots.jsonl"
+    root = config.repo_root()
     out: dict[tuple[str, str], dict] = {}
     if not manifest.exists():
         return out
@@ -36,9 +48,10 @@ def latest_snapshots() -> dict[tuple[str, str], dict]:
             if not line.strip():
                 continue
             e = json.loads(line)
-            out[(e["source_id"], e.get("part", ""))] = e  # later lines win
-    return {k: e for k, e in out.items()
-            if (config.repo_root() / e["path"]).exists()}
+            if not (root / e["path"]).exists():
+                continue                      # recorded elsewhere, not here
+            out[(e["source_id"], e.get("part", ""))] = e   # latest usable wins
+    return out
 
 
 def _snap_path(source_id: str, part: str) -> Path | None:

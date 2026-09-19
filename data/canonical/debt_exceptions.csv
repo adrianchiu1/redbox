@@ -1,0 +1,53 @@
+check_id,severity,scope,message
+V29,WARN,-,0 positions and 0 flows reference unknown securities; 1723 securities without a position (issued and redeemed between two year-ends: bills)
+V30,WARN,-,"7035 security-years reproduce snapshot(t) = snapshot(t−1) + Σ flows; 1297 do not; worst: [('DEU', 'DE0001141216', 1997, np.float64(7759.1)), ('DEU', 'DE0001141257', 1998, np.float64(7419.5)), ('DEU', 'DE0001141208', 1997, np.float64(2045.2)), ('DEU', 'DE0001141240', 1998, np.float64(1022.6)), ('DEU', 'DE0001030070', 2009, np.float64(-679.3))]"
+V33,OK,-,"bucket sums equal class totals on 339 (country, year-end, class) cells"
+V34,OK,-,32 ratio dates compared; 0 beyond 0.01%
+V36,WARN,-,3 securities with not_computable interest (DD10); declared in notes
+V40,OK,-,0 positions with market-hands above nominal
+V31,SKIP,FRA,Eurostat GD_F3 (debt securities) rows not found
+V31,WARN,DEU/1995,"aggregate stock 494,113 vs Eurostat S1311 GD_F3 527,690: -6.36% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/1996,"aggregate stock 525,607 vs Eurostat S1311 GD_F3 561,362: -6.37% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/1997,"aggregate stock 561,445 vs Eurostat S1311 GD_F3 600,620: -6.52% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/1998,"aggregate stock 590,706 vs Eurostat S1311 GD_F3 630,641: -6.33% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/1999,"aggregate stock 633,905 vs Eurostat S1311 GD_F3 673,530: -5.88% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2000,"aggregate stock 656,695 vs Eurostat S1311 GD_F3 695,732: -5.61% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,OK,DEU/2001,"aggregate stock 688,288 vs Eurostat S1311 GD_F3 693,365: -0.73% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,OK,DEU/2002,"aggregate stock 723,637 vs Eurostat S1311 GD_F3 727,625: -0.55% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,OK,DEU/2003,"aggregate stock 764,246 vs Eurostat S1311 GD_F3 767,028: -0.36% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,OK,DEU/2004,"aggregate stock 809,202 vs Eurostat S1311 GD_F3 810,606: -0.17% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,OK,DEU/2005,"aggregate stock 851,889 vs Eurostat S1311 GD_F3 859,821: -0.92% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2006,"aggregate stock 883,410 vs Eurostat S1311 GD_F3 898,940: -1.73% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2007,"aggregate stock 901,482 vs Eurostat S1311 GD_F3 917,584: -1.75% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2008,"aggregate stock 915,346 vs Eurostat S1311 GD_F3 928,754: -1.44% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2009,"aggregate stock 999,086 vs Eurostat S1311 GD_F3 1,013,072: -1.38% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2010,"aggregate stock 1,046,881 vs Eurostat S1311 GD_F3 1,084,019: -3.43% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2011,"aggregate stock 1,058,031 vs Eurostat S1311 GD_F3 1,121,331: -5.65% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2012,"aggregate stock 1,077,575 vs Eurostat S1311 GD_F3 1,177,168: -8.46% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2013,"aggregate stock 1,095,596 vs Eurostat S1311 GD_F3 1,192,025: -8.09% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2014,"aggregate stock 1,096,659 vs Eurostat S1311 GD_F3 1,206,203: -9.08% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2015,"aggregate stock 1,079,898 vs Eurostat S1311 GD_F3 1,188,523: -9.14% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2016,"aggregate stock 1,074,825 vs Eurostat S1311 GD_F3 1,179,464: -8.87% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2017,"aggregate stock 1,072,745 vs Eurostat S1311 GD_F3 1,168,633: -8.21% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2018,"aggregate stock 1,057,934 vs Eurostat S1311 GD_F3 1,149,768: -7.99% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2019,"aggregate stock 1,066,988 vs Eurostat S1311 GD_F3 1,140,538: -6.45% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2020,"aggregate stock 1,261,309 vs Eurostat S1311 GD_F3 1,335,371: -5.55% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2021,"aggregate stock 1,428,234 vs Eurostat S1311 GD_F3 1,476,948: -3.30% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2022,"aggregate stock 1,505,331 vs Eurostat S1311 GD_F3 1,538,815: -2.18% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2023,"aggregate stock 1,630,972 vs Eurostat S1311 GD_F3 1,655,913: -1.51% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,WARN,DEU/2024,"aggregate stock 1,676,949 vs Eurostat S1311 GD_F3 1,696,961: -1.18% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,OK,DEU/2025,"aggregate stock 1,773,391 vs Eurostat S1311 GD_F3 1,789,103: -0.88% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
+V31,OK,GBR,aggregate gilt and bill stocks are the ONS PSA8A_1 rows themselves (same source); independent cross-check awaits the DMO register
+V32,OK,interest,official_total = carried + Σ items + residual on all 524 steps
+V32,OK,financing,official_total = carried + Σ items + residual on all 524 steps
+V35,OK,GBR/C_s13_gf01_7,step C equals the package's series on 39 years
+V35,OK,GBR/C_s13_nlb,step C equals the package's series on 36 years
+V35,OK,FRA/C_s13_gf01_7,step C equals the package's series on 48 years
+V35,OK,FRA/C_s13_nlb,step C equals the package's series on 31 years
+V35,OK,DEU/C_s13_gf01_7,step C equals the package's series on 35 years
+V35,OK,DEU/C_s13_nlb,step C equals the package's series on 31 years
+V37,OK,debt_reference_series,0 rows without a source; 0 official rows without a snapshot hash
+V37,OK,debt_official_totals,0 rows without a source; 0 official rows without a snapshot hash
+V37,OK,debt_class_aggregates,0 rows without a source; 0 official rows without a snapshot hash
+V38,SKIP,-,"maturity profile not built (register pending, OQ-8)"
+V39,OK,-,"class-level interest is the ministry's own instrument split (DEU BMF, GBR NLF); per-security comparison awaits the register"

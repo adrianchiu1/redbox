@@ -38,7 +38,26 @@ def lines() -> dict:
 
 
 def sources() -> dict:
-    return _load("sources")["sources"]
+    """The parent register plus the debt-extension register
+    (`config/debt_sources.yaml`, DD12) — one mapping, so source_register.csv
+    and detect-vintages cover both."""
+    merged = dict(_load("sources")["sources"])
+    debt_path = repo_root() / "config" / "debt_sources.yaml"
+    if debt_path.exists():
+        for sid, src in (_load("debt_sources").get("sources") or {}).items():
+            if sid in merged:
+                raise ValueError(f"source_id {sid} defined in both sources.yaml and debt_sources.yaml")
+            merged[sid] = src
+    return merged
+
+
+def debt() -> dict:
+    """DEBT_KICKOFF.md configuration (perimeter, taxonomy, buckets, chains)."""
+    return _load("debt")
+
+
+def debt_sources() -> dict:
+    return _load("debt_sources").get("sources") or {}
 
 
 def no_forecast_lines() -> dict:

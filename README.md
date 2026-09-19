@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-09 15:13 UTC, run 20260908T093901Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-11 00:07 UTC, run 20260911T000629Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (12 lines per country incl. the GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 66 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -10,14 +10,15 @@ Governing principles: **maximise length subject to transparency and conceptual i
 
 ## Start here
 
-The end product is the flat files, plus two notebooks that explain and display them. None of it needs the pipeline to read:
+The end product is the flat files, plus the notebooks that explain and display them. None of it needs the pipeline to read:
 
 1. **[`deliverables/strict_GBR.csv`](deliverables/strict_GBR.csv), [`strict_FRA.csv`](deliverables/strict_FRA.csv), [`strict_DEU.csv`](deliverables/strict_DEU.csv)** — one file per country, every series a column, every year a row, and **strict variant only**: no proxy, composite or partial-coverage leg, so every number comes from an official published source. The modelling shape, and the place to start.
 2. **[`deliverables/`](deliverables/)** — the same numbers in full, with their provenance: expenditure by COFOG function, revenue by ESA type, the balance ledger, the WEO levels bridge and the WEO dynamics reconciliation, plus a per-series catalogue and a data dictionary covering every column of every file. Each observation carries the derivation behind it, so any stitched or forecast value can be reproduced from the flat file alone.
 3. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — how each series was derived, series by series, executed against those files with its outputs committed.
-4. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — the same series plotted, one chart each, country by category by series, with seams and projection years marked, plus our totals against the IMF WEO. For eyeballing construction quality.
+4. **[`notebooks/forecasts_*.ipynb`](notebooks/)** — six books, one per country and tree: every granular line as a share of GDP, with `auto.arima`, `ets`, `prophet` and an unobserved-components forecast to 2031 and their combination, each as a fan chart beside the official projection. Benchmarks, not rivals — the numbers are in `deliverables/statistical_forecasts.csv`.
+5. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — the same series plotted, one chart each, country by category by series, with seams and projection years marked, plus our totals against the IMF WEO. Each country section opens with a **forecast panel**: every category as a share of GDP carrying the one forecast this project would quote for it — the official projection where one is published, the four-model combination where none is — and a ranked chart of what each line is forecast to change. For eyeballing construction quality, and for seeing the whole forecast at once. The levels charts themselves carry the benchmark forward in currency wherever nobody publishes a forecast of the line. §4.5 reads the line forecasts back as a benchmark deficit path to 2031, with the cone their own standard errors imply, and §4.6 puts that beside the IMF WEO's own projection and decomposes the difference by side.
 
-Both notebooks need only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/*.ipynb`. GitHub renders them in the browser and gives up on large ones (the chartbook is kept under a megabyte for exactly that reason); if a notebook ever shows *Loading* forever, [nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) renders it regardless of size.
+The notebooks need only `pandas` and `matplotlib` to re-run: `pip install -e .[notebook] && jupyter nbconvert --execute --inplace notebooks/*.ipynb`. GitHub renders them in the browser and gives up on large ones; the chartbook is the biggest at about 1.4 MB, past the 0.9 MB margin D-S9-004 judged safe, and the fallback D-S9-004 named — splitting it one notebook per country — is what to reach for if GitHub declines it. If a notebook ever shows *Loading* forever, [nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) renders it regardless of size.
 
 Everything below is how they are produced.
 
@@ -31,6 +32,10 @@ ggfiscal reconcile          # §8.2-8.5: bridge, decomposition, residual history
 ggfiscal report             # small multiples, reconciliation + validation reports, README
 ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)
 ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)
+ggfiscal statistical-forecasts   # benchmark forecasts to 2031 -> deliverables/statistical_forecasts.csv (needs .[forecast])
+ggfiscal forecast-levels        # the same forecasts in currency -> deliverables/forecast_levels.csv
+ggfiscal benchmark-balance      # those lines summed into an NLB path -> deliverables/benchmark_balance.csv
+ggfiscal benchmark-vs-weo       # that balance against the WEO's own projection -> deliverables/benchmark_vs_weo.csv
 ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md
 pytest                      # per-stage gate tests
 ```
@@ -45,7 +50,7 @@ crosswalks/      versioned source-to-target mappings (§11.5)
 data/            raw -> manual -> standard -> canonical -> manifest (§11.1)
 src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report | publish
 deliverables/    the flat-file bundle: every series as plain CSV, plus a data dictionary
-notebooks/       derivation.ipynb (how each series was derived) + chartbook.ipynb (every series plotted)
+notebooks/       derivation.ipynb, chartbook.ipynb, forecasts_{GBR,FRA,DEU}_{expenditure,revenue}.ipynb
 tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6) + tests/deliverables
 reports/         verification, validation, reconciliation, vintage diff
 ```
@@ -79,7 +84,7 @@ Stages 0–6 complete, all hard gates passed (§12): harvest and source verifica
 | `data/canonical/stitch_boundaries.csv` | 32 | §7.4 backward-stitch boundary records incl. non-applications |
 | `data/canonical/forecast_boundaries.csv` | 38 | §7.4 forward boundary records incl. withheld joins (V16) |
 | `data/canonical/forecast_declarations.csv` | 52 | D7/Gate 3: why each line carries no strict forecast |
-| `reports/source_register.csv` | 31 | §6.4 register generated from config/sources.yaml |
+| `reports/source_register.csv` | 63 | §6.4 register generated from config/sources.yaml |
 | `reports/validation_report.html` | — | §10 suite rendered (summary, per-check outcomes, WARN tiers) |
 | `reports/reconciliation_report.html` | — | §10/Gate 5 contribution charts + explained shares |
 | `reports/vintage_diff.md` | — | §11.7 live-metadata diff against the register |
@@ -97,11 +102,43 @@ The same numbers as above, rendered flat by `ggfiscal flatten` — no value is r
 | `deliverables/weo_levels_bridge.csv` | 398 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
 | `deliverables/weo_reconciliation.csv` | 5995 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
 | `deliverables/series_catalogue.csv` | 72 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
-| `deliverables/data_dictionary.csv` | 239 | every column of every file above, described |
+| `deliverables/data_dictionary.csv` | 435 | every column of every file above, described |
 | `deliverables/strict_GBR.csv` | 66 | United Kingdom, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_FRA.csv` | 106 | France, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_DEU.csv` | 80 | Germany, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
+| `deliverables/debt_reference_series.csv` | 137169 | guide to the bundle |
+| `deliverables/debt_official_totals.csv` | 732 | guide to the bundle |
+| `deliverables/debt_class_aggregates.csv` | 5045 | guide to the bundle |
+| `deliverables/debt_interest_reconciliation.csv` | 2027 | guide to the bundle |
+| `deliverables/debt_financing_reconciliation.csv` | 3371 | guide to the bundle |
+| `deliverables/debt_securities.csv` | 5004 | guide to the bundle |
+| `deliverables/debt_positions.csv` | 12031 | guide to the bundle |
+| `deliverables/debt_flows.csv` | 22239 | guide to the bundle |
+| `deliverables/debt_index_ratios.csv` | 133803 | guide to the bundle |
+| `deliverables/debt_interest_by_security.csv` | 33834 | guide to the bundle |
+| `deliverables/debt_maturity_profile.csv` | 1939 | guide to the bundle |
+| `deliverables/debt_issuance_by_bucket.csv` | 1208 | guide to the bundle |
 | `deliverables/README.md` | — | guide to the bundle |
+
+## Debt in issue (DEBT_KICKOFF.md)
+
+The debt extension adds the central-government debt-securities register and two reconciliation chains — **interest**: Σ register by instrument class → finance-ministry interest → S.1311 D.41 → `GF01_7`; **financing**: Σ net issuance → CG net cash requirement → S.1311 net borrowing → `NLB` — each step carrying its official bridge items and a published residual (never allocated), plus the reference series (RPI, CPI/HICP ex-tobacco, SONIA, Bank Rate, money-market rates, BoE curves). The register step is the computed per-security register where one is built (Germany from the Finanzagentur files, the United Kingdom from the DMO reports: every security, its year-end positions, operations and index ratios, interest per security on both bases, the maturity profile and issuance by residual-maturity bucket) and the ministries' own instrument-class aggregates (DD8) elsewhere (France, until the AFT files arrive — OQ-8). Files: `deliverables/debt_*.csv`; notebook: [`notebooks/debtbook.ipynb`](notebooks/debtbook.ipynb).
+
+Years with a published residual per step (interest A/B/C, financing A/B/C) and the aggregate layer's span:
+
+| country | int A | int B | int C | fin A | fin B | fin C | aggregates |
+|---|---|---|---|---|---|---|---|
+| GBR | 2009–2024 | 1987–2025 | 1987–2025 | 1997–2025 | 1998–2025 | 1990–2025 | 1975–2026 |
+| FRA | — | 2000–2025 | 1995–2025 | — | 2000–2025 | 1995–2025 | 2000–2025 |
+| DEU | 1996–2025 | 1996–2025 | 1995–2025 | 2009–2025 | 1996–2025 | 1995–2025 | 1995–2025 |
+
+Per-security register (stage D2–D4) per country:
+
+| country | securities | classes | year-end positions | flows | register source |
+|---|---|---|---|---|---|
+| GBR | 1,747 | bill 1406, fixed_bullet 283, inflation_linked 56, floating 2 | 1981–2025 (4,404 rows) | 8,173 (1981–2027) | UK_DMO_BILLS, UK_DMO_GILTS |
+| FRA | 1,603 | bill 1402, fixed_bullet 166, inflation_linked 35 | 1999–2025 (2,069 rows) | 7,903 (1999–2026) | FRA_AFT_ADJUDICATIONS, FRA_AFT_ENCOURS |
+| DEU | 1,654 | other 859, fixed_bullet 400, bill 384, inflation_linked 9, floating 2 | 1995–2025 (5,256 rows) | 6,163 (1996–2026) | DEU_FINANZAGENTUR |
 
 ## Coverage (66 line series)
 

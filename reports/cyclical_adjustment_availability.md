@@ -182,7 +182,7 @@ cost:
    published elasticities. That is original research presented as official
    data, and the repo's governing principles rule it out.
 
-Tabled for the committee as **OQ-8**.
+Tabled for the committee as **OQ-11**.
 
 ---
 

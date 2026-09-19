@@ -63,6 +63,89 @@ def _fmt_int(v) -> str:
         return "—"
 
 
+def _debt_section(root: Path) -> list[str]:
+    """DEBT_KICKOFF.md: the debt-in-issue extension, present once
+    `ggfiscal debt build` has run."""
+    import pandas as pd
+    p = root / "data" / "canonical" / "debt_interest_reconciliation.csv"
+    if not p.exists():
+        return []
+    chains = {c: pd.read_csv(root / "data" / "canonical" / f"debt_{c}_reconciliation.csv")
+              for c in ("interest", "financing")}
+    agg = pd.read_csv(root / "data" / "canonical" / "debt_class_aggregates.csv")
+    rows = []
+    for iso3 in ("GBR", "FRA", "DEU"):
+        cells = [iso3]
+        for c in ("interest", "financing"):
+            df = chains[c]
+            for step in sorted(df["step"].unique(), key=lambda s: ["register", "A", "B", "C"].index(s[0]) if s[0] in "ABC" else 0):
+                if step == "register":
+                    continue
+                r = df[(df["iso3"] == iso3) & (df["step"] == step) & (df["item"] == "residual")].dropna(subset=["value_lcu_mn"])
+                cells.append(f"{int(r['year'].min())}–{int(r['year'].max())}" if len(r) else "—")
+        a = agg[(agg["iso3"] == iso3) & agg["in_register"]]
+        cells.append(f"{int(a['year'].min())}–{int(a['year'].max())}" if len(a) else "—")
+        rows.append("| " + " | ".join(cells) + " |")
+    return [
+        "## Debt in issue (DEBT_KICKOFF.md)",
+        "",
+        "The debt extension adds the central-government debt-securities "
+        "register and two reconciliation chains — **interest**: Σ register by "
+        "instrument class → finance-ministry interest → S.1311 D.41 → "
+        "`GF01_7`; **financing**: Σ net issuance → CG net cash requirement → "
+        "S.1311 net borrowing → `NLB` — each step carrying its official "
+        "bridge items and a published residual (never allocated), plus the "
+        "reference series (RPI, CPI/HICP ex-tobacco, SONIA, Bank Rate, money-"
+        "market rates, BoE curves). The register step is the computed per-"
+        "security register where one is built (Germany from the Finanzagentur "
+        "files, the United Kingdom from the DMO reports: every security, its "
+        "year-end positions, operations and index ratios, interest per security "
+        "on both bases, the maturity profile and issuance by residual-maturity "
+        "bucket) and the ministries' own instrument-class aggregates (DD8) "
+        "elsewhere (France, until the AFT files arrive — OQ-8). Files: "
+        "`deliverables/debt_*.csv`; notebook: "
+        "[`notebooks/debtbook.ipynb`](notebooks/debtbook.ipynb).",
+        "",
+        "Years with a published residual per step (interest A/B/C, financing "
+        "A/B/C) and the aggregate layer's span:",
+        "",
+        "| country | int A | int B | int C | fin A | fin B | fin C | aggregates |",
+        "|---|---|---|---|---|---|---|---|",
+        *rows,
+        "",
+        *_register_rows(root),
+    ]
+
+
+def _register_rows(root: Path) -> list[str]:
+    """Per-country register coverage: securities, positions span, flows."""
+    import pandas as pd
+    p = root / "data" / "canonical" / "debt_securities.csv"
+    if not p.exists():
+        return []
+    secs = pd.read_csv(p)
+    if secs.empty:
+        return []
+    pos = pd.read_csv(root / "data" / "canonical" / "debt_positions.csv", parse_dates=["as_of"])
+    fl = pd.read_csv(root / "data" / "canonical" / "debt_flows.csv", parse_dates=["settlement_date"])
+    out = ["Per-security register (stage D2–D4) per country:", "",
+           "| country | securities | classes | year-end positions | flows | register source |",
+           "|---|---|---|---|---|---|"]
+    for iso3 in ("GBR", "FRA", "DEU"):
+        s = secs[secs["iso3"] == iso3]
+        if s.empty:
+            out.append(f"| {iso3} | — | — | — | — | aggregate layer only (OQ-8) |")
+            continue
+        pp = pos[(pos["iso3"] == iso3) & (pos["as_of"].dt.month == 12)]
+        ff = fl[fl["iso3"] == iso3]
+        classes = ", ".join(f"{k} {v}" for k, v in s["instrument_class"].value_counts().items())
+        span = f"{pp['as_of'].dt.year.min()}–{pp['as_of'].dt.year.max()} ({len(pp):,} rows)" if len(pp) else "—"
+        src = ", ".join(sorted(set(s["source_id"])))
+        out.append(f"| {iso3} | {len(s):,} | {classes} | {span} | {len(ff):,} ({ff['settlement_date'].dt.year.min()}–"
+                   f"{ff['settlement_date'].dt.year.max()}) | {src} |")
+    return out + [""]
+
+
 def _coverage_section(root: Path) -> list[str]:
     cm = pd.read_csv(root / "data" / "canonical" / "coverage_matrix.csv")
     out = []
@@ -171,7 +254,7 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Start here",
         "",
-        "The end product is the flat files, plus two notebooks that "
+        "The end product is the flat files, plus the notebooks that "
         "explain and display them. None of it needs the pipeline to read:",
         "",
         "1. **[`deliverables/strict_GBR.csv`](deliverables/strict_GBR.csv), "
@@ -191,17 +274,36 @@ def write(path: Path | None = None) -> Path:
         "3. **[`notebooks/derivation.ipynb`](notebooks/derivation.ipynb)** — "
         "how each series was derived, series by series, executed against "
         "those files with its outputs committed.",
-        "4. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
+        "4. **[`notebooks/forecasts_*.ipynb`](notebooks/)** — six books, "
+        "one per country and tree: every granular line as a share of GDP, "
+        "with `auto.arima`, `ets`, `prophet` and an unobserved-components "
+        "forecast to 2031 and their combination, each as a fan chart beside "
+        "the official projection. Benchmarks, not rivals \u2014 the numbers are "
+        "in `deliverables/statistical_forecasts.csv`.",
+        "5. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
         "the same series plotted, one chart each, country by category by "
         "series, with seams and projection years marked, plus our totals "
-        "against the IMF WEO. For eyeballing construction quality.",
+        "against the IMF WEO. Each country section opens with a **forecast "
+        "panel**: every category as a share of GDP carrying the one forecast "
+        "this project would quote for it \u2014 the official projection where "
+        "one is published, the four-model combination where none is \u2014 and "
+        "a ranked chart of what each line is forecast to change. For "
+        "eyeballing construction quality, and for seeing the whole forecast "
+        "at once. The levels charts themselves carry the benchmark forward "
+        "in currency wherever nobody publishes a forecast of the line. "
+        "\u00a74.5 reads the line forecasts back as a benchmark deficit path "
+        "to 2031, with the cone their own standard errors imply, and "
+        "\u00a74.6 puts that beside the IMF WEO's own projection and "
+        "decomposes the difference by side.",
         "",
-        "Both notebooks need only `pandas` and `matplotlib` to re-run: "
+        "The notebooks need only `pandas` and `matplotlib` to re-run: "
         "`pip install -e .[notebook] && jupyter nbconvert --execute "
         "--inplace notebooks/*.ipynb`. GitHub renders them in the browser "
-        "and gives up on large ones (the chartbook is kept under a "
-        "megabyte for exactly that reason); if a notebook ever shows "
-        "*Loading* forever, "
+        "and gives up on large ones; the chartbook is the biggest at about "
+        "1.4 MB, past the 0.9 MB margin D-S9-004 judged safe, and the "
+        "fallback D-S9-004 named \u2014 splitting it one notebook per country "
+        "\u2014 is what to reach for if GitHub declines it. If a notebook ever "
+        "shows *Loading* forever, "
         "[nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) "
         "renders it regardless of size.",
         "",
@@ -217,6 +319,10 @@ def write(path: Path | None = None) -> Path:
         "ggfiscal report             # small multiples, reconciliation + validation reports, README",
         "ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)",
         "ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)",
+        "ggfiscal statistical-forecasts   # benchmark forecasts to 2031 -> deliverables/statistical_forecasts.csv (needs .[forecast])",
+        "ggfiscal forecast-levels        # the same forecasts in currency -> deliverables/forecast_levels.csv",
+        "ggfiscal benchmark-balance      # those lines summed into an NLB path -> deliverables/benchmark_balance.csv",
+        "ggfiscal benchmark-vs-weo       # that balance against the WEO's own projection -> deliverables/benchmark_vs_weo.csv",
         "ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md",
         "pytest                      # per-stage gate tests",
         "```",
@@ -234,7 +340,7 @@ def write(path: Path | None = None) -> Path:
         "data/            raw -> manual -> standard -> canonical -> manifest (§11.1)",
         "src/ggfiscal/    ingest | standardise | stitch | forecast | reconcile | validate | report | publish",
         "deliverables/    the flat-file bundle: every series as plain CSV, plus a data dictionary",
-        "notebooks/       derivation.ipynb (how each series was derived) + chartbook.ipynb (every series plotted)",
+        "notebooks/       derivation.ipynb, chartbook.ipynb, forecasts_{GBR,FRA,DEU}_{expenditure,revenue}.ipynb",
         "tests/           per-stage gate suites (tests/stage_0 ... tests/stage_6) + tests/deliverables",
         "reports/         verification, validation, reconciliation, vintage diff",
         "```",
@@ -284,6 +390,7 @@ def write(path: Path | None = None) -> Path:
                      f"{_FLAT.get(name, 'guide to the bundle')} |")
     lines += [
         "",
+        *_debt_section(root),
         "## Coverage (66 line series)",
         "",
         "Spans per line and variant, from `coverage_matrix.csv` (which adds "

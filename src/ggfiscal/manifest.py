@@ -69,6 +69,19 @@ FLAT_FILES = [
     "deliverables/strict_GBR.csv",
     "deliverables/strict_FRA.csv",
     "deliverables/strict_DEU.csv",
+    # debt extension (DEBT_KICKOFF.md DD12) — present once `ggfiscal debt build` has run
+    "deliverables/debt_reference_series.csv",
+    "deliverables/debt_official_totals.csv",
+    "deliverables/debt_class_aggregates.csv",
+    "deliverables/debt_interest_reconciliation.csv",
+    "deliverables/debt_financing_reconciliation.csv",
+    "deliverables/debt_securities.csv",
+    "deliverables/debt_positions.csv",
+    "deliverables/debt_flows.csv",
+    "deliverables/debt_index_ratios.csv",
+    "deliverables/debt_interest_by_security.csv",
+    "deliverables/debt_maturity_profile.csv",
+    "deliverables/debt_issuance_by_bucket.csv",
     "deliverables/README.md",
 ]
 

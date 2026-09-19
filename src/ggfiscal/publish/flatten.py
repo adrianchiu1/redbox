@@ -650,6 +650,156 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
         "forecast_status": "Recorded status when no strict forecast exists.",
         "forecast_note": "Why, in words.",
     })
+    _dict_rows("statistical_forecasts.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "line_code",
+                                   "line_label", "year")},
+        "classification": "COFOG or ESA_REV.",
+        "method": "auto.arima | ets | prophet | uc | combination. The first "
+                  "four are standard univariate methods fitted to the line's "
+                  "own history; combination is their mean.",
+        "pct_gdp": "Point forecast, as a percentage of GDP.",
+        "se": "Standard error of the point forecast, from the method itself. "
+              "For combination it carries both the average within-model "
+              "variance and the variance across the four point forecasts.",
+        "lo80": "pct_gdp - 1.2816 * se.",
+        "hi80": "pct_gdp + 1.2816 * se.",
+        "lo95": "pct_gdp - 1.9600 * se.",
+        "hi95": "pct_gdp + 1.9600 * se.",
+        "model": "The specification the method selected, e.g. "
+                 "ARIMA(0, 1, 2)+drift or ETS(A,Ad,N).",
+        "fit_first_year": "First year of the estimation sample.",
+        "fit_last_year": "Last year of the estimation sample — the last "
+                         "OUTTURN, never the last official forecast, so a "
+                         "line's official projection can be read against the "
+                         "model on the same axes.",
+        "n_obs": "Number of outturn observations fitted.",
+        "run_id": "Run that produced the forecasts.",
+    })
+    _dict_rows("forecast_levels.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "line_code",
+                                   "line_label", "year", "currency", "notes")},
+        "classification": "COFOG or ESA_REV.",
+        "method": "auto.arima | ets | prophet | uc | combination — the same "
+                  "five as statistical_forecasts.csv, of which this file is "
+                  "the currency twin.",
+        "pct_gdp": "The forecast share of GDP, copied unchanged from "
+                   "statistical_forecasts.csv.",
+        "gdp_lcu_mn": "Nominal GDP on the path named by gdp_basis, millions "
+                      "of national currency.",
+        "value_lcu_mn": "pct_gdp / 100 * gdp_lcu_mn.",
+        "lo80_lcu_mn": "lo80 / 100 * gdp_lcu_mn. The GDP path is taken as "
+                       "given, so this is the RATIO's interval in currency "
+                       "and carries no uncertainty about GDP itself.",
+        "hi80_lcu_mn": "hi80 / 100 * gdp_lcu_mn, on the same footing.",
+        "lo95_lcu_mn": "lo95 / 100 * gdp_lcu_mn, on the same footing.",
+        "hi95_lcu_mn": "hi95 / 100 * gdp_lcu_mn, on the same footing.",
+        "gdp_basis": "How the GDP path was built. "
+                     "anchored_outturn_chained_on_weo_ngdp = the tree's own "
+                     "outturn GDP to gdp_anchor_year, then chained on the "
+                     "growth of the named WEO series — never the WEO level "
+                     "itself, which sits up to 1% off our anchor and would "
+                     "step every forecast level at the join.",
+        "gdp_anchor_year": "Last year every line's GDP denominator agrees; "
+                           "the year the chain starts from. At the last "
+                           "outturn the denominator forks by source, so the "
+                           "anchor is a year earlier.",
+        "gdp_anchor_lcu_mn": "GDP at gdp_anchor_year.",
+        "gdp_growth_source": "Source of the growth rates after the anchor.",
+        "gdp_growth_vintage": "That source's vintage.",
+        "run_id": "Run that produced the levels.",
+    })
+    _dict_rows("benchmark_balance.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "year", "line_code",
+                                   "line_label", "notes")},
+        "base_year": "Year the path starts from: the latest year in which "
+                     "EVERY line has an outturn, which the expenditure tree "
+                     "sets a year before the revenue tree.",
+        "horizon": "year - base_year.",
+        "kind": "line = one granular line; expenditure_total / revenue_total "
+                "= the sum of that side's lines; balance = the benchmark "
+                "NLB/GDP path itself.",
+        "side": "revenue | expenditure | balance.",
+        "anchor_year": "Last outturn year of that line (base_year on the "
+                       "aggregate rows).",
+        "anchor_pct_gdp": "The line's value at base_year; on a balance row, "
+                          "the ledger's own NLB/GDP at base_year.",
+        "pct_gdp": "Level at year, as a percentage of GDP.",
+        "contribution_pp": "Change since base_year in percentage points of "
+                           "GDP, signed so the line rows sum to the balance "
+                           "row's own change: positive for revenue, negative "
+                           "for expenditure.",
+        "se": "Standard error. On a line row, the line's own published "
+              "standard error, zero where the path is an official projection "
+              "or still an outturn. On a balance row, those propagated under "
+              "rho_within and rho_between.",
+        "lo80": "pct_gdp - 1.2816 * se (balance rows).",
+        "hi80": "pct_gdp + 1.2816 * se (balance rows).",
+        "lo95": "pct_gdp - 1.9600 * se (balance rows).",
+        "hi95": "pct_gdp + 1.9600 * se (balance rows).",
+        "source": "outturn | official | statistical on a line row; benchmark "
+                  "on a balance row. An official projection is used only "
+                  "where it covers the whole horizon, so this need not match "
+                  "the source the chartbook panel shows for the same line.",
+        "source_runs_to": "Last year that line's chosen source reaches.",
+        "rho_within": "Average pairwise correlation of the lines' h-year "
+                      "changes in ratio within a side, estimated from the "
+                      "outturn history.",
+        "rho_between": "The same across the two sides. It enters the balance "
+                       "variance with a minus sign, so a positive value "
+                       "narrows the interval.",
+        "n_corr_obs": "Overlapping h-year changes behind those estimates.",
+        "history_sd_pp": "Standard deviation of h-year moves in the ledger's "
+                         "own NLB/GDP over the whole outturn record. A "
+                         "calibration reference, not an interval, and never "
+                         "used to build one.",
+        "n_history_obs": "Overlapping h-year moves behind history_sd_pp.",
+        "n_official": "Lines on an official path, which contribute no "
+                      "variance to the interval.",
+        "n_statistical": "Lines on a statistical path.",
+        "run_id": "Run that produced the balance.",
+    })
+    _dict_rows("benchmark_vs_weo.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "year", "notes")},
+        "weo_vintage": "WEO edition compared against.",
+        "base_year": "Year the changes are measured from — the benchmark "
+                     "balance's own base.",
+        "horizon": "year - base_year.",
+        "kind": "balance | revenue | expenditure | weo_internal_wedge.",
+        "side": "balance | revenue | expenditure | memo.",
+        "ours_pct_gdp": "Our benchmark level as a percentage of GDP.",
+        "weo_pct_gdp": "The WEO's own GGXCNL, GGR or GGX over its NGDP.",
+        "level_gap_pp": "ours_pct_gdp - weo_pct_gdp. On a side row this "
+                        "carries the perimeter difference; compare changes, "
+                        "not levels, where perimeter_gap_pp is large.",
+        "ours_change_pp": "Our change since base_year, signed so revenue and "
+                          "expenditure sum to the change in the balance.",
+        "weo_change_pp": "The WEO's change since base_year, signed the same "
+                         "way. On the wedge row, the WEO's own change in "
+                         "(GGR - GGX - GGXCNL)/NGDP.",
+        "change_gap_pp": "ours_change_pp - weo_change_pp, and -wedge on the "
+                         "wedge row, so revenue + expenditure + wedge equal "
+                         "the balance row exactly.",
+        "se": "The benchmark balance's standard error (balance rows).",
+        "lo80": "Benchmark 80% lower bound.",
+        "hi80": "Benchmark 80% upper bound.",
+        "lo95": "Benchmark 95% lower bound.",
+        "hi95": "Benchmark 95% upper bound.",
+        "weo_inside_80": "Whether the WEO's projection falls inside the "
+                         "benchmark's 80% interval that year.",
+        "weo_inside_95": "The same for the 95% interval.",
+        "weo_z": "How many of the benchmark's own standard errors the WEO "
+                 "sits away from it, signed: positive means the WEO is the "
+                 "smaller deficit.",
+        "perimeter_gap_pp": "Base-year difference between our total and the "
+                            "WEO's on that side, in pp of GDP. Large on the "
+                            "UK's two sides, and it cancels in the balance.",
+        "perimeter_gap_sd_pp": "Standard deviation of that gap over the last "
+                               "ten overlap years — how safe it is to treat "
+                               "it as cancelling in a change.",
+        "perimeter_classification": "How §8.2 classified the history gap: "
+                                    "perimeter, revision or unexplained.",
+        "run_id": "Run that produced the comparison.",
+    })
     _dict_rows("data_dictionary.csv", {
         "file": "Flat file the column belongs to.",
         "column": "Name of the column, as it appears in that file's header.",
@@ -759,6 +909,22 @@ DESCRIPTIONS = {
         "built it, and why it ends",
     "data_dictionary.csv":
         "every column of every file above, described",
+    "statistical_forecasts.csv":
+        "benchmark forecasts of each granular line as a share of GDP to 2031 "
+        "— auto.arima, ets, prophet, an unobserved-components model and their "
+        "combination, fitted on outturn only",
+    "forecast_levels.csv":
+        "the same benchmark forecasts in currency \u2014 each line's share of "
+        "GDP on one nominal GDP path per country, our outturn anchored and "
+        "chained on the IMF WEO's NGDP growth",
+    "benchmark_vs_weo.csv":
+        "that benchmark balance beside the IMF WEO's own deficit projection, "
+        "with the difference decomposed by side on changes since the base "
+        "year",
+    "benchmark_balance.csv":
+        "those line forecasts summed back into a net lending/borrowing path "
+        "to 2031 \u2014 per line, per side and as the balance itself, with an "
+        "interval propagated from the lines' own standard errors",
     **{f"strict_{iso3}.csv":
        f"{name}, strict variant only: one column per series, one row per "
        "year — the same series the chartbook plots, in the shape you model "
@@ -784,6 +950,16 @@ def write() -> dict[str, Path]:
                  for iso3 in COUNTRY_NAME}
     country_columns = {f"strict_{iso3}.csv": _country_columns(exp, rev, iso3)
                        for iso3 in COUNTRY_NAME}
+    # The debt extension's tables join the bundle verbatim (DEBT_KICKOFF.md
+    # DD12): files, dictionary rows and README descriptions come from
+    # ggfiscal.debt.flatten and are absent when the debt layer is not built.
+    from ggfiscal.debt.flatten import bundle as debt_bundle
+    debt_files, debt_dict, debt_desc = debt_bundle()
+    DESCRIPTIONS.update(debt_desc)
+    dictionary = _build_dictionary(country_columns)
+    if debt_dict:
+        dictionary = pd.concat([dictionary, pd.DataFrame(debt_dict, columns=dictionary.columns)],
+                               ignore_index=True)
     files = {
         "expenditure_cofog.csv": exp,
         "revenue_esa.csv": rev,
@@ -792,7 +968,8 @@ def write() -> dict[str, Path]:
         "weo_reconciliation.csv": _flat_reconciliation(),
         "series_catalogue.csv": _flat_catalogue(exp, rev),
         **countries,
-        "data_dictionary.csv": _build_dictionary(country_columns),
+        **debt_files,
+        "data_dictionary.csv": dictionary,
     }
     written: dict[str, Path] = {}
     for name, df in files.items():
