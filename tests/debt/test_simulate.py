@@ -1,4 +1,4 @@
-"""Gate for the register-based interest simulation (D-S11-001).
+"""Gate for the register-based interest simulation (D-S12-001).
 
 Arithmetic and accounting identities only: the scenarios are declared
 inputs, so nothing here tests that a path is *right*, only that the engine

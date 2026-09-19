@@ -1376,7 +1376,311 @@ failures were only `pypdf` missing from this image (declared in
 Nothing in `deliverables/debt_*.csv` changed: `flatten` copies the debt
 canonical layer, and all twelve files are byte-identical after the rebuild.
 
-## D-S11-001 — The AFT briefing: the register rolled forward through declared yield paths onto the interest line, and the note built on it (serves DEBT_KICKOFF.md §1 "shaped for: simulating alternative yield-curve paths through the register", DD7; new deliverable under `reports/`)
+## D-S11-001 — The chartbook carries the forecasts: a panel of every category per country, one forecast per line (serves D-S9-002, consumes D-S9-007; costs the D-S9-004 size margin)
+2026-09-17, session 11. The six `forecasts_*.ipynb` books (D-S9-007) put
+seven charts under every granular line — levels, the share of GDP, and a
+fan for each of `auto.arima`, `ets`, `prophet`, `uc` and their
+combination. That is the right shape for interrogating one line and the
+wrong shape for the question "what is actually being forecast here?",
+which needs every category of a country on one page. The chartbook now
+answers that question first: each country section opens with §*x*.1
+**Forecast panel — every category at a glance**, and the per-series charts
+it already had follow as the evidence.
+**What is drawn, and the one rule that decides it.** Per line, as a share
+of GDP from 2000 to 2031:
+  - an **official projection exists** -> that projection, blue dashed, no
+    band. It is a published number, not a distribution, and where it exists
+    it is the answer; the statistical benchmark is not drawn against it.
+  - **none exists** -> the statistical `combination`, violet dashed, with
+    its 80% interval. The four underlying methods are never drawn here.
+    One line stands for all four, which is what `combination` is for
+    (mean of the four, variance = mean within-model variance + variance
+    across their point forecasts). The method-by-method comparison, and
+    the benchmark-against-official reading, stay in the forecast books.
+That splits 66 granular lines into 20 official and 46 statistical.
+**Three judgements inside the rule.**
+  1. *An official forecast that stops short of 2031 is not topped up.* The
+     UK's R01-R04 stop at 2030, GF02 at 2028, five lines at 2027. Carrying
+     them on with the statistical path would mean splicing a benchmark
+     anchored at the last **outturn** onto an official path that has
+     already moved away from it — a number that appears in no file. The
+     panel draws the official path to where it ends and the readout names
+     the year, so horizons differ across a panel and say so.
+  2. *The 95% band is drawn in the forecast books, not here.* At facet size
+     it swamps the y-axis of every statistical line and the panel stops
+     showing what it exists to show. The 80% band is drawn and labelled as
+     the 80% band; nothing is implied about the 95% one.
+  3. *`TE` and `TR` are out.* They are envelopes, not categories, and carry
+     no forecast path (`not_extended`), as in the forecast books.
+**The identity that does not close, said out loud.** `GF01 = GF01_7 +
+GF01_X` in the trees, but each of the three takes its forecast from
+whichever source it has. France is the case: official interest **+1.55 pp**
+and a statistical `GF01_X` of **+0.01** come to +1.56, against a
+statistical `GF01` of **-0.50** — a 2.07 pp gap, because a univariate fit
+of the whole knows nothing about the official projection of the interest
+line inside it. The caption under each ranked chart does that arithmetic
+from the data rather than asserting the identity holds.
+**A second figure per country, `changes(iso3)`**, ranks every line by the
+change it is forecast to make between its last outturn and its horizon,
+expenditure and revenue in separate blocks on one x-axis. Separate blocks
+deliberately: a rise is a rise in both, and it moves the balance in
+opposite directions, so one merged ranking would invite exactly that
+misreading. Bars are coloured by source, never by direction — direction is
+already carried by the side of zero, and D-S9-002's rule that a hue means
+an entity and nothing else holds. Under it, the same numbers as a printed
+table, because a bar length is not a value.
+**Palette.** VIOLET `#4a3aa7` joins the chartbook's fixed quantisation
+palette as slot 4 — the same violet the forecast books already use for the
+same thing. Appended **last** in `_palette()` on purpose: inserting it
+earlier renumbers every index and rewrites every figure in the book for no
+change in what any of them shows. Re-validated all-pairs against the
+surface: lightness, chroma and CVD separation pass; worst normal-vision
+adjacent pair is VIOLET/BLUE at dE 16.3, and line style repeats the
+distinction anyway.
+**Cost: the D-S9-004 size margin is spent.** Nine new figures (three per
+country) add 182 KB of PNG and take the chartbook from 0.94 MB to
+**1.19 MB**, past the 0.9 MB margin D-S9-004 judged — not measured — safe
+for GitHub's client-side notebook renderer. Confirmed there is no cheaper
+rendering: the figures are already palette-quantised and PIL-optimised
+(recompression at every level returns the same bytes to the byte), and 66
+facets cost 1.9 KB each against 5.4 KB for a full-size chart. The margin
+was a judgement, the panel is content, and the panel wins; the README now
+states the real size and points at D-S9-004's own fallback — split the
+chartbook one notebook per country — if GitHub declines it.
+**Nothing recomputed, nothing spliced.** Every path is anchored at its own
+line's last outturn, every value is read from `deliverables/`, and the
+window is applied to the DATA and not only to `set_xlim` (the D-S9-004
+lesson: FRA `GF07`/`GF09` run to 2070, and leaving those years in would
+flatten the visible history).
+Tests: two new — one re-derives every row of the printed table from the
+flat files and checks the official-beats-statistical rule line by line,
+the other pins that the panel's *code* names `combination` and no other
+method and draws `lo80`/`hi80` and never `lo95`/`hi95`; the axis/shading
+test learns the fourth chart family and that its window is applied to the
+data. `tests/deliverables` 49 passed (was 47); the full-suite failure set
+is byte-identical before and after (this container has an incomplete
+harvest, so the debt and stage gates fail either way).
+
+## D-S11-002 — The benchmark balance: the line forecasts summed back into an NLB path to 2031, with the cone their own errors imply (serves §4.3, §8.3, D-S9-006; consumes D-S9-007, D-S11-001; new deliverable `benchmark_balance.csv`)
+2026-09-17, session 11. D-S9-006 settled that there is no forward "our NLB"
+because **a level needs every component and a change does not**, and 44 of
+72 series carried no forecast at all. The first half of that is unchanged.
+The second half is not: D-S9-007's benchmark reaches every granular line to
+2031, so a balance can now be summed with `resid_coverage` **zero by
+construction** — the hole the argument turned on is closed. New module
+`forecast/balance.py`, new command `ggfiscal benchmark-balance`, new file
+`deliverables/benchmark_balance.csv`, new chartbook §4.5. It is a
+**benchmark** balance on exactly the footing of the lines it is built from:
+not in the canonical layer, not in the trees, and never the number where an
+official projection of the balance exists.
+**Four choices, each recoverable from the file.**
+  1. *Base year = the last year EVERY line has an outturn.* The expenditure
+     tree ends a year before the revenue tree, so that is 2024, not the
+     ledger's 2025. The path starts from the balance ledger's own published
+     NLB/GDP at that year — a published balance, not a sum of lines.
+  2. *Expenditure is `GF01_7 + GF01_X + GF02..GF10`, never the Level I set.*
+     Identical in history (checked: Σ = TE to the last digit in every
+     outturn year, all three countries). Not identical in forecast, because
+     the Level I set hides interest inside `GF01`, whose univariate fit knows
+     nothing about the official interest projection inside it. France 2031:
+     **-6.13% of GDP on the split against -3.85% on `GF01`** — a 2.25 pp
+     difference, and the largest single judgement in the section. Germany
+     1.31 pp, the UK 0.63 pp. `reconcile/explanation.py` keeps the Level I
+     set for the history decomposition, where the two agree; this is the one
+     place they do not.
+  3. *An official projection is used only where it covers the whole horizon.*
+     Deliberately NOT the D-S11-001 panel rule, which prefers an official
+     projection at any horizon. A total needs every line in every year, and
+     splicing a benchmark anchored at the last outturn onto an official path
+     that has already left it would invent a number in no file. Seven UK
+     lines, five German and two French take their statistical path here and
+     show official in the panel above; the `source` column names them and
+     `compute()` reports them as notes.
+  4. *The cone is the lines' own published standard errors, propagated* under
+     one average correlation within a side and one across the two, both
+     ESTIMATED from the outturn history of the same lines (h-year changes in
+     ratio, per country and horizon). Estimated, not assumed: independence
+     would understate a set of lines that move with the cycle together, and
+     the cross-side term enters with a minus sign, so it is what lets a
+     revenue miss and a spending miss cancel. Measured at ρ_within ≈ +0.11 to
+     +0.19, ρ_between ≈ 0.00 to +0.06 — low, which is itself the finding:
+     these lines do not cancel much. Lines on an official path contribute
+     **no** variance (a published projection is not a distribution), so the
+     cone understates wherever a country has official legs; `n_official` is
+     on every row.
+**The cone is wide and that is the answer, not a defect.** UK 2031:
+-7.27% of GDP, 80% -15.2 to +0.6. Every row carries, beside it, the standard
+deviation of h-year moves in that country's own ledger NLB/GDP across the
+whole outturn record — a yardstick, never used to build the interval. At
+h=7 the model band is 6.16 pp against history's 4.74 (UK), 4.17 against 2.28
+(FRA), 4.83 against 3.05 (DEU): the same order, a little wider. A balance
+six years out is genuinely this uncertain, and 2009 and 2020 are both inside
+the record the yardstick is measured on.
+**One free mark.** Because the revenue tree runs a year past the expenditure
+tree, the first forecast year already has a published balance beside it —
+the only outturn this construction can so far be scored against. Benchmark
+vs ledger at 2025: UK -6.34 against -5.18, France -5.70 against -5.12,
+Germany -1.36 against -2.67. Misses of -1.16, -0.58 and +1.30 pp, all well
+inside the one-year band, and all reported in the section's caption.
+**Where it runs.** The module reads `deliverables/` and nothing else — the
+two trees, the ledger and the statistical forecasts — so it needs no
+harvest and no canonical layer, and the file is a pure function of the
+published bundle. It is a side-car like `statistical_forecasts.csv`: not in
+`M.FLAT_FILES`, so it does not enter the run manifest, but it IS in the data
+dictionary, which the coverage test requires of every CSV in the directory.
+**What was NOT done.** A single nominal GDP path is still not published. The
+WEO's `NGDP` is ingested and used at every forecast horizon by
+`reconcile/explanation.py`, but `weo_levels_bridge.csv` emits `gdp_weo_mn`
+only on history rows, so a currency-level version of this path cannot be
+built from the bundle. Deliberately deferred: this section needs no GDP
+forecast, because the components are ratios and a balance is a difference of
+ratios. The per-source denominators that ARE in the trees disagree — Germany
+2030 carries 5.205 / 5.240 / 5.339 tn from three sources, a 2.6% spread —
+so publishing "a" GDP path is a choice that needs making, not a copy.
+Tests: six new — reproducibility of the file from the published bundle,
+the three-way sum identity (lines, sides, balance), the interest split and
+the absence of `GF01`, the official-only-where-it-reaches rule, the base
+year and its ledger anchor, and the cone re-derived from the published
+per-line errors and correlations. A seventh pins §4.5's prose and that §4.4
+now points at it instead of being quietly contradicted. `tests/deliverables`
+56 passed (was 49); the full-suite failure set is unchanged.
+
+## D-S11-003 — The levels charts carry the benchmark: one nominal GDP path per country, our outturn anchored and chained on WEO NGDP growth (serves D-S9-002, D-S11-001; new deliverable `forecast_levels.csv`; answers the gap left open by D-S11-002)
+2026-09-17, session 11. The chartbook's per-series charts are levels in
+millions of national currency; the statistical forecasts are shares of GDP.
+Putting one on the other needs a nominal GDP path, and D-S11-002 recorded
+that the bundle has none — each forecast row in the trees carries the
+denominator that came with *that line's* source, and the sources disagree
+(DEU 2030 spans 5.205 / 5.240 / 5.339 tn, a 2.57% spread worth EUR 27bn on
+GF10 alone; GBR has no forecast GDP at 2031 at all). That is now closed.
+**The blocker was smaller than recorded.** D-S11-002 said this needed a
+container with the WEO harvest. `api.imf.org` is in fact reachable from the
+build environment: the 46 `IMF_WEO*` pulls were fetched here and **48 of the
+49 (source, part) keys came back byte-identical to the earlier harvest** —
+only the dataflow `catalog` part churned, which is a listing and not data.
+So the NGDP used here is exactly the series the committed bundle was
+reconciled against; there is no vintage drift to reason about.
+**The construction: anchor an outturn, chain a growth rate** — the same rule
+as every stitched series in the project (§7, D-S4-002), not a substitution.
+  - *anchor*: the tree's own GDP at the last year on which every line's
+    denominator agrees. That is **2024**, a year before the last outturn: at
+    2025 the denominator forks by source (GBR three values, DEU two at a
+    1.34% spread), and picking one would be arbitrary.
+  - *growth*: IMF WEO `NGDP`, one vintage, the series §4 already reconciles
+    our totals against.
+  Chaining rather than substituting is the whole point. Over 2021-2025 the
+  WEO's NGDP runs **0.97% below our GDP anchor for Germany**, so multiplying
+  a ratio by the raw level would step every German forecast level about a
+  point below what its own history implies — a seam that is an artefact of
+  the denominator and nothing else. Growth rates carry no level difference.
+  Cross-check: the chained 2025 lands within 0.001-0.61% of the published
+  2025 denominators it deliberately does not choose between.
+**What this does NOT do is add uncertainty about GDP.** The interval is the
+line's own interval times a single path, so it is the uncertainty of the
+RATIO with the path taken as given. A level in this file is a joint
+statement — this ratio, on that path — and the columns name the path so it
+can be replaced. Said on the chart, in the caption and in the dictionary.
+**In the chartbook**, `chart()` gains a violet dashed leg and its 80% band
+(the 95% swamps a levels axis and stays in the forecast books), drawn on
+**46 of the 72** charts. The rule is D-S11-001's: only where the **strict**
+series carries no official forecast — where one exists the published number
+is the answer. Two details that bit:
+  - keyed on strict, not on the furthest variant. GBR GF10's
+    `maximum_extension` carries a proxy leg to 2027 while strict stops at
+    2024; a proxy extension is not an official forecast, so that chart gets
+    the benchmark as well as the orange leg.
+  - anchored on **strict's own last outturn**, not on the chart's `actual`,
+    which comes from both variants and is a year later wherever
+    maximum_extension carries a stitched 2025 the strict series does not.
+    The first version crashed on exactly that.
+  `no projection published` now appears on **six** charts — the `TE`/`TR`
+totals, the only ones left with nothing in the projection region — so the
+reading guide and two of the schema notes were rewritten rather than left
+quietly false (`GF01_X`'s chart no longer "always stops at the last
+outturn").
+**Where it lives.** `forecast/levels.py`, `ggfiscal forecast-levels`,
+`deliverables/forecast_levels.csv` — the currency twin of
+`statistical_forecasts.csv`, same key, all five methods. A forecast-layer
+side-car like its two neighbours: outside `M.FLAT_FILES` and the run
+manifest, inside the data dictionary. Unlike `benchmark_balance.csv` it is
+**not** a pure function of the published bundle — it needs the WEO snapshot
+— so its reproducibility test is skipped where that snapshot is absent.
+Cost: the chartbook goes 1.30 -> 1.34 MB (+48 KB), already past the
+D-S9-004 margin.
+Tests: five new — the level is the ratio times the path and nothing else and
+the path is shared by every line of a country; the anchor is our own outturn
+at the last agreed year AND that the last outturn really is ambiguous (a
+test that never saw the fork would not notice if the anchor moved); the
+chain is WEO growth and is measurably not the WEO level; the file
+reproduces from the bundle plus the snapshot; and the chartbook draws the
+leg on exactly the 46 charts where nothing is published, checked against the
+executed captions rather than the source. `tests/deliverables` 61 passed
+(was 56).
+
+## D-S11-004 — The benchmark balance read against the WEO's own deficit projection, and the difference decomposed (serves §8.3, D-S9-006, D-S11-002; new deliverable `benchmark_vs_weo.csv`)
+2026-09-17, session 11. §4.1-4.3 compare our totals with the WEO's over the
+overlap years and stop at the last outturn. D-S11-002 carried a benchmark
+balance to 2031 and the WEO publishes GGXCNL over exactly that horizon, so
+the comparison §4 could never make is now available. New
+`forecast/weo_compare.py`, `ggfiscal benchmark-vs-weo`,
+`deliverables/benchmark_vs_weo.csv`, chartbook §4.6.
+**The comparison is clean at the base year.** Balance gap at 2024: GBR
+**+0.017 pp** of GDP, FRA -0.001, DEU +0.000. Nothing in the section is a
+definitional wedge in disguise, which is what makes the rest worth reading.
+**By side it is not, and that drove the design.** The UK's TR and TE are each
+about **2.6 pp of GDP larger** than the WEO's (revenue +2.60, expenditure
++2.58) — a stable perimeter difference, sd 0.21-0.25 pp over ten overlap
+years, classified `perimeter` in §8.2, which cancels in the balance because
+it sits on both sides. So the side comparison is made on **changes since the
+base year**, where a stable wedge cancels, and `perimeter_gap_pp` and its
+standard deviation are published on every row rather than left to be
+discovered by whoever first compares two levels.
+**The decomposition closes exactly**, and is tested to 1e-6:
+    balance gap = revenue gap + expenditure gap - weo_internal_wedge
+The wedge is the WEO's own Δ((GGR - GGX - GGXCNL)/NGDP). It is **zero to four
+decimals on the 2026-04 vintage** and is carried anyway: the HANDOFF note
+from session 9 says it is reported and never absorbed, and a row that is
+usually zero is the cheapest way to keep that true.
+**What it says.** At 2031, in % of GDP:
+  - **GBR** benchmark -7.27 against WEO -1.60, **-5.67 pp apart**. Almost all
+    of it is revenue: the WEO has GGR going 37.6% -> 42.1% of GDP, a 4.5 pp
+    rise, with spending flat. Split: revenue -3.28, expenditure -2.40.
+  - **FRA** -6.13 against -2.89, -3.23 pp. Revenue nearly agrees (+0.23); the
+    story is spending, which the WEO has FALLING 1.2 pp while the benchmark
+    has it rising 2.3. Split: revenue +0.23, expenditure -3.49.
+  - **DEU** -2.47 against -3.66, **+1.19 pp the other way** — the only country
+    where the benchmark is less pessimistic, because the WEO embeds the
+    announced defence and infrastructure expansion (GGX 49.4% -> 51.6%) and a
+    model fitted on history does not. Split: revenue +0.53, expenditure +0.62.
+**And the statistic that reframes all of it:** the WEO sits inside the
+benchmark's 80% interval in **21 of 21 country-years**, never more than
+**0.97** of the benchmark's own standard errors away. A five-point gap sounds
+like a disagreement; on this cone it is not one. That is a statement about
+how wide six-year fiscal uncertainty is, not about how close the two
+forecasts are, and the section says so in those words.
+**What it deliberately does not do is judge.** The benchmark knows only each
+line's own history; the WEO's projection embeds announced policy. Where they
+part company the difference IS the policy. The file reports how far apart
+they are and whether the WEO is inside the interval — never which one is
+right — and §4.6's prose and the chart captions both say so.
+**Charts.** Two, in the book's existing palette with no new hue: aqua is the
+IMF WEO as everywhere else, violet the benchmark, blue the published balance.
+§4.6's first figure is the three paths on one shared axis with the
+benchmark's 80/95 cone; the second is the side decomposition as six panels
+(two sides x three countries) of cumulative change since the base year, ours
+against the WEO's, with the gap shaded between the two lines. Aqua is below
+3:1 on this surface, so the WEO line carries a direct text label as it does
+in §4.1-4.3 — the relief the palette validator requires, not an afterthought.
+Cost: the chartbook goes 1.34 -> 1.39 MB.
+Tests: five new — the decomposition closes on the balance for every
+country-year; the `ours` side is the published benchmark rather than a
+recomputation, and the interval flags and `weo_z` are re-derived; the
+perimeter gap is published, is large on the UK's two sides, is ~0 on the
+balance, and is absent only on the wedge memo; the WEO side quotes the
+snapshot unchanged and the file reproduces from the bundle; and §4.6's prose
+claim that the WEO is always inside the 80% interval is checked against the
+data rather than taken on trust. `tests/deliverables` 66 passed (was 61).
+## D-S12-001 — The AFT briefing: the register rolled forward through declared yield paths onto the interest line, and the note built on it (serves DEBT_KICKOFF.md §1 "shaped for: simulating alternative yield-curve paths through the register", DD7; new deliverable under `reports/`)
 2026-09-18, session 10. The committee asked for a briefing note for a
 meeting with the Agence France Trésor's Chief Economist, built from the
 chartbook and the debt book, addressing three concerns — the interest bill

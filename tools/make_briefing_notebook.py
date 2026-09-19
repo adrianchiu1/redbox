@@ -17,7 +17,7 @@ cells = []
 cells.append(nbf.v4.new_markdown_cell("""# The AFT briefing — France's debt stock, its interest bill, and the 2027 map
 
 Companion to [`../reports/briefing_FRA_AFT_2026-09/briefing.html`](../reports/briefing_FRA_AFT_2026-09/briefing.html)
-(D-S11-001). The briefing was written for a meeting with the Agence France
+(D-S12-001). The briefing was written for a meeting with the Agence France
 Trésor's Chief Economist on 18 September 2026; this notebook regenerates every
 chart and table in it from [`../deliverables/`](../deliverables) and nothing
 else, so the numbers can be re-run when the register is refreshed.

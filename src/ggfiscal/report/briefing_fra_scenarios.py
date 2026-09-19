@@ -1,4 +1,4 @@
-"""Scenario charts for the AFT briefing (D-S11-001): the register-based
+"""Scenario charts for the AFT briefing (D-S12-001): the register-based
 interest simulation of `ggfiscal.debt.simulate` drawn in the debtbook's
 palette. `render_all(out_dir)` writes the PNGs, `scenarios_FRA.csv` (every
 scenario-year the engine produced), `scenario_decomposition.csv` and

@@ -3,7 +3,7 @@
 `DEBT_KICKOFF.md` §1 closes with "out of scope now, but shaped for:
 simulating alternative yield-curve paths through the register onto the
 interest line". This module is that simulation, for France, built for the
-AFT briefing of September 2026 (D-S11-001).
+AFT briefing of September 2026 (D-S12-001).
 
 It reads only the flat files in `deliverables/` — the per-security register
 at the AFT's latest snapshot, the reference rates, the ledger and the strict
