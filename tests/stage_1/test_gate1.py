@@ -41,7 +41,7 @@ def test_schema_validates():
 
 
 def test_esa_exp_identity_and_every_level2_split_hold_in_every_anchor_year():
-    """D-S11-002/003/005: E01..E09 = TE_ESA exactly, and for every Level II
+    """D-S13-002/003/005: E01..E09 = TE_ESA exactly, and for every Level II
     split remainder + Σ Level II = parent exactly wherever the anchor
     publishes them, both variants."""
     for variant in ("strict", "maximum_extension"):

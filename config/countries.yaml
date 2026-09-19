@@ -58,7 +58,7 @@ tolerances:
     - {iso3: FRA, line_code: GF01_7, incoming_source: EC_DSM}
     - {iso3: DEU, line_code: GF01_7, incoming_source: EC_DSM}
     - {iso3: GBR, line_code: R06, incoming_source: OBR_EFO_LATEST}
-    # 2026-09-19 (D-S11-005): the committee approved the same DSM join for
+    # 2026-09-19 (D-S13-005): the committee approved the same DSM join for
     # the economic tree's interest line, so E05 and GF01_7 run to the same
     # 2036 horizon (identical source, concept and seam)
     - {iso3: FRA, line_code: E05, incoming_source: EC_DSM}

@@ -6,7 +6,7 @@ Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and 
 
 Governing principles: **maximise length subject to transparency and conceptual integrity**, and **decompose, never force** — no line is ever scaled or adjusted to hit a WEO aggregate (D13, D16).
 
-**The specification is [`COFOG_KICKOFF.md`](COFOG_KICKOFF.md) (v2.2 with the v2.3 addendum of D-S11-001: the pension split and the economic tree). It governs.** Working state lives in [`HANDOFF.md`](HANDOFF.md); the append-only decision log in [`DECISIONS.md`](DECISIONS.md); committee items in [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).
+**The specification is [`COFOG_KICKOFF.md`](COFOG_KICKOFF.md) (v2.2 with the v2.3 addendum of D-S13-001: the pension split and the economic tree). It governs.** Working state lives in [`HANDOFF.md`](HANDOFF.md); the append-only decision log in [`DECISIONS.md`](DECISIONS.md); committee items in [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).
 
 ## Start here
 
@@ -282,7 +282,7 @@ Spans per line and variant, from `coverage_matrix.csv` (which adds stitch counts
 
 ## Validation
 
-Last `ggfiscal validate`: **ERROR=0, WARN=2092, OK=87, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison (V1, D-S11-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
+Last `ggfiscal validate`: **ERROR=0, WARN=2092, OK=87, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison (V1, D-S13-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
 
 ## WEO reconciliation headline
 
@@ -302,7 +302,7 @@ WEO vintages registered and reconciled: 2026-04, 2025-10, 2025-04 (the IMF API e
 
 ## Known limits awaiting the committee
 
-- **OQ-10 (raised and resolved 2026-09-19, D-S11-001..006)** — the pension line `GF10_2`, the economic tree `E01`-`E09` and the four further splits (`GF10_5` unemployment, `GF04_5` transport, `R02_A` excise duties, `R06_E`/`R06_H` employers'/households' contributions) are built; the OBR historical pensioner series carries GBR `GF10_2` back to 1979 (maximum) and `E05` chains into the DSM like GF01_7. GBR `GF10_2` has no forecast until an FRS edition with state-pension projections is in hand (OQ-6 a); `GF09_4` tertiary is the one optional split not taken up.
+- **OQ-10 (raised and resolved 2026-09-19, D-S13-001..006)** — the pension line `GF10_2`, the economic tree `E01`-`E09` and the four further splits (`GF10_5` unemployment, `GF04_5` transport, `R02_A` excise duties, `R06_E`/`R06_H` employers'/households' contributions) are built; the OBR historical pensioner series carries GBR `GF10_2` back to 1979 (maximum) and `E05` chains into the DSM like GF01_7. GBR `GF10_2` has no forecast until an FRS edition with state-pension projections is in hand (OQ-6 a); `GF09_4` tertiary is the one optional split not taken up.
 - **OQ-6 (partially resolved 2026-09-05)** — gov.uk and bmas.de are allowlisted and OBR files were hand-retrieved (D-S7-001/002), so GBR strict now runs on OBR EFO March 2026 + PESA 2026. Still open: obr.uk itself remains challenge-blocked (each new EFO needs the manual route), an FRS edition with functional long-term projections would unlock GBR GF07/GF09/GF10 long legs, and the BMAS Rentenversicherungsbericht is PDF-only (OQ-5 gate).
 - **OQ-7 (resolved 2026-09-05, D-S8-001)** — the committee approved the above-threshold D12 joins via `tolerances.v16_approved_joins`: FRA/DEU GF01_7 runs to 2036 (DSM, strict) and GBR R06 to 2030 (OBR NICs, maximum — grade C stays out of strict). V16 keeps warning on the seams by design; the next DSM/EFO vintages should shrink them.
 - **OQ-5** — pre-1995 expenditure archives need §11.4 manual ingestion (independent second keying) or machine-readable archive endpoints.

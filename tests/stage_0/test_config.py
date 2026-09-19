@@ -4,8 +4,8 @@ from ggfiscal import config
 
 
 def test_line_universe_is_123():
-    """§1 fixed 66 (12 COFOG + 10 ESA_REV per country); D-S11-001 adds the
-    nine-line ESA_EXP tree and the GF10_2 pension split; D-S11-005 adds
+    """§1 fixed 66 (12 COFOG + 10 ESA_REV per country); D-S13-001 adds the
+    nine-line ESA_EXP tree and the GF10_2 pension split; D-S13-005 adds
     GF10_5, GF04_5, R02_A and R06_E/R06_H with their remainders: 41 per
     country, 123 in all, enumerated from config rather than hard-coded."""
     universe = config.line_universe()
@@ -26,7 +26,7 @@ def test_cofog_lines_match_spec():
     expected = {f"GF{n:02d}" for n in range(1, 11)} | {"GF01_7", "GF01_X", "GF04_5", "GF04_X", "GF10_2", "GF10_5", "GF10_X"} | {"TE"}
     assert set(exp) == expected
     for rem in ("GF01_X", "GF04_X", "GF10_X"):
-        assert exp[rem]["never_forecast"] is True  # D10 / D-S11-002 / D-S11-005
+        assert exp[rem]["never_forecast"] is True  # D10 / D-S13-002 / D-S13-005
 
 
 def test_level2_splits_enumerate_from_config():

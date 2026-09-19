@@ -130,7 +130,7 @@ def test_catalogue_covers_every_published_series_and_agrees_on_spans():
                       read("revenue_esa.csv")])
     published = set(map(tuple, tree[["iso3", "line_code"]].drop_duplicates().values))
     assert set(map(tuple, cat[["iso3", "line_code"]].values)) == published
-    # the 123 line series (D-S11-001/005) are all there, on top of the nine totals
+    # the 123 line series (D-S13-001/005) are all there, on top of the nine totals
     assert {(iso3, line) for iso3, _, line in config.line_universe()} <= published
     assert len(cat) == config.universe_size() + 9 == 132
     assert set(cat.classification) == {"COFOG", "ESA_EXP", "ESA_REV"}
@@ -424,7 +424,7 @@ FORECAST_NOTEBOOKS = tuple(
     for iso3 in ("GBR", "FRA", "DEU")
     for tree in ("expenditure", "esa", "revenue"))
 # chartbook_esa.ipynb and chartbook_revenue.ipynb are the companions for the
-# ESA_EXP and ESA_REV trees (D-S11-004/006): the main chartbook keeps the
+# ESA_EXP and ESA_REV trees (D-S13-004/006): the main chartbook keeps the
 # COFOG tree, the ledger, the WEO comparison and the seams table, and stays
 # under the size GitHub will render
 CHARTBOOKS = {"COFOG": "chartbook.ipynb", "ESA_REV": "chartbook_revenue.ipynb",

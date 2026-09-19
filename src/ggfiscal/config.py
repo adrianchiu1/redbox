@@ -72,7 +72,7 @@ def residual_method(iso3: str, line_code: str) -> str:
         line_code, cfg.get("default", "grow_with_proxy"))
 
 
-# The three published trees (D-S11-001): classification -> lines.yaml key and
+# The three published trees (D-S13-001): classification -> lines.yaml key and
 # canonical file stem. Order is publication order (expenditure by function,
 # expenditure by economic type, revenue by type).
 TREES = {"COFOG": "expenditure", "ESA_EXP": "expenditure_esa", "ESA_REV": "revenue"}
@@ -114,7 +114,7 @@ def level2_lines(classification: str) -> dict[str, dict]:
 
 def level2_splits(classification: str | None = None) -> list[dict]:
     """Every parent that carries Level II lines, with its derived remainder
-    (D10: GF01_7/GF01_X; D-S11-002: GF10_2/GF10_X; D-S11-005: GF10_5,
+    (D10: GF01_7/GF01_X; D-S13-002: GF10_2/GF10_X; D-S13-005: GF10_5,
     GF04_5, R02_A, R06_E/R06_H). One dict per parent: classification,
     parent, level2s (ordered codes), remainder, and per-Level II meta
     (anchor cell, GFS indicator, OECD RS heading, D10 fallback). The
@@ -147,7 +147,7 @@ def level2_splits(classification: str | None = None) -> list[dict]:
 
 
 def line_universe() -> list[tuple[str, str, str]]:
-    """The (iso3, classification, line_code) series of §1 (D-S11-001): per
+    """The (iso3, classification, line_code) series of §1 (D-S13-001): per
     country, the COFOG lines (Level I, the Level II splits and their
     remainders), the ESA_EXP economic lines and the ESA_REV lines. Totals
     (TE, TE_ESA, TR) and ledger quantities are not members."""
@@ -159,5 +159,5 @@ def line_universe() -> list[tuple[str, str, str]]:
 
 
 def universe_size() -> int:
-    """len(line_universe()) — the number §1 once fixed at 66 (D-S11-001)."""
+    """len(line_universe()) — the number §1 once fixed at 66 (D-S13-001)."""
     return len(line_universe())

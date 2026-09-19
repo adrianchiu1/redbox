@@ -1376,7 +1376,7 @@ failures were only `pypdf` missing from this image (declared in
 Nothing in `deliverables/debt_*.csv` changed: `flatten` copies the debt
 canonical layer, and all twelve files are byte-identical after the rebuild.
 
-## D-S11-001 — The line universe is enumerated from config and grows from 66 to 99: a third tree and a generic Level II mechanism (serves §1, §4, §5, §11.2; supersedes the "twelve lines per country" and "66 series" counts of §1/§4.1 and D10's "these are the only sub-Level I lines"; session 11, 2026-09-19)
+## D-S13-001 — The line universe is enumerated from config and grows from 66 to 99: a third tree and a generic Level II mechanism (serves §1, §4, §5, §11.2; supersedes the "twelve lines per country" and "66 series" counts of §1/§4.1 and D10's "these are the only sub-Level I lines"; session 11, 2026-09-19)
 2026-09-19, session 11. The committee asked for social benefits and pensions,
 which the spec's COFOG tree carries only as the undivided GF10 lump, and for
 a review of every Level I line and every revenue line for further breakdowns.
@@ -1387,13 +1387,13 @@ Two structural changes carry both asks without touching the methodology:
     `config.level2_splits()` enumerates them and the build, the coverage
     matrix, V19, the stitched-year derivation and the flat files iterate over
     that list. GF01_7/GF01_X (D10) are the first split; GF10_2/GF10_X
-    (D-S11-002) the second; a further group is one config entry plus its
+    (D-S13-002) the second; a further group is one config entry plus its
     remainder — the §11.7 standard of "config change plus rebuild, never a
     code change". D10's sentence "these are the only sub-Level I lines" is
     superseded; its substance (interest separated gross on both sides, the
     D.41 fallback for missing Level II 01.7) is unchanged and remains the
     only split with a fallback concept.
-  - **A third tree, `ESA_EXP`** (expenditure by ESA economic type, D-S11-003),
+  - **A third tree, `ESA_EXP`** (expenditure by ESA economic type, D-S13-003),
     stored in its own canonical files (`expenditure_esa_long_{variant}`) and
     flat file (`deliverables/expenditure_esa.csv`), with `classification`
     now a published column of every tree file. `config.TREES`/`STEMS` name
@@ -1412,7 +1412,7 @@ inside GF01 (D-S8-001's reasoning). `series_catalogue.csv` and the coverage
 matrix are keyed by classification as well as line code, so the two TE
 concepts (COFOG `TE`, ESA `TE_ESA`) never collide.
 
-## D-S11-002 — Pensions = COFOG 10.2 Old age, as a Level II line `GF10_2` with remainder `GF10_X`; the Ageing Report pension path enters strict for FRA/DEU at grade B (serves §4.1, §6.2(2), §7.5, §9; new lines)
+## D-S13-002 — Pensions = COFOG 10.2 Old age, as a Level II line `GF10_2` with remainder `GF10_X`; the Ageing Report pension path enters strict for FRA/DEU at grade B (serves §4.1, §6.2(2), §7.5, §9; new lines)
 2026-09-19. Three candidate concepts were measured before choosing:
 (a) the function total of COFOG 10.2 (old-age cash benefits plus the
 function's administration and in-kind old-age services), (b) 10.2 + 10.3
@@ -1461,7 +1461,7 @@ GF10 itself is unchanged (still the AMECO D.62 C-proxy chained into the AR
 composite, maximum only). The §8.3 explained shares are unchanged by
 construction (D-S8-001's argument).
 
-## D-S11-003 — The `ESA_EXP` tree: total expenditure by ESA economic type, nine lines summing to TE, AMECO as the direct forecast and backward source (serves §3, §4, §6.1-6.2, §7.2-7.3, §9; new tree)
+## D-S13-003 — The `ESA_EXP` tree: total expenditure by ESA economic type, nine lines summing to TE, AMECO as the direct forecast and backward source (serves §3, §4, §6.1-6.2, §7.2-7.3, §9; new tree)
 2026-09-19. Lines (`config/lines.yaml` `expenditure_esa`): E01 D.1
 compensation of employees, E02 P.2 intermediate consumption, **E03 D.62
 social benefits other than social transfers in kind** (the "social
@@ -1512,7 +1512,7 @@ design), V16 +2 (the withheld E05 joins), V5 +3 (new backward legs),
 S0_SNAPSHOTS +494 (the append-only manifest now carries this session's
 fetch on top of the earlier machines' entries, D-S0-004).
 
-## D-S11-004 — Packaging: a companion chartbook for the economic tree, three more forecast books, and the notebook cell surgery scripted (serves §11.6, D-S9-002/004/007)
+## D-S13-004 — Packaging: a companion chartbook for the economic tree, three more forecast books, and the notebook cell surgery scripted (serves §11.6, D-S9-002/004/007)
 2026-09-19. The chartbook gains the six GF10_2/GF10_X charts in place
 (after GF10 in each country's COFOG section) and stays under the size
 GitHub renders; the 30 ESA_EXP charts live in `notebooks/chartbook_esa.ipynb`,
@@ -1535,14 +1535,14 @@ before + 12 new/extended: the 99-line universe, the Level II enumeration,
 the ESA_EXP spec, the identities in every anchor year, the pension and
 social-benefits horizons in the coverage matrix, the companion chartbook
 and the three esa forecast books); `validate` **OK=77 WARN=1885, no ERROR,
-no SKIP** (WARN delta explained in D-S11-003). `chartbook.ipynb` executed
+no SKIP** (WARN delta explained in D-S13-003). `chartbook.ipynb` executed
 at 1.01 MB, 5% over the judged 1 MB margin of D-S9-004 (0.96 MB before the
 six pension charts); GitHub's threshold is unmeasurable from here — if it
 declines to render, the documented fallback is one book per country, and
 nbviewer renders it regardless. The rebuild on the 2026-09-19 harvest
 changed no value in the 66 pre-existing series (run_id only).
 
-## D-S11-005 — OQ-10 resolved by the committee: four further Level II splits (GF10_5, GF04_5, R02_A, R06_E/R06_H), the E05–DSM join, and the OBR pensioner leg for UK pensions (serves §4.1a, §4.2a, D12, D15, §7.8, §9; supersedes §15 Q13; resolves OQ-10 a–c)
+## D-S13-005 — OQ-10 resolved by the committee: four further Level II splits (GF10_5, GF04_5, R02_A, R06_E/R06_H), the E05–DSM join, and the OBR pensioner leg for UK pensions (serves §4.1a, §4.2a, D12, D15, §7.8, §9; supersedes §15 Q13; resolves OQ-10 a–c)
 2026-09-19, session 11 (continued). The committee approved all of OQ-10.
 Mechanism first: `config.level2_splits()` now returns one entry per
 parent with an ordered list of Level II lines and one remainder whose
@@ -1609,10 +1609,10 @@ from 0.82 in 1995 as those grow) — grade C, `maximum_extension` only,
 UK pensions now run 1979-2024 in maximum (crosswalk
 `OBR_HIST_PF_to_COFOG.csv` v1.0). V5 reports the drift.
 Gate record and the end-to-end verification the committee asked for are
-in D-S11-006.
+in D-S13-006.
 
-## D-S11-006 — Gate record and the end-to-end verification the committee asked for: the previously built machinery works unchanged on the 123-line universe (serves §12 gates, §11.6; session 11 close)
-2026-09-19. Full chain re-run after D-S11-005 on the 2026-09-19 harvest:
+## D-S13-006 — Gate record and the end-to-end verification the committee asked for: the previously built machinery works unchanged on the 123-line universe (serves §12 gates, §11.6; session 11 close)
+2026-09-19. Full chain re-run after D-S13-005 on the 2026-09-19 harvest:
 `build` → `reconcile` → `validate` → `report` (incl. `flatten`) →
 `statistical-forecasts` → notebook execution → `pytest`. What was checked,
 and how, so the "does it still work" question has a recorded answer:
@@ -1637,7 +1637,7 @@ and how, so the "does it still work" question has a recorded answer:
     `tests/deliverables` re-proves that the set is exactly the series that
     need one, that each fits on outturn only, and that the combination is
     the mean with within-plus-between variance (the index-alignment fix
-    of D-S11-004 holds for the new ordering).
+    of D-S13-004 holds for the new ordering).
   - **Presentation.** `series_catalogue.csv` 132 rows (123 + 9 totals) with
     spans agreeing with `coverage_matrix.csv` (123 rows) on every series;
     `strict_{GBR,FRA,DEU}.csv` 51 columns each (GDP, 17 COFOG + TE, 9

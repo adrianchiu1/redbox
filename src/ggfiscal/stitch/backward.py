@@ -100,7 +100,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
                 "IMF GFS COFOG: redistribution of the same Destatis ESA data "
                 "(boundary ratio ~1.0 at 1995); XDC levels", GFS_XWALK,
                 break_before=DEU_BREAK)]
-        # COFOG Level II groups (D-S11-002/005): GFS group series where one
+        # COFOG Level II groups (D-S13-002/005): GFS group series where one
         # exists (GF1020_T, GF1050_T; none for 04.5) — registered as the
         # candidate for the years Eurostat DEU Level II lacks (1995-99);
         # measured live the GFS groups also start in 2000, so nothing is
@@ -114,7 +114,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
                         f"IMF GFS COFOG group {ind}: redistribution of the same "
                         "Destatis ESA data (coverage measured at the boundary); "
                         "XDC levels", GFS_XWALK, break_before=DEU_BREAK)]
-    # --- Revenue Level II lines via OECD RS (D-S11-005): excise duties
+    # --- Revenue Level II lines via OECD RS (D-S13-005): excise duties
     # (5121), employers' (2200) and employees'/self-employed (2100)
     # contributions — same crosswalk discipline as the parent lines (D15)
     for split in config.level2_splits("ESA_REV"):
@@ -135,7 +135,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
                     f"OECD {' + '.join(h[2:] for h in headings)} {label}: " + RS_NOTE,
                     RS_XWALK, break_before=DEU_BREAK if iso3 == "DEU" else None)]
     # --- GBR GF10_2 via the OBR historical public finances database
-    # (D-S11-005, committee-approved OQ-10 b): public-sector pensioner
+    # (D-S13-005, committee-approved OQ-10 b): public-sector pensioner
     # spending, FY converted per §7.10, growth only; measured 0.67 of COFOG
     # 10.2 at 2022 (state pension plus pensioner benefits against the
     # function total incl. public-service pensions and in-kind services), so
@@ -148,7 +148,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
             "£mn), converted FY->CY per §7.10; pensioner cash benefits vs COFOG "
             "10.2 function total — coverage measured (C band); growth only",
             OBR_HIST_XWALK, concept_flag="public_sector_perimeter")]
-    # --- ESA_EXP (D-S11-003): every economic line has an AMECO counterpart of
+    # --- ESA_EXP (D-S13-003): every economic line has an AMECO counterpart of
     # the same ESA concept (Commission redistribution of national accounts);
     # growth only, coverage measured at the boundary, DEU never below 1991.
     # Partial components (UIGG0 = P.51G of E08; UKOG = D.9 + NP of E09) grade

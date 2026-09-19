@@ -130,7 +130,7 @@ def test_coverage_matrix_complete(matrix):
     for code in ("GF01_X", "GF04_X", "GF10_X", "R02_X", "R06_X"):
         gx = matrix[matrix.line_code == code]
         assert len(gx) == 3 and (gx.final_maximum_year == gx.final_actual_year).all(), code
-    # D-S11-005: the UK pension line reaches back to 1979 in maximum only
+    # D-S13-005: the UK pension line reaches back to 1979 in maximum only
     g102 = matrix[matrix.line_code == "GF10_2"].set_index("iso3")
     assert g102.loc["GBR", "first_historical_year"] == 1979
     # excises forecast where a source exists (GBR OBR, DEU Steuerschätzung)
@@ -138,12 +138,12 @@ def test_coverage_matrix_complete(matrix):
     assert r02a.loc["GBR", "final_maximum_year"] >= 2030
     assert r02a.loc["DEU", "final_maximum_year"] >= 2030
     assert r02a.loc["FRA", "final_maximum_year"] == r02a.loc["FRA", "final_actual_year"]
-    # the pension line carries the Ageing Report leg in strict (D-S11-002)
+    # the pension line carries the Ageing Report leg in strict (D-S13-002)
     g102 = matrix[matrix.line_code == "GF10_2"].set_index("iso3")
     assert g102.loc["FRA", "final_strict_year"] == 2070
     assert g102.loc["DEU", "final_strict_year"] == 2070
     assert g102.loc["GBR", "final_strict_year"] == g102.loc["GBR", "final_actual_year"]
-    # the ESA_EXP social-benefits line is a direct AMECO forecast (D-S11-003)
+    # the ESA_EXP social-benefits line is a direct AMECO forecast (D-S13-003)
     e03 = matrix[(matrix.classification == "ESA_EXP") & (matrix.line_code == "E03")]
     assert len(e03) == 3 and (e03.final_strict_year == 2027).all()
 

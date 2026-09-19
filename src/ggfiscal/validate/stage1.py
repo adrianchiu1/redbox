@@ -19,7 +19,7 @@ VARIANTS = ("strict", "maximum_extension")
 NEGATIVE_OK = {"R08", "R10", "R06_X"}  # lines; ledger NLB/NI/PB handled separately
 REV_LINES = [f"R{n:02d}" for n in range(1, 11)]
 EXP_LINES = [f"GF{n:02d}" for n in range(1, 11)]
-EXP_ESA_LINES = [f"E{n:02d}" for n in range(1, 10)]   # ESA_EXP (D-S11-003)
+EXP_ESA_LINES = [f"E{n:02d}" for n in range(1, 10)]   # ESA_EXP (D-S13-003)
 
 
 def _tables() -> dict[str, pd.DataFrame]:
@@ -76,7 +76,7 @@ def _sum_check(check_id: str, lines: list[str], total_code: str) -> list[Finding
 
 def check_v2() -> list[Finding]:
     """Σ Level I = the tree's own total, for both expenditure cuts: COFOG
-    GF01-GF10 = TE and (D-S11-003) ESA_EXP E01-E09 = TE_ESA."""
+    GF01-GF10 = TE and (D-S13-003) ESA_EXP E01-E09 = TE_ESA."""
     cofog = _sum_check("V2", EXP_LINES, "TE")
     esa = _sum_check("V2", EXP_ESA_LINES, "TE_ESA")
     out = [f for f in cofog + esa if f.severity != "OK"]
@@ -200,7 +200,7 @@ def check_v14() -> list[Finding]:
 def check_v19() -> list[Finding]:
     """Every Level II split (config.level2_splits(): GF01_7/GF01_X per D10,
     GF10_2/GF10_5/GF10_X and GF04_5/GF04_X, R02_A/R02_X, R06_E/R06_H/R06_X
-    per D-S11-002/005): remainder + Σ Level II = parent exactly, each Level
+    per D-S13-002/005): remainder + Σ Level II = parent exactly, each Level
     II line never exceeds its parent, and the remainder is never forecast."""
     out = []
     splits = config.level2_splits()

@@ -12,7 +12,7 @@ Line construction (documented against §4):
   GF01_X       GF01 - GF01_7, derived, never forecast
   GF10_2/GF10_5/GF04_5 and R02_A/R06_E/R06_H: further Level II splits with
                remainders GF10_X/GF04_X/R02_X/R06_X (config.level2_splits(),
-               D-S11-002/005) — one config entry each
+               D-S13-002/005) — one config entry each
   TE (COFOG)   the COFOG table's own total row (V2 tests Level I against it)
   R01          D211            R02  D2 - D211
   R03          D51 households (FRA/DEU D51A_C1; GBR D51M — incl. holding gains)
@@ -164,7 +164,7 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     out.update([m("COFOG", "TE", te_cofog, exp_src, "anchor_actual", "total",
                   "Total expenditure",
                   notes="the COFOG table's own total row (V2 baseline)")])
-    # --- ESA_EXP: expenditure by economic type (D-S11-003), from the same
+    # --- ESA_EXP: expenditure by economic type (D-S13-003), from the same
     # institution's main-aggregates table: gov_10a_main payable items (FRA,
     # DEU), ONS ESA Table 2 payable rows (GBR). Sums are derived_actual;
     # the identity E01..E09 = TE_ESA is exact by construction (V2).
@@ -199,8 +199,8 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     out.update([m("ESA_REV", "TR", tr, rev_src, "anchor_actual", "total",
                   "Total revenue")])
     # Level II splits (config.level2_splits(): GF01_7/GF01_X per D10,
-    # GF10_2 per D-S11-002, GF10_5/GF04_5 and the revenue splits R02_A,
-    # R06_E/R06_H per D-S11-005). Each Level II line comes from the anchor's
+    # GF10_2 per D-S13-002, GF10_5/GF04_5 and the revenue splits R02_A,
+    # R06_E/R06_H per D-S13-005). Each Level II line comes from the anchor's
     # own table (COFOG Level II; a taxag/NTL or main/T2 cell for revenue);
     # the remainder is parent minus every Level II line, derived and never
     # forecast. D10's fallback applies to the interest line only: years the
@@ -492,7 +492,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "notes": src.concept_note,
                     })
         # Level II remainders in stitched years: derive where the parent and
-        # every Level II line were stitched (D10, D-S11-002/005), any tree
+        # every Level II line were stitched (D10, D-S13-002/005), any tree
         for variant, vals in stitched_vals.items():
             for split in config.level2_splits():
                 cls, rem = split["classification"], split["remainder"]
@@ -538,7 +538,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "is_forecast": False, "run_id": run_id,
                         "notes": f"derived {split['parent']} - "
                                  f"{' - '.join(split['level2s'])} in backward-stitched "
-                                 "years (D10 / D-S11-005)",
+                                 "years (D10 / D-S13-005)",
                     })
         # balance ledger from the balance anchor's own TR/TE/B9 (V23 exact)
         if iso3 == "GBR":

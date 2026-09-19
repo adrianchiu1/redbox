@@ -180,7 +180,7 @@ def _validation_section(root: Path) -> list[str]:
         "DSM interest join flagged for the committee (V16 → OQ-7), blocked "
         "register URLs (V18 → OQ-6), stitch diagnostics at measured grades "
         "(V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison "
-        "(V1, D-S11-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, "
+        "(V1, D-S13-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, "
         "D-S0-004). Details: `reports/validation_report.html`.",
         "",
     ]
@@ -257,7 +257,7 @@ def write(path: Path | None = None) -> Path:
         "ever scaled or adjusted to hit a WEO aggregate (D13, D16).",
         "",
         "**The specification is [`COFOG_KICKOFF.md`](COFOG_KICKOFF.md) "
-        "(v2.2 with the v2.3 addendum of D-S11-001: the pension split and the "
+        "(v2.2 with the v2.3 addendum of D-S13-001: the pension split and the "
         "economic tree). It governs.** Working state lives in "
         "[`HANDOFF.md`](HANDOFF.md); the append-only decision log in "
         "[`DECISIONS.md`](DECISIONS.md); committee items in "
@@ -417,7 +417,7 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Known limits awaiting the committee",
         "",
-        "- **OQ-10 (raised and resolved 2026-09-19, D-S11-001..006)** — the "
+        "- **OQ-10 (raised and resolved 2026-09-19, D-S13-001..006)** — the "
         "pension line `GF10_2`, the economic tree `E01`-`E09` and the four "
         "further splits (`GF10_5` unemployment, `GF04_5` transport, `R02_A` "
         "excise duties, `R06_E`/`R06_H` employers'/households' contributions) "

@@ -20,7 +20,7 @@ from ggfiscal import config
 
 # §10 one-line test descriptions (the table's Test column, abridged)
 CHECK_LABELS = {
-    "S0_LINES": "structural: the line universe enumerates from config (D-S11-001/005)",
+    "S0_LINES": "structural: the line universe enumerates from config (D-S13-001/005)",
     "S0_REGISTER": "structural: register entries carry status + endpoint",
     "S0_SNAPSHOTS": "D8: manifest snapshots verify byte-for-byte where present",
     "S0_COVERAGE": "Gate 0: every line has measured coverage from ≥1 source",

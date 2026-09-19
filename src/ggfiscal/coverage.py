@@ -59,7 +59,7 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
         gf = f"GF{n:02d}"
         out[("COFOG", gf)] = _cofog_sources(iso3, gf, f"{gf}_T")
 
-    # --- ESA_EXP: expenditure by economic type (D-S11-003) ---
+    # --- ESA_EXP: expenditure by economic type (D-S13-003) ---
     for code, meta in config.tree_lines("ESA_EXP").items():
         if config.is_total(meta):
             continue
@@ -168,7 +168,7 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
     for line, entries in rev.items():
         out[("ESA_REV", line)] = entries
     # --- Level II splits and their derived remainders, every tree
-    # (config.level2_splits(): D10, D-S11-002, D-S11-005) ---
+    # (config.level2_splits(): D10, D-S13-002, D-S13-005) ---
     from ggfiscal.build import _revenue_level2
 
     for split in config.level2_splits():
@@ -195,7 +195,7 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
                 if l2 == "GF10_2" and iso3 == "GBR":
                     entries.append(("OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners"),
                                     "backward extension candidate; public-sector pensioner "
-                                    "spending, FY converted (D-S11-005)"))
+                                    "spending, FY converted (D-S13-005)"))
             else:
                 series, src_id, note = _revenue_level2(iso3, l2, meta)
                 entries = [(src_id, series, f"anchor; {note}")]

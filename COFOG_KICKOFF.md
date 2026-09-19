@@ -5,7 +5,7 @@ Prepared 31 August 2026. Self-contained. Supersedes v1 (ChatGPT specification), 
 
 v2.2 changes: scope reduced to **GBR, FRA, DEU**; a **revenue-by-type tree** on the same engine; a **reconciliation module** relating the granular series to IMF WEO fiscal aggregates; interest receivable separated on the revenue side to mirror `GF01_7`.
 
-v2.3 addendum (2026-09-19, sessions 11; D-S11-001..004 in `DECISIONS.md`): the committee asked for social benefits and pensions. Two additions, recorded here so the spec and the build agree; the methodology (§6–§10) is unchanged and every new line obeys it. (1) **COFOG Level II is a config mechanism** — any group declared with `level: "2"` and a `parent` in `config/lines.yaml` gets a derived, never-forecast remainder (`parent − group`) and the V19 identity; D10's "these are the only sub-Level I lines" is superseded by that mechanism, its substance (gross interest on both sides, the D.41 fallback for 01.7) kept. The second split is **`GF10_2` Old age (COFOG 10.2, the pensions line)** with remainder `GF10_X` (§4.1a). (2) **A third tree, `ESA_EXP`** — total expenditure by ESA 2010 economic type, nine lines summing to `TE_ESA` (§4.1b), with **`E03` social benefits other than social transfers in kind (D.62)** the social-benefits line. The universe is 99 line series (33 per country: 14 COFOG, 9 ESA_EXP, 10 ESA_REV), enumerated from config. The §8.3 decomposition still runs on the 20 Level I lines by code, so the second cut of TE is never double counted.
+v2.3 addendum (2026-09-19, sessions 11; D-S13-001..004 in `DECISIONS.md`): the committee asked for social benefits and pensions. Two additions, recorded here so the spec and the build agree; the methodology (§6–§10) is unchanged and every new line obeys it. (1) **COFOG Level II is a config mechanism** — any group declared with `level: "2"` and a `parent` in `config/lines.yaml` gets a derived, never-forecast remainder (`parent − group`) and the V19 identity; D10's "these are the only sub-Level I lines" is superseded by that mechanism, its substance (gross interest on both sides, the D.41 fallback for 01.7) kept. The second split is **`GF10_2` Old age (COFOG 10.2, the pensions line)** with remainder `GF10_X` (§4.1a). (2) **A third tree, `ESA_EXP`** — total expenditure by ESA 2010 economic type, nine lines summing to `TE_ESA` (§4.1b), with **`E03` social benefits other than social transfers in kind (D.62)** the social-benefits line. The universe is 99 line series (33 per country: 14 COFOG, 9 ESA_EXP, 10 ESA_REV), enumerated from config. The §8.3 decomposition still runs on the 20 Level I lines by code, so the second cut of TE is never double counted.
 
 ---
 
@@ -124,12 +124,12 @@ Derived measures per observation: `pct_gdp`, `pct_total` (of TE or TR as appropr
 | GF08 | 1 | Recreation, culture and religion |
 | GF09 | 1 | Education |
 | GF10 | 1 | Social protection |
-| GF10_2 | 2 | Old age — COFOG 10.2, the pensions line (v2.3, D-S11-002) |
+| GF10_2 | 2 | Old age — COFOG 10.2, the pensions line (v2.3, D-S13-002) |
 | GF10_X | derived | Social protection excluding old age (GF10 − GF10_2; never forecast) |
 | TE | total | Total expenditure |
 
 ### 4.1a Level II splits (v2.3)
-Declared in `config/lines.yaml`: a `level: "2"` line names its `parent`; its remainder is `level: derived`, `never_forecast`, and its `minus` list names every Level II line under that parent (a parent may carry several). The build takes the Level II cell from the anchor's own Level II table (ONS Table 11 / Eurostat `gov_10a_exp`), derives the remainder in every year both exist (anchor and backward-stitched), and V19 checks `remainder + level2 = parent` and that the remainder carries no forecast row. Only the interest split has a fallback concept (D10). Built splits after D-S11-005: `GF01_7` interest (remainder `GF01_X`); `GF10_2` old age and `GF10_5` unemployment (remainder `GF10_X`); `GF04_5` transport (remainder `GF04_X`). Adding a further group (e.g. 09.4 tertiary) is a config entry plus its forecast/extension sources and a chart cell.
+Declared in `config/lines.yaml`: a `level: "2"` line names its `parent`; its remainder is `level: derived`, `never_forecast`, and its `minus` list names every Level II line under that parent (a parent may carry several). The build takes the Level II cell from the anchor's own Level II table (ONS Table 11 / Eurostat `gov_10a_exp`), derives the remainder in every year both exist (anchor and backward-stitched), and V19 checks `remainder + level2 = parent` and that the remainder carries no forecast row. Only the interest split has a fallback concept (D10). Built splits after D-S13-005: `GF01_7` interest (remainder `GF01_X`); `GF10_2` old age and `GF10_5` unemployment (remainder `GF10_X`); `GF04_5` transport (remainder `GF04_X`). Adding a further group (e.g. 09.4 tertiary) is a config entry plus its forecast/extension sources and a chart cell.
 
 | Code | Level | Label | Anchor cell |
 |---|---|---|---|
@@ -138,7 +138,7 @@ Declared in `config/lines.yaml`: a `level: "2"` line names its `parent`; its rem
 | GF10_5 | 2 | Unemployment (COFOG 10.5) | GF1005 |
 | GF10_X | derived | Social protection excluding old age and unemployment | GF10 − GF10_2 − GF10_5 |
 
-### 4.2a Revenue Level II splits (v2.3, D-S11-005)
+### 4.2a Revenue Level II splits (v2.3, D-S13-005)
 The same mechanism on the revenue tree. Anchor cells come from the anchor institution's per-tax table where the main aggregate has no sub-item (NTL table 9 / `gov_10a_taxag`), so any drift between the two tables lands in the derived remainder, never in the V22 identity.
 
 | Code | Level | ESA | Label | Anchor cell (ONS / Eurostat) | Backward (OECD RS) |

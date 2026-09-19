@@ -675,7 +675,7 @@ def obr_hist_pf_fy(column: str) -> pd.Series:
     """OBR historical public finances database, sheet 'Spending (£m)': one
     column (header row 4, e.g. 'Social Security' or 'o/w pensioners') as an
     FY Series (£mn, indexed by the FY start year). Rows carry FY labels in
-    column B; non-numeric cells ('-') are skipped (D-S11-005)."""
+    column B; non-numeric cells ('-') are skipped (D-S13-005)."""
     path = _snap_path("OBR_HIST_PF", "database")
     if path is None:
         return pd.Series(dtype=float)

@@ -1,5 +1,5 @@
 """Notebook cell surgery for the Level II splits and the economic tree
-(sessions 11: D-S11-001..005). Idempotent — running it twice leaves the
+(sessions 11: D-S13-001..005). Idempotent — running it twice leaves the
 notebooks unchanged; execution (outputs) happens afterwards with nbconvert.
 
 What it does, from `deliverables/series_catalogue.csv` and
@@ -97,7 +97,7 @@ def _after_block(cells, start):
 def chartbook():
     nb = load("chartbook.ipynb")
     cells = nb["cells"]
-    # the revenue tree moves to chartbook_revenue.ipynb (D-S11-006): drop its
+    # the revenue tree moves to chartbook_revenue.ipynb (D-S13-006): drop its
     # chart cells and section headings here so the main book stays under the
     # size GitHub renders
     rev_calls = {f'chart("{iso3}", "{line}")' for iso3 in COUNTRIES
@@ -221,7 +221,7 @@ def chartbook_esa(chartbook_nb):
 The companion to [`chartbook.ipynb`](chartbook.ipynb), which explains how to
 read every chart here (levels, seams, projection shading, captions). This book
 holds the third tree, **expenditure by ESA economic type** (`ESA_EXP`,
-D-S11-003): nine lines per country that sum to `TE_ESA`, a second cut of the
+D-S13-003): nine lines per country that sum to `TE_ESA`, a second cut of the
 same total expenditure as the COFOG functions — so an `E` line must never be
 added to a `GF` line.
 
@@ -294,7 +294,7 @@ def chartbook_revenue(chartbook_nb):
 The companion to [`chartbook.ipynb`](chartbook.ipynb), which explains how to
 read every chart here (levels, seams, projection shading, captions). This book
 holds the **revenue tree** (`ESA_REV`): the ten ESA revenue types `R01`–`R10`
-that sum to `TR`, plus the Level II splits of D-S11-005 — `R02_A` excise
+that sum to `TR`, plus the Level II splits of D-S13-005 — `R02_A` excise
 duties (remainder `R02_X`) and `R06_E` employers' / `R06_H` households'
 actual social contributions (remainder `R06_X`, the imputed and
 supplementary part). A remainder plus its Level II lines equals the parent
@@ -440,11 +440,11 @@ def derivation():
                   "  social contributions, each with its remainder")
     for old in ("That is the 66 line series of the specification (3 countries × 22 lines), plus",
                 "That is the 99 line series (3 countries × 33 lines: the specification's 66 plus\n"
-                "the pension split `GF10_2`/`GF10_X` and the nine-line economic tree, D-S11-001), plus"):
+                "the pension split `GF10_2`/`GF10_X` and the nine-line economic tree, D-S13-001), plus"):
         s = s.replace(old, "That is the 123 line series (3 countries × 41 lines: the specification's 66 plus\n"
                            "the Level II splits — interest, old age, unemployment, transport, excise duties,\n"
                            "employers' and households' contributions, each with its remainder — and the\n"
-                           "nine-line economic tree, D-S11-001/005), plus")
+                           "nine-line economic tree, D-S13-001/005), plus")
     c["source"] = s
     c = cells[15]
     s = "".join(c["source"])

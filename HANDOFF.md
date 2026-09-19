@@ -7,7 +7,7 @@ from `main` at 8b99c74).
 ## Current stage
 
 **All parent-package stages 0–6 remain complete on a 123-line universe
-(D-S11-001/005): three trees per country — 17 COFOG lines (ten Level I plus
+(D-S13-001/005): three trees per country — 17 COFOG lines (ten Level I plus
 the Level II splits GF01_7 interest, GF10_2 old age, GF10_5 unemployment,
 GF04_5 transport, each with its remainder), 9 ESA_EXP lines (expenditure by
 economic type) and 15 ESA_REV lines (ten ESA types plus R02_A excise duties
@@ -15,7 +15,7 @@ and the R06_E/R06_H employers'/households' contributions split, with
 remainders).** The specification carries the v2.3 addendum (§4.1a, §4.1b,
 §4.2a). The debt extension (DEBT_KICKOFF.md) is untouched.
 
-## What session 11 did (D-S11-001..006; OQ-10 raised and resolved)
+## What session 11 did (D-S13-001..006; OQ-10 raised and resolved)
 
 - **Fresh harvest** (`ggfiscal fetch --all`, 2026-09-19, 0 failures); the
   rebuild changed no value in the pre-existing 66 series (run_id only).
@@ -50,7 +50,7 @@ remainders).** The specification carries the v2.3 addendum (§4.1a, §4.1b,
   regenerated; chartbook +Level II charts, `chartbook_esa.ipynb`
   companion, forecast books extended and three `forecasts_{cc}_esa.ipynb`.
 - **Verification** that the previously built machinery still works after
-  the splits: D-S11-006 lists what was checked (pytest 151 passed; validate
+  the splits: D-S13-006 lists what was checked (pytest 151 passed; validate
   OK=87 WARN=2092 no ERROR) (identities, the untouched
   20-line WEO decomposition and its explained shares, the benchmark
   forecasts covering exactly the series that need them, the catalogue /

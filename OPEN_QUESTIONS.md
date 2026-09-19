@@ -243,13 +243,13 @@ Fallback per D-S7-001: hand-download the file lists in `DEBT_SCOPING.md`
 extension builds the reference series, the official intermediates and the
 DEU aggregate layer (all reachable), and the per-security register waits.
 
-## OQ-10 — Further breakdowns after the session-11 review — **RESOLVED 2026-09-19 (all three asks approved; D-S11-005)**
+## OQ-10 — Further breakdowns after the session-11 review — **RESOLVED 2026-09-19 (all three asks approved; D-S13-005)**
 
-The committee approved (a) all four breakdowns, (b) the OBR pensioner series as a C-band backward leg for GBR `GF10_2`, and (c) the E05 ← DSM join. All built and verified end to end (D-S11-005/006). One finding from building: excise duties had to be defined as D.214A + D.2122C because Germany books its energy tax on imported fuels under D.2122C. Not taken up: `GF09_4` tertiary education (optional in the review) — one config entry if wanted.
+The committee approved (a) all four breakdowns, (b) the OBR pensioner series as a C-band backward leg for GBR `GF10_2`, and (c) the E05 ← DSM join. All built and verified end to end (D-S13-005/006). One finding from building: excise duties had to be defined as D.214A + D.2122C because Germany books its energy tax on imported fuels under D.2122C. Not taken up: `GF09_4` tertiary education (optional in the review) — one config entry if wanted.
 
 Original item (kept for the record):
 
-### OQ-10 (original) — Further breakdowns after the session-11 review: what the data says, and three asks (raised 2026-09-19, D-S11-001..004)
+### OQ-10 (original) — Further breakdowns after the session-11 review: what the data says, and three asks (raised 2026-09-19, D-S13-001..004)
 
 The committee asked for a review of every COFOG Level I line and every
 revenue line for breakdowns that "make sense", with general public services
@@ -257,7 +257,7 @@ and VAT named. Measured from the harvested anchors (Level II groups and
 economic items from ONS Table 11 and Eurostat `gov_10a_exp`; tax sub-items
 from ONS NTL table 9 and `gov_10a_taxag`), shares of the 2024 total,
 GBR / FRA / DEU. Built this session: `GF10_2` old age (pensions) and the
-`ESA_EXP` economic tree with `E03` social benefits (D-S11-002/003).
+`ESA_EXP` economic tree with `E03` social benefits (D-S13-002/003).
 
 **Expenditure — where a further Level II line would carry weight**
 
@@ -284,7 +284,7 @@ GBR / FRA / DEU. Built this session: `GF10_2` old age (pensions) and the
 - (a) Confirm or amend the two expenditure recommendations (`GF10_5`
   unemployment, `GF04_5` transport) and the two revenue ones (`R02_A`
   excise duties, the R06 employers'/households' split). Each is now a
-  config entry plus its sources and a notebook cell (D-S11-001); the
+  config entry plus its sources and a notebook cell (D-S13-001); the
   revenue split additionally needs the OECD RS / OBR / Steuerschätzung
   crosswalk rows.
 - (b) GBR pensions history: the OBR historical public finances database

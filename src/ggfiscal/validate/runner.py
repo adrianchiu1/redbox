@@ -53,7 +53,7 @@ def current_stage() -> int:
 
 def check_s0_line_universe() -> list[Finding]:
     """The universe enumerates from config/lines.yaml: every country carries
-    every granular line of every tree (D-S11-001: 33 per country — 14 COFOG
+    every granular line of every tree (D-S13-001: 33 per country — 14 COFOG
     incl. two Level II splits, 9 ESA_EXP, 10 ESA_REV — 99 in all)."""
     universe = config.line_universe()
     n = len(universe)

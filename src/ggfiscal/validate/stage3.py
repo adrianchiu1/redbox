@@ -219,7 +219,7 @@ def check_v15() -> list[Finding]:
                         out.append(Finding("V15", "WARN", f"{iso3}/{variant}/{year}",
                                            f"covered Level I sum {exp_sum:.0f} exceeds "
                                            f"envelope TE {te_env[year]:.0f} + {tol:.0%}"))
-                if year in te_env.index and esa_sum:   # D-S11-003: same TE envelope
+                if year in te_env.index and esa_sum:   # D-S13-003: same TE envelope
                     checked += 1
                     if esa_sum > float(te_env[year]) * (1 + tol):
                         out.append(Finding("V15", "WARN", f"{iso3}/{variant}/{year}",
