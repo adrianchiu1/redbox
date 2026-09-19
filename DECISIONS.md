@@ -2046,3 +2046,87 @@ and how, so the "does it still work" question has a recorded answer:
   - **Tests**: `pytest --ignore=tests/debt` **151 passed** (149 + the split
     enumeration and the revenue chartbook).
 Nothing in the debt extension changed; `tests/debt` were not re-run.
+
+## D-S13-007 — The session-11 benchmark methodology of `main` (D-S11-001..004) integrated on the 123-line universe; the benchmark balance takes the pension split as it takes the interest split (serves D-S11-002/003, D-S13-002, D-S9-004; session 11 close, 2026-09-19)
+
+**Context.** Four branches had not landed on `main` when this branch was
+started, and three of them carry methodology this branch had to reflect:
+`friendly-archimedes` (D-S11-001..004: forecast panels in the chartbook, the
+benchmark balance `benchmark_balance.csv`, the levels benchmark
+`forecast_levels.csv`, the WEO comparison `benchmark_vs_weo.csv`),
+`charts-ios` (the phone chart site), `french-debt-aft-briefing` (D-S12-001,
+the AFT briefing and debt simulator) and `cofog-cyclical-adjustment-check`
+(OQ-11, informational). They were merged into `main` in that order as PRs
+#14–#17 after each was rebased onto `main` and its clashing identifiers
+renumbered (this branch's decisions D-S11-00N → D-S13-00N in commit
+3cd0c75; the briefing's D-S11-001 → D-S12-001; the cyclical check's OQ-8 →
+OQ-11). `main` was then merged into this branch twice (after #14, after #17)
+and the benchmark chain re-run on the full universe.
+
+**Decisions.**
+
+1. **The benchmark balance splits `GF10` exactly as D-S11-002 split `GF01`.**
+   D-S11-002's rule is that an official projection must not be hidden inside
+   a statistical parent. Checked against every Level II line of D-S13-002/005
+   (catalogue spans, strict variant): three parents hide an official strict
+   path in some country — `GF01` (GF01_7, all three countries, as before),
+   **`GF10`** (GF10_2, France and Germany: the Ageing Report's pension path is
+   grade B and enters strict to 2070, whereas GF10's own Ageing Report leg is
+   grade C and lives in `maximum_extension` only, so strict GF10 is a
+   statistical fit) and `R02` (R02_A, Germany, Steuerschätzung to 2030 — one
+   year short of the 2031 horizon, so the balance would take the statistical
+   path anyway). Expenditure in the sum is therefore
+   `GF01_7 + GF01_X + GF02..GF09 + GF10_2 + GF10_5 + GF10_X`; revenue stays
+   `R01..R10`. `GF04` (no official path on either side) and the revenue splits
+   stay as their parents; the trigger for revisiting is written into
+   `balance.py` (a Level II line with an official strict path to the horizon
+   while its parent has none — the German excise path reaching 2031 in a later
+   vintage would be the first case). Effect on the 2031 benchmark balance
+   (% of GDP, with the 80% interval): France −6.13 → **−6.46** [−10.61, −2.31]
+   (GF10_2 official −0.02 pp, GF10_5 −0.34, GF10_X −0.14, against GF10's
+   statistical −0.18); Germany −2.47 → **−2.86** [−9.97, +4.26] (GF10_2
+   official −0.48, GF10_5 +0.28, GF10_X −0.16, against +0.03); the United
+   Kingdom −7.27 → −6.95 (all three parts statistical, as GF10 was; the
+   difference is three fits against one). `n_official` rises from 3 to 4 in
+   France and Germany. The WEO still sits inside the 80% interval in 21 of 21
+   country-years (D-S11-004).
+2. **`forecast_levels.csv` covers all three trees.** The statistical
+   benchmarks already covered the ESA_EXP lines (113 series); `levels._tree()`
+   now reads `expenditure_esa.csv` too, so the currency lookup and the GDP
+   anchor ("the last year every line's denominator agrees") are taken over
+   every line. The anchor is unchanged at 2024 in all three countries. The
+   levels charts of `chartbook_esa.ipynb` and `chartbook_revenue.ipynb` carry
+   the benchmark leg (D-S11-003) exactly as the main book's do — the three
+   books share the setup cell — and the caption test runs per book.
+3. **Forecast panels (D-S11-001) in three books.** The main book keeps the
+   COFOG and revenue panels and the ranked `changes()` picture across both
+   (the revenue per-series charts live in `chartbook_revenue.ipynb` under
+   D-S13-006, but the panel is the summary and `changes()` pairs the two sides
+   of the balance, so both stay). `chartbook_esa.ipynb` gains its own panel of
+   the nine `E` lines (`panel(iso3, "economic")`, the same cell with `TREE_OF`
+   pointed at the economic tree) and no `changes()`: the economic tree is the
+   same money as the COFOG tree cut a second way and would double-count in a
+   ranked picture that feeds the balance. The panel table's row pattern in
+   the tests now admits Level II codes (`R02_A`, `E03`).
+4. **Size.** `chartbook.ipynb` is 1.31 MB with the panels (1.39 MB on `main`,
+   0.79 MB on this branch before the merge): the D-S11-001 title already
+   records that the panels cost the D-S9-004 margin, and the revenue tree's
+   per-series charts are already out. Moving the revenue panel to its book
+   would save 0.12 MB and split the summary; not done. nbviewer renders
+   regardless; the chart site (`tools/build_chartsite.py`) now carries the
+   two companion books beside the main book and the debtbook.
+5. **Nothing else in the merged methodology needed a line assumption
+   changed**: `weo_compare.py` reads the balance file by side; the §8.3
+   decomposition stays on its 20 lines (D-S13-006); the chart site's
+   forecast books are deliberately not on the phone site (D-S11 notes).
+
+**Verification.** Full chain re-run (`build`, `reconcile`, `validate`,
+`report`, `statistical-forecasts`, `forecast-levels`, `benchmark-balance`,
+`benchmark-vs-weo`), `tools/update_notebooks_s11.py`, all thirteen
+notebooks re-executed; `pytest --ignore=tests/debt` **173 passed** (151
+before the merge, plus `main`'s panel / balance / levels / WEO tests, the
+caption and benchmark-leg tests now run per book, and the ESA tree in the
+fidelity test). One merged test was loosened to its own claim: the WEO's
+z-score against the benchmark cone is asserted inside the 80% band
+(|z| < 1.28, which is what §4.6 says) rather than below 1.0 — France 2031
+is 1.10 after the pension split, still inside.

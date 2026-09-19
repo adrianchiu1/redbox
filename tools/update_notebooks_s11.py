@@ -132,6 +132,30 @@ def chartbook():
         assert 'ECONOMIC = load' in s
         setup["source"] = s
     _chartbook_prose(cells)
+    for c in cells:
+        if c["cell_type"] == "markdown":
+            s = "".join(c["source"])
+            s2 = s.replace("and its\nfive companions.", "and its\neight companions.")
+            s2 = s2.replace(
+                "* **Expenditure is `GF01_7 + GF01_X + GF02…GF10`, never `GF01…GF10`.** The two\n"
+                "  are the same identity in history. In forecast they are not: the Level I set\n"
+                "  hides the interest line inside `GF01`, whose own univariate fit knows nothing\n"
+                "  about the official interest projection. For France that choice is worth over\n"
+                "  two points of GDP by 2031, and it is the single largest judgement in this\n"
+                "  section.",
+                "* **Expenditure is `GF01_7 + GF01_X + GF02…GF09 + GF10_2 + GF10_5 + GF10_X`,\n"
+                "  never `GF01…GF10`.** The two are the same identity in history. In forecast\n"
+                "  they are not: the Level I set hides the interest line inside `GF01`, whose\n"
+                "  own univariate fit knows nothing about the official interest projection. For\n"
+                "  France that choice is worth over two points of GDP by 2031, and it is the\n"
+                "  single largest judgement in this section. The same rule splits `GF10`\n"
+                "  (D-S13-007): for France and Germany the old-age pension line `GF10_2` is on\n"
+                "  the Ageing Report's official path, which `GF10` itself carries only in\n"
+                "  `maximum_extension`. A parent is split here exactly when one of its Level II\n"
+                "  lines has an official strict path to 2031 and the parent has not; `GF04` and\n"
+                "  the revenue splits stay as their parents.")
+            if s2 != s:
+                c["source"] = s2
     return nb
 
 
@@ -211,11 +235,31 @@ def _chartbook_prose(cells):
             c["source"] = t2
 
 
+def _panel_cell_for(cells, tree_of, totals):
+    """A copy of the main book's panel cell (D-S11-001) pointed at another
+    tree. The cell's closing census runs over TREE_OF, so it reports the
+    companion's own lines."""
+    cell = copy.deepcopy(cells[index_of(cells, "# --------------------------------------------------------------- the panels")])
+    s = "".join(cell["source"])
+    start = s.index("TOTALS = (")
+    end = s.index("\n", s.index("TREE_OF = {")) + 1
+    end = s.index("\n\n", start) + 1
+    head = s[:start]
+    assert 'TREE_OF = {"expenditure"' in s[start:end], s[start:end]
+    s = head + totals + "    # envelopes, not categories, and never forecast\n" + tree_of + "\n" + s[end:]
+    cell["source"] = s
+    cell["outputs"] = []
+    cell["execution_count"] = None
+    return cell
+
+
 def chartbook_esa(chartbook_nb):
     """The companion: same setup cell, the economic tree only."""
     base = copy.deepcopy(chartbook_nb)
     cells = base["cells"]
     setup = cells[index_of(cells, "import io")]
+    panel_cell = _panel_cell_for(cells, 'TREE_OF = {"economic": (ECONOMIC, "ESA economic type")}',
+                                 'TOTALS = ("TE", "TR", "TE_ESA")')
     intro = md("""# Chartbook — expenditure by ESA economic type
 
 The companion to [`chartbook.ipynb`](chartbook.ipynb), which explains how to
@@ -253,14 +297,24 @@ the UK history exists.
 
 Every caption states the recipe and how far each variant projects, exactly as
 in the main book; "no projection published" and its five reasons mean the same
-thing here.
+thing here. Each country opens with the same **forecast panel** as the main
+book (D-S11-001, extended to this tree by D-S13-007): every `E` line as a share
+of GDP with the one forecast this project would quote for it — the official
+projection where one is published, the statistical combination with its 80%
+interval where none is — and the levels charts carry the statistical benchmark
+in currency (D-S11-003) wherever the strict series has no official path. The
+ranked `changes()` picture and the benchmark balance stay in the main book:
+the balance is built from the COFOG and revenue trees, and this tree is the
+same money cut a second way.
 """)
-    out = [intro, setup]
+    out = [intro, setup, panel_cell]
     for iso3 in COUNTRIES:
         out.append(md(f"## {SECTION[iso3]}. {NAME[iso3]} — expenditure by ESA economic type\n\n"
-                      "Nine economic lines and their total. `E03` (cash social benefits) "
-                      "and `E05` (interest) are the two that other publications forecast "
-                      "directly; read `E05` against `GF01_7` in the main book."))
+                      "The forecast panel first, then nine economic lines and their total. "
+                      "`E03` (cash social benefits) and `E05` (interest) are the two that "
+                      "other publications forecast directly; read `E05` against `GF01_7` "
+                      "in the main book."))
+        out.append(code(f'panel("{iso3}", "economic")'))
         for line in ESA_LINES + ["TE_ESA"]:
             out.append(code(f'chart("{iso3}", "{line}")'))
     out.append(md("---\n\n## Seams in the economic tree\n\nThe same triage table as the "

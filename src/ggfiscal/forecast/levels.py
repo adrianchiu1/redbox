@@ -68,7 +68,10 @@ def latest_vintage() -> str:
 def _tree() -> pd.DataFrame:
     deliv = config.repo_root() / "deliverables"
     read = lambda n: pd.read_csv(deliv / n, float_precision="round_trip")
-    return pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")],
+    # all three trees (D-S13-007): the ESA_EXP lines are among the series
+    # forecast, and the GDP anchor is the last year *every* line agrees on
+    return pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
+                      read("revenue_esa.csv")],
                      ignore_index=True).query("variant == 'strict'")
 
 

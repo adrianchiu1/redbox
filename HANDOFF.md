@@ -47,7 +47,7 @@ and the R06_E/R06_H employers'/households' contributions split, with
 remainders).** The specification carries the v2.3 addendum (§4.1a, §4.1b,
 §4.2a). The debt extension (DEBT_KICKOFF.md) is untouched.
 
-## What session 11 did (D-S13-001..006; OQ-10 raised and resolved)
+## What session 11 did (D-S13-001..007; OQ-10 raised and resolved)
 
 - **Fresh harvest** (`ggfiscal fetch --all`, 2026-09-19, 0 failures); the
   rebuild changed no value in the pre-existing 66 series (run_id only).
@@ -88,6 +88,14 @@ remainders).** The specification carries the v2.3 addendum (§4.1a, §4.1b,
   forecasts covering exactly the series that need them, the catalogue /
   coverage matrix / strict matrices / chartbooks covering every series).
 
+- **Integration with `main` (D-S13-007)**: the four unmerged branches were
+  landed on `main` as PRs #14–#17 (archimedes benchmark methodology, chart
+  site, AFT briefing as D-S12-001, cyclical check as OQ-11) and `main`
+  merged here. The benchmark balance now splits `GF10` as it splits `GF01`
+  (France 2031: −6.13 → −6.46; Germany −2.47 → −2.86); `forecast_levels`
+  spans the three trees; `chartbook_esa.ipynb` carries its own forecast
+  panel; the chart site lists the companion books.
+
 ## Blocked on whom
 
 - Nothing blocking. OQ-10 resolved. Open: OQ-6 (a) an FRS edition with
@@ -101,9 +109,16 @@ remainders).** The specification carries the v2.3 addendum (§4.1a, §4.1b,
 pip install -e ".[dev,forecast,notebook]"
 ggfiscal fetch --all && ggfiscal build && ggfiscal reconcile && ggfiscal validate
 ggfiscal report && ggfiscal statistical-forecasts
+ggfiscal forecast-levels && ggfiscal benchmark-balance && ggfiscal benchmark-vs-weo
+python3 tools/update_notebooks_s11.py
 jupyter nbconvert --execute --inplace notebooks/chartbook*.ipynb notebooks/derivation.ipynb notebooks/forecasts_*.ipynb
 python3 -m pytest -q --ignore=tests/debt
 ```
+
+The three `forecast-*` / `benchmark-*` commands are the session-11 benchmark
+chain from `main` (D-S11-002/003/004); they read the flat files and
+`statistical_forecasts.csv`, so they come after `report` and
+`statistical-forecasts` and before the notebooks are executed.
 
 To add the next Level II group: one `level: "2"` entry with its `parent`
 and anchor cell (`eurostat_cofog` + `gfs_indicator` for COFOG; `eurostat`

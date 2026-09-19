@@ -191,7 +191,7 @@ statistical_forecasts.csv,n_obs,Number of outturn observations fitted.
 statistical_forecasts.csv,run_id,Run that produced the forecasts.
 forecast_levels.csv,iso3,"Country (GBR, FRA, DEU)."
 forecast_levels.csv,country,"Country name, for readability."
-forecast_levels.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+forecast_levels.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 forecast_levels.csv,line_label,Human-readable name of the line.
 forecast_levels.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
 forecast_levels.csv,currency,"GBP for GBR, EUR for FRA and DEU."
@@ -214,7 +214,7 @@ forecast_levels.csv,run_id,Run that produced the levels.
 benchmark_balance.csv,iso3,"Country (GBR, FRA, DEU)."
 benchmark_balance.csv,country,"Country name, for readability."
 benchmark_balance.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
-benchmark_balance.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+benchmark_balance.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 benchmark_balance.csv,line_label,Human-readable name of the line.
 benchmark_balance.csv,notes,The concept caveat recorded with the observation at build time.
 benchmark_balance.csv,base_year,"Year the path starts from: the latest year in which EVERY line has an outturn, which the expenditure tree sets a year before the revenue tree."
