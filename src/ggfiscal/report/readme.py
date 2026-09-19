@@ -24,16 +24,16 @@ from ggfiscal import manifest as M
 from ggfiscal.ingest.endpoints import weo_vintages
 
 DESCRIPTIONS = {
-    "expenditure_long": "COFOG tree, §5 long format (14 lines + TE per country)",
+    "expenditure_long": "COFOG tree, §5 long format (17 lines + TE per country)",
     "expenditure_esa_long": "ESA_EXP tree — expenditure by economic type, §5 long format (9 lines + TE_ESA per country)",
-    "revenue_long": "ESA revenue tree, §5 long format (10 lines + TR per country)",
+    "revenue_long": "ESA revenue tree, §5 long format (15 lines + TR per country)",
     "balance_ledger": "TR, TE, NLB, NI, PB per (country, year, variant), §4.3",
     "weo_base_bridge": "§8.2 base-year level bridge per (country, WEO vintage)",
     "deficit_dynamics": "§8.3 history decomposition (drivers of Δ(NLB/GDP))",
     "weo_explanation": "§8.3 forecast decomposition with residuals + denominator effect",
     "weo_residual_history": "§8.5 residual time series across WEO vintages",
     "net_interest_check": "§8.4 net-interest cross-check per (country, vintage, horizon)",
-    "coverage_matrix": "§11.6(9): span, grades, sources, why each of the 99 series ends",
+    "coverage_matrix": "§11.6(9): span, grades, sources, why each of the 123 series ends",
     "crosswalks": "§11.5 crosswalks concatenated (one row per mapping, keyed by file)",
     "exceptions": "§10 validation findings (all rows, all severities)",
     "stitch_boundaries": "§7.4 backward-stitch boundary records incl. non-applications",
@@ -236,15 +236,18 @@ def write(path: Path | None = None) -> Path:
         "",
         "Reproducible pipeline producing, for the United Kingdom (GBR), "
         "France (FRA) and Germany (DEU): consolidated general-government "
-        "**expenditure by COFOG function** (14 lines per country incl. the "
-        "GF01_7/GF01_X interest split and the GF10_2/GF10_X old-age pension "
-        "split), **expenditure by ESA economic type** (9 lines per country: "
+        "**expenditure by COFOG function** (17 lines per country: ten Level I "
+        "functions plus the Level II splits for interest (GF01_7), old-age "
+        "pensions (GF10_2), unemployment (GF10_5) and transport (GF04_5) "
+        "with their remainders), **expenditure by ESA economic type** (9 lines per country: "
         "compensation, intermediate consumption, social benefits in cash, "
         "social transfers in kind, interest, subsidies, other current, "
-        "capital formation, capital transfers), **revenue by ESA type** (10 "
-        "lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), "
+        "capital formation, capital transfers), **revenue by ESA type** (15 "
+        "lines per country: ten ESA types plus the excise-duty split of R02 "
+        "and the employers'/households' split of social contributions, with "
+        "remainders), the **balance ledger** (TR, TE, NLB, NI, PB), "
         "and a **reconciliation of history and forecast dynamics to the IMF "
-        "WEO** general-government aggregates — 99 line series plus three "
+        "WEO** general-government aggregates — 123 line series plus three "
         "ledgers, "
         "each extended backwards and forwards as far as compatible official "
         "sources permit (§1).",
@@ -414,15 +417,15 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Known limits awaiting the committee",
         "",
-        "- **OQ-10 (raised 2026-09-19, D-S11-001..004)** — the pension line "
-        "`GF10_2` and the economic tree `E01`-`E09` are built; the review of "
-        "every line recommends four further breakdowns (`GF10_5` "
-        "unemployment, `GF04_5` transport, `R02_A` excise duties, the R06 "
-        "employers'/households' split) and asks for two approvals: the OBR "
-        "historical pensioner series as a C-band backward leg for GBR "
-        "`GF10_2`, and the DSM join for `E05` (one config row, as for "
-        "GF01_7). GBR `GF10_2` has no forecast until an FRS edition with "
-        "state-pension projections is in hand (OQ-6 a).",
+        "- **OQ-10 (raised and resolved 2026-09-19, D-S11-001..006)** — the "
+        "pension line `GF10_2`, the economic tree `E01`-`E09` and the four "
+        "further splits (`GF10_5` unemployment, `GF04_5` transport, `R02_A` "
+        "excise duties, `R06_E`/`R06_H` employers'/households' contributions) "
+        "are built; the OBR historical pensioner series carries GBR `GF10_2` "
+        "back to 1979 (maximum) and `E05` chains into the DSM like GF01_7. "
+        "GBR `GF10_2` has no forecast until an FRS edition with state-pension "
+        "projections is in hand (OQ-6 a); `GF09_4` tertiary is the one "
+        "optional split not taken up.",
         "- **OQ-6 (partially resolved 2026-09-05)** — gov.uk and bmas.de "
         "are allowlisted and OBR files were hand-retrieved (D-S7-001/002), "
         "so GBR strict now runs on OBR EFO March 2026 + PESA 2026. Still "

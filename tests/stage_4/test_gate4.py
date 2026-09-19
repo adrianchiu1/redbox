@@ -109,7 +109,7 @@ def test_proxies_carry_d2_and_78_requirements():
 
 
 def test_coverage_matrix_complete(matrix):
-    assert len(matrix) == 99 == config.universe_size()
+    assert len(matrix) == 123 == config.universe_size()
     assert matrix.reason_series_ends.astype(str).str.len().ge(10).all()
     assert matrix.first_historical_year.notna().all()
     assert matrix.final_actual_year.notna().all()
@@ -126,10 +126,18 @@ def test_coverage_matrix_complete(matrix):
     assert gf10.loc["GBR", "final_maximum_year"] == 2027
     assert gf10.loc["FRA", "final_maximum_year"] == 2070
     assert gf10.loc["DEU", "final_maximum_year"] == 2070
-    # GF01_X / GF10_X are never forecast: final maximum = final actual
-    for code in ("GF01_X", "GF10_X"):
+    # remainders are never forecast: final maximum = final actual
+    for code in ("GF01_X", "GF04_X", "GF10_X", "R02_X", "R06_X"):
         gx = matrix[matrix.line_code == code]
         assert len(gx) == 3 and (gx.final_maximum_year == gx.final_actual_year).all(), code
+    # D-S11-005: the UK pension line reaches back to 1979 in maximum only
+    g102 = matrix[matrix.line_code == "GF10_2"].set_index("iso3")
+    assert g102.loc["GBR", "first_historical_year"] == 1979
+    # excises forecast where a source exists (GBR OBR, DEU Steuerschätzung)
+    r02a = matrix[matrix.line_code == "R02_A"].set_index("iso3")
+    assert r02a.loc["GBR", "final_maximum_year"] >= 2030
+    assert r02a.loc["DEU", "final_maximum_year"] >= 2030
+    assert r02a.loc["FRA", "final_maximum_year"] == r02a.loc["FRA", "final_actual_year"]
     # the pension line carries the Ageing Report leg in strict (D-S11-002)
     g102 = matrix[matrix.line_code == "GF10_2"].set_index("iso3")
     assert g102.loc["FRA", "final_strict_year"] == 2070

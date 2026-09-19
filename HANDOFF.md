@@ -6,64 +6,62 @@ from `main` at 8b99c74).
 
 ## Current stage
 
-**All parent-package stages 0–6 remain complete on a 99-line universe
-(D-S11-001): three trees per country — 14 COFOG lines (the GF01_7/GF01_X
-interest split and the new GF10_2/GF10_X old-age pension split), 9 ESA_EXP
-lines (expenditure by economic type, new) and 10 ESA_REV lines.** The
-specification carries a v2.3 addendum (§4.1a, §4.1b) recording both. The
-debt extension (DEBT_KICKOFF.md) is untouched.
+**All parent-package stages 0–6 remain complete on a 123-line universe
+(D-S11-001/005): three trees per country — 17 COFOG lines (ten Level I plus
+the Level II splits GF01_7 interest, GF10_2 old age, GF10_5 unemployment,
+GF04_5 transport, each with its remainder), 9 ESA_EXP lines (expenditure by
+economic type) and 15 ESA_REV lines (ten ESA types plus R02_A excise duties
+and the R06_E/R06_H employers'/households' contributions split, with
+remainders).** The specification carries the v2.3 addendum (§4.1a, §4.1b,
+§4.2a). The debt extension (DEBT_KICKOFF.md) is untouched.
 
-## What session 11 did (D-S11-001..004; OQ-10)
+## What session 11 did (D-S11-001..006; OQ-10 raised and resolved)
 
-- **Fresh harvest** (`ggfiscal fetch --all`, 2026-09-19, 0 failures): the
-  parent-package raw snapshots were absent from this container; the rebuild
-  on the new pulls changed no value in any tree (run_id only).
-- **Level II is a config mechanism**: `config.level2_splits()` enumerates
-  every `level: "2"` line and its derived remainder from `config/lines.yaml`;
-  build, coverage, V19, stitched-year derivation and the flat files iterate
-  it. A further COFOG group is one config entry plus its remainder.
-- **`GF10_2` Old age (COFOG 10.2) = pensions**, remainder `GF10_X`. Anchors
-  GBR/FRA 1995–2024, DEU 2000–2024 (Eurostat DEU Level II lacks 1995–99 and
-  the GFS group series also starts 2000). FRA/DEU strict to 2070 on the
-  Ageing Report's gross public pensions (measured 1.07 of the line, grade B);
-  GBR has no applicable forecast (EFO 4.9 State pension starts FY 2024-25 —
-  no overlap year; declared `source_blocked`).
-- **`ESA_EXP` tree** E01–E09 + `TE_ESA` from gov_10a_main payable items
-  (FRA/DEU) and ONS ESA Table 2 payable rows (GBR); identity to TE exact
-  everywhere (V2). AMECO is the direct grade-A forecast (to 2027) and the
-  backward source (FRA 1978, DEU 1991, GBR 1987) for E01–E07; E08/E09 are
-  §7.8 proxies (maximum); GBR E01/E02/E07 have no AMECO history (declared).
-  `E03` D.62 is the social-benefits line the committee asked for. FRA/DEU
-  `E05` ← DSM is withheld by V16 (the approval list names GF01_7 only;
-  OQ-10 c).
-- **Validators**: `build.load_trees()` feeds every classification-agnostic
-  check; V2 now also checks E01..E09 = TE_ESA; V19 checks every split; V20
-  covers E05; V15 has an ESA_EXP arm against the same TE envelope. Counts
-  (66/72/12/10) are derived from config everywhere.
-- **Deliverables**: `expenditure_esa.csv` (new), `classification` column in
-  every tree file, catalogue and coverage matrix keyed by classification,
-  `strict_{cc}.csv` columns GDP → COFOG → ESA_EXP → revenue → ledger,
-  `statistical_forecasts.csv` regenerated (91 series). Notebooks:
-  chartbook +6 charts (pension split), `chartbook_esa.ipynb` (new
-  companion, 30 charts), `forecasts_{cc}_expenditure` +2 series each,
-  `forecasts_{cc}_esa.ipynb` (new ×3); cell surgery scripted in
-  `tools/update_notebooks_s11.py`.
-- **Review of every line for further breakdowns** → OQ-10, with measured
-  shares: recommended `GF10_5` unemployment, `GF04_5` transport, `R02_A`
-  excise duties and the R06 employers'/households' split; no further GF01
-  split (its non-interest groups are coded differently across the three
-  offices; the transfer content is now `E07`).
+- **Fresh harvest** (`ggfiscal fetch --all`, 2026-09-19, 0 failures); the
+  rebuild changed no value in the pre-existing 66 series (run_id only).
+- **Level II is a config mechanism** for every tree: `config.level2_splits()`
+  returns one entry per parent (ordered Level II lines, one remainder whose
+  `minus` lists them all, per-line anchor cells / GFS indicator / OECD RS
+  headings); build, coverage, V19, the stitched-year remainder derivation,
+  the small multiples, the flat files and `tools/update_notebooks_s11.py`
+  iterate it. A further group is one config entry plus its remainder,
+  sources, crosswalk row and a re-run of the notebook script.
+- **Pensions `GF10_2`** (COFOG 10.2): FRA/DEU strict to 2070 on the Ageing
+  Report (1.07, B); GBR back to 1979 in maximum on the OBR historical
+  pensioner series (0.665, C; committee-approved) and no forecast (EFO 4.9
+  has no overlap year).
+- **`GF10_5` unemployment, `GF04_5` transport**: anchors only (D7: no
+  institution projects them); DEU from 2000.
+- **`ESA_EXP` tree** E01–E09 + TE_ESA, identity exact; AMECO grade-A
+  forecasts to 2027 and backward legs; **E05 now chains into the DSM to
+  2036** beside GF01_7 (committee-approved config rows).
+- **`R02_A` excise duties = D.214A + D.2122C** (Germany books its energy tax
+  on imports under D.2122C — measured before choosing): GBR strict to 2030
+  on six OBR duty series (0.986 B), DEU strict to 2030 on the
+  Steuerschätzung excises (0.918 B), FRA declared; OECD 5121 backward
+  (FRA/DEU B to 1965/1991, GBR C).
+- **`R06_E` / `R06_H`** employers'/households' actual contributions,
+  remainder R06_X (imputed and supplementary): GBR maximum to 2030 on EFO
+  3.4 NICs by class (0.73/0.74 C — the anchor rows include public-service
+  pension contributions); FRA/DEU declared (no split published); OECD
+  2200 and 2100+2300 backward (FRA B, DEU B/C, GBR C).
+- **Deliverables**: `expenditure_esa.csv`, `classification` column in every
+  tree file, strict matrices widened, `statistical_forecasts.csv`
+  regenerated; chartbook +Level II charts, `chartbook_esa.ipynb`
+  companion, forecast books extended and three `forecasts_{cc}_esa.ipynb`.
+- **Verification** that the previously built machinery still works after
+  the splits: D-S11-006 lists what was checked (pytest 151 passed; validate
+  OK=87 WARN=2092 no ERROR) (identities, the untouched
+  20-line WEO decomposition and its explained shares, the benchmark
+  forecasts covering exactly the series that need them, the catalogue /
+  coverage matrix / strict matrices / chartbooks covering every series).
 
 ## Blocked on whom
 
-- **OQ-10 (committee)**: (a) confirm the four recommended breakdowns;
-  (b) approve the OBR historical pensioner-spending series as a C-band
-  backward leg for GBR GF10_2 (to 1978); (c) one config row each to let
-  FRA/DEU E05 chain into the DSM path like GF01_7.
-- OQ-6 (a) unchanged: an FRS edition with long-term state-pension /
-  functional projections would give GBR GF10_2 (and GF07/GF09/GF10) a
-  strict long-term leg.
-- OQ-8/OQ-9 (debt) unchanged.
+- Nothing blocking. OQ-10 resolved. Open: OQ-6 (a) an FRS edition with
+  state-pension / functional long-term projections would give GBR GF10_2
+  (and GF07/GF09/GF10) a strict long-term leg; OQ-8/OQ-9 (debt) unchanged;
+  `GF09_4` tertiary education is the one optional split not taken up.
 
 ## Exact next command
 
@@ -75,12 +73,14 @@ jupyter nbconvert --execute --inplace notebooks/chartbook*.ipynb notebooks/deriv
 python3 -m pytest -q --ignore=tests/debt
 ```
 
-To add the next Level II group (OQ-10 a): one `level: "2"` entry with its
-`parent`, `eurostat_cofog` and `gfs_indicator` in `config/lines.yaml`, its
-`level: derived` remainder with `minus:` and `never_forecast: true`, the
-sources in `forecast/forward.py` and `stitch/backward.py`, a crosswalk row,
-a `chart(...)` cell per country (`tools/update_notebooks_s11.py` shows the
-pattern), then rebuild and re-execute.
+To add the next Level II group: one `level: "2"` entry with its `parent`
+and anchor cell (`eurostat_cofog` + `gfs_indicator` for COFOG; `eurostat`
+dataset + codes, `ons` table + codes, `oecd_rs` headings for revenue) in
+`config/lines.yaml`, the remainder's `minus` list extended (or a new
+`level: derived` remainder with `never_forecast: true`), the forecast
+sources in `forecast/forward.py` if any, a crosswalk row, then rebuild,
+`python3 tools/update_notebooks_s11.py` (inserts the chart and forecast
+cells after the parent's), and re-execute the notebooks.
 
 ## Data facts future sessions must not rediscover (session 11)
 
@@ -113,6 +113,22 @@ pattern), then rebuild and re-execute.
   benefits) starts FY 2025-26. OBR historical PF database "Spending (£m)"
   has Social Security and "o/w pensioners" 1978-79 → 2022-23 (public
   sector); no 2023-24, so it cannot bridge to the EFO tables.
+- Excise duties: Germany's `gov_10a_taxag` D214A (36 EUR bn, 2024) is only
+  the domestic part — the energy tax on imported fuels sits in D2122C
+  (29 bn); D214A + D2122C = 65 bn = OECD 5121 exactly. The UK NTL D214A
+  row ("excise duties and consumption taxes", 62 £bn) also holds air
+  passenger duty, the climate change levy, the renewables obligation and
+  contracts for difference, landfill, aggregates, soft-drinks and
+  plastic-packaging levies — the OBR databank covers 92% of it.
+- Contributions: ONS ESA Table 2 has D611 and D613 receivable;
+  `gov_10a_main` has D611REC/D613REC (no D612/D614). EFO detailed receipts
+  table 3.4 splits NICs by class from FY 2024-25, so CY 2025 overlaps the
+  anchor (unlike the welfare and state-pension tables). The anchors'
+  D.611/D.613 include employer and employee contributions to public-service
+  pension schemes, so NICs cover ~73%.
+- OBR historical PF "Spending (£m)": header row 4, FY labels in column B,
+  `readers.obr_hist_pf_fy(column)`; the pensioner column is IFS-based from
+  1978-79; converted per §7.10 it runs 1979–2022.
 - `statistical_forecasts.csv` is not in (iso3, line_code) sorted order once
   the trees are concatenated by classification; the combination test
   reindexes `within`/`between` onto the combination's index.
@@ -120,9 +136,15 @@ pattern), then rebuild and re-execute.
   differently-ordered indexes — reindex first.
 - `pip install -e .[forecast]` (pmdarima, prophet, statsmodels) and
   `.[notebook]` (jupyter, nbconvert, ipykernel) both install cleanly in this
-  image; `ggfiscal statistical-forecasts` takes ~3 minutes for 91 series.
-- The chartbook must stay under ~1 MB (D-S9-004): the pension split fits;
-  the economic tree does not, hence `chartbook_esa.ipynb`.
+  image; `ggfiscal statistical-forecasts` takes ~4 minutes for 113 series.
+- Notebook sizes (D-S9-004, ~1 MB to render on GitHub): the chartbook is
+  now three books — `chartbook.ipynb` 0.79 MB (COFOG, ledger, WEO, seams),
+  `chartbook_revenue.ipynb` 0.44, `chartbook_esa.ipynb` 0.29. The nine
+  forecast books are 0.54–0.96 MB except `forecasts_GBR_expenditure` at
+  1.06 MB — split it per the D-S9-004 fallback if GitHub declines to render
+  it. `tools/update_notebooks_s11.py` rebuilds the two companion chartbooks
+  and the three esa forecast books WITHOUT outputs every run: re-execute
+  them (nbconvert) after every run of the script.
 
 ## Parent data facts carried forward
 

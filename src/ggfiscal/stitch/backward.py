@@ -28,6 +28,7 @@ RS_XWALK = "OECD_RS_to_ESA_REV:1.0"
 AMECO_XWALK = "EC_AMECO_to_INTEREST:1.0"
 AMECO_EXP_XWALK = "EC_AMECO_to_ESA_EXP:1.0"
 GFS_XWALK = "IMF_GFS_to_COFOG:1.0"
+OBR_HIST_XWALK = "OBR_HIST_PF_to_COFOG:1.0"
 
 RS_NOTE = ("OECD Revenue Statistics heading, growth only (§7.11): historical "
            "years cash-basis; payable tax credits net where the anchor is gross "
@@ -99,17 +100,54 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
                 "IMF GFS COFOG: redistribution of the same Destatis ESA data "
                 "(boundary ratio ~1.0 at 1995); XDC levels", GFS_XWALK,
                 break_before=DEU_BREAK)]
-        # GF10_2 (D-S11-002): Eurostat DEU Level II starts 2000; the GFS
-        # old-age group (GF1020_T) is registered as the candidate for
-        # 1995-99 but measured live it also starts in 2000, so nothing is
-        # applied and the line stops at 2000 (crosswalk row records it)
-        for split in config.level2_splits():
-            if split["level2"] != "GF01_7" and split["gfs_indicator"]:
-                out[("COFOG", split["level2"])] = [ExtSource(
-                    "IMF_GFS", R.gfs_series(iso3, "cofog", split["gfs_indicator"]),
-                    f"IMF GFS COFOG group {split['gfs_indicator']}: redistribution "
-                    "of the same Destatis ESA data (coverage measured at the "
-                    "boundary); XDC levels", GFS_XWALK, break_before=DEU_BREAK)]
+        # COFOG Level II groups (D-S11-002/005): GFS group series where one
+        # exists (GF1020_T, GF1050_T; none for 04.5) — registered as the
+        # candidate for the years Eurostat DEU Level II lacks (1995-99);
+        # measured live the GFS groups also start in 2000, so nothing is
+        # applied and the crosswalk row records the stop
+        for split in config.level2_splits("COFOG"):
+            for l2 in split["level2s"]:
+                ind = split["meta"][l2]["gfs_indicator"]
+                if l2 != "GF01_7" and ind:
+                    out[("COFOG", l2)] = [ExtSource(
+                        "IMF_GFS", R.gfs_series(iso3, "cofog", ind),
+                        f"IMF GFS COFOG group {ind}: redistribution of the same "
+                        "Destatis ESA data (coverage measured at the boundary); "
+                        "XDC levels", GFS_XWALK, break_before=DEU_BREAK)]
+    # --- Revenue Level II lines via OECD RS (D-S11-005): excise duties
+    # (5121), employers' (2200) and employees'/self-employed (2100)
+    # contributions — same crosswalk discipline as the parent lines (D15)
+    for split in config.level2_splits("ESA_REV"):
+        for l2 in split["level2s"]:
+            headings = split["meta"][l2]["oecd_rs"]
+            if not headings:
+                continue
+            label = config.tree_lines("ESA_REV")[l2]["label"]
+            if len(headings) == 1:
+                out[("ESA_REV", l2)] = [_rs(iso3, headings[0], f"OECD {headings[0][2:]} {label}")]
+            else:
+                series = None
+                for h in headings:
+                    part = R.oecd_rs_heading(iso3, h)
+                    series = part if series is None else (series + part)
+                out[("ESA_REV", l2)] = [ExtSource(
+                    "OECD_RS", series.dropna(),
+                    f"OECD {' + '.join(h[2:] for h in headings)} {label}: " + RS_NOTE,
+                    RS_XWALK, break_before=DEU_BREAK if iso3 == "DEU" else None)]
+    # --- GBR GF10_2 via the OBR historical public finances database
+    # (D-S11-005, committee-approved OQ-10 b): public-sector pensioner
+    # spending, FY converted per §7.10, growth only; measured 0.67 of COFOG
+    # 10.2 at 2022 (state pension plus pensioner benefits against the
+    # function total incl. public-service pensions and in-kind services), so
+    # a C-band leg: maximum_extension only, to 1979
+    if iso3 == "GBR":
+        out[("COFOG", "GF10_2")] = [ExtSource(
+            "OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners"),
+            "OBR historical public finances database, Social Security o/w "
+            "pensioners (IFS-based FY series 1978-79 to 2022-23, public sector, "
+            "£mn), converted FY->CY per §7.10; pensioner cash benefits vs COFOG "
+            "10.2 function total — coverage measured (C band); growth only",
+            OBR_HIST_XWALK, concept_flag="public_sector_perimeter")]
     # --- ESA_EXP (D-S11-003): every economic line has an AMECO counterpart of
     # the same ESA concept (Commission redistribution of national accounts);
     # growth only, coverage measured at the boundary, DEU never below 1991.

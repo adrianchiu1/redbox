@@ -20,7 +20,7 @@ from ggfiscal import config
 
 # §10 one-line test descriptions (the table's Test column, abridged)
 CHECK_LABELS = {
-    "S0_LINES": "structural: the line universe enumerates from config (99 series, D-S11-001)",
+    "S0_LINES": "structural: the line universe enumerates from config (D-S11-001/005)",
     "S0_REGISTER": "structural: register entries carry status + endpoint",
     "S0_SNAPSHOTS": "D8: manifest snapshots verify byte-for-byte where present",
     "S0_COVERAGE": "Gate 0: every line has measured coverage from ≥1 source",
@@ -43,7 +43,7 @@ CHECK_LABELS = {
     "V16": "short/long-term overlap divergence",
     "V17": "coverage_share_year on every proxy/composite row",
     "V18": "register URLs resolve or archived copy present",
-    "V19": "Level II splits: GF01_X + GF01_7 = GF01, GF10_X + GF10_2 = GF10; remainders never forecast",
+    "V19": "Level II splits (GF01, GF04, GF10, R02, R06): remainder + Σ Level II = parent; remainders never forecast",
     "V20": "interest rows carry concept_flag; strict rows gross",
     "V21": "Level II GF01.7 vs D.41 payable within 5%",
     "V22": "history: Σ R01–R10 = TR (0.1%)",

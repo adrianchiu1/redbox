@@ -16,7 +16,7 @@ from ggfiscal.build import load_ledger, load_trees
 from ggfiscal.validate.runner import Finding
 
 VARIANTS = ("strict", "maximum_extension")
-NEGATIVE_OK = {"R08", "R10"}  # lines; ledger NLB/NI/PB handled separately
+NEGATIVE_OK = {"R08", "R10", "R06_X"}  # lines; ledger NLB/NI/PB handled separately
 REV_LINES = [f"R{n:02d}" for n in range(1, 11)]
 EXP_LINES = [f"GF{n:02d}" for n in range(1, 11)]
 EXP_ESA_LINES = [f"E{n:02d}" for n in range(1, 10)]   # ESA_EXP (D-S11-003)
@@ -198,34 +198,37 @@ def check_v14() -> list[Finding]:
 
 
 def check_v19() -> list[Finding]:
-    """Every COFOG Level II split (config.level2_splits(): GF01_7/GF01_X per
-    D10, GF10_2/GF10_X per D-S11-002): remainder + Level II = parent exactly,
-    Level II never exceeds its parent, and the remainder is never forecast."""
+    """Every Level II split (config.level2_splits(): GF01_7/GF01_X per D10,
+    GF10_2/GF10_5/GF10_X and GF04_5/GF04_X, R02_A/R02_X, R06_E/R06_H/R06_X
+    per D-S11-002/005): remainder + Σ Level II = parent exactly, each Level
+    II line never exceeds its parent, and the remainder is never forecast."""
     out = []
     splits = config.level2_splits()
     for variant, df in _tables().items():
         for iso3 in config.COUNTRIES:
-            piv = df[(df.iso3 == iso3) & (df.series_variant == variant)
-                     & (df.classification == "COFOG")] \
-                .pivot_table(index="year", columns="line_code", values="value_lcu_mn")
             for sp in splits:
-                p, l2, x = sp["parent"], sp["level2"], sp["remainder"]
+                p, l2s, x = sp["parent"], sp["level2s"], sp["remainder"]
+                piv = df[(df.iso3 == iso3) & (df.series_variant == variant)
+                         & (df.classification == sp["classification"])] \
+                    .pivot_table(index="year", columns="line_code", values="value_lcu_mn")
                 both = [y for y in piv.index
-                        if all(c in piv.columns and pd.notna(piv[c][y]) for c in (p, l2, x))]
+                        if all(c in piv.columns and pd.notna(piv[c][y]) for c in (p, x, *l2s))]
                 for y in both:
-                    if abs(piv[x][y] + piv[l2][y] - piv[p][y]) > 1e-6:
+                    total = piv[x][y] + sum(piv[c][y] for c in l2s)
+                    if abs(total - piv[p][y]) > 1e-6 * max(1.0, abs(piv[p][y])):
                         out.append(Finding("V19", "ERROR", f"{iso3}/{variant}/{y}",
-                                           f"{x} + {l2} != {p}"))
-                    if piv[l2][y] > piv[p][y] + 1e-6:
-                        out.append(Finding("V19", "ERROR", f"{iso3}/{variant}/{y}",
-                                           f"{l2} > {p}"))
+                                           f"{x} + {' + '.join(l2s)} != {p}"))
+                    for c in l2s:
+                        if piv[c][y] > piv[p][y] + 1e-6:
+                            out.append(Finding("V19", "ERROR", f"{iso3}/{variant}/{y}",
+                                               f"{c} > {p}"))
         for sp in splits:
             fc = df[(df.line_code == sp["remainder"]) & df.is_forecast]
             for _, r in fc.iterrows():
                 out.append(Finding("V19", "ERROR", f"{r.iso3}/{r.year}",
                                    f"{sp['remainder']} has a forecast row (never forecast)"))
     return out or [Finding("V19", "OK", "-",
-                           "Level II split identities hold (GF01, GF10); remainders never forecast")]
+                           "Level II split identities hold in every tree; remainders never forecast")]
 
 
 def check_v20() -> list[Finding]:

@@ -1,14 +1,14 @@
 <html><head><meta charset='utf-8'><title>gg-fiscal validation report</title><style>body{font-family:sans-serif;margin:2em;max-width:75em}table{border-collapse:collapse;margin:1em 0}td,th{border:1px solid #ccc;padding:0.3em 0.6em;text-align:left;font-size:0.9em}.ERROR{background:#fdd}.WARN{background:#ffedcc}.OK{background:#e8f5e9}.SKIP{background:#eee}</style></head><body>
 <h1>Validation report — §10 suite</h1>
-<p>Generated 2026-09-19 07:58 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
-<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>1885</td><td class='OK'>77</td><td class='SKIP'>0</td></tr></table>
+<p>Generated 2026-09-19 08:54 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
+<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>2092</td><td class='OK'>87</td><td class='SKIP'>0</td></tr></table>
 <p><b>No ERROR findings: the gate holds.</b></p>
 <p>The WARN tiers are intended visibility, not defects: documented concept wedges (V1/V21/V25 crosswalk and perimeter differences), the withheld AMECO→DSM interest join flagged for the committee (V16, OQ-7), blocked register URLs (V18, OQ-6), stitch diagnostics at their measured C/D grades (V5), and raw snapshot bytes of earlier sessions not synced into this container (S0_SNAPSHOTS, by design D-S0-004 — provenance lives in the hash manifest).</p>
 <h2>Per-check outcomes</h2>
 <table><tr><th>check</th><th>test</th><th>worst</th><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr>
 <tr><td>S0_BRIDGE</td><td>Gate 0: §8.2 bridge computed, all countries, latest vintage</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>S0_COVERAGE</td><td>Gate 0: every line has measured coverage from ≥1 source</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>S0_LINES</td><td>structural: the line universe enumerates from config (99 series, D-S11-001)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>S0_LINES</td><td>structural: the line universe enumerates from config (D-S11-001/005)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>S0_REGISTER</td><td>structural: register entries carry status + endpoint</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>S0_SNAPSHOTS</td><td>D8: manifest snapshots verify byte-for-byte where present</td><td class='WARN'>WARN</td><td></td><td>1265</td><td></td><td></td></tr>
 <tr><td>V1</td><td>anchor years reproduce anchor values; IMF GFS within 0.5%</td><td class='WARN'>WARN</td><td></td><td>358</td><td></td><td></td></tr>
@@ -17,24 +17,24 @@
 <tr><td>V12</td><td>S13 everywhere; non-GG sources carry a perimeter note</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V13</td><td>concept compatibility note per stitch</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V14</td><td>missing stays missing</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>V15</td><td>forecast: covered sums ≤ envelope × (1 + tol)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V15</td><td>forecast: covered sums ≤ envelope × (1 + tol)</td><td class='WARN'>WARN</td><td></td><td>5</td><td></td><td></td></tr>
 <tr><td>V16</td><td>short/long-term overlap divergence</td><td class='WARN'>WARN</td><td></td><td>7</td><td>2</td><td></td></tr>
 <tr><td>V17</td><td>coverage_share_year on every proxy/composite row</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V18</td><td>register URLs resolve or archived copy present</td><td class='WARN'>WARN</td><td></td><td>11</td><td></td><td></td></tr>
-<tr><td>V19</td><td>Level II splits: GF01_X + GF01_7 = GF01, GF10_X + GF10_2 = GF10; remainders never forecast</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
+<tr><td>V19</td><td>Level II splits (GF01, GF04, GF10, R02, R06): remainder + Σ Level II = parent; remainders never forecast</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V2</td><td>history: Σ GF01–GF10 = TE and Σ E01–E09 = TE_ESA (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V20</td><td>interest rows carry concept_flag; strict rows gross</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V21</td><td>Level II GF01.7 vs D.41 payable within 5%</td><td class='WARN'>WARN</td><td></td><td>30</td><td></td><td></td></tr>
 <tr><td>V22</td><td>history: Σ R01–R10 = TR (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V23</td><td>history: TR − TE = anchor B.9 (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V24</td><td>base-year bridge gaps within tolerance; GBR perimeter stable</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>V25</td><td>OECD RS reconciliation on tax lines within tolerance</td><td class='WARN'>WARN</td><td></td><td>206</td><td></td><td></td></tr>
+<tr><td>V25</td><td>OECD RS reconciliation on tax lines within tolerance</td><td class='WARN'>WARN</td><td></td><td>408</td><td></td><td></td></tr>
 <tr><td>V26</td><td>decomposition additivity exact (history and forecast)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V27</td><td>net-interest cross-check reported everywhere</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V28</td><td>reconciliation tables keyed by both vintages</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V3</td><td>history: shares sum to 100 ± tol</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V4</td><td>values ≥ 0 except legitimately negative lines</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>V5</td><td>overlap-growth diagnostic per stitch (bias, RMSE)</td><td class='WARN'>WARN</td><td></td><td>8</td><td>49</td><td></td></tr>
+<tr><td>V5</td><td>overlap-growth diagnostic per stitch (bias, RMSE)</td><td class='WARN'>WARN</td><td></td><td>8</td><td>60</td><td></td></tr>
 <tr><td>V6</td><td>boundary growth equals recorded source growth</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V7</td><td>every forecast row has source, release date, URL, snapshot hash</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V8</td><td>interpolated / converted rows labelled</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
@@ -97,14 +97,21 @@
 <tr class='WARN'><td>FRA/GF01_7/2020</td><td>IMF GFS diff -0.6651% beyond 0.5%</td></tr>
 <tr><td colspan='2'>… 333 more in exceptions.csv</td></tr>
 </table>
+<h3>V15 — 5 WARNs: forecast: covered sums ≤ envelope × (1 + tol)</h3><table><tr><th>scope</th><th>message</th></tr>
+<tr class='WARN'><td>GBR/maximum_extension/2026</td><td>covered revenue sum 1548107 exceeds envelope TR 1285420 + 1%</td></tr>
+<tr class='WARN'><td>GBR/maximum_extension/2027</td><td>covered revenue sum 1629673 exceeds envelope TR 1357504 + 1%</td></tr>
+<tr class='WARN'><td>GBR/maximum_extension/2028</td><td>covered revenue sum 1694612 exceeds envelope TR 1414430 + 1%</td></tr>
+<tr class='WARN'><td>GBR/maximum_extension/2029</td><td>covered revenue sum 1768181 exceeds envelope TR 1475818 + 1%</td></tr>
+<tr class='WARN'><td>GBR/maximum_extension/2030</td><td>covered revenue sum 1839600 exceeds envelope TR 1536600 + 1%</td></tr>
+</table>
 <h3>V16 — 7 WARNs: short/long-term overlap divergence</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>GBR/GF01_7</td><td>EC_AMECO vs OBR_EFO_LATEST growth over 8 overlap years: max divergence +0.3424 in 2022 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
 <tr class='WARN'><td>GBR/R06</td><td>EC_AMECO vs OBR_EFO_LATEST growth over 8 overlap years: max divergence -0.0325 in 2024 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>GBR/GF10</td><td>EC_AMECO vs OBR_EFO_LATEST growth over 2 overlap years: max divergence +0.0294 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
 <tr class='WARN'><td>FRA/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
-<tr class='WARN'><td>FRA/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
+<tr class='WARN'><td>FRA/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>DEU/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
-<tr class='WARN'><td>DEU/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
+<tr class='WARN'><td>DEU/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 </table>
 <h3>V18 — 11 WARNs: register URLs resolve or archived copy present</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>register/INSEE_APU</td><td>no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)</td></tr>
@@ -147,7 +154,7 @@
 <tr class='WARN'><td>DEU/2019</td><td>Level II 01.7 vs D.41 payable diff 8.31% &gt; 5.0%</td></tr>
 <tr><td colspan='2'>… 5 more in exceptions.csv</td></tr>
 </table>
-<h3>V25 — 206 WARNs: OECD RS reconciliation on tax lines within tolerance</h3><table><tr><th>scope</th><th>message</th></tr>
+<h3>V25 — 408 WARNs: OECD RS reconciliation on tax lines within tolerance</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>GBR/R03/1991</td><td>OECD RS diff -6.7448% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
 <tr class='WARN'><td>GBR/R03/1992</td><td>OECD RS diff -7.6697% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
 <tr class='WARN'><td>GBR/R03/1993</td><td>OECD RS diff -6.0359% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
@@ -173,7 +180,7 @@
 <tr class='WARN'><td>GBR/R04/2022</td><td>OECD RS diff -3.725% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
 <tr class='WARN'><td>GBR/R06/1990</td><td>OECD RS diff -18.1194% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
 <tr class='WARN'><td>GBR/R06/1991</td><td>OECD RS diff -19.0313% beyond 3.0% (concept wedge carried by the crosswalk)</td></tr>
-<tr><td colspan='2'>… 181 more in exceptions.csv</td></tr>
+<tr><td colspan='2'>… 383 more in exceptions.csv</td></tr>
 </table>
 <h3>V5 — 8 WARNs: overlap-growth diagnostic per stitch (bias, RMSE)</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>GBR/R05/OECD_RS</td><td>overlap growth: bias +0.0071, rmse 0.1477 over 34 year-pairs</td></tr>
@@ -193,6 +200,6 @@
 <tr><td>level2_vs_d41_pct</td><td>5.0</td></tr>
 <tr><td>oecd_rs_reconciliation_pct</td><td>3.0</td></tr>
 <tr><td>sum_to_total_pct</td><td>0.1</td></tr>
-<tr><td>v16_approved_joins</td><td>[{&#x27;iso3&#x27;: &#x27;FRA&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;DEU&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;GBR&#x27;, &#x27;line_code&#x27;: &#x27;R06&#x27;, &#x27;incoming_source&#x27;: &#x27;OBR_EFO_LATEST&#x27;}]</td></tr>
+<tr><td>v16_approved_joins</td><td>[{&#x27;iso3&#x27;: &#x27;FRA&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;DEU&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;GBR&#x27;, &#x27;line_code&#x27;: &#x27;R06&#x27;, &#x27;incoming_source&#x27;: &#x27;OBR_EFO_LATEST&#x27;}, {&#x27;iso3&#x27;: &#x27;FRA&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;DEU&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}]</td></tr>
 <tr><td>v16_overlap_divergence</td><td>0.02</td></tr>
 </table></body></html>

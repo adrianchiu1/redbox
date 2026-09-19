@@ -129,7 +129,27 @@ Derived measures per observation: `pct_gdp`, `pct_total` (of TE or TR as appropr
 | TE | total | Total expenditure |
 
 ### 4.1a Level II splits (v2.3)
-Declared in `config/lines.yaml`: a `level: "2"` line names its `parent`; its remainder is `level: derived`, `never_forecast`. The build takes the Level II cell from the anchor's own Level II table (ONS Table 11 / Eurostat `gov_10a_exp`), derives the remainder in every year both exist (anchor and backward-stitched), and V19 checks `remainder + level2 = parent` and that the remainder carries no forecast row. Only the interest split has a fallback concept (D10). Adding a further group (the OQ-10 candidates: 10.5 unemployment, 04.5 transport, 09.4 tertiary) is a config entry plus its forecast/extension sources and a chart cell.
+Declared in `config/lines.yaml`: a `level: "2"` line names its `parent`; its remainder is `level: derived`, `never_forecast`, and its `minus` list names every Level II line under that parent (a parent may carry several). The build takes the Level II cell from the anchor's own Level II table (ONS Table 11 / Eurostat `gov_10a_exp`), derives the remainder in every year both exist (anchor and backward-stitched), and V19 checks `remainder + level2 = parent` and that the remainder carries no forecast row. Only the interest split has a fallback concept (D10). Built splits after D-S11-005: `GF01_7` interest (remainder `GF01_X`); `GF10_2` old age and `GF10_5` unemployment (remainder `GF10_X`); `GF04_5` transport (remainder `GF04_X`). Adding a further group (e.g. 09.4 tertiary) is a config entry plus its forecast/extension sources and a chart cell.
+
+| Code | Level | Label | Anchor cell |
+|---|---|---|---|
+| GF04_5 | 2 | Transport (COFOG 04.5) | GF0405 |
+| GF04_X | derived | Economic affairs excluding transport | GF04 − GF04_5 |
+| GF10_5 | 2 | Unemployment (COFOG 10.5) | GF1005 |
+| GF10_X | derived | Social protection excluding old age and unemployment | GF10 − GF10_2 − GF10_5 |
+
+### 4.2a Revenue Level II splits (v2.3, D-S11-005)
+The same mechanism on the revenue tree. Anchor cells come from the anchor institution's per-tax table where the main aggregate has no sub-item (NTL table 9 / `gov_10a_taxag`), so any drift between the two tables lands in the derived remainder, never in the V22 identity.
+
+| Code | Level | ESA | Label | Anchor cell (ONS / Eurostat) | Backward (OECD RS) |
+|---|---|---|---|---|---|
+| R02_A | 2 | D.214A + D.2122C | Excise duties (on domestic products and on imports) | NTL D214A + D2122C / taxag D214A + D2122C | 5121 |
+| R02_X | derived | | Other taxes on production and imports excluding excise duties | R02 − R02_A | — |
+| R06_E | 2 | D.611 | Employers' actual social contributions | T2 D611 / main D611REC | 2200 |
+| R06_H | 2 | D.613 | Households' actual social contributions | T2 D613 / main D613REC | 2100 + 2300 |
+| R06_X | derived | D.612 + D.614 − D.61SC | Imputed and supplementary social contributions | R06 − R06_E − R06_H | — |
+
+Forecasts: OBR per-duty receipts and the EFO NICs-by-class table (GBR); the Steuerschätzung federal excises plus beer duty (DEU); none for France (PDF-only, OQ-5) or for the FRA/DEU contribution split (no institution publishes one). §15 Q13 (one D.61 line with the imputed component flagged) is superseded: the imputed component is now its own remainder line.
 
 ### 4.1b Expenditure by economic type (`classification = ESA_EXP`, v2.3)
 | Code | ESA | Label | Eurostat `gov_10a_main` / ONS ESA Table 2 (payable) |

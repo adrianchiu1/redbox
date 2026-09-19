@@ -59,34 +59,6 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
         gf = f"GF{n:02d}"
         out[("COFOG", gf)] = _cofog_sources(iso3, gf, f"{gf}_T")
 
-    # --- COFOG Level II splits (GF01_7/GF01_X per D10; GF10_2/GF10_X per
-    # D-S11-002) and their derived remainders, enumerated from lines.yaml ---
-    for split in config.level2_splits():
-        l2 = _cofog_sources(iso3, split["eurostat_cofog"], split["gfs_indicator"])
-        if split["level2"] == "GF01_7":
-            if iso3 == "GBR":
-                l2.append(("ONS_PSF_INTEREST", R.ons_t2_series("D41", "payable"),
-                           "D10 fallback concept: GG D.41 payable, accrued"))
-            else:
-                l2.append(("EUROSTAT_GOV10A_MAIN", R.eurostat_main(iso3, "D41PAY"),
-                           "D10 fallback concept: GG D.41 payable"))
-            l2.append(("EC_AMECO", R.ameco_series(iso3, "UYIG", 16),
-                       "envelope forecast source; ESA gross GG interest (D.41 pay)"))
-        if split["level2"] == "GF10_2" and iso3 in ("FRA", "DEU"):
-            l2.append(("EC_AGEING_2024", R.ar_series(iso3, "pensions"),
-                       "forecast source; AWG gross public pensions, % GDP"))
-        out[("COFOG", split["level2"])] = l2
-        if iso3 == "GBR":
-            parent, child = R.ons_cofog(split["parent"]), R.ons_cofog(split["eurostat_cofog"])
-            anchor = "ONS_ESA_T11"
-        else:
-            parent = R.eurostat_cofog(iso3, split["parent"])
-            child = R.eurostat_cofog(iso3, split["eurostat_cofog"])
-            anchor = "EUROSTAT_GOV10A_EXP"
-        out[("COFOG", split["remainder"])] = [
-            (anchor, _intersect(parent, child),
-             f"derived {split['parent']} - {split['level2']}; years where both exist")]
-
     # --- ESA_EXP: expenditure by economic type (D-S11-003) ---
     for code, meta in config.tree_lines("ESA_EXP").items():
         if config.is_total(meta):
@@ -195,6 +167,54 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
 
     for line, entries in rev.items():
         out[("ESA_REV", line)] = entries
+    # --- Level II splits and their derived remainders, every tree
+    # (config.level2_splits(): D10, D-S11-002, D-S11-005) ---
+    from ggfiscal.build import _revenue_level2
+
+    for split in config.level2_splits():
+        cls, parent = split["classification"], split["parent"]
+        components = []
+        for l2 in split["level2s"]:
+            meta = split["meta"][l2]
+            if cls == "COFOG":
+                entries = _cofog_sources(iso3, meta["eurostat_cofog"], meta["gfs_indicator"])
+                if not meta["gfs_indicator"]:
+                    entries = [e for e in entries if e[0] != "IMF_GFS"]
+                if l2 == "GF01_7":
+                    if iso3 == "GBR":
+                        entries.append(("ONS_PSF_INTEREST", R.ons_t2_series("D41", "payable"),
+                                        "D10 fallback concept: GG D.41 payable, accrued"))
+                    else:
+                        entries.append(("EUROSTAT_GOV10A_MAIN", R.eurostat_main(iso3, "D41PAY"),
+                                        "D10 fallback concept: GG D.41 payable"))
+                    entries.append(("EC_AMECO", R.ameco_series(iso3, "UYIG", 16),
+                                    "envelope forecast source; ESA gross GG interest (D.41 pay)"))
+                if l2 == "GF10_2" and iso3 in ("FRA", "DEU"):
+                    entries.append(("EC_AGEING_2024", R.ar_series(iso3, "pensions"),
+                                    "forecast source; AWG gross public pensions, % GDP"))
+                if l2 == "GF10_2" and iso3 == "GBR":
+                    entries.append(("OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners"),
+                                    "backward extension candidate; public-sector pensioner "
+                                    "spending, FY converted (D-S11-005)"))
+            else:
+                series, src_id, note = _revenue_level2(iso3, l2, meta)
+                entries = [(src_id, series, f"anchor; {note}")]
+                for heading in (meta.get("oecd_rs") or []):
+                    entries.append(("OECD_RS", R.oecd_rs_heading(iso3, heading),
+                                    f"backward extension; OECD heading {heading}"))
+            out[(cls, l2)] = entries
+            components.append(entries[0][1])
+        if cls == "COFOG":
+            parent_series = (R.ons_cofog(parent) if iso3 == "GBR"
+                             else R.eurostat_cofog(iso3, parent))
+            anchor = "ONS_ESA_T11" if iso3 == "GBR" else "EUROSTAT_GOV10A_EXP"
+        else:
+            parent_series = out[(cls, parent)][0][1] if (cls, parent) in out else pd.Series(dtype=float)
+            anchor = out[(cls, parent)][0][0] if (cls, parent) in out else ""
+        out[(cls, split["remainder"])] = [
+            (anchor, _intersect(parent_series, *components),
+             f"derived {parent} - {' - '.join(split['level2s'])}; years where all exist")]
+
     return out
 
 

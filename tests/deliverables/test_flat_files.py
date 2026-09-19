@@ -130,9 +130,9 @@ def test_catalogue_covers_every_published_series_and_agrees_on_spans():
                       read("revenue_esa.csv")])
     published = set(map(tuple, tree[["iso3", "line_code"]].drop_duplicates().values))
     assert set(map(tuple, cat[["iso3", "line_code"]].values)) == published
-    # the 99 line series (D-S11-001) are all there, on top of the nine totals
+    # the 123 line series (D-S11-001/005) are all there, on top of the nine totals
     assert {(iso3, line) for iso3, _, line in config.line_universe()} <= published
-    assert len(cat) == 99 + 9
+    assert len(cat) == config.universe_size() + 9 == 132
     assert set(cat.classification) == {"COFOG", "ESA_EXP", "ESA_REV"}
 
     for row in cat.itertuples():
@@ -151,7 +151,7 @@ def test_catalogue_spans_agree_with_the_coverage_matrix():
     66 line series — one of them drifting would be a rendering bug."""
     cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
     cov = canonical("coverage_matrix.csv").set_index(["iso3", "line_code"])
-    assert len(cov) == 99
+    assert len(cov) == 123
     cat = cat.reindex(cov.index)
     assert cat.line_label.notna().all()             # every line is catalogued
     for cov_col, cat_col in (("first_historical_year", "first_year"),
@@ -423,12 +423,14 @@ FORECAST_NOTEBOOKS = tuple(
     f"forecasts_{iso3}_{tree}.ipynb"
     for iso3 in ("GBR", "FRA", "DEU")
     for tree in ("expenditure", "esa", "revenue"))
-# chartbook_esa.ipynb is the companion for the ESA_EXP tree (D-S11-004): the
-# main chartbook stays under the size GitHub will render
-CHARTBOOKS = {"COFOG": "chartbook.ipynb", "ESA_REV": "chartbook.ipynb",
+# chartbook_esa.ipynb and chartbook_revenue.ipynb are the companions for the
+# ESA_EXP and ESA_REV trees (D-S11-004/006): the main chartbook keeps the
+# COFOG tree, the ledger, the WEO comparison and the seams table, and stays
+# under the size GitHub will render
+CHARTBOOKS = {"COFOG": "chartbook.ipynb", "ESA_REV": "chartbook_revenue.ipynb",
               "ESA_EXP": "chartbook_esa.ipynb"}
 NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb", "chartbook_esa.ipynb",
-             *FORECAST_NOTEBOOKS)
+             "chartbook_revenue.ipynb", *FORECAST_NOTEBOOKS)
 
 
 def _notebook(name: str):
@@ -506,20 +508,28 @@ def test_chartbook_charts_every_published_series():
     """One chart per series, country by country, plus the WEO comparison and
     the ledger — a series that gains a chart nowhere would be invisible."""
     _, code, source, markdown = _notebook("chartbook.ipynb")
-    _, code_esa, source_esa, markdown_esa = _notebook("chartbook_esa.ipynb")
+    books = {name: _notebook(name) for name in set(CHARTBOOKS.values())}
     cat = read("series_catalogue.csv")
 
+    # whole-cell matches: `chart("DEU", "TR")` is a substring of the ledger
+    # cell `ledger_chart("DEU", "TR")`
+    calls = {name: {"".join(c["source"]).strip() for c in book_code}
+             for name, (_, book_code, _, _) in books.items()}
     for row in cat.itertuples():
         call = f'chart("{row.iso3}", "{row.line_code}")'
-        book = source_esa if row.classification == "ESA_EXP" else source
-        assert call in book, call
-        assert call not in (source if book is source_esa else source_esa), call
-    figures_esa = [o for c in code_esa for o in c["outputs"]
+        home = CHARTBOOKS[row.classification]
+        for name in books:
+            assert (call in calls[name]) == (name == home), (call, name)
+    for cls, name in CHARTBOOKS.items():
+        _, book_code, _, book_md = books[name]
+        figures = [o for c in book_code for o in c["outputs"]
                    if "data" in o and "image/png" in o["data"]]
-    assert len(figures_esa) >= (cat.classification == "ESA_EXP").sum()
+        assert len(figures) >= (cat.classification == cls).sum(), name
     for topic in ("second cut", "never", "TE_ESA", "E03", "E05"):
-        assert topic in markdown_esa, topic
-    cat = cat[cat.classification != "ESA_EXP"]
+        assert topic in books["chartbook_esa.ipynb"][3], topic
+    for topic in ("R02_A", "R06_E", "R06_H", "never forecast", "TR"):
+        assert topic in books["chartbook_revenue.ipynb"][3], topic
+    cat = cat[cat.classification == "COFOG"]
     for iso3 in ("GBR", "FRA", "DEU"):
         for q in ("TR", "TE", "NLB", "NI", "PB"):
             assert f'ledger_chart("{iso3}", "{q}")' in source
@@ -532,8 +542,9 @@ def test_chartbook_charts_every_published_series():
                if "data" in o and "image/png" in o["data"]]
     assert len(figures) >= len(cat) + 15 + 9 + 3, "a chart is missing"
     # the schema caveats are stated, not left for the reader to discover
-    for topic in ("GF01_X", "GF10_X", "chartbook_esa", "outturn-only",
-                  "two different TE numbers", "explained_share", "seam"):
+    for topic in ("GF01_X", "GF10_X", "chartbook_esa", "chartbook_revenue",
+                  "outturn-only", "two different TE numbers", "explained_share",
+                  "seam"):
         assert topic in markdown, topic
 
 
@@ -570,13 +581,13 @@ def test_chartbook_shares_one_x_axis_per_country_and_shades_every_chart():
     assert "to 2031" in markdown
 
 
-@pytest.mark.parametrize("book", ["chartbook.ipynb", "chartbook_esa.ipynb"])
+@pytest.mark.parametrize("book", sorted(set(CHARTBOOKS.values())))
 def test_chartbook_says_why_each_series_without_a_projection_has_none(book):
     """Every series that stops at its last outturn must say so in its own
     caption, and none that projects may claim it does not."""
     _, code, source, markdown = _notebook(book)
     cat = read("series_catalogue.csv")
-    cat = cat[(cat.classification == "ESA_EXP") == (book == "chartbook_esa.ipynb")]
+    cat = cat[cat.classification.map(CHARTBOOKS) == book]
     cat = cat.set_index(["iso3", "line_code"])
 
     checked = 0

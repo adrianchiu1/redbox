@@ -467,15 +467,21 @@ _SHARED = {
                "contains strict and equals it wherever both exist; it adds "
                "years at either end — a longer backward leg as well as a "
                "longer forecast. Pick one; never mix them in a series.",
-    "line_code": "Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II "
-                 "interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old "
-                 "age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total "
-                 "expenditure). ESA economic expenditure: E01 compensation of "
+    "line_code": "Series code. COFOG: GF01-GF10 (Level I); Level II splits "
+                 "GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. "
+                 "pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 "
+                 "transport (remainder GF04_X); TE (total expenditure). ESA "
+                 "revenue: R01-R10 with the Level II splits R02_A excise duties "
+                 "(remainder R02_X) and R06_E employers' / R06_H households' "
+                 "actual social contributions (remainder R06_X, the imputed "
+                 "and supplementary part); TR (total revenue). "
+                 "ESA economic expenditure: E01 compensation of "
                  "employees, E02 intermediate consumption, E03 social benefits "
                  "in cash (D.62), E04 social transfers in kind purchased "
                  "(D.632), E05 interest, E06 subsidies, E07 other current, E08 "
                  "capital formation, E09 capital transfers, TE_ESA (their "
-                 "total). ESA revenue: R01-R10, TR (total revenue).",
+                 "total). A remainder plus its Level II lines equals the "
+                 "parent exactly; remainders are never forecast.",
     "line_label": "Human-readable name of the line.",
     "line_level": "1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = "
                   "identity; total = TE, TE_ESA or TR.",
@@ -506,8 +512,27 @@ _COUNTRY_COLUMN_NOTE = {
     "GF10_2": "Old age (GF10_2): COFOG group 10.2 from the anchor's own Level "
               "II table — the pensions line (old-age cash benefits plus the "
               "administration and in-kind services of the function).",
-    "GF10_X": "Social protection excluding old age (GF10_X): the identity "
-              "GF10 - GF10_2, never forecast.",
+    "GF10_5": "Unemployment (GF10_5): COFOG group 10.5 from the anchor's "
+              "own Level II table — unemployment benefits and services. Note "
+              "the UK books Universal Credit under 10.7, so its 10.5 is small.",
+    "GF10_X": "Social protection excluding old age and unemployment (GF10_X): "
+              "the identity GF10 - GF10_2 - GF10_5, never forecast.",
+    "GF04_5": "Transport (GF04_5): COFOG group 04.5 from the anchor's own "
+              "Level II table.",
+    "GF04_X": "Economic affairs excluding transport (GF04_X): the identity "
+              "GF04 - GF04_5, never forecast.",
+    "R02_A": "Excise duties (R02_A, ESA D.214A): fuel, tobacco, alcohol and "
+             "other excises, from the anchor institution's per-tax table "
+             "(NTL table 9 / gov_10a_taxag).",
+    "R02_X": "Other taxes on production and imports excluding excise duties "
+             "(R02_X): the identity R02 - R02_A, never forecast; carries any "
+             "drift between the per-tax table and the main aggregate.",
+    "R06_E": "Employers' actual social contributions (R06_E, ESA D.611).",
+    "R06_H": "Households' actual social contributions (R06_H, ESA D.613): "
+             "employees, self-employed and non-employed persons.",
+    "R06_X": "Imputed and supplementary social contributions (R06_X): the "
+             "identity R06 - R06_E - R06_H = D.612 + D.614 - D.61SC, never "
+             "forecast; may be negative in principle.",
     "TE": "Total expenditure (TE) from the COFOG tree's expenditure anchor. "
           "Not the same series as LEDGER_TE — see that column.",
     "TE_ESA": "Total expenditure from the ESA main-aggregates table (the sum "

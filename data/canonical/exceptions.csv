@@ -1,5 +1,5 @@
 check_id,severity,scope,message
-S0_LINES,OK,-,99 line series enumerated (3 countries x 33)
+S0_LINES,OK,-,123 line series enumerated (3 countries x 41)
 S0_REGISTER,OK,-,63 register entries structurally complete
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124529Z_f88cbdb3b751.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124538Z_26601ec18b30.csv (raw store not synced)
@@ -1266,7 +1266,7 @@ S0_SNAPSHOTS,WARN,OECD_FINMARK,snapshot file missing locally: data/raw/OECD_FINM
 S0_SNAPSHOTS,WARN,OECD_FINMARK,snapshot file missing locally: data/raw/OECD_FINMARK/20260911T004926Z_39cfc2986750.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,OECD_FINMARK,snapshot file missing locally: data/raw/OECD_FINMARK/20260911T004926Z_6ef4d65a877d.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,OECD_FINMARK,snapshot file missing locally: data/raw/OECD_FINMARK/20260911T004927Z_6c76eb661c77.csv (raw store not synced)
-S0_COVERAGE,OK,-,99/99 lines have measured coverage from >=1 source
+S0_COVERAGE,OK,-,123/123 lines have measured coverage from >=1 source
 S0_BRIDGE,OK,-,§8.2 bridge computed for all 3 countries on WEO 2026-04
 V1,WARN,FRA/GF01/2001,IMF GFS diff -1.0426% beyond 0.5%
 V1,WARN,FRA/GF01/2002,IMF GFS diff -0.6244% beyond 0.5%
@@ -1637,6 +1637,10 @@ V5,WARN,GBR/R05/OECD_RS,"overlap growth: bias +0.0071, rmse 0.1477 over 34 year-
 V5,OK,GBR/R06/OECD_RS,"overlap growth: bias -0.0024, rmse 0.0140 over 34 year-pairs"
 V5,OK,GBR/GF01_7/ONS_PSF_INTEREST,"overlap growth: bias +0.0002, rmse 0.0040 over 29 year-pairs"
 V5,OK,GBR/GF01_7/EC_AMECO,"overlap growth: bias -0.0050, rmse 0.0192 over 29 year-pairs"
+V5,OK,GBR/R02_A/OECD_RS,"overlap growth: bias -0.0087, rmse 0.0199 over 29 year-pairs"
+V5,OK,GBR/R06_E/OECD_RS,"overlap growth: bias -0.0076, rmse 0.0227 over 34 year-pairs"
+V5,OK,GBR/R06_H/OECD_RS,"overlap growth: bias -0.0023, rmse 0.0162 over 34 year-pairs"
+V5,OK,GBR/GF10_2/OBR_HIST_PF,"overlap growth: bias -0.0080, rmse 0.0217 over 27 year-pairs"
 V5,OK,GBR/E03/EC_AMECO,"overlap growth: bias -0.0002, rmse 0.0017 over 35 year-pairs"
 V5,OK,GBR/E04/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 35 year-pairs"
 V5,OK,GBR/E05/EC_AMECO,"overlap growth: bias -0.0068, rmse 0.0208 over 35 year-pairs"
@@ -1650,6 +1654,9 @@ V5,WARN,FRA/R04/OECD_RS,"overlap growth: bias -0.0081, rmse 0.0503 over 29 year-
 V5,WARN,FRA/R05/OECD_RS,"overlap growth: bias +0.0188, rmse 0.0492 over 29 year-pairs"
 V5,OK,FRA/R06/OECD_RS,"overlap growth: bias -0.0007, rmse 0.0050 over 29 year-pairs"
 V5,OK,FRA/GF01_7/EC_AMECO,"overlap growth: bias +0.0034, rmse 0.0218 over 29 year-pairs"
+V5,OK,FRA/R02_A/OECD_RS,"overlap growth: bias -0.0016, rmse 0.0087 over 29 year-pairs"
+V5,OK,FRA/R06_E/OECD_RS,"overlap growth: bias +0.0001, rmse 0.0025 over 29 year-pairs"
+V5,OK,FRA/R06_H/OECD_RS,"overlap growth: bias -0.0002, rmse 0.0027 over 29 year-pairs"
 V5,OK,FRA/E01/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 30 year-pairs"
 V5,OK,FRA/E02/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 30 year-pairs"
 V5,OK,FRA/E03/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 30 year-pairs"
@@ -1677,6 +1684,10 @@ V5,OK,DEU/GF08/IMF_GFS,"overlap growth: bias +0.0000, rmse 0.0000 over 29 year-p
 V5,OK,DEU/GF09/IMF_GFS,"overlap growth: bias +0.0000, rmse 0.0000 over 29 year-pairs"
 V5,OK,DEU/GF10/IMF_GFS,"overlap growth: bias +0.0000, rmse 0.0000 over 29 year-pairs"
 V5,OK,DEU/GF10_2/IMF_GFS,"overlap growth: bias +0.0000, rmse 0.0000 over 24 year-pairs"
+V5,OK,DEU/GF10_5/IMF_GFS,"overlap growth: bias +0.0000, rmse 0.0000 over 24 year-pairs"
+V5,OK,DEU/R02_A/OECD_RS,"overlap growth: bias -0.0005, rmse 0.0121 over 29 year-pairs"
+V5,OK,DEU/R06_E/OECD_RS,"overlap growth: bias +0.0011, rmse 0.0072 over 29 year-pairs"
+V5,OK,DEU/R06_H/OECD_RS,"overlap growth: bias +0.0046, rmse 0.0150 over 29 year-pairs"
 V5,OK,DEU/E01/EC_AMECO,"overlap growth: bias +0.0000, rmse 0.0000 over 30 year-pairs"
 V5,OK,DEU/E02/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 30 year-pairs"
 V5,OK,DEU/E03/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 30 year-pairs"
@@ -1695,16 +1706,20 @@ V11,OK,-,every forecast source is the latest registered vintage
 V12,OK,-,all sources S13; no unnoted perimeter
 V13,OK,-,every stitched and forecast row carries a concept note and crosswalk
 V14,OK,-,no filled values; year sets match the anchors
-V15,OK,-,"covered sums within the envelope in all 48 checked (country, variant, year, side) cells"
+V15,WARN,GBR/maximum_extension/2026,covered revenue sum 1548107 exceeds envelope TR 1285420 + 1%
+V15,WARN,GBR/maximum_extension/2027,covered revenue sum 1629673 exceeds envelope TR 1357504 + 1%
+V15,WARN,GBR/maximum_extension/2028,covered revenue sum 1694612 exceeds envelope TR 1414430 + 1%
+V15,WARN,GBR/maximum_extension/2029,covered revenue sum 1768181 exceeds envelope TR 1475818 + 1%
+V15,WARN,GBR/maximum_extension/2030,covered revenue sum 1839600 exceeds envelope TR 1536600 + 1%
 V16,WARN,GBR/GF01_7,"EC_AMECO vs OBR_EFO_LATEST growth over 8 overlap years: max divergence +0.3424 in 2022 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
 V16,WARN,GBR/R06,"EC_AMECO vs OBR_EFO_LATEST growth over 8 overlap years: max divergence -0.0325 in 2024 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,GBR/GF10,"EC_AMECO vs OBR_EFO_LATEST growth over 2 overlap years: max divergence +0.0294 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
 V16,WARN,FRA/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,OK,FRA/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0164 in 2024 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
-V16,WARN,FRA/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,FRA/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0653 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,DEU/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,OK,DEU/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0141 in 2024 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
-V16,WARN,DEU/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,DEU/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V17,OK,-,"every proxy/composite row carries coverage share, year and residual_method; no proxy in strict"
 V18,WARN,register/INSEE_APU,no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)
 V18,WARN,register/DESTATIS_81000,no archived copy and unresolved URL (status: unverified; Stage 2 concern)
@@ -1717,7 +1732,7 @@ V18,WARN,register/DEU_BMF_FINPLAN,no URL recorded and no archived copy (status: 
 V18,WARN,register/FRA_PLF_P117,no archived copy and unresolved URL (status: blocked)
 V18,WARN,register/DEU_FINANZAGENTUR,"no archived copy and unresolved URL (status: blocked; deutsche-finanzagentur.de, bundesbank.de, genesis.destatis.de blocked (OQ-8))"
 V18,WARN,register/BDF_WEBSTAT,no archived copy and unresolved URL (status: blocked)
-V19,OK,-,"Level II split identities hold (GF01, GF10); remainders never forecast"
+V19,OK,-,Level II split identities hold in every tree; remainders never forecast
 V20,OK,-,interest rows flagged; strict rows gross
 V21,WARN,FRA/1999,Level II 01.7 vs D.41 payable diff 5.44% > 5.0%
 V21,WARN,FRA/2000,Level II 01.7 vs D.41 payable diff 5.58% > 5.0%
@@ -1810,6 +1825,106 @@ V25,WARN,GBR/R06/2021,OECD RS diff -21.9857% beyond 3.0% (concept wedge carried 
 V25,WARN,GBR/R06/2022,OECD RS diff -20.6854% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,GBR/R06/2023,OECD RS diff -21.5385% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,GBR/R06/2024,OECD RS diff -24.9256% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/1995,OECD RS diff -6.341% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/1996,OECD RS diff -5.5173% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/1997,OECD RS diff -4.3032% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/1998,OECD RS diff -4.0008% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/1999,OECD RS diff -3.7709% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2000,OECD RS diff -3.8546% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2001,OECD RS diff -5.4737% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2002,OECD RS diff -7.0456% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2003,OECD RS diff -7.7123% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2004,OECD RS diff -7.889% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2005,OECD RS diff -7.883% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2006,OECD RS diff -8.2513% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2007,OECD RS diff -10.7375% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2008,OECD RS diff -10.9101% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2009,OECD RS diff -10.5865% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2010,OECD RS diff -11.8972% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2011,OECD RS diff -13.2712% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2012,OECD RS diff -14.3639% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2013,OECD RS diff -16.4506% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2014,OECD RS diff -18.2939% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2015,OECD RS diff -19.6336% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2016,OECD RS diff -20.7251% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2017,OECD RS diff -21.8384% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2018,OECD RS diff -23.235% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2019,OECD RS diff -24.479% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2020,OECD RS diff -21.6904% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2021,OECD RS diff -18.7143% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2022,OECD RS diff -21.4275% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2023,OECD RS diff -25.0911% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R02_A/2024,OECD RS diff -26.9536% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1990,OECD RS diff -6.1432% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1991,OECD RS diff -6.2849% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1992,OECD RS diff -6.7618% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1993,OECD RS diff -6.6153% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1994,OECD RS diff -6.7154% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1995,OECD RS diff -6.5864% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1996,OECD RS diff -6.5437% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1997,OECD RS diff -13.9268% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1998,OECD RS diff -14.1256% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/1999,OECD RS diff -14.3131% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2000,OECD RS diff -14.7488% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2001,OECD RS diff -14.9148% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2002,OECD RS diff -16.6278% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2003,OECD RS diff -17.2252% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2004,OECD RS diff -18.8951% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2005,OECD RS diff -20.9125% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2006,OECD RS diff -20.1302% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2007,OECD RS diff -20.0318% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2008,OECD RS diff -19.8675% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2009,OECD RS diff -22.6842% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2010,OECD RS diff -23.6235% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2011,OECD RS diff -22.5122% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2012,OECD RS diff -21.6579% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2013,OECD RS diff -20.8891% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2014,OECD RS diff -20.5886% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2015,OECD RS diff -21.5307% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2016,OECD RS diff -20.9864% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2017,OECD RS diff -20.4916% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2018,OECD RS diff -20.3701% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2019,OECD RS diff -23.8529% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2020,OECD RS diff -26.5603% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2021,OECD RS diff -25.86% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2022,OECD RS diff -24.1478% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2023,OECD RS diff -24.779% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_E/2024,OECD RS diff -26.4567% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1990,OECD RS diff -19.2616% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1991,OECD RS diff -19.8423% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1992,OECD RS diff -20.853% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1993,OECD RS diff -21.2894% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1994,OECD RS diff -17.9066% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1995,OECD RS diff -17.7031% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1996,OECD RS diff -18.4212% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1997,OECD RS diff -16.7581% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1998,OECD RS diff -16.2061% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/1999,OECD RS diff -17.3805% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2000,OECD RS diff -18.5725% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2001,OECD RS diff -21.204% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2002,OECD RS diff -22.8637% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2003,OECD RS diff -24.8565% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2004,OECD RS diff -22.5859% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2005,OECD RS diff -21.6513% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2006,OECD RS diff -21.4484% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2007,OECD RS diff -21.8787% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2008,OECD RS diff -21.3989% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2009,OECD RS diff -20.7485% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2010,OECD RS diff -18.9839% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2011,OECD RS diff -18.9813% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2012,OECD RS diff -18.8458% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2013,OECD RS diff -20.806% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2014,OECD RS diff -21.2247% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2015,OECD RS diff -21.5213% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2016,OECD RS diff -20.873% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2017,OECD RS diff -20.2592% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2018,OECD RS diff -20.4082% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2019,OECD RS diff -20.142% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2020,OECD RS diff -21.0164% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2021,OECD RS diff -21.4047% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2022,OECD RS diff -20.6129% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2023,OECD RS diff -21.7664% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,GBR/R06_H/2024,OECD RS diff -26.8892% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,FRA/R03/1995,OECD RS diff -3.5807% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,FRA/R03/1997,OECD RS diff -3.1493% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,FRA/R03/1999,OECD RS diff -3.0462% beyond 3.0% (concept wedge carried by the crosswalk)
@@ -1878,6 +1993,62 @@ V25,WARN,FRA/R06/2021,OECD RS diff -11.6163% beyond 3.0% (concept wedge carried 
 V25,WARN,FRA/R06/2022,OECD RS diff -11.008% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,FRA/R06/2023,OECD RS diff -11.1623% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,FRA/R06/2024,OECD RS diff -11.3722% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/1995,OECD RS diff 5.727% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/1996,OECD RS diff 6.5984% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/1997,OECD RS diff 4.4111% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/1998,OECD RS diff 4.7538% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/1999,OECD RS diff 5.2303% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2000,OECD RS diff 5.7771% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2001,OECD RS diff 6.0569% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2002,OECD RS diff 5.7403% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2003,OECD RS diff 5.3118% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2004,OECD RS diff 5.2267% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2005,OECD RS diff 6.0133% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2006,OECD RS diff 6.6214% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2007,OECD RS diff 6.0375% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2008,OECD RS diff 6.4897% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2009,OECD RS diff 6.0143% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2010,OECD RS diff 5.4693% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2011,OECD RS diff 6.0691% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2012,OECD RS diff 6.2389% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2013,OECD RS diff 5.5549% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2014,OECD RS diff 6.6331% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2015,OECD RS diff 5.2799% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2016,OECD RS diff 4.7926% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2017,OECD RS diff 4.3419% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2018,OECD RS diff 3.2549% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2022,OECD RS diff 3.4951% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R02_A/2023,OECD RS diff 4.0314% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/1995,OECD RS diff -18.9163% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/1996,OECD RS diff -20.2953% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/1997,OECD RS diff -20.6898% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/1998,OECD RS diff -20.6401% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/1999,OECD RS diff -20.4791% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2000,OECD RS diff -20.6482% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2001,OECD RS diff -21.5323% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2002,OECD RS diff -21.1041% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2003,OECD RS diff -21.8399% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2004,OECD RS diff -22.3694% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2005,OECD RS diff -22.7892% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2006,OECD RS diff -23.4548% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2007,OECD RS diff -23.4009% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2008,OECD RS diff -24.3096% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2009,OECD RS diff -25.2372% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2010,OECD RS diff -25.5606% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2011,OECD RS diff -24.832% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2012,OECD RS diff -25.0672% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2013,OECD RS diff -24.9334% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2014,OECD RS diff -24.8147% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2015,OECD RS diff -23.9683% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2016,OECD RS diff -23.0607% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2017,OECD RS diff -22.2816% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2018,OECD RS diff -23.5825% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2019,OECD RS diff -25.0356% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2020,OECD RS diff -25.7115% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2021,OECD RS diff -24.9249% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2022,OECD RS diff -25.4097% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2023,OECD RS diff -24.6745% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,FRA/R06_H/2024,OECD RS diff -25.0387% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R03/1995,OECD RS diff 8.1074% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R03/2001,OECD RS diff 6.7996% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R03/2006,OECD RS diff 3.2544% beyond 3.0% (concept wedge carried by the crosswalk)
@@ -1958,6 +2129,52 @@ V25,WARN,DEU/R06/2021,OECD RS diff -15.4895% beyond 3.0% (concept wedge carried 
 V25,WARN,DEU/R06/2022,OECD RS diff -15.0135% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R06/2023,OECD RS diff -14.9832% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R06/2024,OECD RS diff -14.9687% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R02_A/2000,OECD RS diff -3.7038% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R02_A/2001,OECD RS diff -3.7373% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R02_A/2002,OECD RS diff -4.028% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R02_A/2003,OECD RS diff -4.7299% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/1995,OECD RS diff -3.0349% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/1996,OECD RS diff -3.3839% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/1997,OECD RS diff -3.1554% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/1999,OECD RS diff -3.3894% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2000,OECD RS diff -3.051% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2001,OECD RS diff -3.5507% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2003,OECD RS diff -3.6391% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2004,OECD RS diff -3.563% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2005,OECD RS diff -3.4145% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2006,OECD RS diff -3.2983% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2007,OECD RS diff -3.5677% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_E/2008,OECD RS diff -3.4482% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/1995,OECD RS diff -35.592% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/1996,OECD RS diff -37.7657% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/1997,OECD RS diff -37.5223% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/1998,OECD RS diff -37.0429% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/1999,OECD RS diff -37.0169% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2000,OECD RS diff -35.7812% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2001,OECD RS diff -35.5794% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2002,OECD RS diff -36.9105% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2003,OECD RS diff -36.8818% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2004,OECD RS diff -37.8946% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2005,OECD RS diff -38.4211% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2006,OECD RS diff -37.5855% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2007,OECD RS diff -35.9426% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2008,OECD RS diff -35.6437% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2009,OECD RS diff -33.6239% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2010,OECD RS diff -33.0564% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2011,OECD RS diff -31.807% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2012,OECD RS diff -31.3849% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2013,OECD RS diff -31.3605% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2014,OECD RS diff -31.0115% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2015,OECD RS diff -30.9869% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2016,OECD RS diff -30.6815% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2017,OECD RS diff -30.6715% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2018,OECD RS diff -30.2716% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2019,OECD RS diff -31.1428% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2020,OECD RS diff -32.5171% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2021,OECD RS diff -31.8709% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2022,OECD RS diff -30.856% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2023,OECD RS diff -30.9097% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,DEU/R06_H/2024,OECD RS diff -31.0332% beyond 3.0% (concept wedge carried by the crosswalk)
 V26,OK,-,history contributions sum to Δ(NLB/GDP) exactly; forecast components sum to the WEO change exactly
 V27,OK,-,"net-interest cross-check present for all 112 (country, variant, vintage, horizon) cells; non-computable cells carry their reason (R07 declared, OQ-6)"
 V28,OK,-,all reconciliation tables keyed by weo_vintage; forecast tables carry source_vintage_set_hash

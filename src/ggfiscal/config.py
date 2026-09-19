@@ -106,25 +106,43 @@ def level1_lines(classification: str) -> list[str]:
             if not is_total(m) and str(m.get("level", "1")) == "1"]
 
 
-def level2_splits() -> list[dict]:
-    """Every COFOG Level II line with its parent and derived remainder
-    (GF01_7/GF01_X per D10; GF10_2/GF10_X per D-S11-002): one dict per
-    split — parent, level2, remainder, eurostat_cofog, gfs_indicator,
-    fallback. Enumerated from lines.yaml so a further group is config only."""
-    exp = lines()["expenditure"]
+def level2_lines(classification: str) -> dict[str, dict]:
+    """The Level II lines of a tree: code -> meta (with `parent`)."""
+    return {c: m for c, m in tree_lines(classification).items()
+            if str(m.get("level")) == "2"}
+
+
+def level2_splits(classification: str | None = None) -> list[dict]:
+    """Every parent that carries Level II lines, with its derived remainder
+    (D10: GF01_7/GF01_X; D-S11-002: GF10_2/GF10_X; D-S11-005: GF10_5,
+    GF04_5, R02_A, R06_E/R06_H). One dict per parent: classification,
+    parent, level2s (ordered codes), remainder, and per-Level II meta
+    (anchor cell, GFS indicator, OECD RS heading, D10 fallback). The
+    remainder is `parent - Σ level2s`, never forecast. Enumerated from
+    lines.yaml so a further group is config only."""
     out = []
-    for code, meta in exp.items():
-        if str(meta.get("level")) != "2":
-            continue
-        parent = meta["parent"]
-        remainder = next(c for c, m in exp.items()
-                         if m.get("level") == "derived" and m.get("parent") == parent
-                         and m.get("minus") == code)
-        out.append({"parent": parent, "level2": code, "remainder": remainder,
-                    "eurostat_cofog": meta["eurostat_cofog"],
-                    "gfs_indicator": meta.get("gfs_indicator"),
-                    "fallback": meta.get("fallback"),
-                    "grade_on_fallback": meta.get("grade_on_fallback", "B")})
+    for cls in (TREES if classification is None else [classification]):
+        tree = tree_lines(cls)
+        l2 = level2_lines(cls)
+        parents = list(dict.fromkeys(m["parent"] for m in l2.values()))
+        for parent in parents:
+            codes = [c for c, m in l2.items() if m["parent"] == parent]
+            remainder = next(c for c, m in tree.items()
+                             if m.get("level") == "derived" and m.get("parent") == parent)
+            minus = tree[remainder].get("minus")
+            minus = [minus] if isinstance(minus, str) else list(minus)
+            if set(minus) != set(codes):
+                raise ValueError(f"{remainder}.minus {minus} != Level II lines {codes}")
+            out.append({"classification": cls, "parent": parent, "level2s": codes,
+                        "remainder": remainder,
+                        "meta": {c: {"eurostat_cofog": l2[c].get("eurostat_cofog"),
+                                     "gfs_indicator": l2[c].get("gfs_indicator"),
+                                     "eurostat": l2[c].get("eurostat"),
+                                     "ons": l2[c].get("ons"),
+                                     "oecd_rs": l2[c].get("oecd_rs"),
+                                     "fallback": l2[c].get("fallback"),
+                                     "grade_on_fallback": l2[c].get("grade_on_fallback", "B")}
+                                 for c in codes}})
     return out
 
 

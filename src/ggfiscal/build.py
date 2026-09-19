@@ -10,6 +10,9 @@ Line construction (documented against §4):
   GF01..GF10   anchor COFOG Level I, na_item TE
   GF01_7       anchor COFOG Level II 01.7 (D10; level2 per D-S0-008)
   GF01_X       GF01 - GF01_7, derived, never forecast
+  GF10_2/GF10_5/GF04_5 and R02_A/R06_E/R06_H: further Level II splits with
+               remainders GF10_X/GF04_X/R02_X/R06_X (config.level2_splits(),
+               D-S11-002/005) — one config entry each
   TE (COFOG)   the COFOG table's own total row (V2 tests Level I against it)
   R01          D211            R02  D2 - D211
   R03          D51 households (FRA/DEU D51A_C1; GBR D51M — incl. holding gains)
@@ -43,6 +46,43 @@ def _release(source_id: str) -> tuple[str, str]:
     ver = (config.sources().get(source_id, {}).get("verification") or {})
     return (str(ver.get("last_update_observed", "") or ""),
             str(ver.get("checked", "") or ""))
+
+
+def _sum_codes(series: list[pd.Series]) -> pd.Series:
+    """Sum of anchor cells where a secondary cell may be absent in some years
+    (D.2122C is not published for every country-year): the first code sets
+    the year set, later codes add where present."""
+    total = series[0].copy()
+    for extra in series[1:]:
+        total = total.add(extra.reindex(total.index, fill_value=0.0), fill_value=0.0)
+    return total.dropna()
+
+
+def _revenue_level2(iso3: str, code: str, meta: dict) -> tuple[pd.Series, str, str]:
+    """(series, source_id, concept note) for a revenue Level II line from its
+    lines.yaml anchor cells: ONS ESA Table 2 receivable rows or NTL table 9
+    codes (GBR); gov_10a_main or gov_10a_taxag items (FRA/DEU). taxag/NTL
+    cells sit in a different table from the parent's main/T2 aggregate, so
+    their transmission-timing drift (D-S1-002) lands in the derived
+    remainder, never in the identity."""
+    if iso3 == "GBR":
+        spec = meta["ons"]
+        codes = spec["codes"]
+        if spec["table"] == "t2":
+            d = spec.get("direction", "receivable")
+            return (_sum_codes([R.ons_t2_series(c, d) for c in codes]),
+                    "ONS_GG_RECEIPTS", f"ESA Table 2 {' + '.join(codes)} receivable")
+        return (_sum_codes([R.ons_tax_series(c) for c in codes]), "ONS_TAX_DETAIL",
+                f"NTL table 9 {' + '.join(codes)} (per-tax detail table; the parent "
+                "comes from ESA Table 2, so any drift lands in the remainder)")
+    spec = meta["eurostat"]
+    codes = spec["codes"]
+    if spec["dataset"] == "gov_10a_main":
+        return (_sum_codes([R.eurostat_main(iso3, c) for c in codes]), "EUROSTAT_GOV10A_MAIN",
+                f"gov_10a_main {' + '.join(codes)}")
+    return (_sum_codes([R.eurostat_taxag(iso3, c) for c in codes]), "EUROSTAT_GOV10A_TAXAG",
+            f"gov_10a_taxag {' + '.join(codes)} (detail table; the parent comes from "
+            "gov_10a_main, so any drift lands in the remainder, D-S1-002)")
 
 
 def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
@@ -121,49 +161,6 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
         code = f"GF{n:02d}"
         out.update([m("COFOG", code, cof(code), exp_src,
                       "anchor_actual", "1", exp_meta[code]["label"])])
-    # COFOG Level II splits (config.level2_splits(): GF01_7/GF01_X per D10,
-    # GF10_2/GF10_X per D-S11-002). The Level II line comes from the anchor's
-    # own Level II table; its remainder is parent minus Level II, derived and
-    # never forecast. D10's fallback applies to the interest line only: years
-    # the anchor covers (parent exists) but Level II lacks are filled from the
-    # same institution's GG D.41 payable, level2_proxy_actual, grade B (DEU
-    # 1995-99 is the case). Other groups simply start where Level II starts.
-    for split in config.level2_splits():
-        parent, l2, rem = split["parent"], split["level2"], split["remainder"]
-        l2_series = cof(split["eurostat_cofog"])
-        parent_series = out[("COFOG", parent)]["series"]
-        per_year: dict[int, dict] = {}
-        if split["fallback"] == "d41_payable":
-            d41pay = (R.ons_t2_series("D41", "payable") if iso3 == "GBR"
-                      else R.eurostat_main(iso3, "D41PAY"))
-            for y in sorted(set(parent_series.index) - set(l2_series.index)):
-                if y in d41pay.index:
-                    l2_series.loc[y] = float(d41pay[y])
-                    per_year[y] = {
-                        "observation_type": "level2_proxy_actual",
-                        "quality_grade": split["grade_on_fallback"],
-                        "notes": "D10 fallback: GG gross D.41 payable in place of "
-                                 "missing Level II 01.7 (same institution)"}
-        l2_series = l2_series.sort_index()
-        cofog_code = split["eurostat_cofog"]
-        dotted = f"{cofog_code[2:4]}.{int(cofog_code[4:6])}"
-        interest = l2 == "GF01_7"
-        out.update([m("COFOG", l2, l2_series, exp_src, "anchor_actual", "2",
-                      exp_meta[l2]["label"],
-                      concept="d41_gross_accrued" if interest else "",
-                      notes=(f"COFOG {dotted} from the anchor's Level II table "
-                             + ("(D10)" if interest else "(D-S11-002)")),
-                      per_year=per_year)])
-        remainder = (parent_series - l2_series).dropna()
-        x_per_year = {y: {"observation_type": "derived_actual",
-                          "quality_grade": split["grade_on_fallback"],
-                          "notes": f"{parent} minus a D10 proxy {l2} year"}
-                      for y in per_year}
-        out.update([m("COFOG", rem, remainder, exp_src, "derived_actual", "derived",
-                      exp_meta[rem]["label"],
-                      notes=f"derived {parent} - {l2}; never forecast "
-                            + ("(D10)" if interest else "(D-S11-002)"),
-                      per_year=x_per_year)])
     out.update([m("COFOG", "TE", te_cofog, exp_src, "anchor_actual", "total",
                   "Total expenditure",
                   notes="the COFOG table's own total row (V2 baseline)")])
@@ -201,6 +198,65 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                       rev_meta[code]["label"], concept=concept, notes=notes)])
     out.update([m("ESA_REV", "TR", tr, rev_src, "anchor_actual", "total",
                   "Total revenue")])
+    # Level II splits (config.level2_splits(): GF01_7/GF01_X per D10,
+    # GF10_2 per D-S11-002, GF10_5/GF04_5 and the revenue splits R02_A,
+    # R06_E/R06_H per D-S11-005). Each Level II line comes from the anchor's
+    # own table (COFOG Level II; a taxag/NTL or main/T2 cell for revenue);
+    # the remainder is parent minus every Level II line, derived and never
+    # forecast. D10's fallback applies to the interest line only: years the
+    # anchor covers (parent exists) but Level II lacks are filled from the
+    # same institution's GG D.41 payable, level2_proxy_actual, grade B (DEU
+    # 1995-99). Other groups simply start where their cell starts.
+    for split in config.level2_splits():
+        cls, parent, rem = split["classification"], split["parent"], split["remainder"]
+        tree_meta = L[config.TREES[cls]]
+        src_id = exp_src if cls == "COFOG" else rev_src
+        parent_series = out[(cls, parent)]["series"]
+        l2_series_all: dict[str, pd.Series] = {}
+        fallback_years: dict[int, dict] = {}
+        for l2 in split["level2s"]:
+            meta = split["meta"][l2]
+            per_year: dict[int, dict] = {}
+            interest = l2 == "GF01_7"
+            if cls == "COFOG":
+                series = cof(meta["eurostat_cofog"])
+                cofog_code = meta["eurostat_cofog"]
+                concept_txt = (f"COFOG {cofog_code[2:4]}.{int(cofog_code[4:6])} from the "
+                               "anchor's Level II table")
+                src_line = src_id
+            else:
+                series, src_line, concept_txt = _revenue_level2(iso3, l2, meta)
+            if meta["fallback"] == "d41_payable":
+                d41pay = (R.ons_t2_series("D41", "payable") if iso3 == "GBR"
+                          else R.eurostat_main(iso3, "D41PAY"))
+                for y in sorted(set(parent_series.index) - set(series.index)):
+                    if y in d41pay.index:
+                        series.loc[y] = float(d41pay[y])
+                        per_year[y] = {
+                            "observation_type": "level2_proxy_actual",
+                            "quality_grade": meta["grade_on_fallback"],
+                            "notes": "D10 fallback: GG gross D.41 payable in place of "
+                                     "missing Level II 01.7 (same institution)"}
+                fallback_years.update(per_year)
+            series = series.sort_index()
+            l2_series_all[l2] = series
+            out.update([m(cls, l2, series, src_line, "anchor_actual", "2",
+                          tree_meta[l2]["label"],
+                          concept="d41_gross_accrued" if interest else "",
+                          notes=concept_txt + (" (D10)" if interest else ""),
+                          per_year=per_year)])
+        remainder = parent_series.copy()
+        for series in l2_series_all.values():
+            remainder = remainder - series
+        remainder = remainder.dropna()
+        x_per_year = {y: {"observation_type": "derived_actual",
+                          "quality_grade": v["quality_grade"],
+                          "notes": f"{parent} minus a D10 proxy year"}
+                      for y, v in fallback_years.items()}
+        out.update([m(cls, rem, remainder, src_id, "derived_actual", "derived",
+                      tree_meta[rem]["label"],
+                      notes=f"derived {tree_meta[rem]['derived']}; never forecast",
+                      per_year=x_per_year)])
     return out
 
 
@@ -228,7 +284,8 @@ def _imf_recon(iso3: str, classification: str, line_code: str) -> pd.Series:
     return pd.Series(dtype=float)
 
 
-_RS_HEADINGS = {"R01": "T_5111", "R03": "T_1100", "R04": "T_1200", "R06": "T_2000"}
+_RS_HEADINGS = {"R01": "T_5111", "R03": "T_1100", "R04": "T_1200", "R06": "T_2000",
+                "R02_A": "T_5121", "R06_E": "T_2200", "R06_H": "T_2100"}
 
 
 def _oecd_recon(iso3: str, classification: str, line_code: str) -> pd.Series:
@@ -434,23 +491,28 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "is_forecast": er["is_forecast"], "run_id": run_id,
                         "notes": src.concept_note,
                     })
-        # Level II remainders (GF01_X, GF10_X) in stitched years: derive where
-        # both the parent and the Level II line were stitched (D10, D-S11-002)
+        # Level II remainders in stitched years: derive where the parent and
+        # every Level II line were stitched (D10, D-S11-002/005), any tree
         for variant, vals in stitched_vals.items():
             for split in config.level2_splits():
-                parent_v = vals.get(("COFOG", split["parent"]), {})
-                l2_v = vals.get(("COFOG", split["level2"]), {})
-                rem = split["remainder"]
-                meta_x = series_map[("COFOG", rem)]
-                for year in sorted(set(parent_v) & set(l2_v)):
+                cls, rem = split["classification"], split["remainder"]
+                parent_v = vals.get((cls, split["parent"]), {})
+                l2_vs = [vals.get((cls, c), {}) for c in split["level2s"]]
+                meta_x = series_map[(cls, rem)]
+                years = set(parent_v)
+                for lv in l2_vs:
+                    years &= set(lv)
+                for year in sorted(years):
                     vp, gp = parent_v[year]
-                    vl, gl = l2_v[year]
-                    grade = max(gp, gl)  # worst grade ('C' > 'B' lexically)
+                    value, grade = vp, gp
+                    for lv in l2_vs:
+                        vl, gl = lv[year]
+                        value -= vl
+                        grade = max(grade, gl)  # worst grade ('C' > 'B' lexically)
                     gdp_v = float(gdp[year]) if year in gdp.index else None
-                    value = vp - vl
-                    frames["COFOG"].append({
+                    frames[cls].append({
                         "series_id": f"{iso3}_{rem}_{variant}",
-                        "iso3": iso3, "classification": "COFOG",
+                        "iso3": iso3, "classification": cls,
                         "line_code": rem, "line_level": "derived",
                         "line_label": meta_x["line_label"], "year": year,
                         "native_period": str(year), "source_period_basis": "CY",
@@ -474,8 +536,9 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "oecd_rs_value": None, "oecd_rs_diff_pct": None,
                         "is_interpolated": False, "is_period_converted": False,
                         "is_forecast": False, "run_id": run_id,
-                        "notes": f"derived {split['parent']} - {split['level2']} in "
-                                 "backward-stitched years (D10 / D-S11-002)",
+                        "notes": f"derived {split['parent']} - "
+                                 f"{' - '.join(split['level2s'])} in backward-stitched "
+                                 "years (D10 / D-S11-005)",
                     })
         # balance ledger from the balance anchor's own TR/TE/B9 (V23 exact)
         if iso3 == "GBR":

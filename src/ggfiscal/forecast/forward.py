@@ -404,6 +404,19 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         r04.residual_method = config.residual_method(iso3, "R04")
         out[("ESA_REV", "R03")] = [r03]
         out[("ESA_REV", "R04")] = [r04]
+        # R02_A excise duties (D-S11-005): the federal excises of Tab 3 plus
+        # the Länder beer duty — the D.214A set per the national tax list
+        # (Versicherungsteuer is D.214G, Kraftfahrzeugsteuer D.29/D.59,
+        # Luftverkehrsteuer D.214H: excluded)
+        r02a = _stsch(
+            [("Tab 3", "Energiesteuer"), ("Tab 3", "Tabaksteuer"),
+             ("Tab 3", "Alkoholsteuer"), ("Tab 3", "Schaumweinsteuer"),
+             ("Tab 3", "Kaffeesteuer"), ("Tab 3", "Stromsteuer"),
+             ("Tab 2", "Biersteuer")],
+            "excise duties (D.214A): energy, tobacco, spirits, sparkling wine, "
+            "coffee, electricity and beer duties per the national tax list")
+        r02a.residual_method = config.residual_method(iso3, "R02_A")
+        out[("ESA_REV", "R02_A")] = [r02a]
     if iso3 == "GBR":
         # OQ-6 partial unblock (D-S7-001/002): OBR EFO March 2026 receipts
         # composites (membership per the ONS national tax list evidence,
@@ -445,6 +458,50 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
             "exists for the remaining small D.59/D.91 items — coverage "
             "measured (C band, maximum_extension only)",
             residual=config.residual_method(iso3, "R05"))]
+        # R02_A excise duties (D-S11-005): the three duty streams that make
+        # up D.214A per the national tax list; measured against NTL D214A
+        out[("ESA_REV", "R02_A")] = [_obr_receipts(
+            ["Fuel duties", "Tobacco duties", "Alcohol duties",
+             "Air passenger duty", "Climate change levy and carbon price floor",
+             "Environmental levies"],
+            "D.214A 'excise duties and consumption taxes' per NTL table 9: "
+            "hydrocarbon oils, tobacco, beer/wine/spirits, air passenger duty, "
+            "climate change levy and the environmental levies (renewables "
+            "obligation, contracts for difference) — 92% of the row in 2024; "
+            "landfill, aggregates, soft-drinks and plastic-packaging levies "
+            "have no databank series (vehicle excise duty is D.29/D.59, "
+            "insurance premium tax D.214G, gambling D.214F)",
+            residual=config.residual_method(iso3, "R02_A"))]
+        # R06_E / R06_H (D-S11-005): EFO detailed receipts table 3.4 splits
+        # NICs by class; employers' Class 1 vs employees' Class 1 plus the
+        # self-employed Classes 2/4 (households' actual, D.613). The table
+        # starts FY 2024-25, so CY 2025 is the one overlap year with the
+        # ESA Table 2 D611/D613 rows — measurable, unlike the welfare and
+        # state-pension tables
+        for line, labels, what in (
+                ("R06_E", ["Class 1 Employer NICs"],
+                 "employers' actual contributions (D.611): Class 1 employer NICs"),
+                ("R06_H", ["Class 1 Employee NICs", "Class 4 and Class 2 Self employed NICs"],
+                 "households' actual contributions (D.613): Class 1 employee "
+                 "plus Classes 2 and 4 self-employed NICs")):
+            fy = None
+            for label in labels:
+                part = R.obr_fy("detailed-receipts", "3.4", label)
+                fy = part if fy is None else fy + part
+            out[("ESA_REV", line)] = [FcSource(
+                source_id="OBR_EFO_LATEST", series=fy_to_cy(fy.dropna()) * 1000.0,
+                kind="level", horizon_year=2031, last_actual_year=2024,
+                concept_note=f"{OBR_NOTE}; EFO table 3.4 {what}; compulsory "
+                             "NICs only — the anchor's D.611/D.613 rows are on "
+                             "the same actual-contributions concept; "
+                             + (CONSTRUCTED_NOTE if len(labels) > 1 else
+                                "single official series"),
+                crosswalk_version=OBR_REV_XWALK,
+                gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+                concept_flag="public_sector_perimeter",
+                period_conversion_method="fy_weighted_quarters",
+                observation_type="composite_forecast" if len(labels) > 1 else "direct_forecast",
+                residual_method=config.residual_method(iso3, line) if len(labels) > 1 else None)]
         # D12 chains: AMECO (later vintage) through 2027, OBR beyond
         out[("ESA_REV", "R06")].append(_obr_receipts(
             ["National insurance contributions (NICs)"],
@@ -552,8 +609,28 @@ def declarations_for(iso3: str) -> list[Declaration]:
           "never forecast by construction (D10); derived only"),
         d("COFOG", "GF10_X", "no_official_forecast",
           "never forecast by construction (D-S11-002, the D10 pattern): the "
-          "remainder GF10 - GF10_2 is derived only, so the GF10 identity "
-          "stays exact in every published year"),
+          "remainder GF10 - GF10_2 - GF10_5 is derived only, so the GF10 "
+          "identity stays exact in every published year"),
+        d("COFOG", "GF04_X", "no_official_forecast",
+          "never forecast by construction (D-S11-005): the remainder "
+          "GF04 - GF04_5 is derived only"),
+        d("COFOG", "GF10_5", "no_official_forecast",
+          "D7: no institution publishes a projection of unemployment benefits "
+          "on the COFOG 10.5 concept (AMECO's UUTZ105 is the cyclical "
+          "component of the deficit, not the line; the AR covers pensions, "
+          "health, LTC, education only); strict and maximum end at the last "
+          "actual (D-S11-005)"),
+        d("COFOG", "GF04_5", "no_official_forecast",
+          "D7: no institution publishes a projection of transport spending "
+          "on the COFOG 04.5 concept; strict and maximum end at the last "
+          "actual (D-S11-005)"),
+        d("ESA_REV", "R02_X", "no_official_forecast",
+          "never forecast by construction (D-S11-005): the remainder "
+          "R02 - R02_A is derived only"),
+        d("ESA_REV", "R06_X", "no_official_forecast",
+          "never forecast by construction (D-S11-005): the remainder "
+          "R06 - R06_E - R06_H (imputed and supplementary contributions) is "
+          "derived only"),
         d("COFOG", "TE", "not_extended",
           "totals are envelopes (§6.1, D4): the envelope constrains V15 but "
           "is not published as a stitched TE path"),
@@ -636,8 +713,23 @@ def declarations_for(iso3: str) -> list[Declaration]:
               "sales (GOS and 'other receipts' are different concepts) — "
               "no measurable composite"),
         ]
+    if iso3 in ("FRA", "DEU"):
+        out += [
+            d("ESA_REV", "R06_E", "no_official_forecast",
+              "no official forecast of employers' contributions separately: "
+              "AMECO carries actual contributions in total (UTAG) and imputed "
+              "(UTIG) but no employer/household split; the Steuerschätzung "
+              "does not cover contributions; BMAS is GRV-only and PDF (OQ-5); "
+              "strict and maximum end at the last actual (D-S11-005)"),
+            d("ESA_REV", "R06_H", "no_official_forecast",
+              "as R06_E: no employer/household split in any reachable "
+              "official forecast (D-S11-005)"),
+        ]
     if iso3 == "FRA":
         out += [
+            d("ESA_REV", "R02_A", "source_blocked",
+              _PDF_BLOCKED.format(src="FRA_LPFP_PSTAB (excise duties are in "
+                                      "the prélèvements obligatoires tables)")),
             d("COFOG", "GF02", "source_blocked",
               _PDF_BLOCKED.format(src="FRA_LPM_2030 (military programming law)")),
             d("COFOG", "GF10", "grade_below_strict",

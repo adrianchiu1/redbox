@@ -1,4 +1,4 @@
-"""Gate 1 report: small multiples — 33 lines x 3 countries plus the balance
+"""Gate 1 report: small multiples — every granular line x 3 countries plus the balance
 ledger, strict variant, anchor history. Plotly, one self-contained HTML
 (plotly.js from CDN to keep the file reviewable in git)."""
 
@@ -11,10 +11,7 @@ import plotly.graph_objects as go
 
 from ggfiscal import config
 
-LINE_ORDER = (["GF%02d" % n for n in range(1, 11)]
-              + ["GF01_7", "GF01_X", "GF10_2", "GF10_X"]
-              + ["E%02d" % n for n in range(1, 10)]
-              + ["R%02d" % n for n in range(1, 11)])
+LINE_ORDER = [c for cls in config.TREES for c in config.granular_lines(cls)]
 
 
 def write(path: Path | None = None, variant: str = "strict") -> Path:

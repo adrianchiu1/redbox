@@ -243,7 +243,13 @@ Fallback per D-S7-001: hand-download the file lists in `DEBT_SCOPING.md`
 extension builds the reference series, the official intermediates and the
 DEU aggregate layer (all reachable), and the per-security register waits.
 
-## OQ-10 — Further breakdowns after the session-11 review: what the data says, and three asks (raised 2026-09-19, D-S11-001..004)
+## OQ-10 — Further breakdowns after the session-11 review — **RESOLVED 2026-09-19 (all three asks approved; D-S11-005)**
+
+The committee approved (a) all four breakdowns, (b) the OBR pensioner series as a C-band backward leg for GBR `GF10_2`, and (c) the E05 ← DSM join. All built and verified end to end (D-S11-005/006). One finding from building: excise duties had to be defined as D.214A + D.2122C because Germany books its energy tax on imported fuels under D.2122C. Not taken up: `GF09_4` tertiary education (optional in the review) — one config entry if wanted.
+
+Original item (kept for the record):
+
+### OQ-10 (original) — Further breakdowns after the session-11 review: what the data says, and three asks (raised 2026-09-19, D-S11-001..004)
 
 The committee asked for a review of every COFOG Level I line and every
 revenue line for breakdowns that "make sense", with general public services

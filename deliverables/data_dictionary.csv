@@ -3,7 +3,7 @@ expenditure_cofog.csv,iso3,"Country (GBR, FRA, DEU)."
 expenditure_cofog.csv,country,"Country name, for readability."
 expenditure_cofog.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
 expenditure_cofog.csv,classification,"Which tree the line belongs to: COFOG (expenditure by function), ESA_EXP (expenditure by ESA economic type) or ESA_REV (revenue by ESA type). COFOG and ESA_EXP are two cuts of the same total expenditure — never add lines across them."
-expenditure_cofog.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total expenditure). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). ESA revenue: R01-R10, TR (total revenue)."
+expenditure_cofog.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 expenditure_cofog.csv,line_label,Human-readable name of the line.
 expenditure_cofog.csv,line_level,"1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = identity; total = TE, TE_ESA or TR."
 expenditure_cofog.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
@@ -30,7 +30,7 @@ expenditure_esa.csv,iso3,"Country (GBR, FRA, DEU)."
 expenditure_esa.csv,country,"Country name, for readability."
 expenditure_esa.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
 expenditure_esa.csv,classification,"Which tree the line belongs to: COFOG (expenditure by function), ESA_EXP (expenditure by ESA economic type) or ESA_REV (revenue by ESA type). COFOG and ESA_EXP are two cuts of the same total expenditure — never add lines across them."
-expenditure_esa.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total expenditure). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). ESA revenue: R01-R10, TR (total revenue)."
+expenditure_esa.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 expenditure_esa.csv,line_label,Human-readable name of the line.
 expenditure_esa.csv,line_level,"1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = identity; total = TE, TE_ESA or TR."
 expenditure_esa.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
@@ -57,7 +57,7 @@ revenue_esa.csv,iso3,"Country (GBR, FRA, DEU)."
 revenue_esa.csv,country,"Country name, for readability."
 revenue_esa.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
 revenue_esa.csv,classification,"Which tree the line belongs to: COFOG (expenditure by function), ESA_EXP (expenditure by ESA economic type) or ESA_REV (revenue by ESA type). COFOG and ESA_EXP are two cuts of the same total expenditure — never add lines across them."
-revenue_esa.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total expenditure). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). ESA revenue: R01-R10, TR (total revenue)."
+revenue_esa.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 revenue_esa.csv,line_label,Human-readable name of the line.
 revenue_esa.csv,line_level,"1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = identity; total = TE, TE_ESA or TR."
 revenue_esa.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
@@ -138,7 +138,7 @@ weo_reconciliation.csv,iso3,"Country (GBR, FRA, DEU)."
 weo_reconciliation.csv,country,"Country name, for readability."
 weo_reconciliation.csv,variant,"strict = official published sources only; maximum_extension = strict plus proxy, composite and partial-coverage legs, each with a declared residual assumption. maximum_extension always contains strict and equals it wherever both exist; it adds years at either end — a longer backward leg as well as a longer forecast. Pick one; never mix them in a series."
 weo_reconciliation.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
-weo_reconciliation.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total expenditure). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). ESA revenue: R01-R10, TR (total revenue)."
+weo_reconciliation.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 weo_reconciliation.csv,notes,The concept caveat recorded with the observation at build time.
 weo_reconciliation.csv,block,history = year-on-year decomposition of our own realised change in NLB/GDP; forecast = decomposition of the WEO's projected change from base_year to year.
 weo_reconciliation.csv,weo_vintage,WEO edition (forecast rows only).
@@ -150,7 +150,7 @@ weo_reconciliation.csv,measure,Unit of contribution_pp on that row.
 weo_reconciliation.csv,component_meaning,Plain-language meaning of component.
 series_catalogue.csv,iso3,"Country (GBR, FRA, DEU)."
 series_catalogue.csv,country,"Country name, for readability."
-series_catalogue.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total expenditure). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). ESA revenue: R01-R10, TR (total revenue)."
+series_catalogue.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 series_catalogue.csv,line_label,Human-readable name of the line.
 series_catalogue.csv,line_level,"1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = identity; total = TE, TE_ESA or TR."
 series_catalogue.csv,currency,"GBP for GBR, EUR for FRA and DEU."
@@ -173,7 +173,7 @@ series_catalogue.csv,forecast_status,Recorded status when no strict forecast exi
 series_catalogue.csv,forecast_note,"Why, in words."
 statistical_forecasts.csv,iso3,"Country (GBR, FRA, DEU)."
 statistical_forecasts.csv,country,"Country name, for readability."
-statistical_forecasts.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total expenditure). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). ESA revenue: R01-R10, TR (total revenue)."
+statistical_forecasts.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."
 statistical_forecasts.csv,line_label,Human-readable name of the line.
 statistical_forecasts.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
 statistical_forecasts.csv,classification,"Which tree the line belongs to: COFOG (expenditure by function), ESA_EXP (expenditure by ESA economic type) or ESA_REV (revenue by ESA type). COFOG and ESA_EXP are two cuts of the same total expenditure — never add lines across them."
@@ -200,6 +200,8 @@ strict_GBR.csv,GF01_X - General public services excluding interest,"General publ
 strict_GBR.csv,GF02 - Defence,"Defence (GF02), strict variant, millions of national currency."
 strict_GBR.csv,GF03 - Public order and safety,"Public order and safety (GF03), strict variant, millions of national currency."
 strict_GBR.csv,GF04 - Economic affairs,"Economic affairs (GF04), strict variant, millions of national currency."
+strict_GBR.csv,GF04_5 - Transport,Transport (GF04_5): COFOG group 04.5 from the anchor's own Level II table.
+strict_GBR.csv,GF04_X - Economic affairs excluding transport,"Economic affairs excluding transport (GF04_X): the identity GF04 - GF04_5, never forecast."
 strict_GBR.csv,GF05 - Environmental protection,"Environmental protection (GF05), strict variant, millions of national currency."
 strict_GBR.csv,GF06 - Housing and community amenities,"Housing and community amenities (GF06), strict variant, millions of national currency."
 strict_GBR.csv,GF07 - Health,"Health (GF07), strict variant, millions of national currency."
@@ -207,7 +209,8 @@ strict_GBR.csv,GF08 - Recreation culture and religion,"Recreation culture and re
 strict_GBR.csv,GF09 - Education,"Education (GF09), strict variant, millions of national currency."
 strict_GBR.csv,GF10 - Social protection,"Social protection (GF10), strict variant, millions of national currency."
 strict_GBR.csv,GF10_2 - Old age (pensions),Old age (GF10_2): COFOG group 10.2 from the anchor's own Level II table — the pensions line (old-age cash benefits plus the administration and in-kind services of the function).
-strict_GBR.csv,GF10_X - Social protection excluding old age,"Social protection excluding old age (GF10_X): the identity GF10 - GF10_2, never forecast."
+strict_GBR.csv,GF10_5 - Unemployment,"Unemployment (GF10_5): COFOG group 10.5 from the anchor's own Level II table — unemployment benefits and services. Note the UK books Universal Credit under 10.7, so its 10.5 is small."
+strict_GBR.csv,GF10_X - Social protection excluding old age and unemployment,"Social protection excluding old age and unemployment (GF10_X): the identity GF10 - GF10_2 - GF10_5, never forecast."
 strict_GBR.csv,TE - Total expenditure,Total expenditure (TE) from the COFOG tree's expenditure anchor. Not the same series as LEDGER_TE — see that column.
 strict_GBR.csv,E01 - Compensation of employees,"Compensation of employees (E01), strict variant, millions of national currency."
 strict_GBR.csv,E02 - Intermediate consumption,"Intermediate consumption (E02), strict variant, millions of national currency."
@@ -221,10 +224,15 @@ strict_GBR.csv,E09 - Capital transfers payable,"Capital transfers payable (E09),
 strict_GBR.csv,TE_ESA - Total expenditure (ESA main aggregates),"Total expenditure from the ESA main-aggregates table (the sum of E01-E09). For FRA/DEU identical to TE; for GBR it is the ESA Table 2 total, the same series as LEDGER_TE."
 strict_GBR.csv,R01 - Value added tax,"Value added tax (R01), strict variant, millions of national currency."
 strict_GBR.csv,R02 - Other taxes on production and imports,"Other taxes on production and imports (R02), strict variant, millions of national currency."
+strict_GBR.csv,R02_A - Excise duties,"Excise duties (R02_A, ESA D.214A): fuel, tobacco, alcohol and other excises, from the anchor institution's per-tax table (NTL table 9 / gov_10a_taxag)."
+strict_GBR.csv,R02_X - Other taxes on production and imports excluding excise duties,"Other taxes on production and imports excluding excise duties (R02_X): the identity R02 - R02_A, never forecast; carries any drift between the per-tax table and the main aggregate."
 strict_GBR.csv,R03 - Taxes on household income,"Taxes on household income (R03), strict variant, millions of national currency."
 strict_GBR.csv,R04 - Taxes on corporate income,"Taxes on corporate income (R04), strict variant, millions of national currency."
 strict_GBR.csv,R05 - Other current taxes and capital taxes,"Other current taxes and capital taxes (R05), strict variant, millions of national currency."
 strict_GBR.csv,R06 - Net social contributions,"Net social contributions (R06), strict variant, millions of national currency."
+strict_GBR.csv,R06_E - Employers' actual social contributions,"Employers' actual social contributions (R06_E, ESA D.611)."
+strict_GBR.csv,R06_H - Households' actual social contributions,"Households' actual social contributions (R06_H, ESA D.613): employees, self-employed and non-employed persons."
+strict_GBR.csv,R06_X - Imputed and supplementary social contributions (D.612 + D.614 - D.61SC),"Imputed and supplementary social contributions (R06_X): the identity R06 - R06_E - R06_H = D.612 + D.614 - D.61SC, never forecast; may be negative in principle."
 strict_GBR.csv,R07 - Interest receivable,"Interest receivable (R07), strict variant, millions of national currency."
 strict_GBR.csv,R08 - Other property income,"Other property income (R08), strict variant, millions of national currency."
 strict_GBR.csv,R09 - Sales of goods and services,"Sales of goods and services (R09), strict variant, millions of national currency."
@@ -243,6 +251,8 @@ strict_FRA.csv,GF01_X - General public services excluding interest,"General publ
 strict_FRA.csv,GF02 - Defence,"Defence (GF02), strict variant, millions of national currency."
 strict_FRA.csv,GF03 - Public order and safety,"Public order and safety (GF03), strict variant, millions of national currency."
 strict_FRA.csv,GF04 - Economic affairs,"Economic affairs (GF04), strict variant, millions of national currency."
+strict_FRA.csv,GF04_5 - Transport,Transport (GF04_5): COFOG group 04.5 from the anchor's own Level II table.
+strict_FRA.csv,GF04_X - Economic affairs excluding transport,"Economic affairs excluding transport (GF04_X): the identity GF04 - GF04_5, never forecast."
 strict_FRA.csv,GF05 - Environmental protection,"Environmental protection (GF05), strict variant, millions of national currency."
 strict_FRA.csv,GF06 - Housing and community amenities,"Housing and community amenities (GF06), strict variant, millions of national currency."
 strict_FRA.csv,GF07 - Health,"Health (GF07), strict variant, millions of national currency."
@@ -250,7 +260,8 @@ strict_FRA.csv,GF08 - Recreation culture and religion,"Recreation culture and re
 strict_FRA.csv,GF09 - Education,"Education (GF09), strict variant, millions of national currency."
 strict_FRA.csv,GF10 - Social protection,"Social protection (GF10), strict variant, millions of national currency."
 strict_FRA.csv,GF10_2 - Old age (pensions),Old age (GF10_2): COFOG group 10.2 from the anchor's own Level II table — the pensions line (old-age cash benefits plus the administration and in-kind services of the function).
-strict_FRA.csv,GF10_X - Social protection excluding old age,"Social protection excluding old age (GF10_X): the identity GF10 - GF10_2, never forecast."
+strict_FRA.csv,GF10_5 - Unemployment,"Unemployment (GF10_5): COFOG group 10.5 from the anchor's own Level II table — unemployment benefits and services. Note the UK books Universal Credit under 10.7, so its 10.5 is small."
+strict_FRA.csv,GF10_X - Social protection excluding old age and unemployment,"Social protection excluding old age and unemployment (GF10_X): the identity GF10 - GF10_2 - GF10_5, never forecast."
 strict_FRA.csv,TE - Total expenditure,Total expenditure (TE) from the COFOG tree's expenditure anchor. Not the same series as LEDGER_TE — see that column.
 strict_FRA.csv,E01 - Compensation of employees,"Compensation of employees (E01), strict variant, millions of national currency."
 strict_FRA.csv,E02 - Intermediate consumption,"Intermediate consumption (E02), strict variant, millions of national currency."
@@ -264,10 +275,15 @@ strict_FRA.csv,E09 - Capital transfers payable,"Capital transfers payable (E09),
 strict_FRA.csv,TE_ESA - Total expenditure (ESA main aggregates),"Total expenditure from the ESA main-aggregates table (the sum of E01-E09). For FRA/DEU identical to TE; for GBR it is the ESA Table 2 total, the same series as LEDGER_TE."
 strict_FRA.csv,R01 - Value added tax,"Value added tax (R01), strict variant, millions of national currency."
 strict_FRA.csv,R02 - Other taxes on production and imports,"Other taxes on production and imports (R02), strict variant, millions of national currency."
+strict_FRA.csv,R02_A - Excise duties,"Excise duties (R02_A, ESA D.214A): fuel, tobacco, alcohol and other excises, from the anchor institution's per-tax table (NTL table 9 / gov_10a_taxag)."
+strict_FRA.csv,R02_X - Other taxes on production and imports excluding excise duties,"Other taxes on production and imports excluding excise duties (R02_X): the identity R02 - R02_A, never forecast; carries any drift between the per-tax table and the main aggregate."
 strict_FRA.csv,R03 - Taxes on household income,"Taxes on household income (R03), strict variant, millions of national currency."
 strict_FRA.csv,R04 - Taxes on corporate income,"Taxes on corporate income (R04), strict variant, millions of national currency."
 strict_FRA.csv,R05 - Other current taxes and capital taxes,"Other current taxes and capital taxes (R05), strict variant, millions of national currency."
 strict_FRA.csv,R06 - Net social contributions,"Net social contributions (R06), strict variant, millions of national currency."
+strict_FRA.csv,R06_E - Employers' actual social contributions,"Employers' actual social contributions (R06_E, ESA D.611)."
+strict_FRA.csv,R06_H - Households' actual social contributions,"Households' actual social contributions (R06_H, ESA D.613): employees, self-employed and non-employed persons."
+strict_FRA.csv,R06_X - Imputed and supplementary social contributions (D.612 + D.614 - D.61SC),"Imputed and supplementary social contributions (R06_X): the identity R06 - R06_E - R06_H = D.612 + D.614 - D.61SC, never forecast; may be negative in principle."
 strict_FRA.csv,R07 - Interest receivable,"Interest receivable (R07), strict variant, millions of national currency."
 strict_FRA.csv,R08 - Other property income,"Other property income (R08), strict variant, millions of national currency."
 strict_FRA.csv,R09 - Sales of goods and services,"Sales of goods and services (R09), strict variant, millions of national currency."
@@ -286,6 +302,8 @@ strict_DEU.csv,GF01_X - General public services excluding interest,"General publ
 strict_DEU.csv,GF02 - Defence,"Defence (GF02), strict variant, millions of national currency."
 strict_DEU.csv,GF03 - Public order and safety,"Public order and safety (GF03), strict variant, millions of national currency."
 strict_DEU.csv,GF04 - Economic affairs,"Economic affairs (GF04), strict variant, millions of national currency."
+strict_DEU.csv,GF04_5 - Transport,Transport (GF04_5): COFOG group 04.5 from the anchor's own Level II table.
+strict_DEU.csv,GF04_X - Economic affairs excluding transport,"Economic affairs excluding transport (GF04_X): the identity GF04 - GF04_5, never forecast."
 strict_DEU.csv,GF05 - Environmental protection,"Environmental protection (GF05), strict variant, millions of national currency."
 strict_DEU.csv,GF06 - Housing and community amenities,"Housing and community amenities (GF06), strict variant, millions of national currency."
 strict_DEU.csv,GF07 - Health,"Health (GF07), strict variant, millions of national currency."
@@ -293,7 +311,8 @@ strict_DEU.csv,GF08 - Recreation culture and religion,"Recreation culture and re
 strict_DEU.csv,GF09 - Education,"Education (GF09), strict variant, millions of national currency."
 strict_DEU.csv,GF10 - Social protection,"Social protection (GF10), strict variant, millions of national currency."
 strict_DEU.csv,GF10_2 - Old age (pensions),Old age (GF10_2): COFOG group 10.2 from the anchor's own Level II table — the pensions line (old-age cash benefits plus the administration and in-kind services of the function).
-strict_DEU.csv,GF10_X - Social protection excluding old age,"Social protection excluding old age (GF10_X): the identity GF10 - GF10_2, never forecast."
+strict_DEU.csv,GF10_5 - Unemployment,"Unemployment (GF10_5): COFOG group 10.5 from the anchor's own Level II table — unemployment benefits and services. Note the UK books Universal Credit under 10.7, so its 10.5 is small."
+strict_DEU.csv,GF10_X - Social protection excluding old age and unemployment,"Social protection excluding old age and unemployment (GF10_X): the identity GF10 - GF10_2 - GF10_5, never forecast."
 strict_DEU.csv,TE - Total expenditure,Total expenditure (TE) from the COFOG tree's expenditure anchor. Not the same series as LEDGER_TE — see that column.
 strict_DEU.csv,E01 - Compensation of employees,"Compensation of employees (E01), strict variant, millions of national currency."
 strict_DEU.csv,E02 - Intermediate consumption,"Intermediate consumption (E02), strict variant, millions of national currency."
@@ -307,10 +326,15 @@ strict_DEU.csv,E09 - Capital transfers payable,"Capital transfers payable (E09),
 strict_DEU.csv,TE_ESA - Total expenditure (ESA main aggregates),"Total expenditure from the ESA main-aggregates table (the sum of E01-E09). For FRA/DEU identical to TE; for GBR it is the ESA Table 2 total, the same series as LEDGER_TE."
 strict_DEU.csv,R01 - Value added tax,"Value added tax (R01), strict variant, millions of national currency."
 strict_DEU.csv,R02 - Other taxes on production and imports,"Other taxes on production and imports (R02), strict variant, millions of national currency."
+strict_DEU.csv,R02_A - Excise duties,"Excise duties (R02_A, ESA D.214A): fuel, tobacco, alcohol and other excises, from the anchor institution's per-tax table (NTL table 9 / gov_10a_taxag)."
+strict_DEU.csv,R02_X - Other taxes on production and imports excluding excise duties,"Other taxes on production and imports excluding excise duties (R02_X): the identity R02 - R02_A, never forecast; carries any drift between the per-tax table and the main aggregate."
 strict_DEU.csv,R03 - Taxes on household income,"Taxes on household income (R03), strict variant, millions of national currency."
 strict_DEU.csv,R04 - Taxes on corporate income,"Taxes on corporate income (R04), strict variant, millions of national currency."
 strict_DEU.csv,R05 - Other current taxes and capital taxes,"Other current taxes and capital taxes (R05), strict variant, millions of national currency."
 strict_DEU.csv,R06 - Net social contributions,"Net social contributions (R06), strict variant, millions of national currency."
+strict_DEU.csv,R06_E - Employers' actual social contributions,"Employers' actual social contributions (R06_E, ESA D.611)."
+strict_DEU.csv,R06_H - Households' actual social contributions,"Households' actual social contributions (R06_H, ESA D.613): employees, self-employed and non-employed persons."
+strict_DEU.csv,R06_X - Imputed and supplementary social contributions (D.612 + D.614 - D.61SC),"Imputed and supplementary social contributions (R06_X): the identity R06 - R06_E - R06_H = D.612 + D.614 - D.61SC, never forecast; may be negative in principle."
 strict_DEU.csv,R07 - Interest receivable,"Interest receivable (R07), strict variant, millions of national currency."
 strict_DEU.csv,R08 - Other property income,"Other property income (R08), strict variant, millions of national currency."
 strict_DEU.csv,R09 - Sales of goods and services,"Sales of goods and services (R09), strict variant, millions of national currency."

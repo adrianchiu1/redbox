@@ -1541,3 +1541,121 @@ six pension charts); GitHub's threshold is unmeasurable from here — if it
 declines to render, the documented fallback is one book per country, and
 nbviewer renders it regardless. The rebuild on the 2026-09-19 harvest
 changed no value in the 66 pre-existing series (run_id only).
+
+## D-S11-005 — OQ-10 resolved by the committee: four further Level II splits (GF10_5, GF04_5, R02_A, R06_E/R06_H), the E05–DSM join, and the OBR pensioner leg for UK pensions (serves §4.1a, §4.2a, D12, D15, §7.8, §9; supersedes §15 Q13; resolves OQ-10 a–c)
+2026-09-19, session 11 (continued). The committee approved all of OQ-10.
+Mechanism first: `config.level2_splits()` now returns one entry per
+parent with an ordered list of Level II lines and one remainder whose
+`minus` names them all; it enumerates every tree, so the revenue tree
+gets the same treatment as COFOG (anchor cells named per line: `eurostat`
+dataset + codes, `ons` table + codes, `oecd_rs` headings). Build,
+coverage, V19, the stitched-year remainder derivation, the small
+multiples, the flat files and the notebook cell surgery iterate it.
+Universe 99 → **123** series (41 per country: 17 COFOG, 9 ESA_EXP, 15
+ESA_REV); catalogue 132 rows.
+**Splits and what was measured** (shares at the last common year,
+boundary files):
+  - **GF10_5 Unemployment (COFOG 10.5)** and **GF04_5 Transport (04.5)**,
+    remainders GF10_X (= GF10 − GF10_2 − GF10_5) and GF04_X. Anchors from
+    the Level II tables (GBR/FRA 1995, DEU 2000). No institution projects
+    either group (AMECO's UUTZ105 is the cyclical component of the balance,
+    not the line), so both are D7 declarations everywhere; the GFS group
+    GF1050_T is registered for DEU 1995-99 and, like GF1020_T, starts in
+    2000; there is no GFS series for 04.5. The UK 10.5 is small by
+    construction (Universal Credit is booked under 10.7) — the dictionary
+    says so.
+  - **R02_A Excise duties = D.214A + D.2122C**, remainder R02_X. The
+    concept had to be widened after measuring: Germany books its energy
+    tax on imported fuels under D.2122C (28.7 of 65.1 EUR bn in 2024), so
+    D.214A alone measured 1.65 (Steuerschätzung) and 1.79 (OECD 5121) —
+    D band — while the sum is what OECD 5121 and the national forecasts
+    describe (D.2122C is zero for the UK, 9 EUR mn for France). Anchor
+    cells from NTL table 9 / gov_10a_taxag; the drift between those detail
+    tables and the main aggregate lands in R02_X, never in V22. Forecasts:
+    GBR ← OBR fuel + tobacco + alcohol + air passenger duty + climate
+    change levy + environmental levies (the NTL D214A content; measured
+    0.986 at CY2025, B, strict to 2030); DEU ← Steuerschätzung Tab 3
+    Energie/Tabak/Alkohol/Schaumwein/Kaffee/Strom + Tab 2 Bier (0.918 at
+    2024, B, strict to 2030); FRA declared (LPFP PDF, OQ-5). Backward:
+    OECD 5121 — FRA 1.015 and DEU 1.000 (B, to 1965 / 1991), GBR 0.731
+    (C, maximum only, to 1965: the UK row carries the environmental and
+    consumption levies the OECD books outside 5121).
+  - **R06_E Employers' actual (D.611) and R06_H Households' actual (D.613)
+    contributions**, remainder R06_X = D.612 + D.614 − D.61SC (imputed and
+    supplementary; `may_be_negative`). Anchors from the main aggregates
+    tables (gov_10a_main D611REC/D613REC; ONS ESA Table 2 D611/D613
+    receivable), so the split is exact within the anchor. Forecasts: GBR
+    ← EFO table 3.4 Class 1 employer NICs (R06_E) and Class 1 employee +
+    Classes 2/4 self-employed NICs (R06_H) — measured 0.73/0.74 at CY2025
+    (the anchor's D.611/D.613 include employer and employee contributions
+    to public-service pension schemes, outside NICs): C, maximum only, to
+    2030. FRA/DEU: no institution publishes the split (AMECO UTAG/UTIG are
+    actual/imputed totals) — declared. Backward: OECD 2200 (employers) and
+    2100 + 2300 (employees plus self-/non-employed = D.613): FRA 0.99/0.99
+    B to 1965; DEU 1.00 B / 0.84 C; GBR 0.74/0.73 C (NICs vs the wider
+    D.61x concept, as for the forecast).
+  §15 Q13 ("one line, imputed flagged in notes") is superseded: the
+  imputed component is a published remainder line.
+**Approvals applied**: (c) `tolerances.v16_approved_joins` gains FRA/DEU
+E05 ← EC_DSM — the economic tree's interest line now runs to 2036 in
+strict beside GF01_7, same source, concept and seam (V16 keeps warning,
+as for GF01_7). (b) GBR GF10_2 ← OBR historical public finances database
+"Social Security o/w pensioners" (IFS-based, FY 1978-79 to 2022-23,
+public sector), read by `readers.obr_hist_pf_fy/_cy` and converted per
+§7.10 before growth: measured 0.665 of COFOG 10.2 at 2022 (state pension
+and pensioner benefits against the function total, which also carries
+public-service pensions and in-kind old-age services; the share drifts
+from 0.82 in 1995 as those grow) — grade C, `maximum_extension` only,
+UK pensions now run 1979-2024 in maximum (crosswalk
+`OBR_HIST_PF_to_COFOG.csv` v1.0). V5 reports the drift.
+Gate record and the end-to-end verification the committee asked for are
+in D-S11-006.
+
+## D-S11-006 — Gate record and the end-to-end verification the committee asked for: the previously built machinery works unchanged on the 123-line universe (serves §12 gates, §11.6; session 11 close)
+2026-09-19. Full chain re-run after D-S11-005 on the 2026-09-19 harvest:
+`build` → `reconcile` → `validate` → `report` (incl. `flatten`) →
+`statistical-forecasts` → notebook execution → `pytest`. What was checked,
+and how, so the "does it still work" question has a recorded answer:
+  - **Identities (roll-ups).** V2: Σ GF01–GF10 = TE and Σ E01–E09 =
+    TE_ESA in every complete year; V22: Σ R01–R10 = TR (the Level II
+    revenue lines are `level: "2"` and stay out of the Level I sum); V19:
+    remainder + Σ Level II = parent for all five splits (GF01, GF04, GF10,
+    R02, R06) in every year, both variants, and no remainder carries a
+    forecast row; V3 shares to 100 on the three Level I sets; V23 ledger.
+    `validate`: **OK=87 WARN=2092, no ERROR, no SKIP** (WARN +207 on the
+    new lines' V1 GFS/OECD comparisons and V5 stitch diagnostics, all
+    intended visibility).
+  - **The WEO reconciliation is untouched.** `weo_explanation.csv` and its
+    `explained_share` rows (112) are bit-identical to the committed
+    version before any split and to `main` at 8b99c74 (max |Δ| = 0.0):
+    the §8.3 decomposition works on the 20 Level I lines by literal code,
+    so neither the Level II lines nor the second cut of TE can enter it.
+    `deficit_dynamics.csv` carries the same 20 lines plus memo rows.
+  - **Statistical benchmark forecasts.** `ggfiscal statistical-forecasts`
+    regenerated: 113 series × 5 methods (123 less the ten whose official
+    strict path reaches 2031: FRA/DEU GF01_7, E05, GF07, GF09, GF10_2);
+    `tests/deliverables` re-proves that the set is exactly the series that
+    need one, that each fits on outturn only, and that the combination is
+    the mean with within-plus-between variance (the index-alignment fix
+    of D-S11-004 holds for the new ordering).
+  - **Presentation.** `series_catalogue.csv` 132 rows (123 + 9 totals) with
+    spans agreeing with `coverage_matrix.csv` (123 rows) on every series;
+    `strict_{GBR,FRA,DEU}.csv` 51 columns each (GDP, 17 COFOG + TE, 9
+    ESA_EXP + TE_ESA, 15 ESA_REV + TR, 5 ledger); `data_dictionary.csv`
+    covers every column of every file (set equality, tested); every
+    chained value reproduces from the flat file alone (Gate 6 form,
+    all three tree files). The chartbook split into three books so each
+    renders: `chartbook.ipynb` 0.79 MB (COFOG tree, ledger, WEO, seams),
+    `chartbook_revenue.ipynb` 0.44 MB, `chartbook_esa.ipynb` 0.29 MB —
+    every catalogued series charted in exactly one of them, every caption
+    stating its projection status (tested per book). Nine forecast books
+    (`forecasts_{cc}_{expenditure,revenue,esa}`) chart every granular
+    series seven ways where a benchmark exists; `forecasts_GBR_expenditure`
+    is 1.06 MB, the one notebook over the 1 MB rendering margin (17 COFOG
+    lines × 7 charts) — nbviewer renders it regardless; splitting it is the
+    documented fallback if GitHub declines. `derivation.ipynb` re-executed
+    over all 132 series. 75 of the 132 series carry no projection at all,
+    stated in the chartbook's opening table.
+  - **Tests**: `pytest --ignore=tests/debt` **151 passed** (149 + the split
+    enumeration and the revenue chartbook).
+Nothing in the debt extension changed; `tests/debt` were not re-run.
