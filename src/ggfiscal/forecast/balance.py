@@ -27,11 +27,20 @@ The construction, in full:
   every year, and splicing a benchmark anchored at the last outturn onto an
   official path that has already moved away from it would invent a number
   that appears in no file. The lines where the two rules differ are reported.
-* **The sum.** Expenditure is taken as GF01_7 + GF01_X + GF02..GF10, never as
-  GF01..GF10. The two are the same identity in history, but in forecast the
-  Level I set hides the interest line inside GF01, whose own univariate fit
-  knows nothing about the official interest projection. For France that is
-  worth over two points of GDP by 2031.
+* **The sum.** Expenditure is taken as GF01_7 + GF01_X + GF02..GF09 +
+  GF10_2 + GF10_5 + GF10_X, never as GF01..GF10. The two are the same
+  identity in history, but in forecast the Level I set hides the interest
+  line inside GF01, whose own univariate fit knows nothing about the official
+  interest projection. For France that is worth over two points of GDP by
+  2031. The same rule takes the old-age pension line GF10_2 out of GF10
+  (D-S13-007): for France and Germany the Ageing Report's pension path is an
+  official strict projection to 2070, while GF10 itself carries that report
+  only in maximum_extension and so takes a statistical fit in strict. A
+  parent is split in this sum exactly when one of its Level II lines carries
+  an official strict path to the horizon in some country and the parent does
+  not; GF04 (no official path on either side) and the revenue splits (the
+  German excise path stops at 2030, the UK contributions paths are
+  maximum-only) stay as their parents until that changes.
 * **The interval.** Each line's published standard error, propagated with a
   correlation structure ESTIMATED from the outturn history of the same lines
   — one average correlation within a side and one across the two sides, per
@@ -65,9 +74,11 @@ from ggfiscal import config
 HORIZON = 2031
 Z95, Z80 = 1.959964, 1.281552
 
-# Expenditure as the interest split, not the Level I set — see the module
-# docstring. GF01 is deliberately absent: it is GF01_7 + GF01_X.
-EXP_LINES = ["GF01_7", "GF01_X"] + [f"GF{i:02d}" for i in range(2, 11)]
+# Expenditure as the interest and pension splits, not the Level I set — see
+# the module docstring. GF01 and GF10 are deliberately absent: they are
+# GF01_7 + GF01_X and GF10_2 + GF10_5 + GF10_X (D-S11-002, D-S13-007).
+EXP_LINES = (["GF01_7", "GF01_X"] + [f"GF{i:02d}" for i in range(2, 10)]
+             + ["GF10_2", "GF10_5", "GF10_X"])
 REV_LINES = [f"R{i:02d}" for i in range(1, 11)]
 LINES = EXP_LINES + REV_LINES
 

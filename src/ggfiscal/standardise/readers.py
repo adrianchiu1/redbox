@@ -670,6 +670,38 @@ def obr_databank(sheet: str, label_prefix: str) -> pd.Series:
     return _year_series(vals.items())
 
 
+@lru_cache(maxsize=None)
+def obr_hist_pf_fy(column: str) -> pd.Series:
+    """OBR historical public finances database, sheet 'Spending (£m)': one
+    column (header row 4, e.g. 'Social Security' or 'o/w pensioners') as an
+    FY Series (£mn, indexed by the FY start year). Rows carry FY labels in
+    column B; non-numeric cells ('-') are skipped (D-S13-005)."""
+    path = _snap_path("OBR_HIST_PF", "database")
+    if path is None:
+        return pd.Series(dtype=float)
+    df = pd.read_excel(path, sheet_name="Spending (£m)", engine="openpyxl", header=None)
+    header = [str(h).strip() for h in df.iloc[3].tolist()]
+    col = next((j for j, h in enumerate(header) if h.startswith(column)), None)
+    if col is None:
+        return pd.Series(dtype=float)
+    vals = {}
+    for _, r in df.iloc[6:].iterrows():
+        label = str(r.iloc[1]).strip()
+        if _OBR_FY_RE.match(label):
+            v = pd.to_numeric(r.iloc[col], errors="coerce")
+            if pd.notna(v):
+                vals[_obr_fy_start(label)] = float(v)
+    return _year_series(vals.items())
+
+
+def obr_hist_pf_cy(column: str) -> pd.Series:
+    """The same column converted to calendar years per §7.10."""
+    from ggfiscal.forecast.forward import fy_to_cy
+
+    fy = obr_hist_pf_fy(column)
+    return fy_to_cy(fy) if len(fy) else fy
+
+
 def obr_fy_with_history(history: pd.Series, forecast: pd.Series) -> pd.Series:
     """Concatenate databank FY history with an EFO table's FY values — the
     same OBR vintage published in two files; the EFO value wins on overlap."""

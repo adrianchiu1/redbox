@@ -40,7 +40,7 @@ SCHEMA = pa.DataFrameSchema(
     {
         "series_id": Column(str),
         "iso3": Column(str, pa.Check.isin(["GBR", "FRA", "DEU"])),
-        "classification": Column(str, pa.Check.isin(["COFOG", "ESA_REV", "BALANCE"])),
+        "classification": Column(str, pa.Check.isin(["COFOG", "ESA_EXP", "ESA_REV", "BALANCE"])),
         "line_code": Column(str),
         "line_level": Column(str, pa.Check.isin(["1", "2", "derived", "total"])),
         "line_label": Column(str),

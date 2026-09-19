@@ -27,10 +27,10 @@ def test_exceptions_csv_written(tmp_path):
     assert len(rows) == len(findings)
 
 
-def test_coverage_v0_prehravest_frame_has_66_rows(tmp_path):
+def test_coverage_v0_prehravest_frame_has_one_row_per_line(tmp_path):
     dest = coverage.build_v0(path=tmp_path / "coverage_matrix_v0.csv")
     rows = list(csv.DictReader(open(dest)))
-    assert len(rows) == 66
+    assert len(rows) == config.universe_size() == 123
     assert all(r["status"] == "awaiting_harvest" for r in rows)
     # D7 notes present where declared
     gf03 = [r for r in rows if r["line_code"] == "GF03"]
@@ -48,7 +48,7 @@ def test_coverage_measured_covers_all_66_lines(tmp_path):
     rows = list(csv.DictReader(open(dest)))
     assert all(r["status"] == "measured" for r in rows)
     measured_lines = {(r["iso3"], r["classification"], r["line_code"]) for r in rows}
-    assert len(measured_lines) == 66
+    assert len(measured_lines) == config.universe_size() == 123
     for r in rows:
         assert int(r["first_usable_year"]) <= int(r["last_usable_year"])
         assert int(r["n_years"]) > 0

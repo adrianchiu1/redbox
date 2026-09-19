@@ -1,4 +1,4 @@
-"""Gate 1 report: small multiples — 22 lines x 3 countries plus the balance
+"""Gate 1 report: small multiples — every granular line x 3 countries plus the balance
 ledger, strict variant, anchor history. Plotly, one self-contained HTML
 (plotly.js from CDN to keep the file reviewable in git)."""
 
@@ -11,8 +11,7 @@ import plotly.graph_objects as go
 
 from ggfiscal import config
 
-LINE_ORDER = (["GF%02d" % n for n in range(1, 11)] + ["GF01_7", "GF01_X"]
-              + ["R%02d" % n for n in range(1, 11)])
+LINE_ORDER = [c for cls in config.TREES for c in config.granular_lines(cls)]
 
 
 def write(path: Path | None = None, variant: str = "strict") -> Path:
@@ -23,6 +22,7 @@ def write(path: Path | None = None, variant: str = "strict") -> Path:
     df = load_canonical("COFOG", variant)
     df = df.set_index(["iso3", "line_code"]).sort_index()
     rv = load_canonical("ESA_REV", variant).set_index(["iso3", "line_code"]).sort_index()
+    ex = load_canonical("ESA_EXP", variant).set_index(["iso3", "line_code"]).sort_index()
     led = load_ledger()
     led = led[led.series_variant == variant]
 
@@ -33,7 +33,7 @@ def write(path: Path | None = None, variant: str = "strict") -> Path:
                         shared_xaxes=False, vertical_spacing=0.004)
     for col, iso3 in enumerate(config.COUNTRIES, start=1):
         for row, code in enumerate(LINE_ORDER, start=1):
-            table = df if code.startswith("GF") else rv
+            table = df if code.startswith("GF") else ex if code.startswith("E") else rv
             try:
                 sub = table.loc[(iso3, code)].sort_values("year")
             except KeyError:

@@ -37,7 +37,7 @@ def _tree(stem: str, variant: str) -> pd.DataFrame:
 @pytest.fixture(scope="module")
 def trees():
     return {(stem, variant): _tree(stem, variant)
-            for stem in ("expenditure_long", "revenue_long")
+            for stem in config.STEMS.values()
             for variant in VARIANTS}
 
 
@@ -89,7 +89,7 @@ def test_gate6_every_derived_row_names_source_and_growth(trees):
 def test_gate6_all_66_series_built_both_variants(trees):
     for variant in VARIANTS:
         built = set()
-        for stem in ("expenditure_long", "revenue_long"):
+        for stem in config.STEMS.values():
             df = trees[(stem, variant)]
             built |= set(map(tuple, df[["iso3", "classification", "line_code"]]
                              .drop_duplicates().values))
