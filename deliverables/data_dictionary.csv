@@ -189,6 +189,84 @@ statistical_forecasts.csv,fit_first_year,First year of the estimation sample.
 statistical_forecasts.csv,fit_last_year,"Last year of the estimation sample — the last OUTTURN, never the last official forecast, so a line's official projection can be read against the model on the same axes."
 statistical_forecasts.csv,n_obs,Number of outturn observations fitted.
 statistical_forecasts.csv,run_id,Run that produced the forecasts.
+forecast_levels.csv,iso3,"Country (GBR, FRA, DEU)."
+forecast_levels.csv,country,"Country name, for readability."
+forecast_levels.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+forecast_levels.csv,line_label,Human-readable name of the line.
+forecast_levels.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+forecast_levels.csv,currency,"GBP for GBR, EUR for FRA and DEU."
+forecast_levels.csv,notes,The concept caveat recorded with the observation at build time.
+forecast_levels.csv,classification,COFOG or ESA_REV.
+forecast_levels.csv,method,"auto.arima | ets | prophet | uc | combination — the same five as statistical_forecasts.csv, of which this file is the currency twin."
+forecast_levels.csv,pct_gdp,"The forecast share of GDP, copied unchanged from statistical_forecasts.csv."
+forecast_levels.csv,gdp_lcu_mn,"Nominal GDP on the path named by gdp_basis, millions of national currency."
+forecast_levels.csv,value_lcu_mn,pct_gdp / 100 * gdp_lcu_mn.
+forecast_levels.csv,lo80_lcu_mn,"lo80 / 100 * gdp_lcu_mn. The GDP path is taken as given, so this is the RATIO's interval in currency and carries no uncertainty about GDP itself."
+forecast_levels.csv,hi80_lcu_mn,"hi80 / 100 * gdp_lcu_mn, on the same footing."
+forecast_levels.csv,lo95_lcu_mn,"lo95 / 100 * gdp_lcu_mn, on the same footing."
+forecast_levels.csv,hi95_lcu_mn,"hi95 / 100 * gdp_lcu_mn, on the same footing."
+forecast_levels.csv,gdp_basis,"How the GDP path was built. anchored_outturn_chained_on_weo_ngdp = the tree's own outturn GDP to gdp_anchor_year, then chained on the growth of the named WEO series — never the WEO level itself, which sits up to 1% off our anchor and would step every forecast level at the join."
+forecast_levels.csv,gdp_anchor_year,"Last year every line's GDP denominator agrees; the year the chain starts from. At the last outturn the denominator forks by source, so the anchor is a year earlier."
+forecast_levels.csv,gdp_anchor_lcu_mn,GDP at gdp_anchor_year.
+forecast_levels.csv,gdp_growth_source,Source of the growth rates after the anchor.
+forecast_levels.csv,gdp_growth_vintage,That source's vintage.
+forecast_levels.csv,run_id,Run that produced the levels.
+benchmark_balance.csv,iso3,"Country (GBR, FRA, DEU)."
+benchmark_balance.csv,country,"Country name, for readability."
+benchmark_balance.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+benchmark_balance.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II interest), GF01_X (GF01 - GF01_7), TE (total expenditure). ESA revenue: R01-R10, TR (total revenue)."
+benchmark_balance.csv,line_label,Human-readable name of the line.
+benchmark_balance.csv,notes,The concept caveat recorded with the observation at build time.
+benchmark_balance.csv,base_year,"Year the path starts from: the latest year in which EVERY line has an outturn, which the expenditure tree sets a year before the revenue tree."
+benchmark_balance.csv,horizon,year - base_year.
+benchmark_balance.csv,kind,line = one granular line; expenditure_total / revenue_total = the sum of that side's lines; balance = the benchmark NLB/GDP path itself.
+benchmark_balance.csv,side,revenue | expenditure | balance.
+benchmark_balance.csv,anchor_year,Last outturn year of that line (base_year on the aggregate rows).
+benchmark_balance.csv,anchor_pct_gdp,"The line's value at base_year; on a balance row, the ledger's own NLB/GDP at base_year."
+benchmark_balance.csv,pct_gdp,"Level at year, as a percentage of GDP."
+benchmark_balance.csv,contribution_pp,"Change since base_year in percentage points of GDP, signed so the line rows sum to the balance row's own change: positive for revenue, negative for expenditure."
+benchmark_balance.csv,se,"Standard error. On a line row, the line's own published standard error, zero where the path is an official projection or still an outturn. On a balance row, those propagated under rho_within and rho_between."
+benchmark_balance.csv,lo80,pct_gdp - 1.2816 * se (balance rows).
+benchmark_balance.csv,hi80,pct_gdp + 1.2816 * se (balance rows).
+benchmark_balance.csv,lo95,pct_gdp - 1.9600 * se (balance rows).
+benchmark_balance.csv,hi95,pct_gdp + 1.9600 * se (balance rows).
+benchmark_balance.csv,source,"outturn | official | statistical on a line row; benchmark on a balance row. An official projection is used only where it covers the whole horizon, so this need not match the source the chartbook panel shows for the same line."
+benchmark_balance.csv,source_runs_to,Last year that line's chosen source reaches.
+benchmark_balance.csv,rho_within,"Average pairwise correlation of the lines' h-year changes in ratio within a side, estimated from the outturn history."
+benchmark_balance.csv,rho_between,"The same across the two sides. It enters the balance variance with a minus sign, so a positive value narrows the interval."
+benchmark_balance.csv,n_corr_obs,Overlapping h-year changes behind those estimates.
+benchmark_balance.csv,history_sd_pp,"Standard deviation of h-year moves in the ledger's own NLB/GDP over the whole outturn record. A calibration reference, not an interval, and never used to build one."
+benchmark_balance.csv,n_history_obs,Overlapping h-year moves behind history_sd_pp.
+benchmark_balance.csv,n_official,"Lines on an official path, which contribute no variance to the interval."
+benchmark_balance.csv,n_statistical,Lines on a statistical path.
+benchmark_balance.csv,run_id,Run that produced the balance.
+benchmark_vs_weo.csv,iso3,"Country (GBR, FRA, DEU)."
+benchmark_vs_weo.csv,country,"Country name, for readability."
+benchmark_vs_weo.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+benchmark_vs_weo.csv,notes,The concept caveat recorded with the observation at build time.
+benchmark_vs_weo.csv,weo_vintage,WEO edition compared against.
+benchmark_vs_weo.csv,base_year,Year the changes are measured from — the benchmark balance's own base.
+benchmark_vs_weo.csv,horizon,year - base_year.
+benchmark_vs_weo.csv,kind,balance | revenue | expenditure | weo_internal_wedge.
+benchmark_vs_weo.csv,side,balance | revenue | expenditure | memo.
+benchmark_vs_weo.csv,ours_pct_gdp,Our benchmark level as a percentage of GDP.
+benchmark_vs_weo.csv,weo_pct_gdp,"The WEO's own GGXCNL, GGR or GGX over its NGDP."
+benchmark_vs_weo.csv,level_gap_pp,"ours_pct_gdp - weo_pct_gdp. On a side row this carries the perimeter difference; compare changes, not levels, where perimeter_gap_pp is large."
+benchmark_vs_weo.csv,ours_change_pp,"Our change since base_year, signed so revenue and expenditure sum to the change in the balance."
+benchmark_vs_weo.csv,weo_change_pp,"The WEO's change since base_year, signed the same way. On the wedge row, the WEO's own change in (GGR - GGX - GGXCNL)/NGDP."
+benchmark_vs_weo.csv,change_gap_pp,"ours_change_pp - weo_change_pp, and -wedge on the wedge row, so revenue + expenditure + wedge equal the balance row exactly."
+benchmark_vs_weo.csv,se,The benchmark balance's standard error (balance rows).
+benchmark_vs_weo.csv,lo80,Benchmark 80% lower bound.
+benchmark_vs_weo.csv,hi80,Benchmark 80% upper bound.
+benchmark_vs_weo.csv,lo95,Benchmark 95% lower bound.
+benchmark_vs_weo.csv,hi95,Benchmark 95% upper bound.
+benchmark_vs_weo.csv,weo_inside_80,Whether the WEO's projection falls inside the benchmark's 80% interval that year.
+benchmark_vs_weo.csv,weo_inside_95,The same for the 95% interval.
+benchmark_vs_weo.csv,weo_z,"How many of the benchmark's own standard errors the WEO sits away from it, signed: positive means the WEO is the smaller deficit."
+benchmark_vs_weo.csv,perimeter_gap_pp,"Base-year difference between our total and the WEO's on that side, in pp of GDP. Large on the UK's two sides, and it cancels in the balance."
+benchmark_vs_weo.csv,perimeter_gap_sd_pp,Standard deviation of that gap over the last ten overlap years — how safe it is to treat it as cancelling in a change.
+benchmark_vs_weo.csv,perimeter_classification,"How §8.2 classified the history gap: perimeter, revision or unexplained."
+benchmark_vs_weo.csv,run_id,Run that produced the comparison.
 data_dictionary.csv,file,Flat file the column belongs to.
 data_dictionary.csv,column,"Name of the column, as it appears in that file's header."
 data_dictionary.csv,description,What the column holds.

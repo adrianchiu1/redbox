@@ -1,5 +1,7 @@
 """ggfiscal CLI (§11.2): fetch | standardise | build | reconcile | validate |
-report | flatten | statistical-forecasts | detect-vintages, plus
+report | flatten | statistical-forecasts | forecast-levels |
+benchmark-balance |
+benchmark-vs-weo | detect-vintages, plus
 register/coverage helpers."""
 
 from __future__ import annotations
@@ -200,6 +202,71 @@ def statistical_forecasts():
                f"{frame.method.nunique()} methods)")
     from ggfiscal import manifest as M
     M.update_flat_files()
+
+
+@app.command("forecast-levels")
+def forecast_levels(vintage: str = typer.Option(
+        "", help="WEO vintage for the GDP growth path (default: latest)")):
+    """Put the statistical forecasts into currency for the chartbook's levels
+    charts. One nominal GDP path per country — the tree's own outturn at the
+    last year every line agrees on it, chained forward on the IMF WEO's NGDP
+    growth — because the trees' own forecast denominators are per-source and
+    disagree. Writes deliverables/forecast_levels.csv; needs the WEO snapshot
+    and the published bundle, nothing else."""
+    from ggfiscal.build import build_run_id
+    from ggfiscal.forecast.levels import write
+
+    dest, notes = write(build_run_id(), vintage)
+    for note in notes:
+        typer.echo(f"  {note}")
+    import pandas as pd
+    frame = pd.read_csv(dest)
+    typer.echo(f"\nwrote {dest}  ({len(frame)} rows, "
+               f"{frame.groupby(['iso3', 'line_code']).ngroups} series x "
+               f"{frame.method.nunique()} methods to {int(frame.year.max())})")
+
+
+@app.command("benchmark-balance")
+def benchmark_balance():
+    """Sum the line forecasts back into a net lending/borrowing path to 2031,
+    with an interval propagated from the lines' own standard errors under a
+    correlation structure estimated from their history. A benchmark balance,
+    never a rival to an official projection. Writes
+    deliverables/benchmark_balance.csv; reads only the published bundle, so
+    it needs no harvest and no canonical layer."""
+    from ggfiscal.build import build_run_id
+    from ggfiscal.forecast.balance import write
+
+    dest, notes = write(build_run_id())
+    for note in notes:
+        typer.echo(f"  {note}")
+    import pandas as pd
+    frame = pd.read_csv(dest)
+    balance = frame[frame.kind == "balance"]
+    typer.echo(f"\nwrote {dest}  ({len(frame)} rows, "
+               f"{balance.iso3.nunique()} countries x {len(balance) // max(balance.iso3.nunique(), 1)} "
+               f"years to {int(frame.year.max())})")
+
+
+@app.command("benchmark-vs-weo")
+def benchmark_vs_weo(vintage: str = typer.Option(
+        "", help="WEO vintage to compare against (default: latest)")):
+    """Put the benchmark balance beside the IMF WEO's own GGXCNL projection
+    and decompose the difference: revenue side, expenditure side, and the
+    WEO's own internal wedge, on changes since the base year so a stable
+    perimeter difference cancels. Writes deliverables/benchmark_vs_weo.csv."""
+    from ggfiscal.build import build_run_id
+    from ggfiscal.forecast.weo_compare import write
+
+    dest, notes = write(build_run_id(), vintage)
+    for note in notes:
+        typer.echo(f"  {note}")
+    import pandas as pd
+    frame = pd.read_csv(dest)
+    bal = frame[frame.kind == "balance"]
+    typer.echo(f"\nwrote {dest}  ({len(frame)} rows; the WEO sits inside the "
+               f"benchmark's 80% interval in {int(bal.weo_inside_80.sum())} "
+               f"of {len(bal)} country-years)")
 
 
 @app.command("detect-vintages")
