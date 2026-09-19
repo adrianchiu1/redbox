@@ -283,14 +283,27 @@ def write(path: Path | None = None) -> Path:
         "5. **[`notebooks/chartbook.ipynb`](notebooks/chartbook.ipynb)** — "
         "the same series plotted, one chart each, country by category by "
         "series, with seams and projection years marked, plus our totals "
-        "against the IMF WEO. For eyeballing construction quality.",
+        "against the IMF WEO. Each country section opens with a **forecast "
+        "panel**: every category as a share of GDP carrying the one forecast "
+        "this project would quote for it \u2014 the official projection where "
+        "one is published, the four-model combination where none is \u2014 and "
+        "a ranked chart of what each line is forecast to change. For "
+        "eyeballing construction quality, and for seeing the whole forecast "
+        "at once. The levels charts themselves carry the benchmark forward "
+        "in currency wherever nobody publishes a forecast of the line. "
+        "\u00a74.5 reads the line forecasts back as a benchmark deficit path "
+        "to 2031, with the cone their own standard errors imply, and "
+        "\u00a74.6 puts that beside the IMF WEO's own projection and "
+        "decomposes the difference by side.",
         "",
         "The notebooks need only `pandas` and `matplotlib` to re-run: "
         "`pip install -e .[notebook] && jupyter nbconvert --execute "
         "--inplace notebooks/*.ipynb`. GitHub renders them in the browser "
-        "and gives up on large ones (the chartbook is kept under a "
-        "megabyte for exactly that reason); if a notebook ever shows "
-        "*Loading* forever, "
+        "and gives up on large ones; the chartbook is the biggest at about "
+        "1.4 MB, past the 0.9 MB margin D-S9-004 judged safe, and the "
+        "fallback D-S9-004 named \u2014 splitting it one notebook per country "
+        "\u2014 is what to reach for if GitHub declines it. If a notebook ever "
+        "shows *Loading* forever, "
         "[nbviewer](https://nbviewer.org/github/adrianchiu1/redbox/tree/main/notebooks/) "
         "renders it regardless of size.",
         "",
@@ -307,6 +320,9 @@ def write(path: Path | None = None) -> Path:
         "ggfiscal validate           # §10 suite -> exceptions.csv (exit 1 on ERROR)",
         "ggfiscal flatten            # deliverables/ flat-file bundle (also run at the end of `report`)",
         "ggfiscal statistical-forecasts   # benchmark forecasts to 2031 -> deliverables/statistical_forecasts.csv (needs .[forecast])",
+        "ggfiscal forecast-levels        # the same forecasts in currency -> deliverables/forecast_levels.csv",
+        "ggfiscal benchmark-balance      # those lines summed into an NLB path -> deliverables/benchmark_balance.csv",
+        "ggfiscal benchmark-vs-weo       # that balance against the WEO's own projection -> deliverables/benchmark_vs_weo.csv",
         "ggfiscal detect-vintages    # §11.7 live-metadata diff -> reports/vintage_diff.md",
         "pytest                      # per-stage gate tests",
         "```",
