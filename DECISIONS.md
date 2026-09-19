@@ -1680,3 +1680,86 @@ balance, and is absent only on the wedge memo; the WEO side quotes the
 snapshot unchanged and the file reproduces from the bundle; and §4.6's prose
 claim that the WEO is always inside the 80% interval is checked against the
 data rather than taken on trust. `tests/deliverables` 66 passed (was 61).
+## D-S12-001 — The AFT briefing: the register rolled forward through declared yield paths onto the interest line, and the note built on it (serves DEBT_KICKOFF.md §1 "shaped for: simulating alternative yield-curve paths through the register", DD7; new deliverable under `reports/`)
+2026-09-18, session 10. The committee asked for a briefing note for a
+meeting with the Agence France Trésor's Chief Economist, built from the
+chartbook and the debt book, addressing three concerns — the interest bill
+and its wrong-way loop with politics, the shortening maturity of the stock,
+and the rate sensitivity of the end holders — under the current path and
+under the four 2027 configurations (Le Pen / Édouard Philippe × majority /
+hung National Assembly).
+**What was built.**
+  - `src/ggfiscal/debt/simulate.py` — the yield-path simulation the debt
+    spec left as "out of scope now, but shaped for". It loads the French
+    register at the AFT's latest office snapshot (2026-09-10) from the
+    bundle and rolls it forward 2026–2035 year by year: coupons pro rata,
+    bill discount on the bill stock, uplift accrued on the linkers, the
+    general-government deficit (primary balance declared, interest
+    endogenous) financed at the marginal OAT yield in the AFT's 2025 tenor
+    mix, interest fed back into next year's deficit. A Bund curve, a spread
+    term structure, a bill-stock path and a tenor tilt are declared inputs;
+    six scenarios (`SCENARIOS`) state the primary-balance deviation, the
+    10y spread path, the bill stock and the tilt, with a +3 bp per pp
+    debt-ratio feedback. `decompose_gap` re-runs one lever at a time to
+    split a scenario's interest gap into spread, volume and interaction;
+    `duration_table` prices every bond at the curve for the mark-to-market
+    sensitivity of the stock. Two calibrations are computed from the
+    bundle and printed, never fitted silently: the share of the
+    general-government deficit the État's negotiable debt has financed
+    (Δ(F.31+F.32)/−NLB 2015–2025 = 0.90) and the wedge GF01_7 − register
+    interest (10.1 EUR bn in 2025, 0.34% of GDP). 2026 is a bridge year:
+    the register already holds the issuance to the snapshot, so only the
+    remainder of the year is financed and the 2026 interest is the strict
+    file's AMECO value. The tenor of each issuance bucket is the AFT's own
+    nominal-weighted residual maturity at issue in that bucket, not the
+    bucket midpoint (the midpoint overstated the 2025 mix by a year).
+  - `src/ggfiscal/report/briefing_fra.py` (descriptive charts and
+    `key_figures.csv`, drawn by a delegated model to the debtbook's
+    palette) and `src/ggfiscal/report/briefing_fra_scenarios.py` (scenario
+    charts, `scenarios_FRA.csv`, `scenario_decomposition.csv`,
+    `duration_by_bucket.csv`). Both read `deliverables/` only.
+  - `reports/briefing_FRA_AFT_2026-09/` — the note: `briefing_template.html`
+    (prose with placeholders), `tools/build_briefing_fra.py` (fills every
+    number from the CSVs and the engine and fails on an unfilled
+    placeholder), `briefing.html` (figures by path) and
+    `briefing_inline.html` (self-contained, the published artifact), the
+    figures and CSVs. `notebooks/briefing_FRA_AFT.ipynb` (via
+    `tools/make_briefing_notebook.py`) regenerates every chart and table,
+    executed with outputs committed at 0.58 MB (D-S9-004 size rule kept by
+    quantising the PNGs).
+  - `tests/debt/test_simulate.py` (10 tests): register loads, mix sums to
+    one with office tenors, calibrations agree with the bundle, every
+    scenario-year present, bridge-year identity, interest = register +
+    wedge and debt = Σ deficits exactly, the political ordering, the
+    current path within a fifth of the EC DSM path in 2030, the
+    decomposition adds up, prices and durations sensible.
+**What the numbers say** (all in the note; here for the log). Current path:
+general-government interest 2.54% of GDP in 2026 → 3.0% (2028) → 3.5%
+(2030) → 4.2% (2035), within a few EUR bn of the EC DSM path already in the
+strict file, which is the cross-check that the engine is doing the same
+arithmetic. Politics adds 10–19 EUR bn a year by 2030 and 34–62 by 2035 in
+the Le Pen cases, two-thirds spread and one-third primary balance; the
+interaction (the loop proper) is under 2 EUR bn by 2035. A Philippe
+majority saves 16 EUR bn by 2035. The register's average residual maturity
+peaked at 8.5 years in 2022 (8.3 at end-2025); maturity at issue of fixed
+paper fell from 12.6 years (2021) to 10.3 (2026 ytd); 32% of the stock
+matures within three years. The OAT stock has a modified duration of 6.2
+years and loses 151 EUR bn per 100 bp.
+**Where the note leaves the repo's rules.** Holder shares, ratings, the
+spread level of September 2026, the political calendar and the AFT's
+programme figures are external (a web search of 2026-09-18 by a delegated
+model; the AFT's own site returned 503 throughout, so its figures come via
+press reproductions) and are tagged `ext` in the note with the source list
+in §8; nothing external enters any module or CSV. The scenarios are
+declared, not forecast, and say so. Nothing enters the canonical layer or
+`deliverables/`: the outputs live under `reports/` and the notebook, and
+`ggfiscal flatten`, `report`, `validate` and the parent tests are untouched.
+**Known limits.** The register is gross of buybacks (1–4% above the AFT on
+the fixed lines), so redemptions and gross issuance in the engine are high
+by the buyback volume; net issuance and interest are barely affected.
+Growth, inflation and the Bund curve are common to all scenarios. France
+has no holdings overlay (DD11 is UK-only), so the holder sensitivities are
+share × the register's duration, an approximation the note states. The
+`tests/debt` suite in this container still carries the pre-existing
+failures for sources without a local snapshot (INSEE idbanks, German and
+French rate sources — D-S9-008); none involve the new module.
