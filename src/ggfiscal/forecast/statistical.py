@@ -43,7 +43,7 @@ from ggfiscal import config
 
 HORIZON = 2031
 Z95, Z80 = 1.959964, 1.281552
-TOTALS = {"TE", "TR"}
+TOTALS = {"TE", "TE_ESA", "TR"}
 
 COLUMNS = [
     "iso3", "country", "classification", "line_code", "line_label", "method",
@@ -172,8 +172,7 @@ METHODS = {"auto.arima": _auto_arima, "ets": _ets,
 def _strict_tree() -> pd.DataFrame:
     canonical = config.repo_root() / "data" / "canonical"
     frames = []
-    for stem, classification in (("expenditure_long", "COFOG"),
-                                 ("revenue_long", "ESA_REV")):
+    for classification, stem in config.STEMS.items():
         df = pd.read_csv(canonical / f"{stem}_strict.csv",
                          float_precision="round_trip")
         frames.append(df.assign(classification=classification))

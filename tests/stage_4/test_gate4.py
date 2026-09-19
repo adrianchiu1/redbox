@@ -109,7 +109,7 @@ def test_proxies_carry_d2_and_78_requirements():
 
 
 def test_coverage_matrix_complete(matrix):
-    assert len(matrix) == 66
+    assert len(matrix) == 99 == config.universe_size()
     assert matrix.reason_series_ends.astype(str).str.len().ge(10).all()
     assert matrix.first_historical_year.notna().all()
     assert matrix.final_actual_year.notna().all()
@@ -126,9 +126,18 @@ def test_coverage_matrix_complete(matrix):
     assert gf10.loc["GBR", "final_maximum_year"] == 2027
     assert gf10.loc["FRA", "final_maximum_year"] == 2070
     assert gf10.loc["DEU", "final_maximum_year"] == 2070
-    # GF01_X is never forecast: final maximum = final actual
-    gx = matrix[matrix.line_code == "GF01_X"]
-    assert (gx.final_maximum_year == gx.final_actual_year).all()
+    # GF01_X / GF10_X are never forecast: final maximum = final actual
+    for code in ("GF01_X", "GF10_X"):
+        gx = matrix[matrix.line_code == code]
+        assert len(gx) == 3 and (gx.final_maximum_year == gx.final_actual_year).all(), code
+    # the pension line carries the Ageing Report leg in strict (D-S11-002)
+    g102 = matrix[matrix.line_code == "GF10_2"].set_index("iso3")
+    assert g102.loc["FRA", "final_strict_year"] == 2070
+    assert g102.loc["DEU", "final_strict_year"] == 2070
+    assert g102.loc["GBR", "final_strict_year"] == g102.loc["GBR", "final_actual_year"]
+    # the ESA_EXP social-benefits line is a direct AMECO forecast (D-S11-003)
+    e03 = matrix[(matrix.classification == "ESA_EXP") & (matrix.line_code == "E03")]
+    assert len(e03) == 3 and (e03.final_strict_year == 2027).all()
 
 
 def test_v17_and_suite_green_at_stage_4():

@@ -1375,3 +1375,169 @@ failures were only `pypdf` missing from this image (declared in
 `pyproject` since the debt merge, but the environment predated it).
 Nothing in `deliverables/debt_*.csv` changed: `flatten` copies the debt
 canonical layer, and all twelve files are byte-identical after the rebuild.
+
+## D-S11-001 — The line universe is enumerated from config and grows from 66 to 99: a third tree and a generic Level II mechanism (serves §1, §4, §5, §11.2; supersedes the "twelve lines per country" and "66 series" counts of §1/§4.1 and D10's "these are the only sub-Level I lines"; session 11, 2026-09-19)
+2026-09-19, session 11. The committee asked for social benefits and pensions,
+which the spec's COFOG tree carries only as the undivided GF10 lump, and for
+a review of every Level I line and every revenue line for further breakdowns.
+Two structural changes carry both asks without touching the methodology:
+  - **COFOG Level II is now a config mechanism, not two hand-built lines.**
+    `config/lines.yaml` declares any `level: "2"` line with its `parent`, and
+    a `level: derived` remainder (`parent - level2`, `never_forecast`);
+    `config.level2_splits()` enumerates them and the build, the coverage
+    matrix, V19, the stitched-year derivation and the flat files iterate over
+    that list. GF01_7/GF01_X (D10) are the first split; GF10_2/GF10_X
+    (D-S11-002) the second; a further group is one config entry plus its
+    remainder — the §11.7 standard of "config change plus rebuild, never a
+    code change". D10's sentence "these are the only sub-Level I lines" is
+    superseded; its substance (interest separated gross on both sides, the
+    D.41 fallback for missing Level II 01.7) is unchanged and remains the
+    only split with a fallback concept.
+  - **A third tree, `ESA_EXP`** (expenditure by ESA economic type, D-S11-003),
+    stored in its own canonical files (`expenditure_esa_long_{variant}`) and
+    flat file (`deliverables/expenditure_esa.csv`), with `classification`
+    now a published column of every tree file. `config.TREES`/`STEMS` name
+    the three trees in publication order; `config.line_universe()` is built
+    from them, totals excluded by their `level: total` mark rather than by
+    the literal codes "TE"/"TR".
+Consequences, all mechanical: `model.py` admits `ESA_EXP`; `build.load_trees`
+concatenates the three trees for the classification-agnostic validators
+(V1, V4-V14, V17, V6/V13 both directions); every count that was hard-coded
+(66 in S0_LINES, S0_COVERAGE, the CLI, the README, six tests; 72 catalogue
+rows; 12/10 lines) is derived from config or restated as 99 / 108 / 14-9-10.
+The §8.3 decomposition is untouched by design: it works on the 20 Level I
+lines by literal code, so the ESA_EXP tree — a second cut of the same TE —
+is never double counted, and GF10_2 sits inside GF10 exactly as GF01_7 sits
+inside GF01 (D-S8-001's reasoning). `series_catalogue.csv` and the coverage
+matrix are keyed by classification as well as line code, so the two TE
+concepts (COFOG `TE`, ESA `TE_ESA`) never collide.
+
+## D-S11-002 — Pensions = COFOG 10.2 Old age, as a Level II line `GF10_2` with remainder `GF10_X`; the Ageing Report pension path enters strict for FRA/DEU at grade B (serves §4.1, §6.2(2), §7.5, §9; new lines)
+2026-09-19. Three candidate concepts were measured before choosing:
+(a) the function total of COFOG 10.2 (old-age cash benefits plus the
+function's administration and in-kind old-age services), (b) 10.2 + 10.3
+(adding survivors), (c) the D.62 cash benefits of 10.2 alone (the
+`D62PAY_GF1002` cell of gov_10a_main, the purest "pensions paid"). Chosen:
+**(a)**, for three reasons. It is a published Level II cell of the anchor's
+own table for all three countries (ONS Table 11 carries GF1002 from 1995;
+Eurostat FRA from 1995, DEU from 2000), so it fits the D10 pattern exactly
+and V19's identity with GF10 is checkable; it is the largest single COFOG
+group anywhere (2024: 18.5% of TE in GBR, 23.4% FRA, 20.0% DEU — bigger
+than any Level I division bar GF10 itself and GF07); and the 2024 Ageing
+Report's gross public pensions (AWG definition: old-age, early, disability
+and survivor pensions) measure against it at 1.07-1.09 in 2022-24 for both
+France and Germany — the B band — so the AR projection to 2070 enters
+**strict** at grade B, where the AR pensions+LTC composite against GF10
+stays C (D-S3-003). Against (b) the same series would measure 0.97-0.99
+(FRA) and 0.90-0.92 (DEU), also B; (b) was not chosen because a two-group
+sum is a constructed line, and survivors is 0.1% of TE in the UK. (c) is
+short for Germany (D62 by COFOG group from 2012 only) and is the concept a
+reader can already take from `E03` × the function shares if wanted.
+Sources and what happened per country (`forecast_boundaries.csv`,
+`stitch_boundaries.csv`, `forecast_declarations.csv`):
+  - **FRA/DEU GF10_2 ← EC_AGEING_2024 "Public pensions, gross"**, % of GDP,
+    §7.5 nominal path as for GF07/GF09: coverage 1.070 (FRA) / 1.068 (DEU)
+    at 2024, grade B, `direct_forecast`, strict and maximum to 2070.
+    Crosswalk `EC_AGEING_to_COFOG.csv` row `pensions_baseline`. The AR's
+    disability and survivor components explain the ~7% over-coverage; the
+    concept note carries it.
+  - **DEU starts 2000, not 1995**: Eurostat DEU Level II lacks 1995-99 for
+    GF1002 as it does for GF0107 (D-S1-003), but there is no fallback
+    concept for old age as there is for interest. The IMF GFS old-age group
+    (`GF1020_T`) was registered as the 1995-99 candidate; measured live it
+    also starts in 2000 for DEU (1995 for FRA/GBR), so nothing is applied;
+    the crosswalk row records the stop. GF10_X therefore also starts 2000.
+  - **GBR GF10_2 has no applicable forecast**: EFO table 4.9 State pension
+    starts at FY 2024-25, so after §7.10 conversion it shares no year with
+    the anchor — §9.2 unmeasurable, grade D, recorded not applied (the
+    welfare-spending problem of D-S7-003). The OBR historical public
+    finances database carries pensioner spending 1978-79 to 2022-23, which
+    cannot bridge 2023-24; declared `source_blocked` with the FRS ask
+    (OQ-6 a). It would be a C-band backward-extension candidate for GF10_2
+    to 1978 (public-sector, FY) — not built this session, listed in OQ-10.
+  - **GF10_X = GF10 − GF10_2**, derived, never forecast, both variants in
+    every year both exist (GBR/FRA from 1995, DEU from 2000), V19-checked.
+GF10 itself is unchanged (still the AMECO D.62 C-proxy chained into the AR
+composite, maximum only). The §8.3 explained shares are unchanged by
+construction (D-S8-001's argument).
+
+## D-S11-003 — The `ESA_EXP` tree: total expenditure by ESA economic type, nine lines summing to TE, AMECO as the direct forecast and backward source (serves §3, §4, §6.1-6.2, §7.2-7.3, §9; new tree)
+2026-09-19. Lines (`config/lines.yaml` `expenditure_esa`): E01 D.1
+compensation of employees, E02 P.2 intermediate consumption, **E03 D.62
+social benefits other than social transfers in kind** (the "social
+benefits" line the committee asked for: every cash benefit across every
+function), E04 D.632 social transfers in kind via market producers, E05 D.41
+interest payable (the economic twin of GF01_7, carrying the same
+`d41_gross_accrued` flag and V20 check), E06 D.3 subsidies, E07 other
+current expenditure (D.29 + D.5 + D.4 excl. D.41 + D.7 + D.8), E08 P.5 + NP
+capital formation, E09 D.9 capital transfers, and the total TE_ESA.
+Anchors are the same institution as each country's balance anchor:
+gov_10a_main payable items for FRA/DEU (`D1PAY`, `P2`, `D62PAY`, `D632PAY`,
+`D41PAY`, `D3PAY`, `D29PAY`+`D5PAY`+`D4PAY`−`D41PAY`+`D7PAY`+`D8`, `P5`+`NP`,
+`D9PAY`, `TE`) and ONS ESA Table 2 payable rows for GBR (`D1`, `P2`, `D62`,
+`D632`, `D41`, `D3P`, `D29`+`D5`+`D4N`+`D7`, `P5`+`NP`, `D9`, `OTE`). The
+identity E01 + … + E09 = TE_ESA closes to 0.000% in every year of every
+country (verified 1995/2010/2024 before building; V2 now checks it every
+year alongside GF01-GF10 = TE). TE_ESA equals the COFOG TE for FRA/DEU and
+the ESA Table 2 total (= LEDGER_TE) for GBR; it is published as its own
+total so the GBR wedge (D-S1-001) stays visible rather than blended.
+Forecasts and extensions (crosswalk `EC_AMECO_to_ESA_EXP.csv` v1.0): AMECO
+chapter 16 carries every line on the anchor's own ESA concept — UWCG,
+UCTGI, UYTGH, UYTGM, UYIG, UYVG, UUOG — measured at 1.000 for FRA/DEU
+(grade **A**, the first A-grade expenditure forecasts in the repo) and, for
+GBR, 1.001 (E03), 1.000 (E04), 1.043 (E05), 1.028 (E06) — A/B; strict to
+2027, and backward to 1978 (FRA), 1991 (DEU, the reunification stop) and
+1987 (GBR, where the UK AMECO history exists). E08 and E09 have partial
+components only: UIGG0 (P.51G, 0.96-1.03 of P.5+NP) and UKOG (D.9 + NP and
+other capital items, 0.95-1.13) are §7.8 proxies, maximum_extension only
+where in band (FRA E09 at 1.133 is D, not applied). AMECO publishes no UK
+history for UWCG, UCTGI and UUOG (2026-27 only, the OQ-4 pattern), so GBR
+E01/E02/E07 are declared `no_machine_readable_source`: EFO table 6.1's
+economic breakdown starts at FY 2025-26 and has the same no-overlap
+problem. The AMECO D.62 series that was usable only as a C-band proxy for
+GF10 (D-S4-003) is now the direct grade-A forecast of E03 — the concrete
+gain the committee asked about: a social-benefits line with an official
+short-term forecast in strict, for all three countries.
+Two things deliberately NOT done: (i) **FRA/DEU E05 does not chain into the
+DSM interest path.** The engine offers the same DSM leg as for GF01_7; the
+overlap divergence is the same −6.5pp/+4.0pp that OQ-7 adjudicated, and the
+committee's approval list (`tolerances.v16_approved_joins`) names GF01_7,
+not E05. The join is therefore withheld with a V16 WARN (D12 read
+strictly); approving it is one config row (OQ-10 c). (ii) No long-term leg
+for E03: the AR pensions+LTC composite covers only ~65-70% of D.62.
+WARN tiers rose as intended visibility, no ERROR: V1 +278 (the GFSM SOO
+expense items registered for E01/E02/E05/E06 differ from ESA by 3-7% for
+FRA/DEU and more for GBR — concept wedges between GFSM and ESA, WARN by
+design), V16 +2 (the withheld E05 joins), V5 +3 (new backward legs),
+S0_SNAPSHOTS +494 (the append-only manifest now carries this session's
+fetch on top of the earlier machines' entries, D-S0-004).
+
+## D-S11-004 — Packaging: a companion chartbook for the economic tree, three more forecast books, and the notebook cell surgery scripted (serves §11.6, D-S9-002/004/007)
+2026-09-19. The chartbook gains the six GF10_2/GF10_X charts in place
+(after GF10 in each country's COFOG section) and stays under the size
+GitHub renders; the 30 ESA_EXP charts live in `notebooks/chartbook_esa.ipynb`,
+a companion with the same setup cell, its own seams table and a header that
+says what the tree is and that an `E` line is never added to a `GF` line.
+`tests/deliverables` now requires every catalogued series to be charted in
+exactly one of the two books and the caption discipline (D-S9-003) in both.
+The six forecast books gain GF10_2/GF10_X sections (levels, share, and the
+five fans where a benchmark exists — none for FRA/DEU GF10_2, whose official
+path reaches 2070) and three new books `forecasts_{GBR,FRA,DEU}_esa.ipynb`
+cover E01-E09. `deliverables/statistical_forecasts.csv` is regenerated:
+91 series (99 less the eight whose strict path reaches 2031) × 5 methods.
+The cell surgery is `tools/update_notebooks_s11.py` (idempotent) so the
+next line added can be wired the same way; execution is nbconvert as before.
+`derivation.ipynb` enumerates from the catalogue and needed only its prose
+counts updated. Gate record and the committee items from the review are in
+HANDOFF.md and OQ-10.
+Gate record (session 11): `pytest --ignore=tests/debt` **149 passed** (137
+before + 12 new/extended: the 99-line universe, the Level II enumeration,
+the ESA_EXP spec, the identities in every anchor year, the pension and
+social-benefits horizons in the coverage matrix, the companion chartbook
+and the three esa forecast books); `validate` **OK=77 WARN=1885, no ERROR,
+no SKIP** (WARN delta explained in D-S11-003). `chartbook.ipynb` executed
+at 1.01 MB, 5% over the judged 1 MB margin of D-S9-004 (0.96 MB before the
+six pension charts); GitHub's threshold is unmeasurable from here — if it
+declines to render, the documented fallback is one book per country, and
+nbviewer renders it regardless. The rebuild on the 2026-09-19 harvest
+changed no value in the 66 pre-existing series (run_id only).

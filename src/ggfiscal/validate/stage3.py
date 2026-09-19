@@ -20,7 +20,7 @@ from __future__ import annotations
 import pandas as pd
 
 from ggfiscal import config
-from ggfiscal.build import anchor_series, load_canonical
+from ggfiscal.build import anchor_series, load_trees
 from ggfiscal.validate.runner import Finding
 
 def _v16_threshold() -> float:
@@ -31,8 +31,7 @@ VERIFIED_STATUSES = {"resolved_live", "verified", "confirmed_search", "confirmed
 
 
 def _forecast_rows(variant: str) -> pd.DataFrame:
-    df = pd.concat([load_canonical("COFOG", variant),
-                    load_canonical("ESA_REV", variant)], ignore_index=True)
+    df = load_trees(variant)
     return df[df.is_forecast]
 
 
@@ -115,8 +114,7 @@ def check_v6() -> list[Finding]:
     anchors = {iso3: anchor_series(iso3) for iso3 in config.COUNTRIES}
     out = [f for f in backward_v6() if f.severity != "OK"]
     for variant in ("strict", "maximum_extension"):
-        df = pd.concat([load_canonical("COFOG", variant),
-                        load_canonical("ESA_REV", variant)], ignore_index=True)
+        df = load_trees(variant)
         fwd = df[df.growth_source_id.notna() & (df.year > df.anchor_year)]
         for (iso3, cls, line), g in fwd.groupby(["iso3", "classification", "line_code"]):
             g = g.sort_values("year")
@@ -212,12 +210,20 @@ def check_v15() -> list[Finding]:
             for year, g in sub.groupby("year"):
                 exp_sum = g[(g.classification == "COFOG")
                             & (g.line_level == "1")].value_lcu_mn.sum()
+                esa_sum = g[(g.classification == "ESA_EXP")
+                            & (g.line_level == "1")].value_lcu_mn.sum()
                 rev_sum = g[g.classification == "ESA_REV"].value_lcu_mn.sum()
                 if year in te_env.index and exp_sum:
                     checked += 1
                     if exp_sum > float(te_env[year]) * (1 + tol):
                         out.append(Finding("V15", "WARN", f"{iso3}/{variant}/{year}",
                                            f"covered Level I sum {exp_sum:.0f} exceeds "
+                                           f"envelope TE {te_env[year]:.0f} + {tol:.0%}"))
+                if year in te_env.index and esa_sum:   # D-S11-003: same TE envelope
+                    checked += 1
+                    if esa_sum > float(te_env[year]) * (1 + tol):
+                        out.append(Finding("V15", "WARN", f"{iso3}/{variant}/{year}",
+                                           f"covered ESA_EXP sum {esa_sum:.0f} exceeds "
                                            f"envelope TE {te_env[year]:.0f} + {tol:.0%}"))
                 if year in tr_env.index and rev_sum:
                     checked += 1

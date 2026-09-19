@@ -59,27 +59,59 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
         gf = f"GF{n:02d}"
         out[("COFOG", gf)] = _cofog_sources(iso3, gf, f"{gf}_T")
 
-    # --- GF01_7 (D10) ---
-    interest = _cofog_sources(iso3, "GF0107", "GF0170_T")
-    if iso3 == "GBR":
-        interest.append(("ONS_PSF_INTEREST", R.ons_t2_series("D41", "payable"),
-                         "D10 fallback concept: GG D.41 payable, accrued"))
-    else:
-        interest.append(("EUROSTAT_GOV10A_MAIN", R.eurostat_main(iso3, "D41PAY"),
-                         "D10 fallback concept: GG D.41 payable"))
-    interest.append(("EC_AMECO", R.ameco_series(iso3, "UYIG", 16),
-                     "envelope forecast source; ESA gross GG interest (D.41 pay)"))
-    out[("COFOG", "GF01_7")] = interest
+    # --- COFOG Level II splits (GF01_7/GF01_X per D10; GF10_2/GF10_X per
+    # D-S11-002) and their derived remainders, enumerated from lines.yaml ---
+    for split in config.level2_splits():
+        l2 = _cofog_sources(iso3, split["eurostat_cofog"], split["gfs_indicator"])
+        if split["level2"] == "GF01_7":
+            if iso3 == "GBR":
+                l2.append(("ONS_PSF_INTEREST", R.ons_t2_series("D41", "payable"),
+                           "D10 fallback concept: GG D.41 payable, accrued"))
+            else:
+                l2.append(("EUROSTAT_GOV10A_MAIN", R.eurostat_main(iso3, "D41PAY"),
+                           "D10 fallback concept: GG D.41 payable"))
+            l2.append(("EC_AMECO", R.ameco_series(iso3, "UYIG", 16),
+                       "envelope forecast source; ESA gross GG interest (D.41 pay)"))
+        if split["level2"] == "GF10_2" and iso3 in ("FRA", "DEU"):
+            l2.append(("EC_AGEING_2024", R.ar_series(iso3, "pensions"),
+                       "forecast source; AWG gross public pensions, % GDP"))
+        out[("COFOG", split["level2"])] = l2
+        if iso3 == "GBR":
+            parent, child = R.ons_cofog(split["parent"]), R.ons_cofog(split["eurostat_cofog"])
+            anchor = "ONS_ESA_T11"
+        else:
+            parent = R.eurostat_cofog(iso3, split["parent"])
+            child = R.eurostat_cofog(iso3, split["eurostat_cofog"])
+            anchor = "EUROSTAT_GOV10A_EXP"
+        out[("COFOG", split["remainder"])] = [
+            (anchor, _intersect(parent, child),
+             f"derived {split['parent']} - {split['level2']}; years where both exist")]
 
-    # --- GF01_X = GF01 − GF01_7, derived only (D10) ---
-    if iso3 == "GBR":
-        gf01, gf017 = R.ons_cofog("GF01"), R.ons_cofog("GF0107")
-        anchor = "ONS_ESA_T11"
-    else:
-        gf01, gf017 = R.eurostat_cofog(iso3, "GF01"), R.eurostat_cofog(iso3, "GF0107")
-        anchor = "EUROSTAT_GOV10A_EXP"
-    out[("COFOG", "GF01_X")] = [(anchor, _intersect(gf01, gf017),
-                                 "derived GF01 - GF01_7; years where both exist")]
+    # --- ESA_EXP: expenditure by economic type (D-S11-003) ---
+    for code, meta in config.tree_lines("ESA_EXP").items():
+        if config.is_total(meta):
+            continue
+        if iso3 == "GBR":
+            spec = meta["ons_t2"]
+            parts = [R.ons_t2_series(c, d) for c, d in spec.get("plus", [])] + \
+                    [R.ons_t2_series(c, d) for c, d in spec.get("minus", [])]
+            anchor_id = "ONS_GG_RECEIPTS"
+        else:
+            spec = meta["eurostat_main"]
+            parts = [R.eurostat_main(iso3, c) for c in spec.get("plus", [])] + \
+                    [R.eurostat_main(iso3, c) for c in spec.get("minus", [])]
+            anchor_id = "EUROSTAT_GOV10A_MAIN"
+        entries = [(anchor_id, _intersect(*parts) if len(parts) > 1 else parts[0],
+                    f"anchor; {meta['esa']}")]
+        if meta.get("ameco"):
+            entries.append(("EC_AMECO", R.ameco_series(iso3, meta["ameco"], 16),
+                            f"AMECO {meta['ameco']}; backward extension and forecast"
+                            + (" (partial component, §7.8 proxy)"
+                               if meta.get("ameco_partial") else "")))
+        if meta.get("gfs_soo"):
+            entries.append(("IMF_GFS", R.gfs_series(iso3, "soo", meta["gfs_soo"]),
+                            f"reconciliation; GFSM {meta['gfs_soo']}"))
+        out[("ESA_EXP", code)] = entries
 
     # --- Revenue ---
     if iso3 == "GBR":
@@ -181,9 +213,7 @@ def measure(path: Path | None = None) -> Path:
         for (classification, line_code) in [(c, l) for (i, c, l) in config.line_universe()
                                             if i == iso3]:
             notes_d7 = []
-            if classification == "COFOG" and line_code in no_fc["expenditure"]:
-                notes_d7.append("D7: no identified forecast source")
-            if classification == "ESA_REV" and line_code in no_fc["revenue"]:
+            if line_code in no_fc.get(config.TREES[classification], []):
                 notes_d7.append("D7: no identified forecast source")
             if classification == "ESA_REV" and line_code in no_fc.get("revenue_partial", {}):
                 notes_d7.append(f"D7 partial: {no_fc['revenue_partial'][line_code]}")
@@ -218,7 +248,7 @@ def measure(path: Path | None = None) -> Path:
 
 
 def gate0_line_coverage() -> tuple[int, list[tuple[str, str, str]]]:
-    """(covered_line_count, uncovered_lines) across the 66-line universe."""
+    """(covered_line_count, uncovered_lines) across the line universe."""
     covered, uncovered = 0, []
     for iso3 in config.COUNTRIES:
         srcs = line_sources(iso3)
@@ -243,9 +273,7 @@ def build_v0(path: Path | None = None) -> Path:
         w.writeheader()
         for iso3, classification, line_code in config.line_universe():
             notes = []
-            if classification == "COFOG" and line_code in no_fc["expenditure"]:
-                notes.append("D7: no identified forecast source; declared at outset")
-            if classification == "ESA_REV" and line_code in no_fc["revenue"]:
+            if line_code in no_fc.get(config.TREES[classification], []):
                 notes.append("D7: no identified forecast source; declared at outset")
             if classification == "ESA_REV" and line_code in no_fc.get("revenue_partial", {}):
                 notes.append(f"D7 partial: {no_fc['revenue_partial'][line_code]}")
@@ -269,18 +297,17 @@ MATRIX_COLUMNS = [
 
 
 def build_matrix() -> pd.DataFrame:
-    """One row per §1 line series (66): span per variant, stitch counts,
-    grades, principal sources, residual method, and why the series ends —
-    assembled from the canonical tables, both boundary files and the
-    declarations, never hand-filled (D13)."""
-    from ggfiscal.build import load_canonical
+    """One row per §1 line series (config.universe_size()): span per variant,
+    stitch counts, grades, principal sources, residual method, and why the
+    series ends — assembled from the canonical tables, both boundary files
+    and the declarations, never hand-filled (D13)."""
+    from ggfiscal.build import load_trees
 
     root = config.repo_root() / "data" / "canonical"
     bwd = pd.read_csv(root / "stitch_boundaries.csv")
     fwd = pd.read_csv(root / "forecast_boundaries.csv")
     dec = pd.read_csv(root / "forecast_declarations.csv")
-    frames = {v: pd.concat([load_canonical("COFOG", v), load_canonical("ESA_REV", v)],
-                           ignore_index=True) for v in ("strict", "maximum_extension")}
+    frames = {v: load_trees(v) for v in ("strict", "maximum_extension")}
     rows = []
     for iso3, classification, line in config.line_universe():
         mx = frames["maximum_extension"]
@@ -291,10 +318,13 @@ def build_matrix() -> pd.DataFrame:
                & (st.classification == classification)]
         fc = m[m.is_forecast]
         applied_b = bwd[(bwd.iso3 == iso3) & (bwd.line_code == line)
+                        & (bwd.classification == classification)
                         & (~bwd.variants.str.startswith("not_applied"))]
         applied_f = fwd[(fwd.iso3 == iso3) & (fwd.line_code == line)
+                        & (fwd.classification == classification)
                         & (~fwd.variants.str.startswith("not_applied"))]
-        d = dec[(dec.iso3 == iso3) & (dec.line_code == line)]
+        d = dec[(dec.iso3 == iso3) & (dec.line_code == line)
+                & (dec.classification == classification)]
         if not d.empty:
             reason = "; ".join(f"[{r.status}] {r.note}" for _, r in d.iterrows())
         elif not fc.empty:

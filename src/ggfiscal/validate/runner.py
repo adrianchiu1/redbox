@@ -52,12 +52,18 @@ def current_stage() -> int:
 
 
 def check_s0_line_universe() -> list[Finding]:
+    """The universe enumerates from config/lines.yaml: every country carries
+    every granular line of every tree (D-S11-001: 33 per country — 14 COFOG
+    incl. two Level II splits, 9 ESA_EXP, 10 ESA_REV — 99 in all)."""
     universe = config.line_universe()
     n = len(universe)
-    if n != 66:
+    per_country = sum(len(config.granular_lines(c)) for c in config.TREES)
+    want = per_country * len(config.COUNTRIES)
+    if n != want or len(set(universe)) != n:
         return [Finding("S0_LINES", "ERROR", "-",
-                        f"line universe has {n} series; §1 requires 66")]
-    return [Finding("S0_LINES", "OK", "-", "66 line series enumerated (3 countries x 22)")]
+                        f"line universe has {n} series; config implies {want}")]
+    return [Finding("S0_LINES", "OK", "-",
+                    f"{n} line series enumerated ({len(config.COUNTRIES)} countries x {per_country})")]
 
 
 def check_s0_register() -> list[Finding]:
@@ -101,7 +107,7 @@ def check_s0_manifest_hashes() -> list[Finding]:
 
 
 def check_s0_coverage() -> list[Finding]:
-    """Gate 0: all 66 lines must have programmatically measured coverage."""
+    """Gate 0: every line of the universe must have programmatically measured coverage."""
     from ggfiscal.coverage import gate0_line_coverage
     from ggfiscal.standardise.readers import latest_snapshots
 
@@ -114,7 +120,7 @@ def check_s0_coverage() -> list[Finding]:
                         "line has no measurable source in the harvest (Gate 0)")
                 for i, c, l in uncovered]
     return [Finding("S0_COVERAGE", "OK", "-",
-                    f"{covered}/66 lines have measured coverage from >=1 source")]
+                    f"{covered}/{config.universe_size()} lines have measured coverage from >=1 source")]
 
 
 def check_s0_bridge() -> list[Finding]:

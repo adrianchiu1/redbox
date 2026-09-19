@@ -126,12 +126,14 @@ def test_data_dictionary_covers_every_column_of_every_file():
 
 def test_catalogue_covers_every_published_series_and_agrees_on_spans():
     cat = read("series_catalogue.csv")
-    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    tree = pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
+                      read("revenue_esa.csv")])
     published = set(map(tuple, tree[["iso3", "line_code"]].drop_duplicates().values))
     assert set(map(tuple, cat[["iso3", "line_code"]].values)) == published
-    # the 66 line series of §1 are all there, on top of the six totals
+    # the 99 line series (D-S11-001) are all there, on top of the nine totals
     assert {(iso3, line) for iso3, _, line in config.line_universe()} <= published
-    assert len(cat) == 72
+    assert len(cat) == 99 + 9
+    assert set(cat.classification) == {"COFOG", "ESA_EXP", "ESA_REV"}
 
     for row in cat.itertuples():
         g = tree[(tree.iso3 == row.iso3) & (tree.line_code == row.line_code)]
@@ -149,7 +151,7 @@ def test_catalogue_spans_agree_with_the_coverage_matrix():
     66 line series — one of them drifting would be a rendering bug."""
     cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
     cov = canonical("coverage_matrix.csv").set_index(["iso3", "line_code"])
-    assert len(cov) == 66
+    assert len(cov) == 99
     cat = cat.reindex(cov.index)
     assert cat.line_label.notna().all()             # every line is catalogued
     for cov_col, cat_col in (("first_historical_year", "first_year"),
@@ -161,7 +163,8 @@ def test_catalogue_spans_agree_with_the_coverage_matrix():
 
 # ------------------------------------------------------- self-reproducing
 
-@pytest.mark.parametrize("flat", ["expenditure_cofog.csv", "revenue_esa.csv"])
+@pytest.mark.parametrize("flat", ["expenditure_cofog.csv", "expenditure_esa.csv",
+                                  "revenue_esa.csv"])
 def test_every_chained_value_reproduces_from_the_flat_file_alone(flat):
     df = read(flat)
     checked = 0
@@ -269,7 +272,8 @@ def test_country_file_is_strict_only_and_carries_every_series(iso3):
     it unchanged, and — the point of the file — no maximum_extension value
     reaches it: the legs that exist only in that variant must be absent."""
     wide = read(f"strict_{iso3}.csv").set_index("year")
-    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    tree = pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
+                      read("revenue_esa.csv")])
     strict = tree.query("iso3 == @iso3 and variant == 'strict'")
     maximum = tree.query("iso3 == @iso3 and variant == 'maximum_extension'")
 
@@ -358,9 +362,10 @@ def test_statistical_forecasts_cover_exactly_the_series_that_need_them():
     """A benchmark exists for every granular line whose official strict
     series stops short of 2031, and for none that already reaches it."""
     fc = read("statistical_forecasts.csv")
-    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    tree = pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
+                      read("revenue_esa.csv")])
     strict = tree.query("variant == 'strict'")
-    granular = strict[~strict.line_code.isin(["TE", "TR"])]
+    granular = strict[~strict.line_code.isin(["TE", "TE_ESA", "TR"])]
     ends = granular.groupby(["iso3", "line_code"]).year.max()
 
     have = set(map(tuple, fc[["iso3", "line_code"]].drop_duplicates().values))
@@ -406,8 +411,8 @@ def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
     means = parts.groupby(key).pct_gdp.mean()
     assert (means - comb.pct_gdp).abs().max() < 1e-9
 
-    within = parts.assign(v=parts.se ** 2).groupby(key).v.mean()
-    between = parts.groupby(key).pct_gdp.var(ddof=1)
+    within = parts.assign(v=parts.se ** 2).groupby(key).v.mean().reindex(comb.index)
+    between = parts.groupby(key).pct_gdp.var(ddof=1).reindex(comb.index)
     assert ((within + between) - comb.se ** 2).abs().max() < 1e-9
     assert (comb.se ** 2 >= within - 1e-12).all()
 
@@ -417,8 +422,13 @@ def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
 FORECAST_NOTEBOOKS = tuple(
     f"forecasts_{iso3}_{tree}.ipynb"
     for iso3 in ("GBR", "FRA", "DEU")
-    for tree in ("expenditure", "revenue"))
-NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb", *FORECAST_NOTEBOOKS)
+    for tree in ("expenditure", "esa", "revenue"))
+# chartbook_esa.ipynb is the companion for the ESA_EXP tree (D-S11-004): the
+# main chartbook stays under the size GitHub will render
+CHARTBOOKS = {"COFOG": "chartbook.ipynb", "ESA_REV": "chartbook.ipynb",
+              "ESA_EXP": "chartbook_esa.ipynb"}
+NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb", "chartbook_esa.ipynb",
+             *FORECAST_NOTEBOOKS)
 
 
 def _notebook(name: str):
@@ -455,9 +465,10 @@ def test_forecast_notebook_charts_every_series_seven_ways(name):
     already reaches 2031, in which case levels and share only."""
     _, code, source, markdown = _notebook(name)
     iso3, tree = name[len("forecasts_"):-len(".ipynb")].split("_")
-    stem = {"expenditure": "expenditure_cofog", "revenue": "revenue_esa"}[tree]
+    stem = {"expenditure": "expenditure_cofog", "esa": "expenditure_esa",
+            "revenue": "revenue_esa"}[tree]
     lines = (read(f"{stem}.csv").query("iso3 == @iso3 and variant == 'strict'")
-             .query("line_code not in ['TE', 'TR']").line_code.unique())
+             .query("line_code not in ['TE', 'TE_ESA', 'TR']").line_code.unique())
     forecast = read("statistical_forecasts.csv").query("iso3 == @iso3")
 
     charted = 0
@@ -495,11 +506,20 @@ def test_chartbook_charts_every_published_series():
     """One chart per series, country by country, plus the WEO comparison and
     the ledger — a series that gains a chart nowhere would be invisible."""
     _, code, source, markdown = _notebook("chartbook.ipynb")
+    _, code_esa, source_esa, markdown_esa = _notebook("chartbook_esa.ipynb")
     cat = read("series_catalogue.csv")
 
     for row in cat.itertuples():
         call = f'chart("{row.iso3}", "{row.line_code}")'
-        assert call in source, call
+        book = source_esa if row.classification == "ESA_EXP" else source
+        assert call in book, call
+        assert call not in (source if book is source_esa else source_esa), call
+    figures_esa = [o for c in code_esa for o in c["outputs"]
+                   if "data" in o and "image/png" in o["data"]]
+    assert len(figures_esa) >= (cat.classification == "ESA_EXP").sum()
+    for topic in ("second cut", "never", "TE_ESA", "E03", "E05"):
+        assert topic in markdown_esa, topic
+    cat = cat[cat.classification != "ESA_EXP"]
     for iso3 in ("GBR", "FRA", "DEU"):
         for q in ("TR", "TE", "NLB", "NI", "PB"):
             assert f'ledger_chart("{iso3}", "{q}")' in source
@@ -512,8 +532,8 @@ def test_chartbook_charts_every_published_series():
                if "data" in o and "image/png" in o["data"]]
     assert len(figures) >= len(cat) + 15 + 9 + 3, "a chart is missing"
     # the schema caveats are stated, not left for the reader to discover
-    for topic in ("GF01_X", "outturn-only", "two different TE numbers",
-                  "explained_share", "seam"):
+    for topic in ("GF01_X", "GF10_X", "chartbook_esa", "outturn-only",
+                  "two different TE numbers", "explained_share", "seam"):
         assert topic in markdown, topic
 
 
@@ -550,11 +570,14 @@ def test_chartbook_shares_one_x_axis_per_country_and_shades_every_chart():
     assert "to 2031" in markdown
 
 
-def test_chartbook_says_why_each_series_without_a_projection_has_none():
+@pytest.mark.parametrize("book", ["chartbook.ipynb", "chartbook_esa.ipynb"])
+def test_chartbook_says_why_each_series_without_a_projection_has_none(book):
     """Every series that stops at its last outturn must say so in its own
     caption, and none that projects may claim it does not."""
-    _, code, source, markdown = _notebook("chartbook.ipynb")
-    cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
+    _, code, source, markdown = _notebook(book)
+    cat = read("series_catalogue.csv")
+    cat = cat[(cat.classification == "ESA_EXP") == (book == "chartbook_esa.ipynb")]
+    cat = cat.set_index(["iso3", "line_code"])
 
     checked = 0
     for cell in code:
@@ -593,8 +616,10 @@ def test_chartbook_says_why_each_series_without_a_projection_has_none():
         checked += 1
     assert checked == len(cat)
 
-    # the taxonomy is spelled out once, up front
-    for status in ("no_official_forecast", "source_blocked",
-                   "grade_below_strict", "no_machine_readable_source",
-                   "not_extended"):
-        assert status in markdown, status
+    # the taxonomy is spelled out once, up front (the companion book points
+    # at the main one for it)
+    if book == "chartbook.ipynb":
+        for status in ("no_official_forecast", "source_blocked",
+                       "grade_below_strict", "no_machine_readable_source",
+                       "not_extended"):
+            assert status in markdown, status

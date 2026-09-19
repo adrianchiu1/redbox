@@ -242,3 +242,53 @@ Fallback per D-S7-001: hand-download the file lists in `DEBT_SCOPING.md`
 §6 and ingest with `ggfiscal ingest-file`. Until either happens the
 extension builds the reference series, the official intermediates and the
 DEU aggregate layer (all reachable), and the per-security register waits.
+
+## OQ-10 — Further breakdowns after the session-11 review: what the data says, and three asks (raised 2026-09-19, D-S11-001..004)
+
+The committee asked for a review of every COFOG Level I line and every
+revenue line for breakdowns that "make sense", with general public services
+and VAT named. Measured from the harvested anchors (Level II groups and
+economic items from ONS Table 11 and Eurostat `gov_10a_exp`; tax sub-items
+from ONS NTL table 9 and `gov_10a_taxag`), shares of the 2024 total,
+GBR / FRA / DEU. Built this session: `GF10_2` old age (pensions) and the
+`ESA_EXP` economic tree with `E03` social benefits (D-S11-002/003).
+
+**Expenditure — where a further Level II line would carry weight**
+
+| line | largest groups, % of TE (GBR / FRA / DEU) | verdict |
+|---|---|---|
+| GF10 social protection (34.5 / 41.5 / 41.3) | old age 10.2: 18.5 / 23.4 / 20.0 — **built**; sickness & disability 10.1: 5.5 / 5.0 / 6.7; social exclusion 10.7: 5.3 / 2.2 / 1.3; family 10.4: 2.9 / 4.0 / 3.9; unemployment 10.5: 0.1 / 2.9 / 3.4; survivors 10.3: 0.1 / 2.4 / 3.8 | **Recommend `GF10_5` unemployment** (the cyclical line, the one automatic stabiliser the §8.3 decomposition could then show; caveat: the UK codes Universal Credit under 10.7, so the UK line is near zero — the note would have to say so). 10.1 is the next largest but no institution forecasts it. |
+| GF01 general public services (13.1 / 10.8 / 13.0) | interest 01.7: 6.3 / 3.5 / 2.3 — already split; executive/legislative/fiscal/external affairs 01.1: 4.8 / 2.6 / 4.2; general services 01.3: 1.1 / 3.2 / 3.1; basic research 01.4: 0.0 / 1.2 / 2.0; foreign aid 01.2: 0.8 / 0.3 / 1.0 | **No further functional split recommended.** Once interest is out, `GF01_X` is 7-9% of TE spread over groups that the three statistical offices code differently (the UK books no basic research under 01.4 at all), so a group line would not be comparable across countries. What the committee probably wants from "general government expenditure" — the transfer component (EU contributions, transfers to other units) — is now visible as `E07` other current expenditure in the economic tree, and the compensation/procurement content of GF01 as `E01`/`E02`. |
+| GF04 economic affairs (8.6 / 9.9 / 11.0) | transport 04.5: 4.3 / 3.6 / 5.4; R&D 04.8: 1.6 / 1.3 / 0.6; fuel & energy 04.3: 1.0 / 0.9 / 1.4; general economic & labour affairs 04.1: 0.9 / 2.7 / 1.7; agriculture 04.2: 0.6 / 0.4 / 0.4. Economically the most heterogeneous division: subsidies 25 / 31 / 16% of it, capital transfers 0 / 16 / 16%, investment 29 / 20 / 21% | **Recommend `GF04_5` transport** if a second split is wanted: the largest group after old age, hospitals and secondary education, capital-heavy, and the one with a policy handle. 04.3 fuel and energy is where the 2022-23 energy support sits and would be worth a memo series, not a line. |
+| GF07 health (19.0 / 15.6 / 15.4) | hospital 07.3: 14.5 / 6.5 / 5.8; outpatient 07.2: 2.2 / 5.5 / 4.6; medical products 07.1: 0.9 / 2.6 / 3.6 | No split: the group shares show institutional coding (the NHS is booked as hospital services), not comparable structure. `E04` (purchased health care in kind) now isolates the part bought from market producers. |
+| GF09 education (10.6 / 8.9 / 9.1) | secondary 09.2: 4.9 / 3.8 / 3.1; pre-primary & primary 09.1: 2.3 / 2.5 / 3.0; tertiary 09.4: 1.0 / 0.7 / 1.6 | Optional `GF09_4` tertiary (a distinct policy line; the UK figure is low because student loans are not expenditure). Modest. |
+| GF02, GF03, GF05, GF06, GF08 | each ≤ 5% of TE and dominated by one group (military defence 4.3 / 2.9 / 2.1; police 2.8 / 1.7 / 1.5) | No split. |
+
+**Revenue — VAT is already a line; the two splits that carry weight**
+
+| line | sub-items, % of TR (GBR / FRA / DEU) | verdict |
+|---|---|---|
+| R01 VAT (17.2 / 13.7 / 14.8) | a single ESA item, D.211 | Already separated (§4.2); nothing to add. The OBR, the Steuerschätzung and AMECO all forecast it and the pipeline applies them. |
+| R02 other production and import taxes (11.9 / 16.4 / 7.2) | **excise duties D.214A: 5.4 / 3.9 / 1.8**; financial and capital transaction taxes D.214C: 1.6 / 1.1 / –; insurance premium tax D.214G: 0.8 / 1.3 / 0.9; other taxes on production D.29: 3.8 / 8.6 / 2.1 (business rates 2.5; French taxes on land/buildings 4.1 and business licences 3.9) | **Recommend `R02_A` excise duties** (fuel, tobacco, alcohol): the sub-line most discussed, forecast duty by duty by the OBR and the Steuerschätzung, OECD RS heading 5121 for the backward leg, D.214A published by all three anchors from 1995. |
+| R06 net social contributions (19.8 / 32.1 / 37.4) | employers' actual D.611: 13.8 / 19.5 / 14.9; households' actual D.613: 5.9 / 9.2 / 20.1; imputed D.612: 0.1 / 3.4 / 2.4 | **Recommend the employers'/households' split** (revisiting §15 Q13, which chose one line with the imputed component flagged): the OBR forecasts employer and employee NICs separately, AMECO carries UTAG (actual) and UTIG (imputed), and the split is the one the 2025-26 UK employer-NICs rise made salient. Imputed contributions would sit with employers' (the ESA convention) with the flag kept. |
+| R03 household income taxes (26.6 / 18.3 / 19.6) | France's CSG (~8-9% of TR) sits inside D.51 households | A CSG line would be France-only; not recommended as a common line. |
+| R05, R08, R10 | council tax / property taxes 4.4 / 0.4 / –; capital taxes 0.7 / 1.4 / 0.5; the rest under 2% | No split. |
+
+**Asks**
+- (a) Confirm or amend the two expenditure recommendations (`GF10_5`
+  unemployment, `GF04_5` transport) and the two revenue ones (`R02_A`
+  excise duties, the R06 employers'/households' split). Each is now a
+  config entry plus its sources and a notebook cell (D-S11-001); the
+  revenue split additionally needs the OECD RS / OBR / Steuerschätzung
+  crosswalk rows.
+- (b) GBR pensions history: the OBR historical public finances database
+  carries pensioner spending 1978-79 to 2022-23 (public sector, FY). Used
+  as a C-band backward leg it would take `GF10_2` back to 1978 in
+  `maximum_extension`. Approve or decline; not built this session.
+- (c) `E05` interest (economic tree) ← DSM 2025: the same source, concept
+  and overlap divergence the committee approved for `GF01_7` (OQ-7,
+  D-S8-001), withheld because the approval list names `GF01_7` only. If
+  the committee wants the two interest lines to run to the same 2036
+  horizon, add `{iso3: FRA, line_code: E05, incoming_source: EC_DSM}` and
+  the DEU row to `tolerances.v16_approved_joins` and rebuild — one config
+  change, no code.

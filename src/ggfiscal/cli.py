@@ -74,7 +74,8 @@ def coverage():
 
     dest = measure()
     covered, uncovered = gate0_line_coverage()
-    typer.echo(f"wrote {dest}  ({covered}/66 lines covered)")
+    from ggfiscal import config as _config
+    typer.echo(f"wrote {dest}  ({covered}/{_config.universe_size()} lines covered)")
     for iso3, classification, line in uncovered:
         typer.echo(f"  NO_COVERAGE {iso3}/{classification}/{line}")
 

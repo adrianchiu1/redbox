@@ -484,6 +484,7 @@ sources:
 
 # D7 — no identified forecast anywhere (declare, do not construct):
 no_forecast_lines:
-  expenditure: [GF03, GF04, GF05, GF06, GF08, GF01_X]
+  expenditure: [GF03, GF04, GF05, GF06, GF08, GF01_X, GF10_X]
+  expenditure_esa: []   # every ESA_EXP line has an AMECO counterpart (D-S11-003); E08/E09 are §7.8 proxies
   revenue: [R08, R10]
   revenue_partial: {R05: other-taxes component partial, R06: imputed component}

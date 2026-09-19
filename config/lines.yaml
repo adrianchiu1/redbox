@@ -1,12 +1,22 @@
 # Line definitions per §4, with source code mappings (verify flags cleared in
 # Stage 0/1 as live metadata confirms each code).
+#
+# Three trees (D-S11-001): COFOG expenditure by function (`expenditure`),
+# expenditure by ESA economic type (`expenditure_esa`, classification
+# ESA_EXP) and revenue by ESA type (`revenue`). Level II COFOG lines are
+# declared with `parent`; each has a derived remainder (`parent - level2`,
+# never forecast) so the parent's Level I identity stays checkable (V19).
+# Adding a further Level II group is one `level: "2"` entry plus its
+# remainder here — no code change (the build, coverage, V19 and the flat
+# files enumerate them from this file).
 
 expenditure:   # classification = COFOG (§4.1)
   GF01:   {level: "1", label: General public services, eurostat_cofog: GF01}
   GF01_7: {level: "2", label: Public debt transactions (interest), eurostat_cofog: GF0107,
+           gfs_indicator: GF0170_T, parent: GF01,
            fallback: d41_payable, grade_on_fallback: B}   # D10
   GF01_X: {level: derived, label: General public services excluding interest,
-           derived: GF01 - GF01_7, never_forecast: true}  # D10
+           derived: GF01 - GF01_7, parent: GF01, minus: GF01_7, never_forecast: true}  # D10
   GF02:   {level: "1", label: Defence, eurostat_cofog: GF02}
   GF03:   {level: "1", label: Public order and safety, eurostat_cofog: GF03}
   GF04:   {level: "1", label: Economic affairs, eurostat_cofog: GF04}
@@ -16,7 +26,49 @@ expenditure:   # classification = COFOG (§4.1)
   GF08:   {level: "1", label: Recreation culture and religion, eurostat_cofog: GF08}
   GF09:   {level: "1", label: Education, eurostat_cofog: GF09}
   GF10:   {level: "1", label: Social protection, eurostat_cofog: GF10}
+  GF10_2: {level: "2", label: Old age (pensions), eurostat_cofog: GF1002,
+           gfs_indicator: GF1020_T, parent: GF10}   # D-S11-002: COFOG 10.2
+  GF10_X: {level: derived, label: Social protection excluding old age,
+           derived: GF10 - GF10_2, parent: GF10, minus: GF10_2, never_forecast: true}
   TE:     {level: total, label: Total expenditure, eurostat_na_item: TE}
+
+expenditure_esa:   # classification = ESA_EXP (D-S11-003): TE by ESA 2010 economic type
+  # Anchor cells: Eurostat gov_10a_main payable items (FRA, DEU); ONS ESA
+  # Table 2 payable rows (GBR). `plus`/`minus` lists are summed at build;
+  # a single-code line is an anchor_actual, a sum is a derived_actual.
+  # Identity (V2): E01 + ... + E09 = TE_ESA exactly, every anchor year.
+  E01: {level: "1", esa: D.1, label: Compensation of employees,
+        eurostat_main: {plus: [D1PAY]}, ons_t2: {plus: [[D1, payable]]},
+        ameco: UWCG, gfs_soo: G21_T}
+  E02: {level: "1", esa: P.2, label: Intermediate consumption,
+        eurostat_main: {plus: [P2]}, ons_t2: {plus: [[P2, ""]]},
+        ameco: UCTGI, gfs_soo: G22_T}
+  E03: {level: "1", esa: D.62, label: Social benefits other than social transfers in kind,
+        eurostat_main: {plus: [D62PAY]}, ons_t2: {plus: [[D62, payable]]},
+        ameco: UYTGH}
+  E04: {level: "1", esa: D.632, label: Social transfers in kind (purchased market production),
+        eurostat_main: {plus: [D632PAY]}, ons_t2: {plus: [[D632, payable]]},
+        ameco: UYTGM}
+  E05: {level: "1", esa: D.41 (uses), label: Interest payable,
+        eurostat_main: {plus: [D41PAY]}, ons_t2: {plus: [[D41, payable]]},
+        ameco: UYIG, gfs_soo: G24_T, concept_flags: [d41_gross_accrued]}   # mirrors GF01_7 / R07 (D10)
+  E06: {level: "1", esa: D.3, label: Subsidies,
+        eurostat_main: {plus: [D3PAY]}, ons_t2: {plus: [[D3P, payable]]},
+        ameco: UYVG, gfs_soo: G25_T}
+  E07: {level: "1", esa: D.29 + D.5 + (D.4 - D.41) + D.7 + D.8,
+        label: Other current expenditure,
+        eurostat_main: {plus: [D29PAY, D5PAY, D4PAY, D7PAY, D8], minus: [D41PAY]},
+        ons_t2: {plus: [[D29, payable], [D5, payable], [D4N, payable], [D7, payable]]},
+        ameco: UUOG}
+  E08: {level: "1", esa: P.5 + NP,
+        label: Gross capital formation and net acquisition of non-produced assets,
+        eurostat_main: {plus: [P5, NP]}, ons_t2: {plus: [[P5, ""], [NP, ""]]},
+        ameco: UIGG0, ameco_partial: true}   # UIGG0 is P.51G only — proxy (§7.8)
+  E09: {level: "1", esa: D.9, label: Capital transfers payable,
+        eurostat_main: {plus: [D9PAY]}, ons_t2: {plus: [[D9, payable]]},
+        ameco: UKOG, ameco_partial: true}    # UKTGT (D.9 exactly) has no forecast years; UKOG = D.9 + NP proxy
+  TE_ESA: {level: total, esa: total, label: Total expenditure (ESA main aggregates),
+           eurostat_main: {plus: [TE]}, ons_t2: {plus: [[OTE, ""]]}, ameco: UUTG}
 
 revenue:       # classification = ESA_REV (§4.2)
   R01: {esa: D.211, label: Value added tax, eurostat: {dataset: gov_10a_taxag, code: D211}}
@@ -39,7 +91,7 @@ revenue:       # classification = ESA_REV (§4.2)
         eurostat: {dataset: gov_10a_main, code: P11_P12_P131}}
   R10: {esa: D.39 + D.7 + D.92 + D.99, label: Other current and capital transfers receivable,
         derived_from: {residual: true}, may_be_negative: true}
-  TR:  {esa: total, label: Total revenue, eurostat: {dataset: gov_10a_main, code: TR}}
+  TR:  {level: total, esa: total, label: Total revenue, eurostat: {dataset: gov_10a_main, code: TR}}
 
 balance:       # classification = BALANCE (§4.3) — derived, never stitched
   TR:  {derived: sum of revenue lines / anchor TR}

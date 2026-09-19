@@ -7,15 +7,14 @@ from __future__ import annotations
 
 import pandas as pd
 
-from ggfiscal.build import load_canonical
+from ggfiscal.build import load_trees
 from ggfiscal.validate.runner import Finding
 
 PROXYLIKE = ("proxy_forecast", "composite_forecast")
 
 
 def _rows(variant: str) -> pd.DataFrame:
-    return pd.concat([load_canonical("COFOG", variant),
-                      load_canonical("ESA_REV", variant)], ignore_index=True)
+    return load_trees(variant)
 
 
 def check_v17() -> list[Finding]:

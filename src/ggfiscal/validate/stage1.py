@@ -12,18 +12,19 @@ from __future__ import annotations
 import pandas as pd
 
 from ggfiscal import config
-from ggfiscal.build import load_canonical, load_ledger
+from ggfiscal.build import load_ledger, load_trees
 from ggfiscal.validate.runner import Finding
 
 VARIANTS = ("strict", "maximum_extension")
 NEGATIVE_OK = {"R08", "R10"}  # lines; ledger NLB/NI/PB handled separately
 REV_LINES = [f"R{n:02d}" for n in range(1, 11)]
 EXP_LINES = [f"GF{n:02d}" for n in range(1, 11)]
+EXP_ESA_LINES = [f"E{n:02d}" for n in range(1, 10)]   # ESA_EXP (D-S11-003)
 
 
 def _tables() -> dict[str, pd.DataFrame]:
-    return {v: pd.concat([load_canonical("COFOG", v), load_canonical("ESA_REV", v)],
-                         ignore_index=True) for v in VARIANTS}
+    """All three trees per variant (line codes are distinct across trees)."""
+    return {v: load_trees(v) for v in VARIANTS}
 
 
 def check_v1() -> list[Finding]:
@@ -74,7 +75,13 @@ def _sum_check(check_id: str, lines: list[str], total_code: str) -> list[Finding
 
 
 def check_v2() -> list[Finding]:
-    return _sum_check("V2", EXP_LINES, "TE")
+    """Σ Level I = the tree's own total, for both expenditure cuts: COFOG
+    GF01-GF10 = TE and (D-S11-003) ESA_EXP E01-E09 = TE_ESA."""
+    cofog = _sum_check("V2", EXP_LINES, "TE")
+    esa = _sum_check("V2", EXP_ESA_LINES, "TE_ESA")
+    out = [f for f in cofog + esa if f.severity != "OK"]
+    return out or [Finding("V2", "OK", "-", "GF01..GF10 = TE and E01..E09 = TE_ESA "
+                                             "within tolerance in all complete years")]
 
 
 def check_v22() -> list[Finding]:
@@ -87,7 +94,7 @@ def check_v3() -> list[Finding]:
     tol = config.tolerances()["sum_to_total_pct"]
     for variant, df in _tables().items():
         for iso3 in config.COUNTRIES:
-            for lines in (EXP_LINES, REV_LINES):
+            for lines in (EXP_LINES, EXP_ESA_LINES, REV_LINES):
                 sub = df[(df.iso3 == iso3) & (df.series_variant == variant)
                          & df.line_code.isin(lines) & df.pct_total.notna()]
                 shares = sub.groupby("year").agg(n=("line_code", "nunique"),
@@ -191,39 +198,47 @@ def check_v14() -> list[Finding]:
 
 
 def check_v19() -> list[Finding]:
+    """Every COFOG Level II split (config.level2_splits(): GF01_7/GF01_X per
+    D10, GF10_2/GF10_X per D-S11-002): remainder + Level II = parent exactly,
+    Level II never exceeds its parent, and the remainder is never forecast."""
     out = []
+    splits = config.level2_splits()
     for variant, df in _tables().items():
         for iso3 in config.COUNTRIES:
-            piv = df[(df.iso3 == iso3) & (df.series_variant == variant)] \
+            piv = df[(df.iso3 == iso3) & (df.series_variant == variant)
+                     & (df.classification == "COFOG")] \
                 .pivot_table(index="year", columns="line_code", values="value_lcu_mn")
-            both = [y for y in piv.index
-                    if all(c in piv.columns and pd.notna(piv[c][y])
-                           for c in ("GF01", "GF01_7", "GF01_X"))]
-            for y in both:
-                if abs(piv.GF01_X[y] + piv.GF01_7[y] - piv.GF01[y]) > 1e-6:
-                    out.append(Finding("V19", "ERROR", f"{iso3}/{variant}/{y}",
-                                       "GF01_X + GF01_7 != GF01"))
-                if piv.GF01_7[y] > piv.GF01[y] + 1e-6:
-                    out.append(Finding("V19", "ERROR", f"{iso3}/{variant}/{y}",
-                                       "GF01_7 > GF01"))
-        fc = df[(df.line_code == "GF01_X") & df.is_forecast]
-        for _, r in fc.iterrows():
-            out.append(Finding("V19", "ERROR", f"{r.iso3}/{r.year}",
-                               "GF01_X has a forecast row (never forecast, D10)"))
-    return out or [Finding("V19", "OK", "-", "GF01 split identities hold; GF01_X never forecast")]
+            for sp in splits:
+                p, l2, x = sp["parent"], sp["level2"], sp["remainder"]
+                both = [y for y in piv.index
+                        if all(c in piv.columns and pd.notna(piv[c][y]) for c in (p, l2, x))]
+                for y in both:
+                    if abs(piv[x][y] + piv[l2][y] - piv[p][y]) > 1e-6:
+                        out.append(Finding("V19", "ERROR", f"{iso3}/{variant}/{y}",
+                                           f"{x} + {l2} != {p}"))
+                    if piv[l2][y] > piv[p][y] + 1e-6:
+                        out.append(Finding("V19", "ERROR", f"{iso3}/{variant}/{y}",
+                                           f"{l2} > {p}"))
+        for sp in splits:
+            fc = df[(df.line_code == sp["remainder"]) & df.is_forecast]
+            for _, r in fc.iterrows():
+                out.append(Finding("V19", "ERROR", f"{r.iso3}/{r.year}",
+                                   f"{sp['remainder']} has a forecast row (never forecast)"))
+    return out or [Finding("V19", "OK", "-",
+                           "Level II split identities hold (GF01, GF10); remainders never forecast")]
 
 
 def check_v20() -> list[Finding]:
     out = []
     for variant, df in _tables().items():
-        interest = df[df.line_code.isin(["GF01_7", "R07"])]
+        interest = df[df.line_code.isin(["GF01_7", "R07", "E05"])]
         bad = interest[interest.concept_flag.isna()]
         for _, r in bad.iterrows():
             out.append(Finding("V20", "ERROR",
                                f"{r.iso3}/{r.line_code}/{r.year}/{variant}",
                                "interest row lacks concept_flag"))
         strict_net = df[(df.series_variant == "strict")
-                        & df.line_code.isin(["GF01_7", "R07"])
+                        & df.line_code.isin(["GF01_7", "R07", "E05"])
                         & (df.concept_flag == "net_interest")]
         for _, r in strict_net.iterrows():
             out.append(Finding("V20", "ERROR", f"{r.iso3}/{r.line_code}/{r.year}",

@@ -11,6 +11,17 @@ GBR,COFOG,GF07,1995,2024,,2024,2024,0,A,ONS_ESA_T11,,"[source_blocked] FRS July 
 GBR,COFOG,GF08,1995,2024,,2024,2024,0,A,ONS_ESA_T11,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 GBR,COFOG,GF09,1995,2024,,2024,2024,0,A,ONS_ESA_T11,,[source_blocked] as GF07: no education long-term projection in the FRS July 2025 edition in hand (OQ-6); strict ends at the last actual
 GBR,COFOG,GF10,1995,2025,2026.0,2024,2027,1,AC,EC_AMECO,grow_with_proxy,"[grade_below_strict] maximum_extension carries the AMECO D.62 dominant-component proxy to 2027 (grade C, §7.8); the EFO welfare-spending series was measured as a longer C-band candidate but its table starts at FY 2024-25, leaving no year in common with the GG anchor to measure §9.2 coverage on — recorded, not applied (D-S7-003)"
+GBR,COFOG,GF10_2,1995,2024,,2024,2024,0,A,ONS_ESA_T11,,"[source_blocked] the only reachable old-age projection is EFO 4.9 State pension, whose table starts at FY 2024-25 — no year in common with the GG anchor, §9.2 coverage unmeasurable, recorded not applied (D-S11-002); the OBR historical database's pensioner-spending series ends 2022-23 and cannot bridge the gap; an FRS edition with long-term state-pension projections is the named ask (OQ-6 a)"
+GBR,COFOG,GF10_X,1995,2024,,2024,2024,0,A,ONS_ESA_T11,,"[no_official_forecast] never forecast by construction (D-S11-002, the D10 pattern): the remainder GF10 - GF10_2 is derived only, so the GF10 identity stays exact in every published year"
+GBR,ESA_EXP,E01,1990,2025,,2025,2025,0,A,ONS_GG_RECEIPTS,,"[no_machine_readable_source] AMECO publishes UK compensation of employees (UWCG) for 2026-27 only, with no history to measure §9.2 coverage on (OQ-4 pattern) — recorded, not applied; the EFO's economic breakdown (table 6.1) starts at FY 2025-26, same problem"
+GBR,ESA_EXP,E02,1990,2025,,2025,2025,0,A,ONS_GG_RECEIPTS,,[no_machine_readable_source] as E01: AMECO UCTGI carries no UK history; EFO 6.1 procurement starts at FY 2025-26
+GBR,ESA_EXP,E03,1987,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+GBR,ESA_EXP,E04,1987,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+GBR,ESA_EXP,E05,1987,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+GBR,ESA_EXP,E06,1987,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+GBR,ESA_EXP,E07,1990,2025,,2025,2025,0,A,ONS_GG_RECEIPTS,,[no_machine_readable_source] as E01: AMECO UUOG carries no UK history
+GBR,ESA_EXP,E08,1987,2025,2026.0,2025,2027,2,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UIGG0 is gross fixed capital formation (P.51G) only — one component of P.5 + NP; §7.8 single-component proxy, applied in maximum_extension to 2027 with the measured share; no official forecast of inventories/valuables/non-produced assets exists"
+GBR,ESA_EXP,E09,1987,2025,2026.0,2025,2027,2,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UKTGT (D.9 exactly) stops at the last actual; UKOG (other capital expenditure incl. capital transfers) is the forecast candidate — a superset proxy (§7.8), maximum_extension only where its measured share is in band"
 GBR,ESA_REV,R01,1973,2025,2026.0,2030,2030,2,AB,OECD_RS+OBR_EFO_LATEST,grow_with_proxy,source horizon: OBR_EFO_LATEST ends 2030 (V10)
 GBR,ESA_REV,R02,1965,2025,2026.0,2030,2030,2,ABC,OECD_RS+OBR_EFO_LATEST,grow_with_proxy,source horizon: OBR_EFO_LATEST ends 2030 (V10)
 GBR,ESA_REV,R03,1965,2025,2026.0,2030,2030,2,AB,OECD_RS+OBR_EFO_LATEST,grow_with_proxy,source horizon: OBR_EFO_LATEST ends 2030 (V10)
@@ -33,6 +44,17 @@ FRA,COFOG,GF07,1995,2024,2025.0,2070,2070,1,AB,EC_AGEING_2024,,source horizon: E
 FRA,COFOG,GF08,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 FRA,COFOG,GF09,1995,2024,2025.0,2070,2070,1,AB,EC_AGEING_2024,,source horizon: EC_AGEING_2024 ends 2070 (V10)
 FRA,COFOG,GF10,1995,2025,2026.0,2024,2070,2,AC,EC_AMECO+EC_AGEING_2024,grow_with_proxy,"[grade_below_strict] AR pensions+LTC composite measured at 69% of GF10 (grade C: no official projection of family/housing/unemployment components) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12, overlap divergence under the V16 threshold"
+FRA,COFOG,GF10_2,1995,2024,2025.0,2070,2070,1,AB,EC_AGEING_2024,,source horizon: EC_AGEING_2024 ends 2070 (V10)
+FRA,COFOG,GF10_X,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_official_forecast] never forecast by construction (D-S11-002, the D10 pattern): the remainder GF10 - GF10_2 is derived only, so the GF10 identity stays exact in every published year"
+FRA,ESA_EXP,E01,1978,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+FRA,ESA_EXP,E02,1978,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+FRA,ESA_EXP,E03,1978,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+FRA,ESA_EXP,E04,1978,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+FRA,ESA_EXP,E05,1978,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+FRA,ESA_EXP,E06,1978,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+FRA,ESA_EXP,E07,1978,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+FRA,ESA_EXP,E08,1978,2025,2026.0,2025,2027,2,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UIGG0 is gross fixed capital formation (P.51G) only — one component of P.5 + NP; §7.8 single-component proxy, applied in maximum_extension to 2027 with the measured share; no official forecast of inventories/valuables/non-produced assets exists"
+FRA,ESA_EXP,E09,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[grade_below_strict] AMECO UKTGT (D.9 exactly) stops at the last actual; UKOG (other capital expenditure incl. capital transfers) is the forecast candidate — a superset proxy (§7.8), maximum_extension only where its measured share is in band"
 FRA,ESA_REV,R01,1965,2025,,2025,2025,1,AB,OECD_RS,,[source_blocked] identified source FRA_LPFP_PSTAB (prélèvements obligatoires) is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
 FRA,ESA_REV,R02,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,[source_blocked] identified source FRA_LPFP_PSTAB is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
 FRA,ESA_REV,R03,1965,2025,,2025,2025,1,AB,OECD_RS,,[source_blocked] identified source FRA_LPFP_PSTAB is PDF-only; §11.4 manual ingestion requires an independent second keying unavailable to a single-agent session (OQ-5 precedent) — OQ-6; strict ends at the last actual
@@ -55,6 +77,17 @@ DEU,COFOG,GF07,1991,2024,2025.0,2070,2070,2,AB,IMF_GFS+EC_AGEING_2024,,source ho
 DEU,COFOG,GF08,1991,2024,,2024,2024,1,AB,IMF_GFS,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 DEU,COFOG,GF09,1991,2024,2025.0,2070,2070,2,AB,IMF_GFS+EC_AGEING_2024,,source horizon: EC_AGEING_2024 ends 2070 (V10)
 DEU,COFOG,GF10,1991,2025,2026.0,2024,2070,3,ABC,IMF_GFS+EC_AMECO+EC_AGEING_2024,grow_with_proxy,"[grade_below_strict] AR pensions+LTC composite measured at 61% of GF10 (grade C); BMAS Rentenversicherungsbericht blocked (bmas.de egress, OQ-6) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12"
+DEU,COFOG,GF10_2,2000,2024,2025.0,2070,2070,1,AB,EC_AGEING_2024,,source horizon: EC_AGEING_2024 ends 2070 (V10)
+DEU,COFOG,GF10_X,2000,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_official_forecast] never forecast by construction (D-S11-002, the D10 pattern): the remainder GF10 - GF10_2 is derived only, so the GF10 identity stays exact in every published year"
+DEU,ESA_EXP,E01,1991,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+DEU,ESA_EXP,E02,1991,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+DEU,ESA_EXP,E03,1991,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+DEU,ESA_EXP,E04,1991,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+DEU,ESA_EXP,E05,1991,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+DEU,ESA_EXP,E06,1991,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+DEU,ESA_EXP,E07,1991,2025,2026.0,2027,2027,2,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+DEU,ESA_EXP,E08,1991,2025,2026.0,2025,2027,2,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UIGG0 is gross fixed capital formation (P.51G) only — one component of P.5 + NP; §7.8 single-component proxy, applied in maximum_extension to 2027 with the measured share; no official forecast of inventories/valuables/non-produced assets exists"
+DEU,ESA_EXP,E09,1991,2025,2026.0,2025,2027,2,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UKTGT (D.9 exactly) stops at the last actual; UKOG (other capital expenditure incl. capital transfers) is the forecast candidate — a superset proxy (§7.8), maximum_extension only where its measured share is in band"
 DEU,ESA_REV,R01,1991,2025,2026.0,2030,2030,2,AB,OECD_RS+DEU_STEUERSCHAETZUNG,,source horizon: DEU_STEUERSCHAETZUNG ends 2030 (V10)
 DEU,ESA_REV,R02,1991,2025,,2025,2025,1,AB,OECD_RS,,"[no_machine_readable_source] Steuerschätzung publishes Länder-/Gemeindesteuern only as cash aggregates mixing D.2, D.59 and D.91 — no ESA-complete component set for D.2 minus D.211; AMECO UTVG is total D.2 only"
 DEU,ESA_REV,R03,1991,2025,2026.0,2030,2030,2,AB,OECD_RS+DEU_STEUERSCHAETZUNG,grow_with_proxy,source horizon: DEU_STEUERSCHAETZUNG ends 2030 (V10)

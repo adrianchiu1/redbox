@@ -60,6 +60,7 @@ DELIVERABLES = [
 # §11.6 gate, so a run that stops at `reconcile` is still a complete run.
 FLAT_FILES = [
     "deliverables/expenditure_cofog.csv",
+    "deliverables/expenditure_esa.csv",
     "deliverables/revenue_esa.csv",
     "deliverables/balance_ledger.csv",
     "deliverables/weo_levels_bridge.csv",

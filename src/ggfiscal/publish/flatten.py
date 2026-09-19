@@ -7,7 +7,8 @@ same numbers, with nothing dropped that a reader needs and nothing added
 that the pipeline did not measure, as flat files a person can open in a
 spreadsheet:
 
-    deliverables/expenditure_cofog.csv    12 COFOG lines + TE per country
+    deliverables/expenditure_cofog.csv    14 COFOG lines + TE per country
+    deliverables/expenditure_esa.csv      9 ESA economic lines + TE_ESA per country
     deliverables/revenue_esa.csv          10 ESA lines + TR per country
     deliverables/balance_ledger.csv       TR, TE, NLB, NI, PB per country-year
     deliverables/weo_levels_bridge.csv    our levels vs the WEO aggregates
@@ -52,7 +53,7 @@ OBS_LABEL = {
 }
 
 TREE_COLUMNS = [
-    "iso3", "country", "variant", "line_code", "line_label", "line_level",
+    "iso3", "country", "variant", "classification", "line_code", "line_label", "line_level",
     "year", "basis", "value_lcu_mn", "currency", "pct_gdp", "pct_total",
     "gdp_lcu_mn", "observation_type", "quality_grade", "source_id",
     "anchor_source", "anchor_year", "anchor_value", "growth_source_id",
@@ -104,8 +105,8 @@ def _derivation(r: pd.Series) -> str:
     if r.observation_type in ANCHOR_TYPES:
         head = f"{label}: {r.source_id} publishes {_num(r.value_lcu_mn)} for {int(r.year)}"
         if r.observation_type == "derived_actual":
-            head = (f"{label}: {_num(r.value_lcu_mn)} = GF01 - GF01_7 in {int(r.year)}, "
-                    f"both from {r.source_id}")
+            head = (f"{label}: {_num(r.value_lcu_mn)} = {_formula(r.line_code)} in "
+                    f"{int(r.year)}, every term from {r.source_id}")
         return head
     back = r.year < r.anchor_year
     neighbour = int(r.year) + 1 if back else int(r.year) - 1
@@ -125,6 +126,21 @@ def _derivation(r: pd.Series) -> str:
         parts.append(f"period conversion {r.period_conversion_method} (§7.10)")
     parts.append(f"grade {r.quality_grade}")
     return "; ".join(parts)
+
+
+def _formula(line_code: str) -> str:
+    """The identity behind a derived line, from lines.yaml: Level II
+    remainders (parent - Level II) and the ESA_EXP sums (their ESA
+    definition); the revenue residuals carry their ESA definition too."""
+    for cls in config.TREES:
+        meta = config.tree_lines(cls).get(line_code)
+        if meta is None:
+            continue
+        if isinstance(meta.get("derived"), str):
+            return meta["derived"]
+        if meta.get("esa"):
+            return str(meta["esa"])
+    return "identity"
 
 
 def _flat_tree(stem: str) -> pd.DataFrame:
@@ -336,12 +352,13 @@ def _recipe(g: pd.DataFrame) -> str:
     return " | ".join(parts)
 
 
-def _flat_catalogue(exp: pd.DataFrame, rev: pd.DataFrame) -> pd.DataFrame:
-    tree = pd.concat([exp, rev], ignore_index=True)
+def _flat_catalogue(trees: list[pd.DataFrame]) -> pd.DataFrame:
+    tree = pd.concat(trees, ignore_index=True)
     cov = _canonical("coverage_matrix.csv")
     decl = _canonical("forecast_declarations.csv")
     rows = []
-    for (iso3, line), g in tree.groupby(["iso3", "line_code"], sort=False):
+    for (iso3, cls, line), g in tree.groupby(["iso3", "classification", "line_code"],
+                                             sort=False):
         strict = g[g.variant == "strict"]
         mx = g[g.variant == "maximum_extension"]
         actual = g[g.basis == "actual"]
@@ -351,7 +368,7 @@ def _flat_catalogue(exp: pd.DataFrame, rev: pd.DataFrame) -> pd.DataFrame:
             "line_code": line,
             "line_label": g.line_label.iloc[0],
             "line_level": g.line_level.iloc[0],
-            "classification": "COFOG" if line.startswith(("GF", "TE")) else "ESA_REV",
+            "classification": cls,
             "currency": g.currency.iloc[0],
             "first_year": int(g.year.min()),
             "final_actual_year": int(actual.year.max()) if len(actual) else None,
@@ -365,15 +382,17 @@ def _flat_catalogue(exp: pd.DataFrame, rev: pd.DataFrame) -> pd.DataFrame:
             "recipe_maximum_extension": _recipe(mx) if len(mx) else "",
         })
     cat = pd.DataFrame(rows)
-    keep = ["iso3", "line_code", "stitch_count", "principal_sources",
-            "residual_method", "reason_series_ends"]
-    cat = cat.merge(cov[keep], on=["iso3", "line_code"], how="left")
+    keep = ["iso3", "classification", "line_code", "stitch_count",
+            "principal_sources", "residual_method", "reason_series_ends"]
+    cat = cat.merge(cov[keep], on=["iso3", "classification", "line_code"], how="left")
     cat = cat.merge(decl.rename(columns={"status": "forecast_status",
                                          "note": "forecast_note"})[
-        ["iso3", "line_code", "forecast_status", "forecast_note"]],
-        on=["iso3", "line_code"], how="left")
-    return cat.sort_values(["iso3", "classification", "line_code"],
-                           kind="stable").reset_index(drop=True)
+        ["iso3", "classification", "line_code", "forecast_status", "forecast_note"]],
+        on=["iso3", "classification", "line_code"], how="left")
+    order = {cls: i for i, cls in enumerate(config.TREES)}
+    cat["_o"] = cat.classification.map(order)
+    return (cat.sort_values(["iso3", "_o", "line_code"], kind="stable")
+            .drop(columns="_o").reset_index(drop=True))
 
 
 # ------------------------------------------------- per-country strict matrix
@@ -396,11 +415,11 @@ def _column_name(code: str, label: str) -> str:
     return f"{code} - {label}"
 
 
-def _country_columns(exp: pd.DataFrame, rev: pd.DataFrame,
-                     iso3: str) -> list[tuple[str, str]]:
-    """(code, label) for every series the chartbook plots, in chart order."""
+def _country_columns(trees: list[pd.DataFrame], iso3: str) -> list[tuple[str, str]]:
+    """(code, label) for every series the chartbook plots, in chart order:
+    GDP, the COFOG tree, the ESA economic tree, the revenue tree, the ledger."""
     out = [GDP_COLUMN]
-    for tree in (exp, rev):
+    for tree in trees:
         g = tree[(tree.iso3 == iso3) & (tree.variant == "strict")]
         seen = g[["line_code", "line_label"]].drop_duplicates()
         out += [(r.line_code, r.line_label) for r in seen.itertuples()]
@@ -408,15 +427,15 @@ def _country_columns(exp: pd.DataFrame, rev: pd.DataFrame,
     return out
 
 
-def _country_strict(exp: pd.DataFrame, rev: pd.DataFrame,
-                    ledger: pd.DataFrame, iso3: str) -> pd.DataFrame:
+def _country_strict(trees: list[pd.DataFrame], ledger: pd.DataFrame,
+                    iso3: str) -> pd.DataFrame:
     """One country, strict variant only, one column per series and one row
     per year — the shape you model with rather than the shape the pipeline
     stores. maximum_extension is excluded entirely: every value here comes
     from an official published source (§7, D13).
     """
     frames = {}
-    for tree in (exp, rev):
+    for tree in trees:
         g = tree[(tree.iso3 == iso3) & (tree.variant == "strict")]
         for code, sub in g.groupby("line_code", sort=False):
             label = sub.line_label.iloc[0]
@@ -430,7 +449,7 @@ def _country_strict(exp: pd.DataFrame, rev: pd.DataFrame,
         frames[_column_name(code, label)] = led.set_index("year")[source]
 
     wide = pd.DataFrame(frames)
-    order = [_column_name(c, l) for c, l in _country_columns(exp, rev, iso3)]
+    order = [_column_name(c, l) for c, l in _country_columns(trees, iso3)]
     wide = wide.reindex(columns=order)
     wide = wide.reindex(range(int(wide.index.min()), int(wide.index.max()) + 1))
     wide.index.name = "year"
@@ -449,11 +468,22 @@ _SHARED = {
                "years at either end — a longer backward leg as well as a "
                "longer forecast. Pick one; never mix them in a series.",
     "line_code": "Series code. COFOG: GF01-GF10 (Level I), GF01_7 (Level II "
-                 "interest), GF01_X (GF01 - GF01_7), TE (total expenditure). "
-                 "ESA revenue: R01-R10, TR (total revenue).",
+                 "interest) and GF01_X (GF01 - GF01_7), GF10_2 (Level II old "
+                 "age, i.e. pensions) and GF10_X (GF10 - GF10_2), TE (total "
+                 "expenditure). ESA economic expenditure: E01 compensation of "
+                 "employees, E02 intermediate consumption, E03 social benefits "
+                 "in cash (D.62), E04 social transfers in kind purchased "
+                 "(D.632), E05 interest, E06 subsidies, E07 other current, E08 "
+                 "capital formation, E09 capital transfers, TE_ESA (their "
+                 "total). ESA revenue: R01-R10, TR (total revenue).",
     "line_label": "Human-readable name of the line.",
     "line_level": "1 = COFOG Level I / ESA line; 2 = COFOG Level II; derived = "
-                  "identity; total = TE or TR.",
+                  "identity; total = TE, TE_ESA or TR.",
+    "classification": "Which tree the line belongs to: COFOG (expenditure by "
+                      "function), ESA_EXP (expenditure by ESA economic type) "
+                      "or ESA_REV (revenue by ESA type). COFOG and ESA_EXP "
+                      "are two cuts of the same total expenditure — never add "
+                      "lines across them.",
     "year": "Calendar year. Sources on a fiscal year are converted first "
             "(§7.10) and flagged in derivation.",
     "basis": "actual = outturn (or an outturn-based backward stitch); "
@@ -473,8 +503,23 @@ _COUNTRY_COLUMN_NOTE = {
            "country's registered GDP source. Divide by it for ratios.",
     "GF01_X": "General public services excluding interest (GF01_X): the "
               "identity GF01 - GF01_7, never forecast (D10).",
+    "GF10_2": "Old age (GF10_2): COFOG group 10.2 from the anchor's own Level "
+              "II table — the pensions line (old-age cash benefits plus the "
+              "administration and in-kind services of the function).",
+    "GF10_X": "Social protection excluding old age (GF10_X): the identity "
+              "GF10 - GF10_2, never forecast.",
     "TE": "Total expenditure (TE) from the COFOG tree's expenditure anchor. "
           "Not the same series as LEDGER_TE — see that column.",
+    "TE_ESA": "Total expenditure from the ESA main-aggregates table (the sum "
+              "of E01-E09). For FRA/DEU identical to TE; for GBR it is the "
+              "ESA Table 2 total, the same series as LEDGER_TE.",
+    "E03": "Social benefits other than social transfers in kind (E03, ESA "
+           "D.62): cash benefits — pensions, unemployment, family, sickness "
+           "and other benefits — across every function. The economic-type "
+           "counterpart of the COFOG GF10 line.",
+    "E05": "Interest payable (E05, ESA D.41 uses): the economic-type "
+           "counterpart of GF01_7 (COFOG 01.7); the two differ by FISIM and "
+           "consolidation treatment (V21).",
     "TR": "Total revenue (TR) from the ESA tree's revenue anchor. Not the "
           "same series as LEDGER_TR — see that column.",
     "LEDGER_TR": "Total revenue as published by the balance anchor. For GBR "
@@ -501,13 +546,14 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
                       ) -> pd.DataFrame:
     DICTIONARY.clear()
     tree_cols = {
-        **{k: _SHARED[k] for k in ("iso3", "country", "variant", "line_code",
-                                   "line_label", "line_level", "year", "basis",
-                                   "value_lcu_mn", "currency")},
+        **{k: _SHARED[k] for k in ("iso3", "country", "variant", "classification",
+                                   "line_code", "line_label", "line_level", "year",
+                                   "basis", "value_lcu_mn", "currency")},
         "pct_gdp": "value_lcu_mn as a percentage of that country-year's GDP "
                    "(gdp_lcu_mn).",
         "pct_total": "value_lcu_mn as a percentage of the same year's total "
-                     "(TE for COFOG lines, TR for revenue lines).",
+                     "(TE for COFOG lines, TE_ESA for ESA economic lines, TR "
+                     "for revenue lines).",
         "gdp_lcu_mn": "GDP at current market prices, same currency and year, "
                       "from the country's registered GDP source.",
         "observation_type": "anchor_actual | derived_actual | "
@@ -541,6 +587,7 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
         "notes": _SHARED["notes"],
     }
     _dict_rows("expenditure_cofog.csv", tree_cols)
+    _dict_rows("expenditure_esa.csv", tree_cols)
     _dict_rows("revenue_esa.csv", tree_cols)
     _dict_rows("balance_ledger.csv", {
         **{k: _SHARED[k] for k in ("iso3", "country", "variant", "year",
@@ -630,7 +677,7 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
     _dict_rows("series_catalogue.csv", {
         **{k: _SHARED[k] for k in ("iso3", "country", "line_code",
                                    "line_label", "line_level", "currency")},
-        "classification": "COFOG or ESA_REV.",
+        "classification": _SHARED["classification"],
         "first_year": "First year published for the series.",
         "final_actual_year": "Last outturn year.",
         "final_strict_year": "Last year of the strict variant.",
@@ -653,7 +700,7 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
     _dict_rows("statistical_forecasts.csv", {
         **{k: _SHARED[k] for k in ("iso3", "country", "line_code",
                                    "line_label", "year")},
-        "classification": "COFOG or ESA_REV.",
+        "classification": _SHARED["classification"],
         "method": "auto.arima | ets | prophet | uc | combination. The first "
                   "four are standard univariate methods fitted to the line's "
                   "own history; combination is their mean.",
@@ -708,8 +755,12 @@ def _readme(files: dict[str, pd.DataFrame], run_id: str) -> str:
 
 Everything the project produces, as flat CSVs: for the United Kingdom,
 France and Germany, general-government **expenditure by COFOG function**
-(12 lines per country including the GF01_7 / GF01_X interest split),
-**revenue by ESA type** (10 lines per country), the **balance ledger**
+(14 lines per country including the GF01_7 / GF01_X interest split and the
+GF10_2 / GF10_X old-age pension split), **expenditure by ESA economic type**
+(9 lines per country — compensation of employees, intermediate consumption,
+social benefits in cash, social transfers in kind, interest, subsidies, other
+current expenditure, capital formation, capital transfers — a second cut of
+the same total), **revenue by ESA type** (10 lines per country), the **balance ledger**
 (TR, TE, NLB, NI, PB), and the **reconciliation of history and forecast
 dynamics to the IMF WEO** general-government aggregates.
 
@@ -767,8 +818,12 @@ bundle copies the gated canonical layer and never recomputes a value.
 
 DESCRIPTIONS = {
     "expenditure_cofog.csv":
-        "COFOG expenditure: 12 lines + TE per country, both variants, one row "
+        "COFOG expenditure: 14 lines + TE per country, both variants, one row "
         "per country-variant-line-year",
+    "expenditure_esa.csv":
+        "expenditure by ESA economic type: 9 lines + TE_ESA per country, both "
+        "variants, same shape — a second cut of total expenditure, never to "
+        "be added to the COFOG lines",
     "revenue_esa.csv":
         "ESA revenue: 10 lines + TR per country, both variants, same shape",
     "balance_ledger.csv":
@@ -806,12 +861,14 @@ def write() -> dict[str, Path]:
     currency = {iso3: cfg["currency"] for iso3, cfg in config.countries().items()}
 
     exp = _flat_tree("expenditure_long")
+    esa = _flat_tree("expenditure_esa_long")
     rev = _flat_tree("revenue_long")
-    gdp = _gdp_lookup([exp, rev])
+    trees = [exp, esa, rev]
+    gdp = _gdp_lookup(trees)
     ledger = _flat_ledger(gdp, currency)
-    countries = {f"strict_{iso3}.csv": _country_strict(exp, rev, ledger, iso3)
+    countries = {f"strict_{iso3}.csv": _country_strict(trees, ledger, iso3)
                  for iso3 in COUNTRY_NAME}
-    country_columns = {f"strict_{iso3}.csv": _country_columns(exp, rev, iso3)
+    country_columns = {f"strict_{iso3}.csv": _country_columns(trees, iso3)
                        for iso3 in COUNTRY_NAME}
     # The debt extension's tables join the bundle verbatim (DEBT_KICKOFF.md
     # DD12): files, dictionary rows and README descriptions come from
@@ -825,11 +882,12 @@ def write() -> dict[str, Path]:
                                ignore_index=True)
     files = {
         "expenditure_cofog.csv": exp,
+        "expenditure_esa.csv": esa,
         "revenue_esa.csv": rev,
         "balance_ledger.csv": ledger,
         "weo_levels_bridge.csv": _flat_levels_bridge(),
         "weo_reconciliation.csv": _flat_reconciliation(),
-        "series_catalogue.csv": _flat_catalogue(exp, rev),
+        "series_catalogue.csv": _flat_catalogue(trees),
         **countries,
         **debt_files,
         "data_dictionary.csv": dictionary,

@@ -72,15 +72,74 @@ def residual_method(iso3: str, line_code: str) -> str:
         line_code, cfg.get("default", "grow_with_proxy"))
 
 
+# The three published trees (D-S11-001): classification -> lines.yaml key and
+# canonical file stem. Order is publication order (expenditure by function,
+# expenditure by economic type, revenue by type).
+TREES = {"COFOG": "expenditure", "ESA_EXP": "expenditure_esa", "ESA_REV": "revenue"}
+STEMS = {"COFOG": "expenditure_long", "ESA_EXP": "expenditure_esa_long",
+         "ESA_REV": "revenue_long"}
+
+
+def tree_lines(classification: str) -> dict:
+    """Line definitions of one tree, totals included."""
+    return lines()[TREES[classification]]
+
+
+def is_total(meta: dict) -> bool:
+    return meta.get("level") == "total" or meta.get("esa") == "total"
+
+
+def total_code(classification: str) -> str:
+    """The tree's own total line (TE, TE_ESA, TR)."""
+    return next(c for c, m in tree_lines(classification).items() if is_total(m))
+
+
+def granular_lines(classification: str) -> list[str]:
+    """Every line of the tree except its total."""
+    return [c for c, m in tree_lines(classification).items() if not is_total(m)]
+
+
+def level1_lines(classification: str) -> list[str]:
+    """The lines that sum to the tree's total (V2/V22): Level I for COFOG,
+    every non-total line for the ESA trees."""
+    return [c for c, m in tree_lines(classification).items()
+            if not is_total(m) and str(m.get("level", "1")) == "1"]
+
+
+def level2_splits() -> list[dict]:
+    """Every COFOG Level II line with its parent and derived remainder
+    (GF01_7/GF01_X per D10; GF10_2/GF10_X per D-S11-002): one dict per
+    split — parent, level2, remainder, eurostat_cofog, gfs_indicator,
+    fallback. Enumerated from lines.yaml so a further group is config only."""
+    exp = lines()["expenditure"]
+    out = []
+    for code, meta in exp.items():
+        if str(meta.get("level")) != "2":
+            continue
+        parent = meta["parent"]
+        remainder = next(c for c, m in exp.items()
+                         if m.get("level") == "derived" and m.get("parent") == parent
+                         and m.get("minus") == code)
+        out.append({"parent": parent, "level2": code, "remainder": remainder,
+                    "eurostat_cofog": meta["eurostat_cofog"],
+                    "gfs_indicator": meta.get("gfs_indicator"),
+                    "fallback": meta.get("fallback"),
+                    "grade_on_fallback": meta.get("grade_on_fallback", "B")})
+    return out
+
+
 def line_universe() -> list[tuple[str, str, str]]:
-    """The 66 (iso3, classification, line_code) series of §1: per country,
-    12 COFOG lines (GF01..GF10, GF01_7, GF01_X) + 10 ESA_REV lines (R01..R10).
-    TE/TR/ledger quantities are totals, not members of the 66."""
-    cfg = lines()
-    exp = [c for c in cfg["expenditure"] if c != "TE"]
-    rev = [c for c in cfg["revenue"] if c != "TR"]
+    """The (iso3, classification, line_code) series of §1 (D-S11-001): per
+    country, the COFOG lines (Level I, the Level II splits and their
+    remainders), the ESA_EXP economic lines and the ESA_REV lines. Totals
+    (TE, TE_ESA, TR) and ledger quantities are not members."""
     out = []
     for iso3 in COUNTRIES:
-        out += [(iso3, "COFOG", c) for c in exp]
-        out += [(iso3, "ESA_REV", c) for c in rev]
+        for classification in TREES:
+            out += [(iso3, classification, c) for c in granular_lines(classification)]
     return out
+
+
+def universe_size() -> int:
+    """len(line_universe()) — the number §1 once fixed at 66 (D-S11-001)."""
+    return len(line_universe())

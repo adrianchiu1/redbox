@@ -24,7 +24,8 @@ from ggfiscal import manifest as M
 from ggfiscal.ingest.endpoints import weo_vintages
 
 DESCRIPTIONS = {
-    "expenditure_long": "COFOG tree, §5 long format (12 lines + TE per country)",
+    "expenditure_long": "COFOG tree, §5 long format (14 lines + TE per country)",
+    "expenditure_esa_long": "ESA_EXP tree — expenditure by economic type, §5 long format (9 lines + TE_ESA per country)",
     "revenue_long": "ESA revenue tree, §5 long format (10 lines + TR per country)",
     "balance_ledger": "TR, TE, NLB, NI, PB per (country, year, variant), §4.3",
     "weo_base_bridge": "§8.2 base-year level bridge per (country, WEO vintage)",
@@ -32,7 +33,7 @@ DESCRIPTIONS = {
     "weo_explanation": "§8.3 forecast decomposition with residuals + denominator effect",
     "weo_residual_history": "§8.5 residual time series across WEO vintages",
     "net_interest_check": "§8.4 net-interest cross-check per (country, vintage, horizon)",
-    "coverage_matrix": "§11.6(9): span, grades, sources, why each of the 66 series ends",
+    "coverage_matrix": "§11.6(9): span, grades, sources, why each of the 99 series ends",
     "crosswalks": "§11.5 crosswalks concatenated (one row per mapping, keyed by file)",
     "exceptions": "§10 validation findings (all rows, all severities)",
     "stitch_boundaries": "§7.4 backward-stitch boundary records incl. non-applications",
@@ -178,7 +179,8 @@ def _validation_section(root: Path) -> list[str]:
         "visibility: documented concept wedges (V1/V21/V25), the withheld "
         "DSM interest join flagged for the committee (V16 → OQ-7), blocked "
         "register URLs (V18 → OQ-6), stitch diagnostics at measured grades "
-        "(V5), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, "
+        "(V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison "
+        "(V1, D-S11-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, "
         "D-S0-004). Details: `reports/validation_report.html`.",
         "",
     ]
@@ -234,11 +236,16 @@ def write(path: Path | None = None) -> Path:
         "",
         "Reproducible pipeline producing, for the United Kingdom (GBR), "
         "France (FRA) and Germany (DEU): consolidated general-government "
-        "**expenditure by COFOG function** (12 lines per country incl. the "
-        "GF01_7/GF01_X interest split), **revenue by ESA type** (10 lines "
-        "per country), the **balance ledger** (TR, TE, NLB, NI, PB), and a "
-        "**reconciliation of history and forecast dynamics to the IMF WEO** "
-        "general-government aggregates — 66 line series plus three ledgers, "
+        "**expenditure by COFOG function** (14 lines per country incl. the "
+        "GF01_7/GF01_X interest split and the GF10_2/GF10_X old-age pension "
+        "split), **expenditure by ESA economic type** (9 lines per country: "
+        "compensation, intermediate consumption, social benefits in cash, "
+        "social transfers in kind, interest, subsidies, other current, "
+        "capital formation, capital transfers), **revenue by ESA type** (10 "
+        "lines per country), the **balance ledger** (TR, TE, NLB, NI, PB), "
+        "and a **reconciliation of history and forecast dynamics to the IMF "
+        "WEO** general-government aggregates — 99 line series plus three "
+        "ledgers, "
         "each extended backwards and forwards as far as compatible official "
         "sources permit (§1).",
         "",
@@ -247,7 +254,8 @@ def write(path: Path | None = None) -> Path:
         "ever scaled or adjusted to hit a WEO aggregate (D13, D16).",
         "",
         "**The specification is [`COFOG_KICKOFF.md`](COFOG_KICKOFF.md) "
-        "(v2.2). It governs.** Working state lives in "
+        "(v2.2 with the v2.3 addendum of D-S11-001: the pension split and the "
+        "economic tree). It governs.** Working state lives in "
         "[`HANDOFF.md`](HANDOFF.md); the append-only decision log in "
         "[`DECISIONS.md`](DECISIONS.md); committee items in "
         "[`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).",
@@ -375,7 +383,7 @@ def write(path: Path | None = None) -> Path:
     lines += [
         "",
         *_debt_section(root),
-        "## Coverage (66 line series)",
+        f"## Coverage ({config.universe_size()} line series)",
         "",
         "Spans per line and variant, from `coverage_matrix.csv` (which adds "
         "stitch counts, principal sources, residual methods and the recorded "
@@ -406,6 +414,15 @@ def write(path: Path | None = None) -> Path:
         "",
         "## Known limits awaiting the committee",
         "",
+        "- **OQ-10 (raised 2026-09-19, D-S11-001..004)** — the pension line "
+        "`GF10_2` and the economic tree `E01`-`E09` are built; the review of "
+        "every line recommends four further breakdowns (`GF10_5` "
+        "unemployment, `GF04_5` transport, `R02_A` excise duties, the R06 "
+        "employers'/households' split) and asks for two approvals: the OBR "
+        "historical pensioner series as a C-band backward leg for GBR "
+        "`GF10_2`, and the DSM join for `E05` (one config row, as for "
+        "GF01_7). GBR `GF10_2` has no forecast until an FRS edition with "
+        "state-pension projections is in hand (OQ-6 a).",
         "- **OQ-6 (partially resolved 2026-09-05)** — gov.uk and bmas.de "
         "are allowlisted and OBR files were hand-retrieved (D-S7-001/002), "
         "so GBR strict now runs on OBR EFO March 2026 + PESA 2026. Still "

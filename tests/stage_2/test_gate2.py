@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from ggfiscal import config
-from ggfiscal.build import load_canonical
+from ggfiscal.build import load_canonical, load_trees
 from ggfiscal.standardise.readers import latest_snapshots
 
 pytestmark = pytest.mark.skipif(not latest_snapshots(),
@@ -25,8 +25,7 @@ def boundaries():
 def _stitched(variant):
     """Backward stitches only (year < anchor_year): Stage 3+ also writes
     forward newer-actual stitches, which tests/stage_3+ cover."""
-    df = pd.concat([load_canonical("COFOG", variant),
-                    load_canonical("ESA_REV", variant)], ignore_index=True)
+    df = load_trees(variant)
     return df[(df.observation_type == "stitched_actual")
               & (df.year < df.anchor_year)]
 
