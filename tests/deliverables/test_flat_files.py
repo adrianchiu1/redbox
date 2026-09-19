@@ -66,6 +66,7 @@ def test_run_manifest_pins_the_bundle():
 # ---------------------------------------------------- fidelity to canonical
 
 @pytest.mark.parametrize("flat,stem", [("expenditure_cofog.csv", "expenditure_long"),
+                                       ("expenditure_esa.csv", "expenditure_esa_long"),
                                        ("revenue_esa.csv", "revenue_long")])
 def test_trees_carry_every_canonical_row_and_value_unchanged(flat, stem):
     got = read(flat)
@@ -127,12 +128,14 @@ def test_data_dictionary_covers_every_column_of_every_file():
 
 def test_catalogue_covers_every_published_series_and_agrees_on_spans():
     cat = read("series_catalogue.csv")
-    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    tree = pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
+                      read("revenue_esa.csv")])
     published = set(map(tuple, tree[["iso3", "line_code"]].drop_duplicates().values))
     assert set(map(tuple, cat[["iso3", "line_code"]].values)) == published
-    # the 66 line series of §1 are all there, on top of the six totals
+    # the 123 line series (D-S13-001/005) are all there, on top of the nine totals
     assert {(iso3, line) for iso3, _, line in config.line_universe()} <= published
-    assert len(cat) == 72
+    assert len(cat) == config.universe_size() + 9 == 132
+    assert set(cat.classification) == {"COFOG", "ESA_EXP", "ESA_REV"}
 
     for row in cat.itertuples():
         g = tree[(tree.iso3 == row.iso3) & (tree.line_code == row.line_code)]
@@ -150,7 +153,7 @@ def test_catalogue_spans_agree_with_the_coverage_matrix():
     66 line series — one of them drifting would be a rendering bug."""
     cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
     cov = canonical("coverage_matrix.csv").set_index(["iso3", "line_code"])
-    assert len(cov) == 66
+    assert len(cov) == 123
     cat = cat.reindex(cov.index)
     assert cat.line_label.notna().all()             # every line is catalogued
     for cov_col, cat_col in (("first_historical_year", "first_year"),
@@ -162,7 +165,8 @@ def test_catalogue_spans_agree_with_the_coverage_matrix():
 
 # ------------------------------------------------------- self-reproducing
 
-@pytest.mark.parametrize("flat", ["expenditure_cofog.csv", "revenue_esa.csv"])
+@pytest.mark.parametrize("flat", ["expenditure_cofog.csv", "expenditure_esa.csv",
+                                  "revenue_esa.csv"])
 def test_every_chained_value_reproduces_from_the_flat_file_alone(flat):
     df = read(flat)
     checked = 0
@@ -270,7 +274,8 @@ def test_country_file_is_strict_only_and_carries_every_series(iso3):
     it unchanged, and — the point of the file — no maximum_extension value
     reaches it: the legs that exist only in that variant must be absent."""
     wide = read(f"strict_{iso3}.csv").set_index("year")
-    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    tree = pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
+                      read("revenue_esa.csv")])
     strict = tree.query("iso3 == @iso3 and variant == 'strict'")
     maximum = tree.query("iso3 == @iso3 and variant == 'maximum_extension'")
 
@@ -359,9 +364,10 @@ def test_statistical_forecasts_cover_exactly_the_series_that_need_them():
     """A benchmark exists for every granular line whose official strict
     series stops short of 2031, and for none that already reaches it."""
     fc = read("statistical_forecasts.csv")
-    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    tree = pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
+                      read("revenue_esa.csv")])
     strict = tree.query("variant == 'strict'")
-    granular = strict[~strict.line_code.isin(["TE", "TR"])]
+    granular = strict[~strict.line_code.isin(["TE", "TE_ESA", "TR"])]
     ends = granular.groupby(["iso3", "line_code"]).year.max()
 
     have = set(map(tuple, fc[["iso3", "line_code"]].drop_duplicates().values))
@@ -407,8 +413,8 @@ def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
     means = parts.groupby(key).pct_gdp.mean()
     assert (means - comb.pct_gdp).abs().max() < 1e-9
 
-    within = parts.assign(v=parts.se ** 2).groupby(key).v.mean()
-    between = parts.groupby(key).pct_gdp.var(ddof=1)
+    within = parts.assign(v=parts.se ** 2).groupby(key).v.mean().reindex(comb.index)
+    between = parts.groupby(key).pct_gdp.var(ddof=1).reindex(comb.index)
     assert ((within + between) - comb.se ** 2).abs().max() < 1e-9
     assert (comb.se ** 2 >= within - 1e-12).all()
 
@@ -531,7 +537,8 @@ def test_forecast_levels_is_reproducible_from_the_bundle_and_the_snapshot():
 
 # ------------------------------------------------- the benchmark balance
 
-BAL_EXP = ["GF01_7", "GF01_X"] + [f"GF{i:02d}" for i in range(2, 11)]
+BAL_EXP = (["GF01_7", "GF01_X"] + [f"GF{i:02d}" for i in range(2, 10)]
+           + ["GF10_2", "GF10_5", "GF10_X"])
 BAL_REV = [f"R{i:02d}" for i in range(1, 11)]
 
 
@@ -582,15 +589,21 @@ def test_benchmark_balance_sums_the_lines_back_into_the_balance():
 
 
 def test_benchmark_balance_takes_the_interest_split_not_the_level_i_set():
-    """Expenditure is GF01_7 + GF01_X + GF02..GF10. GF01 must be absent: it
-    is their sum, and its own univariate fit knows nothing about the official
-    interest projection inside it."""
+    """Expenditure is GF01_7 + GF01_X + GF02..GF09 + GF10_2 + GF10_5 + GF10_X.
+    GF01 and GF10 must be absent: each is the sum of its parts, and its own
+    univariate fit knows nothing about the official interest or pension
+    projection inside it (D-S11-002, D-S13-007)."""
     bal = read("benchmark_balance.csv")
     lines = bal[bal.kind == "line"]
     for iso3, g in lines.groupby("iso3"):
         codes = set(g.line_code)
         assert codes == set(BAL_EXP + BAL_REV), (iso3, codes)
-        assert "GF01" not in codes and not codes & {"TE", "TR"}, iso3
+        assert not codes & {"GF01", "GF10", "TE", "TR"}, iso3
+    # the pension split earns its place: in France and Germany GF10_2 is on
+    # its official path to 2031 while GF10 itself would have been statistical
+    for iso3 in ("FRA", "DEU"):
+        assert (lines.query("iso3 == @iso3 and line_code == 'GF10_2' and "
+                            "year == 2031").source == "official").all(), iso3
     assert set(lines.source) <= {"outturn", "official", "statistical"}
 
 
@@ -778,8 +791,15 @@ def test_benchmark_vs_weo_quotes_the_weo_unchanged_and_reproduces():
 FORECAST_NOTEBOOKS = tuple(
     f"forecasts_{iso3}_{tree}.ipynb"
     for iso3 in ("GBR", "FRA", "DEU")
-    for tree in ("expenditure", "revenue"))
-NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb", *FORECAST_NOTEBOOKS)
+    for tree in ("expenditure", "esa", "revenue"))
+# chartbook_esa.ipynb and chartbook_revenue.ipynb are the companions for the
+# ESA_EXP and ESA_REV trees (D-S13-004/006): the main chartbook keeps the
+# COFOG tree, the ledger, the WEO comparison and the seams table, and stays
+# under the size GitHub will render
+CHARTBOOKS = {"COFOG": "chartbook.ipynb", "ESA_REV": "chartbook_revenue.ipynb",
+              "ESA_EXP": "chartbook_esa.ipynb"}
+NOTEBOOKS = ("derivation.ipynb", "chartbook.ipynb", "chartbook_esa.ipynb",
+             "chartbook_revenue.ipynb", *FORECAST_NOTEBOOKS)
 
 
 def _notebook(name: str):
@@ -816,9 +836,10 @@ def test_forecast_notebook_charts_every_series_seven_ways(name):
     already reaches 2031, in which case levels and share only."""
     _, code, source, markdown = _notebook(name)
     iso3, tree = name[len("forecasts_"):-len(".ipynb")].split("_")
-    stem = {"expenditure": "expenditure_cofog", "revenue": "revenue_esa"}[tree]
+    stem = {"expenditure": "expenditure_cofog", "esa": "expenditure_esa",
+            "revenue": "revenue_esa"}[tree]
     lines = (read(f"{stem}.csv").query("iso3 == @iso3 and variant == 'strict'")
-             .query("line_code not in ['TE', 'TR']").line_code.unique())
+             .query("line_code not in ['TE', 'TE_ESA', 'TR']").line_code.unique())
     forecast = read("statistical_forecasts.csv").query("iso3 == @iso3")
 
     charted = 0
@@ -856,11 +877,28 @@ def test_chartbook_charts_every_published_series():
     """One chart per series, country by country, plus the WEO comparison and
     the ledger — a series that gains a chart nowhere would be invisible."""
     _, code, source, markdown = _notebook("chartbook.ipynb")
+    books = {name: _notebook(name) for name in set(CHARTBOOKS.values())}
     cat = read("series_catalogue.csv")
 
+    # whole-cell matches: `chart("DEU", "TR")` is a substring of the ledger
+    # cell `ledger_chart("DEU", "TR")`
+    calls = {name: {"".join(c["source"]).strip() for c in book_code}
+             for name, (_, book_code, _, _) in books.items()}
     for row in cat.itertuples():
         call = f'chart("{row.iso3}", "{row.line_code}")'
-        assert call in source, call
+        home = CHARTBOOKS[row.classification]
+        for name in books:
+            assert (call in calls[name]) == (name == home), (call, name)
+    for cls, name in CHARTBOOKS.items():
+        _, book_code, _, book_md = books[name]
+        figures = [o for c in book_code for o in c["outputs"]
+                   if "data" in o and "image/png" in o["data"]]
+        assert len(figures) >= (cat.classification == cls).sum(), name
+    for topic in ("second cut", "never", "TE_ESA", "E03", "E05"):
+        assert topic in books["chartbook_esa.ipynb"][3], topic
+    for topic in ("R02_A", "R06_E", "R06_H", "never forecast", "TR"):
+        assert topic in books["chartbook_revenue.ipynb"][3], topic
+    cat = cat[cat.classification == "COFOG"]
     for iso3 in ("GBR", "FRA", "DEU"):
         for q in ("TR", "TE", "NLB", "NI", "PB"):
             assert f'ledger_chart("{iso3}", "{q}")' in source
@@ -875,8 +913,9 @@ def test_chartbook_charts_every_published_series():
     # diagnostics, and the 9 forecast-panel figures (3 per country)
     assert len(figures) >= len(cat) + 15 + 9 + 3 + 9 + 4, "a chart is missing"
     # the schema caveats are stated, not left for the reader to discover
-    for topic in ("GF01_X", "outturn-only", "two different TE numbers",
-                  "explained_share", "seam"):
+    for topic in ("GF01_X", "GF10_X", "chartbook_esa", "chartbook_revenue",
+                  "outturn-only", "two different TE numbers", "explained_share",
+                  "seam"):
         assert topic in markdown, topic
 
 
@@ -922,9 +961,18 @@ def test_chartbook_shares_one_x_axis_per_country_and_shades_every_chart():
 
 
 PANEL_ROW = re.compile(
-    r"^(GF\S+|R\d\d)\s+.*?"
+    r"^(GF\S+|R\S+|E\S+)\s+.*?"
     r"(-?\d+\.\d\d) \((\d{4})\)\s+(-?\d+\.\d\d) \((\d{4})\)\s+"
     r"([-+\u00b1]\d+\.\d\d)\s+(official|statistical)")
+
+
+# which panels each book draws, and the flat file each panel is read from
+# (D-S11-001, extended to the third tree by D-S13-007): the main book carries
+# the COFOG and revenue panels and the ranked `changes()` picture across
+# both; the economic companion carries its own panel of the E lines
+PANELS = {"chartbook.ipynb": {"expenditure": "expenditure_cofog.csv",
+                              "revenue": "revenue_esa.csv"},
+          "chartbook_esa.ipynb": {"economic": "expenditure_esa.csv"}}
 
 
 def test_chartbook_panels_quote_one_forecast_per_category():
@@ -937,13 +985,13 @@ def test_chartbook_panels_quote_one_forecast_per_category():
     re-derived here from the flat files, row by row.
     """
     _, code, source, markdown = _notebook("chartbook.ipynb")
-    tree = pd.concat([read("expenditure_cofog.csv"), read("revenue_esa.csv")])
+    tree = pd.concat([read(f) for f in PANELS["chartbook.ipynb"].values()])
     strict = tree.query("variant == 'strict'")
     combination = read("statistical_forecasts.csv").query(
         "method == 'combination'")
 
     for iso3 in ("GBR", "FRA", "DEU"):
-        for what in ("expenditure", "revenue"):
+        for what in PANELS["chartbook.ipynb"]:
             assert f'panel("{iso3}", "{what}")' in source, (iso3, what)
         assert f'changes("{iso3}")' in source, iso3
 
@@ -994,15 +1042,17 @@ def test_chartbook_panels_quote_one_forecast_per_category():
         assert topic in markdown, topic
 
 
-def test_chartbook_levels_charts_carry_the_benchmark_where_nothing_is_published():
+@pytest.mark.parametrize("book", sorted(set(CHARTBOOKS.values())))
+def test_chartbook_levels_charts_carry_the_benchmark_where_nothing_is_published(book):
     """The levels charts gain a violet leg in currency — but only where the
     strict series carries no official forecast. Where one exists the
     published number is the answer, exactly as in the forecast panels.
 
     Checked against the executed captions, so this is what the book actually
-    printed and not what the code looks like it would print.
+    printed and not what the code looks like it would print. The three books
+    share the setup cell, so the companions draw the same leg for their trees.
     """
-    _, code, source, markdown = _notebook("chartbook.ipynb")
+    _, code, source, markdown = _notebook(book)
     assert 'load("forecast_levels")' in source
     setup = "".join(next(c for c in code
                          if "def chart(" in "".join(c["source"]))["source"])
@@ -1011,9 +1061,17 @@ def test_chartbook_levels_charts_carry_the_benchmark_where_nothing_is_published(
     assert "int(strict.year.max()) <= actual" in setup
     assert "lo80_lcu_mn" in setup and "lo95_lcu_mn" not in setup
 
-    cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
+    cat = read("series_catalogue.csv")
+    cat = cat[cat.classification.map(CHARTBOOKS) == book]
+    cat = cat.set_index(["iso3", "line_code"])
     levels = read("forecast_levels.csv").query("method == 'combination'")
     have = set(map(tuple, levels[["iso3", "line_code"]].drop_duplicates().values))
+    # every series of this book's tree whose strict variant stops at the last
+    # outturn and has a combination must carry the leg — and no other
+    expected_total = int(sum(
+        (row.final_strict_year <= row.final_actual_year) and (key in have)
+        for key, row in cat.iterrows()))
+    assert expected_total > 0, book
 
     drawn = 0
     for cell in code:
@@ -1037,12 +1095,13 @@ def test_chartbook_levels_charts_carry_the_benchmark_where_nothing_is_published(
             assert "80%" in said
             assert "not a published forecast" in text
             assert "anchored_outturn_chained_on_weo_ngdp" in text
-    assert drawn == 46, drawn
+    assert drawn == expected_total, (book, drawn, expected_total)
 
     # and the reading guide says what the new leg is and what its band is not
-    for topic in ("statistical benchmark", "80% interval of the *ratio*",
-                  "taken as given", "no official forecast"):
-        assert topic in markdown, topic
+    if book == "chartbook.ipynb":
+        for topic in ("statistical benchmark", "80% interval of the *ratio*",
+                      "taken as given", "no official forecast"):
+            assert topic in markdown, topic
 
 
 def test_chartbook_puts_the_benchmark_beside_the_weo_with_its_cone():
@@ -1072,7 +1131,9 @@ def test_chartbook_puts_the_benchmark_beside_the_weo_with_its_cone():
     vs = read("benchmark_vs_weo.csv")
     bal = vs[vs.kind == "balance"]
     assert bal.weo_inside_80.all(), "the prose says the WEO is always inside"
-    assert bal.weo_z.abs().max() < 1.0
+    # inside the 80% band is the claim (|z| < 1.28); the pension split of
+    # D-S13-007 narrows the French cone and takes its 2031 z to 1.10
+    assert bal.weo_z.abs().max() < 1.281552
 
 
 def test_chartbook_states_the_benchmark_balance_and_what_it_is_not():
@@ -1120,11 +1181,14 @@ def test_chartbook_panel_never_draws_a_single_method_or_a_95_band():
     assert "lo95" not in runs and "hi95" not in runs
 
 
-def test_chartbook_says_why_each_series_without_a_projection_has_none():
+@pytest.mark.parametrize("book", sorted(set(CHARTBOOKS.values())))
+def test_chartbook_says_why_each_series_without_a_projection_has_none(book):
     """Every series that stops at its last outturn must say so in its own
     caption, and none that projects may claim it does not."""
-    _, code, source, markdown = _notebook("chartbook.ipynb")
-    cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
+    _, code, source, markdown = _notebook(book)
+    cat = read("series_catalogue.csv")
+    cat = cat[cat.classification.map(CHARTBOOKS) == book]
+    cat = cat.set_index(["iso3", "line_code"])
 
     checked = 0
     for cell in code:
@@ -1163,8 +1227,10 @@ def test_chartbook_says_why_each_series_without_a_projection_has_none():
         checked += 1
     assert checked == len(cat)
 
-    # the taxonomy is spelled out once, up front
-    for status in ("no_official_forecast", "source_blocked",
-                   "grade_below_strict", "no_machine_readable_source",
-                   "not_extended"):
-        assert status in markdown, status
+    # the taxonomy is spelled out once, up front (the companion book points
+    # at the main one for it)
+    if book == "chartbook.ipynb":
+        for status in ("no_official_forecast", "source_blocked",
+                       "grade_below_strict", "no_machine_readable_source",
+                       "not_extended"):
+            assert status in markdown, status

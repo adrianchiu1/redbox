@@ -19,27 +19,61 @@ def built():
         build()
 
 
-def test_all_66_lines_plus_totals_present_in_both_variants():
+def test_all_99_lines_plus_totals_present_in_both_variants():
     for variant in ("strict", "maximum_extension"):
         exp = load_canonical("COFOG", variant)
+        esa = load_canonical("ESA_EXP", variant)
         rev = load_canonical("ESA_REV", variant)
         for iso3 in config.COUNTRIES:
             exp_lines = set(exp[exp.iso3 == iso3].line_code)
+            esa_lines = set(esa[esa.iso3 == iso3].line_code)
             rev_lines = set(rev[rev.iso3 == iso3].line_code)
-            assert exp_lines == {f"GF{n:02d}" for n in range(1, 11)} | \
-                {"GF01_7", "GF01_X", "TE"}, (iso3, variant)
-            assert rev_lines == {f"R{n:02d}" for n in range(1, 11)} | {"TR"}, \
+            assert exp_lines == {f"GF{n:02d}" for n in range(1, 11)} | {"GF01_7", "GF01_X", "GF04_5", "GF04_X", "GF10_2", "GF10_5", "GF10_X"} | {"TE"}, (iso3, variant)
+            assert esa_lines == {f"E{n:02d}" for n in range(1, 10)} | {"TE_ESA"}, \
                 (iso3, variant)
+            assert rev_lines == {f"R{n:02d}" for n in range(1, 11)} | {"R02_A", "R02_X", "R06_E", "R06_H", "R06_X"} | {"TR"}, (iso3, variant)
 
 
 def test_schema_validates():
     from ggfiscal.model import SCHEMA
-    for cls in ("COFOG", "ESA_REV"):
+    for cls in config.TREES:
         SCHEMA.validate(load_canonical(cls, "strict"))
 
 
+def test_esa_exp_identity_and_every_level2_split_hold_in_every_anchor_year():
+    """D-S13-002/003/005: E01..E09 = TE_ESA exactly, and for every Level II
+    split remainder + Σ Level II = parent exactly wherever the anchor
+    publishes them, both variants."""
+    for variant in ("strict", "maximum_extension"):
+        esa = load_canonical("ESA_EXP", variant)
+        trees = {cls: load_canonical(cls, variant) for cls in config.TREES}
+        for iso3 in config.COUNTRIES:
+            e = esa[(esa.iso3 == iso3) & (esa.anchor_year == esa.year)].pivot_table(
+                index="year", columns="line_code", values="value_lcu_mn")
+            lines = [f"E{n:02d}" for n in range(1, 10)]
+            full = e.dropna(subset=lines + ["TE_ESA"])
+            assert len(full) >= 25, (iso3, variant)
+            assert (full[lines].sum(axis=1) - full.TE_ESA).abs().max() < 1e-6 * full.TE_ESA.max()
+            for sp in config.level2_splits():
+                df = trees[sp["classification"]]
+                g = df[(df.iso3 == iso3) & (df.anchor_year == df.year)].pivot_table(
+                    index="year", columns="line_code", values="value_lcu_mn")
+                cols = [sp["parent"], sp["remainder"], *sp["level2s"]]
+                full = g.dropna(subset=cols)
+                assert len(full) >= 25, (iso3, variant, sp["parent"])
+                total = full[sp["remainder"]] + full[sp["level2s"]].sum(axis=1)
+                assert (total - full[sp["parent"]]).abs().max() < 1e-6 * full[sp["parent"]].abs().max()
+                for c in sp["level2s"]:
+                    assert (full[c] <= full[sp["parent"]]).all(), (iso3, c)
+            # old age is the largest single COFOG group everywhere
+            g = trees["COFOG"]
+            g = g[(g.iso3 == iso3) & (g.anchor_year == g.year)].pivot_table(
+                index="year", columns="line_code", values="value_lcu_mn").dropna(subset=["GF10", "GF10_2"])
+            assert (g.GF10_2 / g.GF10 > 0.4).all(), (iso3, variant)
+
+
 def test_history_only_all_grade_a_or_b_no_forecasts():
-    for cls in ("COFOG", "ESA_REV"):
+    for cls in config.TREES:
         df = load_canonical(cls, "strict")
         # history side: no anchor-era or backward-stitched row is a forecast
         # (Stage 3 adds forward rows beyond the anchor; those are is_forecast

@@ -13,7 +13,7 @@ from __future__ import annotations
 import pandas as pd
 
 from ggfiscal import config
-from ggfiscal.build import anchor_series, load_canonical
+from ggfiscal.build import anchor_series, load_canonical, load_trees
 from ggfiscal.validate.runner import Finding
 
 V5_BIAS_WARN = 0.01
@@ -21,8 +21,7 @@ V5_RMSE_WARN = 0.05
 
 
 def _stitched(variant: str) -> pd.DataFrame:
-    df = pd.concat([load_canonical("COFOG", variant),
-                    load_canonical("ESA_REV", variant)], ignore_index=True)
+    df = load_trees(variant)
     return df[df.observation_type == "stitched_actual"]
 
 

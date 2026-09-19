@@ -1,7 +1,8 @@
 # HANDOFF.md
 
-Rewritten 2026-09-10, end of session 9 (the debt-in-issue extension, on
-`claude/stoic-dijkstra-bc42s1` branched from the merged `main` at 6441366).
+Rewritten 2026-09-19, end of session 11 (pensions, social benefits and the
+economic tree, on `claude/redbox-social-benefits-pensions-f52j5a` branched
+from `main` at 8b99c74).
 
 ## Session 10 (2026-09-18): the AFT briefing (D-S12-001)
 
@@ -37,186 +38,162 @@ through the agent proxy here (`NO_PROXY= no_proxy= pip install …`).
 
 ## Current stage
 
-**Debt extension (DEBT_KICKOFF.md v1.0): D0–D5 complete on the per-security
-register for all three countries — Germany (D-S10-004), the United Kingdom
-(D-S10-005), France (D-S10-006/007).** The aggregate layer (DD8) stays as the
-register step before each register starts (FRA before 2000, DEU before
-1995/2005 for the tests, GBR before 1987) and as the V31/V39 cross-check. The
-parent package is untouched except: `config.sources()` merges
-`config/debt_sources.yaml`; the snapshot store names pdf/html extensions;
-pypdf, cffi, bs4 are dependencies. Parent baseline still 120 passed (the
-three validation tests are order-sensitive when a build runs concurrently —
-rerun alone).
+**All parent-package stages 0–6 remain complete on a 123-line universe
+(D-S13-001/005): three trees per country — 17 COFOG lines (ten Level I plus
+the Level II splits GF01_7 interest, GF10_2 old age, GF10_5 unemployment,
+GF04_5 transport, each with its remainder), 9 ESA_EXP lines (expenditure by
+economic type) and 15 ESA_REV lines (ten ESA types plus R02_A excise duties
+and the R06_E/R06_H employers'/households' contributions split, with
+remainders).** The specification carries the v2.3 addendum (§4.1a, §4.1b,
+§4.2a). The debt extension (DEBT_KICKOFF.md) is untouched.
 
-## What session 9 did (D-S10-005)
+## What session 11 did (D-S13-001..007; OQ-10 raised and resolved)
 
-- **DMO access.** The export endpoint clears the ShieldSquare challenge for
-  `browser.py`; each report exports in exactly one presentation type
-  (`families/debt_offices.DMO_FORMATS`), every other request returns a
-  35-byte stub that the family, `ingest-incoming` and the desktop script now
-  refuse. 14 reports snapshotted; D1D/D5I/D9C/D2.2A export in no format; the
-  `COBDate` year-end snapshots do not work by URL.
-- **`readers/dmo.py` + `register_gbr.py`**: 1,747 securities, 4,404 year-end
-  positions 1981–2025 rolled from the operations record and anchored on D1A
-  (in issue) / D1C (nominal at redemption), 8,173 flows, 10,562 index-ratio
-  points recomputed from the ONS RPI (D10C reproduced to 5 dp). Recurrence
-  exact on 3,499 year-end pairs; IL unindexed nominal = DMR to the million
-  2023–2025; conventional gilts 8% above the consolidated ONS/DMR stock
-  (OQ-9).
-- **Chains**: `config/debt.yaml` `register_chain_items` — the register's
-  interest basis and step-A bridges per country (GBR accrued, no value-date
-  items; DEU cash with the two BMF items); new financing bridge
-  `issuance_cash_less_nominal`. UK interest step A within ±3.3 £bn 2010–2024
-  (three years 5–8); financing step A within ±13 £bn except 2022 and
-  2008–09 (OQ-9 wedge).
-- Tests: `tests/debt` 200 passed, 6 skipped (13 new GBR); deliverables and
-  README regenerated; notebook re-executed with a register section.
+- **Fresh harvest** (`ggfiscal fetch --all`, 2026-09-19, 0 failures); the
+  rebuild changed no value in the pre-existing 66 series (run_id only).
+- **Level II is a config mechanism** for every tree: `config.level2_splits()`
+  returns one entry per parent (ordered Level II lines, one remainder whose
+  `minus` lists them all, per-line anchor cells / GFS indicator / OECD RS
+  headings); build, coverage, V19, the stitched-year remainder derivation,
+  the small multiples, the flat files and `tools/update_notebooks_s11.py`
+  iterate it. A further group is one config entry plus its remainder,
+  sources, crosswalk row and a re-run of the notebook script.
+- **Pensions `GF10_2`** (COFOG 10.2): FRA/DEU strict to 2070 on the Ageing
+  Report (1.07, B); GBR back to 1979 in maximum on the OBR historical
+  pensioner series (0.665, C; committee-approved) and no forecast (EFO 4.9
+  has no overlap year).
+- **`GF10_5` unemployment, `GF04_5` transport**: anchors only (D7: no
+  institution projects them); DEU from 2000.
+- **`ESA_EXP` tree** E01–E09 + TE_ESA, identity exact; AMECO grade-A
+  forecasts to 2027 and backward legs; **E05 now chains into the DSM to
+  2036** beside GF01_7 (committee-approved config rows).
+- **`R02_A` excise duties = D.214A + D.2122C** (Germany books its energy tax
+  on imports under D.2122C — measured before choosing): GBR strict to 2030
+  on six OBR duty series (0.986 B), DEU strict to 2030 on the
+  Steuerschätzung excises (0.918 B), FRA declared; OECD 5121 backward
+  (FRA/DEU B to 1965/1991, GBR C).
+- **`R06_E` / `R06_H`** employers'/households' actual contributions,
+  remainder R06_X (imputed and supplementary): GBR maximum to 2030 on EFO
+  3.4 NICs by class (0.73/0.74 C — the anchor rows include public-service
+  pension contributions); FRA/DEU declared (no split published); OECD
+  2200 and 2100+2300 backward (FRA B, DEU B/C, GBR C).
+- **Deliverables**: `expenditure_esa.csv`, `classification` column in every
+  tree file, strict matrices widened, `statistical_forecasts.csv`
+  regenerated; chartbook +Level II charts, `chartbook_esa.ipynb`
+  companion, forecast books extended and three `forecasts_{cc}_esa.ipynb`.
+- **Verification** that the previously built machinery still works after
+  the splits: D-S13-006 lists what was checked (pytest 151 passed; validate
+  OK=87 WARN=2092 no ERROR) (identities, the untouched
+  20-line WEO decomposition and its explained shares, the benchmark
+  forecasts covering exactly the series that need them, the catalogue /
+  coverage matrix / strict matrices / chartbooks covering every series).
 
-## Session 9, third part (D-S10-007): France complete
-
-- Three rounds of AFT files saved by the committee (pages, coefficient and
-  index files, the auction histories) → `readers/aft.py` +
-  `register_fra.py`: 1,603 securities, 2,069 year-end positions 1999–2025
-  rolled back from the encours through the auction histories, 7,903 flows,
-  92,139 ratio points (office daily). Σ BTF = AFT total to the euro
-  2009–2020; linkers uplifted within 3%; fixed lines 1–4% above the AFT
-  total in recent years (buybacks published only in aggregate). France in
-  both chains from 2000; step A (État cash) remains blocked, the register
-  meets S.1311 at step B.
-- Tests: `tests/debt` 245 passed, 6 skipped.
-
-## Session 9, second part (D-S10-006): France
-
-- Nine AFT pages saved by the committee (Cloudflare challenges every
-  automated navigation, static files included) → `readers/aft.py`,
-  `register_fra.py`: 101 securities, positions at the retrieval date, the
-  month's auctions as flows. Snapshot register: it does not enter the
-  chains (full-year coverage rule in `register.register_sums`), France
-  stays on the aggregate layer until the auction history is saved
-  (DOWNLOAD_LIST.md second round).
-- Maturity profile now also at each office's latest snapshot.
-
-## Sessions 7–8 in brief
-
-- Session 7: `DEBT_SCOPING.md` → `DEBT_KICKOFF.md` v1.0; `ggfiscal.debt`
-  families, engines (§7 interest, DD7 maturity, §8 chain assembler), the
-  aggregate layer, chains, validate, flatten, notebook (D-S10-001/002/003).
-- Session 8: Finanzagentur harvested; `register_deu.py`; `register.py`
-  assembles interest by security, maturity profile, issuance by bucket and
-  the computed register sums; ECB/Bundesbank family (D-S10-004).
+- **Integration with `main` (D-S13-007)**: the four unmerged branches were
+  landed on `main` as PRs #14–#17 (archimedes benchmark methodology, chart
+  site, AFT briefing as D-S12-001, cyclical check as OQ-11) and `main`
+  merged here. The benchmark balance now splits `GF10` as it splits `GF01`
+  (France 2031: −6.13 → −6.46; Germany −2.47 → −2.86); `forecast_levels`
+  spans the three trees; `chartbook_esa.ipynb` carries its own forecast
+  panel; the chart site lists the companion books.
 
 ## Blocked on whom
 
-- **OQ-8 (committee, residual)**: nothing blocking. Optional: the DMO
-  page's own export link for a past close-of-business date; the AFT fiche
-  titre pages (first coupon dates); budget.gouv.fr programme 117 tables
-  (France's step A).
-- **OQ-9 (committee)**: an official series of gilts held by CG bodies (DMA,
-  CRND) would turn the register-vs-ONS wedge into a holdings overlay.
-- Q-D7 (committee, later): PDF extraction rule for pre-register years.
+- Nothing blocking. OQ-10 resolved. Open: OQ-6 (a) an FRS edition with
+  state-pension / functional long-term projections would give GBR GF10_2
+  (and GF07/GF09/GF10) a strict long-term leg; OQ-8/OQ-9 (debt) unchanged;
+  `GF09_4` tertiary education is the one optional split not taken up.
 
 ## Exact next command
 
 ```
-ggfiscal debt fetch --family debt_offices   # DMO through the browser session; AFT will FAIL until OQ-8
-ggfiscal debt build && ggfiscal debt validate && ggfiscal flatten
-python3 -m pytest tests/debt -q
+pip install -e ".[dev,forecast,notebook]"
+ggfiscal fetch --all && ggfiscal build && ggfiscal reconcile && ggfiscal validate
+ggfiscal report && ggfiscal statistical-forecasts
+ggfiscal forecast-levels && ggfiscal benchmark-balance && ggfiscal benchmark-vs-weo
+python3 tools/update_notebooks_s11.py
+jupyter nbconvert --execute --inplace notebooks/chartbook*.ipynb notebooks/derivation.ipynb notebooks/forecasts_*.ipynb
+python3 -m pytest -q --ignore=tests/debt
 ```
 
-Next build steps: (1) per-line buybacks for France if a source appears
-(the AFT bulletins), and the État's step-A totals (programme 117); (2)
-per-ISIN APF holdings from the BOE_APF snapshots into
-`official_holdings_lcu_mn` (DD11); (3) the LIBID fixings for the two
-floating-rate gilts if a source appears (DD10).
+The three `forecast-*` / `benchmark-*` commands are the session-11 benchmark
+chain from `main` (D-S11-002/003/004); they read the flat files and
+`statistical_forecasts.csv`, so they come after `report` and
+`statistical-forecasts` and before the notebooks are executed.
 
-## Data facts future sessions must not rediscover (debt)
+To add the next Level II group: one `level: "2"` entry with its `parent`
+and anchor cell (`eurostat_cofog` + `gfs_indicator` for COFOG; `eurostat`
+dataset + codes, `ons` table + codes, `oecd_rs` headings for revenue) in
+`config/lines.yaml`, the remainder's `minus` list extended (or a new
+`level: derived` remainder with `never_forecast: true`), the forecast
+sources in `forecast/forward.py` if any, a crosswalk row, then rebuild,
+`python3 tools/update_notebooks_s11.py` (inserts the chart and forecast
+cells after the parent's), and re-execute the notebooks.
 
-- DMO export endpoint: `GetDataExport?reportCode=X&exportFormatValue=xml|xls
-  &parameters=&COBDate=` — one format per report (DMO_FORMATS); the report
-  HTML pages re-challenge the headless browser, the export endpoint does not
-  once the challenge has cleared on `XmlDataReport?reportCode=D1A`.
-- D2.1E (issuance history) carries signed nominals: creations positive,
-  cancellations/reverse auctions negative, conversions and switches both
-  signs; `ACTUAL_DATE` is the settlement date; prices are clean. Tranche
-  ISINs (`… 2007 A`) are assimilated into the parent — fold them.
-- D1C lists redeemed gilts by name only (no ISIN): join on
-  `readers.dmo.name_key` (coupon | IL/CV | years, tranche dropped). Gilts
-  converted or switched out in full before 2000 appear nowhere.
-- Index ratios: reference RPI(d) = RPI(m−3) + (d−1)/days(m) × (RPI(m−2) −
-  RPI(m−3)), base = reference RPI at first issue; `UK_RPI` is on Jan 1987 =
-  100 and reproduces D10C exactly. 8-month linkers: RPI(m−8).
-- The NLF accounts are accruals-based: the UK register enters the interest
-  chain on the accrued basis (uplift accrual and amortisation included);
-  never add the BMF value-date bridges to the UK.
-- ONS Appendix S / PSA8A_1 gilt rows (F.332) are consolidated within CG;
-  HMT DMR table A.1 likewise. The register is gross (OQ-9).
-- UK bills: one security per maturity date (fungible); bilateral/ad hoc
-  bills are outside the tender history, so the register bill stock is
-  below ONS BKPJ after 2006.
-- The financing chain runs in NET-BORROWING sign: steps B and C carry
-  −B.9 / −NLB (basis says so). Register selection per country lives in
-  `config/debt.yaml`; DEU special funds are subtracted at step A and
-  added back at step B; the Mitfinanzierung item is interest-only.
-- Kreditaufnahmebericht annex 4.10: 2019–2025 parse and close to the
-  euro; 2013–2018 have no annex (narrative-table NKA, narrower concept);
-  rows may carry 2 cells (Soll blank) and labels wrap both ways.
-- ONS REC2's RUUX is CGNCR incl. NRAM/B&B/Network Rail; PSA7C (M98W,
-  MUI2, ABEC, ABEI) bridges it to M98R. PSA2 −NMOE is LG net borrowing;
-  PSA6J NUGW is LG interest. No intra-GG consolidation line is published.
-- Eurostat EDP identity: GD_CH = B9_T3 + F_ASS + ORADJ + YA3 (KX and K61
-  are inside ORADJ); edpt3 starts FR 2021 / DE 2022.
-- BMF Datenportal flow sheets are cumulative year-to-date (December = full
-  year); Tilgungen/Zinsen are negative; values in whole euro. Indent-0
-  totals: "Kredite … inklusive Mitfinanzierung" is the wider total the
-  instrument tree sums to. From 2025 stock(t) ≠ stock(t−1)+gross−redemptions
-  (agio/disagio spreading, +9.9 EUR bn wedge in 2025).
-- Kreditaufnahmebericht annex numbering moves by edition: match on title.
-  Annex 4.5 (2025 edition) carries Verzinsung 1996–2025 and agrees with the
-  Datenportal to 0.5 EUR mn; annex 4.10 parses 2020–2025 only.
-- BMF host: Radware bot manager — fresh session, de-DE headers, Referer,
-  same-host redirects only, up to 8 retries; large PDFs need Range resume;
-  HTML carries per-request `__uzdbm_*` tokens (never hash-stable).
-- ONS PSA sheets: locate header/CDID rows by column-A stub, never by
-  offset; period labels are `1998`, `Apr 1997 to Mar 1998`, `Apr to Jun
-  1997`, `2026 Jul`. PSA CY blocks start 1998; PUSF NMFX annual goes to
-  1946; M98R monthly from 1984-04 sums to calendar years directly.
-- NLF accounts: 18 of 20 editions parse (2006-07, 2007-08 have no
-  ToUnicode map); 2012-13's printed total does not add up (restated in
-  2013-14). Finance costs are accrual; "Interest paid" is the cash line.
-- RPI: CHAW (Jan 1987=100) from 1987; CDKO (Jan 1974=100) from 1947-06;
-  splice factor 100/394.5, constant to 4 dp over the 475-month overlap.
-- INSEE: `serie/ajax/{idbank}` returns the full history as an HTML table;
-  the csv route 500s; bdm.insee.fr is blocked. FR CPI ex-tobacco base
-  2015→2025 chain factor 0.834606 over 360 months.
-- Eurostat: gov_10dd_ggd key order freq.na_item.sector2.sector.maturity.
-  unit.geo; FR structure-of-debt tables start 2020; DE rmd has 4 of 7
-  bands and S1311 from 2004; HICP coicop code is TOT_X_TBC (dimension
-  `coicop18` in prc_hicp_minr, `coicop` in the midx archive); UK absent.
-- BoE: media CDN 403s a bare requests UA — send browser headers; IADB
-  `_iadb-fromshowcolumns.asp` returns CSV when Datefrom ≥ series start,
-  else HTML/302; curve workbooks: spot sheet, maturities row 4, dates from
-  row 6.
-- AFT files: `hist_mlt` / `hist_btf` (auction histories, EUR mn, yields
-  and prices as fractions), `historique_syndications` (negative volume =
-  buyback), coefficient files (header block rows 2–8: kind, coupon,
-  maturity, base date, base index; daily data from row 10; the current
-  files cover 1998/2001 → the coming month, the `histo` files stop in 2016
-  and carry the lines matured since), `IPC` / `IPCH` (monthly index on
-  every base). The daily reference index is the 3-month-lag interpolation
-  of the monthly index (1.5e-5). Column 0 of a header list is falsy: never
-  `_col(...) or _col(...)`.
-- AFT: the encours pages are HTML tables (no Excel behind them); libellés
-  carry coupon and maturity (`readers/aft.parse_libelle`); French amounts
-  use space thousands and comma decimals, the English OAT€i page uses
-  commas and a `.00`; auction pages are attribute rows × lines, ISIN last;
-  `Volume total émis = adjugé + ONC`. The site challenges every automated
-  navigation and its `/files/` downloads; a person's browser passes once
-  per page.
-- Playwright/Chromium through the agent proxy: `--disable-quic`,
-  `--disable-features=PostQuantumKyber,UseMLKEM,EncryptedClientHello`,
-  `--ssl-version-max=tls1.2`; never `pkill -f` a pattern that matches your
-  own shell command line (it kills the session's shell).
+## Data facts future sessions must not rediscover (session 11)
 
+- `gov_10a_exp` is pulled with both `cofog99` and `na_item` wildcarded: the
+  snapshot already holds every COFOG group × every ESA transaction (D.62 by
+  function included); `readers.eurostat_cofog` reads `na_item == "TE"`. ONS
+  Table 11 row 5 carries the transaction codes (P2, D1, D62, D632, …, OTE)
+  and the Level II rows; `ons_t11()` reads the OTE column. `gov_10a_main`
+  also carries `D62PAY_GF1002/GF1003/GF1005` (cash benefits by function).
+- Eurostat DEU Level II starts 2000 for every group (GF0107 has the D.41
+  fallback for 1995–99; GF1002 has none). IMF GFS COFOG group indicators are
+  `GF{dd}{g}0_T` (GF1020_T = 10.2) and for DEU also start 2000.
+- The Ageing Report's "Public pensions, gross" measures 1.07–1.09 of COFOG
+  10.2 (B band), 0.97–0.99 (FRA) / 0.90–0.92 (DEU) of 10.2+10.3, 0.61/0.52
+  of GF10.
+- AMECO chapter 16 has the full economic breakdown for FRA/DEU (UWCG,
+  UCTGI, UYTGH, UYTGM, UYIG, UYVG, UUOG, UIGG0, UKTGT, UKOG, UUTG) with
+  history from 1978/1991; for the UK only UYTGH, UYTGM, UYIG, UYVG, UIGG0,
+  UKTGT carry history (from 1987) — UWCG, UCTGI, UUOG, UUTG are 2026–27
+  only. UKTGT (D.9) has no forecast years; UKOG is the forecast candidate.
+- ONS ESA Table 2 payable codes: D1, D29, D3P, D4, D41, D4N, D5, D62, D632,
+  D7, D9, D92, D99 (+ P2, P5, NP, OTE with no direction). Sum of the twelve
+  ESA items = OTE to 0.000% every year 1990–2025.
+- The ESA identity in gov_10a_main: TE = P2 + D1PAY + D29PAY + D3PAY + D4PAY
+  + D5PAY + D62PAY + D632PAY + D7PAY + D8 + D9PAY + P5 + NP, exact; D8 is
+  zero for FRA/DEU government.
+- EFO detailed expenditure tables (part `detailed-expenditure`, sheet 4.9
+  State pension; 4.10 pensioner spending; 4.13 public service pensions) and
+  TA.7 all start FY 2024-25; table 6.1 (economic categories: net social
+  benefits) starts FY 2025-26. OBR historical PF database "Spending (£m)"
+  has Social Security and "o/w pensioners" 1978-79 → 2022-23 (public
+  sector); no 2023-24, so it cannot bridge to the EFO tables.
+- Excise duties: Germany's `gov_10a_taxag` D214A (36 EUR bn, 2024) is only
+  the domestic part — the energy tax on imported fuels sits in D2122C
+  (29 bn); D214A + D2122C = 65 bn = OECD 5121 exactly. The UK NTL D214A
+  row ("excise duties and consumption taxes", 62 £bn) also holds air
+  passenger duty, the climate change levy, the renewables obligation and
+  contracts for difference, landfill, aggregates, soft-drinks and
+  plastic-packaging levies — the OBR databank covers 92% of it.
+- Contributions: ONS ESA Table 2 has D611 and D613 receivable;
+  `gov_10a_main` has D611REC/D613REC (no D612/D614). EFO detailed receipts
+  table 3.4 splits NICs by class from FY 2024-25, so CY 2025 overlaps the
+  anchor (unlike the welfare and state-pension tables). The anchors'
+  D.611/D.613 include employer and employee contributions to public-service
+  pension schemes, so NICs cover ~73%.
+- OBR historical PF "Spending (£m)": header row 4, FY labels in column B,
+  `readers.obr_hist_pf_fy(column)`; the pensioner column is IFS-based from
+  1978-79; converted per §7.10 it runs 1979–2022.
+- `statistical_forecasts.csv` is not in (iso3, line_code) sorted order once
+  the trees are concatenated by classification; the combination test
+  reindexes `within`/`between` onto the combination's index.
+- The pandas comparison `series_a >= series_b` raises on identically-set,
+  differently-ordered indexes — reindex first.
+- `pip install -e .[forecast]` (pmdarima, prophet, statsmodels) and
+  `.[notebook]` (jupyter, nbconvert, ipykernel) both install cleanly in this
+  image; `ggfiscal statistical-forecasts` takes ~4 minutes for 113 series.
+- Notebook sizes (D-S9-004, ~1 MB to render on GitHub): the chartbook is
+  now three books — `chartbook.ipynb` 0.79 MB (COFOG, ledger, WEO, seams),
+  `chartbook_revenue.ipynb` 0.44, `chartbook_esa.ipynb` 0.29. The nine
+  forecast books are 0.54–0.96 MB except `forecasts_GBR_expenditure` at
+  1.06 MB — split it per the D-S9-004 fallback if GitHub declines to render
+  it. `tools/update_notebooks_s11.py` rebuilds the two companion chartbooks
+  and the three esa forecast books WITHOUT outputs every run: re-execute
+  them (nbconvert) after every run of the script.
+
+## Parent data facts carried forward
 ## Session 11 (D-S11-001): the forecasts are in the chartbook
 
 `notebooks/chartbook.ipynb` now opens every country section with a forecast
@@ -365,157 +342,11 @@ rediscovering:
 
 ## Parent package state carried from `main` (session 9, chartbook — D-S9-006)
 
-Kept verbatim from main's HANDOFF at the merge of 2026-09-10; the debt
-extension above does not change any of it.
-
-### Deliverables, notebooks and tests of the parent package (D-S9-002…006)
-
-- **`deliverables/` — the flat-file bundle**, written by the new
-  `ggfiscal flatten` (`src/ggfiscal/publish/flatten.py`; also the last step
-  of `ggfiscal report`, so it cannot fall behind a reported run). Seven
-  files: `expenditure_cofog.csv`, `revenue_esa.csv`, `balance_ledger.csv`,
-  `weo_levels_bridge.csv`, `weo_reconciliation.csv`, `series_catalogue.csv`,
-  `data_dictionary.csv`, plus a generated README. Both variants sit in one
-  file behind a `variant` column; each row carries a `derivation` sentence
-  in the Gate 6 form `value(t) = value(t±1) × growth`.
-- **`notebooks/derivation.ipynb`** — executed with outputs committed,
-  reading only the bundle (never `data/canonical/` or `data/raw/`). It
-  prints the recipe of all 72 published series, re-proves the chain
-  arithmetic, checks the ledger identities, and walks the §8.2/§8.3
-  reconciliation. Re-run it with
-  `pip install -e .[notebook] && jupyter nbconvert --execute --inplace
-  notebooks/*.ipynb`.
-- **`deliverables/strict_{GBR,FRA,DEU}.csv`** (D-S9-005) — one file per
-  country, every charted series as a column, every year as a row, STRICT
-  ONLY. Column names are `line_code - line_label`. The ledger's TR/TE are
-  prefixed `LEDGER_` because they are the balance anchor's own totals, not
-  the trees' TE/TR (they differ by up to 0.5% for GBR). Rows run to the
-  last year any strict series reaches (GBR 2030, FRA/DEU 2070), not the
-  chartbook's 2031 display cap.
-- **Statistical benchmark forecasts** (D-S9-007) —
-  `ggfiscal statistical-forecasts` writes
-  `deliverables/statistical_forecasts.csv` (60 series x 5 methods to
-  2031: auto.arima, ets, prophet, unobserved components, and their
-  combination), and six notebooks
-  `forecasts_{GBR,FRA,DEU}_{expenditure,revenue}.ipynb` chart them. Fitted
-  on OUTTURN ONLY so the official projection can be read against the
-  model; a benchmark, never a rival — nothing enters the canonical layer.
-  Needs `pip install -e .[forecast]`.
-- **The forward-balance section** (D-S9-006, chartbook §4.4) — why a
-  forward `explained_share` exists where a forward "our NLB" does not: a
-  level needs every component, a change does not. Plus the chart that
-  makes the forward comparison honestly (WEO path vs the base year moved
-  only by covered lines). Do not re-derive this; the answer is written up
-  in the notebook.
-- **`notebooks/chartbook.ipynb`** (D-S9-002) — 102 figures, one per series,
-  laid out country → category → series, plus the WEO comparison (levels
-  above, gap as % of TE below) for revenue, expenditure and NLB per
-  country. Seams (source or method changes) are drawn as dotted rules and
-  projection years shaded, so construction quality can be eyeballed; §6
-  tabulates every seam with the change across it, sorted, as a triage list.
-  Its opening section lists the ten things that do not fit a flat
-  country/category/series layout — read that before the charts. Revised
-  per D-S9-003: one x-axis per country (GBR 1965-2030, FRA 1965-2070, DEU
-  1991-2070) so charts read side by side; projection shading on every
-  chart, not only those with a forecast; and a per-variant caption saying
-  how far each projects or why it does not — 44 of 72 series carry no
-  projection at all, across five recorded statuses, tabulated up front.
-- **`tests/deliverables/test_flat_files.py`** (47 tests) enforces the three
-  invariants: nothing recomputed (bit-exact copy, `float_precision=
-  "round_trip"`), every chained value reproducible from the flat file alone,
-  and the data dictionary covering every column of every file by set
-  equality. Both notebooks are checked for committed, error-free outputs,
-  and the chartbook for charting every catalogued series.
-- **Packaging fixes**: `openpyxl` and `xlrd` are now real dependencies (the
-  committed OBR snapshots are unreadable without them — session 5 left them
-  as a manual install step), plus a `notebook` extra.
-
-### Parent baseline
-
-`pytest`: **137 passed** on the non-debt suite (zero failures, D-S9-008);
-`tests/debt` 6 failed / 179 passed, all six needing German/French rate
-sources this container cannot retrieve. `validate`: **OK=55 WARN=820, no
-ERROR, no SKIP**. The WARN count is up from 661 on source-vintage drift
-alone (V25/V1 concept wedges against refreshed Eurostat/OECD/AMECO pulls of
-2026-09-08); no new check, no new tier, no ERROR.
-
-### Fresh container (parent package)
-
-Fresh container: `pip install -e .[dev]` (openpyxl/xlrd now come with it;
-use `python3 -m pytest`), `ggfiscal fetch --all`, then
-`build`, `reconcile`, `report` (which now also writes `deliverables/`),
-`validate`. The OBR raw bytes come with the clone (D-S7-001) — do NOT expect
-`fetch` to produce them. Expected green baseline on the 2026-09-08 harvest:
-122 passed; validate no ERROR, no SKIP. **After any rebuild, re-execute both
-notebooks** (`jupyter nbconvert --execute --inplace notebooks/*.ipynb`) so
-their committed outputs match the bundle.
-
-### Parent data facts (sessions 4–9)
-
-- Everything in the session-4 and session-5 HANDOFFs (git history at PR #2
-  and PR #3), plus:
-- `pd.read_csv` loses ~1 ULP per round trip at its default float precision.
-  The bundle reads the canonical layer with `float_precision="round_trip"`
-  so the published decimal text IS the canonical decimal text; drop that and
-  the bit-exact fidelity test fails on FRA R05 first.
-- `pytest` does not rebuild when `data/canonical/` is already populated (the
-  Gate 1 fixture builds only if it is empty), so the suite does not churn
-  run manifests — but it also will NOT pick up a stale canonical layer.
-  Rebuild explicitly when sources change.
-- A pytest run against a canonical layer built from OLDER snapshots fails
-  Stage 0's V14 (`canonical anchor-era years != anchor years`). That is the
-  vintage-drift signal, not a code defect: rebuild, then re-run.
-- **Notebook size is a hard constraint** (D-S9-004): GitHub's renderer is
-  client-side and gives up on large `.ipynb`, showing "Loading" forever —
-  the chartbook did this at 3.28 MB. It is now 0.88 MB and must stay under
-  a megabyte: small figures, and PNGs quantised onto the FIXED palette in
-  the setup cell. Do not switch that to an adaptive palette — adaptive
-  allocates slots by pixel count and crushes the dashed orange series to a
-  muddy brown. The threshold cannot be measured from a session here
-  (fetching a blob page returns "Loading" at any size); nbviewer is the
-  documented fallback, and splitting per country is the next step if 0.88
-  MB still fails.
-- **`main` was red; fixed in D-S9-008.** The cause was NOT a merge
-  conflict: `latest_snapshots` took the last manifest line per source and
-  only then checked the file existed, so a pull made in another container
-  shadowed the byte-identical pull sitting on disk here and every source
-  came back unharvested. It now takes the last line WHOSE FILE EXISTS.
-  Snapshots are content-addressed, so an older entry with the same sha256
-  is the same bytes. Non-debt suite: 16 failed / 106 passed -> 137 passed.
-  If a source ever looks unharvested again, check
-  `latest_snapshots()` against `data/raw/` before re-fetching — the bytes
-  are often already there under an earlier timestamp.
-- **`ggfiscal debt fetch` needs `pip install -e .[debt]`** (playwright) and
-  `pypdf` comes with the base install; an environment built before the
-  debt merge will not have it, which is worth 20 debt-test failures.
-- **One blocked publisher no longer strands the rest of a debt harvest**
-  (D-S9-008): `debt/browser.py` raised a bare `RuntimeError` on an
-  unclearable challenge, escaping the `FetchBlocked`/`FetchError` net in
-  `debt.fetch.fetch_all`. It raises `FetchBlocked` now. dmo.gov.uk still
-  challenges from here, as obr.uk does (OQ-6).
-- statsmodels only forecasts past a `RangeIndex`. ETS and UC must be
-  handed a 0..n-1 indexed Series (`forecast.statistical._positional`), not
-  a year-indexed one and not a bare ndarray; the year index is put back by
-  the caller. Whether pandas hands back a RangeIndex or a plain Index for
-  a year column is incidental, which is what made this look like a
-  per-series flake.
-- The §8.3 forecast decomposition is additive ONLY with
-  `weo_internal_wedge` in the identity: covered_total + denom_effect +
-  residuals + wedge = weo_change (to 1e-9). The WEO's own GGR - GGX does
-  not equal its GGXCNL exactly, and that is reported, not absorbed.
-- Capping a chart's x-axis does NOT cap its y-axis: matplotlib autoscales
-  over all plotted data, so the window must be applied to the DATA, not
-  just to `set_xlim`, or a 2070 value flattens the visible history.
-- `ggfiscal flatten` is deterministic given the canonical layer (D-S9-003):
-  no wall clock in any generated header. Keep it that way — the
-  `tests/deliverables` fixture re-renders the bundle on every pytest run,
-  so a timestamp there dirties the tree every time the suite is run.
-- The tree TE/TR lines and the balance ledger use DIFFERENT anchors for GBR
-  (ONS_ESA_T11 vs ONS_GG_RECEIPTS), so their final actual years differ
-  (2024 vs 2025). Expected; documented in the notebook.
+Everything in the session-9 HANDOFF (git history at 8b99c74: `latest_snapshots`
+shadowing, float round-trip, notebook size, statsmodels RangeIndex, the two
+GBR TE numbers, `weo_internal_wedge`) still holds and is not repeated here.
 
 ## §15 dependencies currently riding on defaults
 
-Unchanged from session 5: Q1, Q3, Q4, Q8, Q10, Q13 on defaults; Q11 pinned
-(D-S6-001); Q7 and Q12 exercised.
-
+Unchanged: Q1, Q3, Q4, Q8, Q10, Q13 on defaults (Q13 revisited in OQ-10);
+Q11 pinned (D-S6-001); Q7 and Q12 exercised.

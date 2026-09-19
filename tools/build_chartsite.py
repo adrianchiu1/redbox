@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Build a single-file, phone-first browser for the notebook charts.
 
-`notebooks/chartbook.ipynb` and `notebooks/debtbook.ipynb` are committed
+`notebooks/chartbook.ipynb`, `notebooks/chartbook_revenue.ipynb`,
+`notebooks/chartbook_esa.ipynb` and `notebooks/debtbook.ipynb` are committed
 already executed: every figure is stored in the .ipynb as a base64 PNG. This
 script reads those files and the series catalogue and nothing else -- no
 pandas, no matplotlib, no kernel, stdlib only -- so the site rebuilds in a
@@ -51,6 +52,12 @@ REPO_URL = "https://github.com/adrianchiu1/redbox"
 BOOKS = [
     ("chartbook", "Chartbook", "notebooks/chartbook.ipynb",
      "Every COFOG, ESA and ledger series plotted, then reconciled to the IMF WEO."),
+    ("chartbook_revenue", "Revenue", "notebooks/chartbook_revenue.ipynb",
+     "The ESA revenue tree (ESA_REV) -- ten revenue types reconciled to TR, "
+     "plus the excise-duty and contributions splits."),
+    ("chartbook_esa", "ESA", "notebooks/chartbook_esa.ipynb",
+     "The ESA economic-type expenditure tree (ESA_EXP) -- nine lines "
+     "reconciled to TE_ESA, a second cut of total expenditure alongside COFOG."),
     ("debtbook", "Debtbook", "notebooks/debtbook.ipynb",
      "The debt-securities register and the interest and financing chains."),
 ]
@@ -931,8 +938,8 @@ sideways for more width</p>
         '<meta name="viewport" content="width=device-width,initial-scale=1,'
         'viewport-fit=cover">\n'
         '<meta name="color-scheme" content="light dark">\n'
-        '<meta name="description" content="Every chart in the redbox chartbook '
-        'and debtbook, on one page.">\n'
+        '<meta name="description" content="Every chart in the redbox chartbook, '
+        'its revenue and ESA companions, and the debtbook, on one page.">\n'
         '<meta name="apple-mobile-web-app-capable" content="yes">\n'
         f"<title>Redbox Chartbook</title>\n{FONTS}\n<style>{CSS}</style>\n"
         "</head>\n<body>\n" + inner + "\n</body>\n</html>\n")

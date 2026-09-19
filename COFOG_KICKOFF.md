@@ -5,6 +5,8 @@ Prepared 31 August 2026. Self-contained. Supersedes v1 (ChatGPT specification), 
 
 v2.2 changes: scope reduced to **GBR, FRA, DEU**; a **revenue-by-type tree** on the same engine; a **reconciliation module** relating the granular series to IMF WEO fiscal aggregates; interest receivable separated on the revenue side to mirror `GF01_7`.
 
+v2.3 addendum (2026-09-19, sessions 11; D-S13-001..004 in `DECISIONS.md`): the committee asked for social benefits and pensions. Two additions, recorded here so the spec and the build agree; the methodology (§6–§10) is unchanged and every new line obeys it. (1) **COFOG Level II is a config mechanism** — any group declared with `level: "2"` and a `parent` in `config/lines.yaml` gets a derived, never-forecast remainder (`parent − group`) and the V19 identity; D10's "these are the only sub-Level I lines" is superseded by that mechanism, its substance (gross interest on both sides, the D.41 fallback for 01.7) kept. The second split is **`GF10_2` Old age (COFOG 10.2, the pensions line)** with remainder `GF10_X` (§4.1a). (2) **A third tree, `ESA_EXP`** — total expenditure by ESA 2010 economic type, nine lines summing to `TE_ESA` (§4.1b), with **`E03` social benefits other than social transfers in kind (D.62)** the social-benefits line. The universe is 99 line series (33 per country: 14 COFOG, 9 ESA_EXP, 10 ESA_REV), enumerated from config. The §8.3 decomposition still runs on the 20 Level I lines by code, so the second cut of TE is never double counted.
+
 ---
 
 ## 0. How to read this document
@@ -122,7 +124,48 @@ Derived measures per observation: `pct_gdp`, `pct_total` (of TE or TR as appropr
 | GF08 | 1 | Recreation, culture and religion |
 | GF09 | 1 | Education |
 | GF10 | 1 | Social protection |
+| GF10_2 | 2 | Old age — COFOG 10.2, the pensions line (v2.3, D-S13-002) |
+| GF10_X | derived | Social protection excluding old age (GF10 − GF10_2; never forecast) |
 | TE | total | Total expenditure |
+
+### 4.1a Level II splits (v2.3)
+Declared in `config/lines.yaml`: a `level: "2"` line names its `parent`; its remainder is `level: derived`, `never_forecast`, and its `minus` list names every Level II line under that parent (a parent may carry several). The build takes the Level II cell from the anchor's own Level II table (ONS Table 11 / Eurostat `gov_10a_exp`), derives the remainder in every year both exist (anchor and backward-stitched), and V19 checks `remainder + level2 = parent` and that the remainder carries no forecast row. Only the interest split has a fallback concept (D10). Built splits after D-S13-005: `GF01_7` interest (remainder `GF01_X`); `GF10_2` old age and `GF10_5` unemployment (remainder `GF10_X`); `GF04_5` transport (remainder `GF04_X`). Adding a further group (e.g. 09.4 tertiary) is a config entry plus its forecast/extension sources and a chart cell.
+
+| Code | Level | Label | Anchor cell |
+|---|---|---|---|
+| GF04_5 | 2 | Transport (COFOG 04.5) | GF0405 |
+| GF04_X | derived | Economic affairs excluding transport | GF04 − GF04_5 |
+| GF10_5 | 2 | Unemployment (COFOG 10.5) | GF1005 |
+| GF10_X | derived | Social protection excluding old age and unemployment | GF10 − GF10_2 − GF10_5 |
+
+### 4.2a Revenue Level II splits (v2.3, D-S13-005)
+The same mechanism on the revenue tree. Anchor cells come from the anchor institution's per-tax table where the main aggregate has no sub-item (NTL table 9 / `gov_10a_taxag`), so any drift between the two tables lands in the derived remainder, never in the V22 identity.
+
+| Code | Level | ESA | Label | Anchor cell (ONS / Eurostat) | Backward (OECD RS) |
+|---|---|---|---|---|---|
+| R02_A | 2 | D.214A + D.2122C | Excise duties (on domestic products and on imports) | NTL D214A + D2122C / taxag D214A + D2122C | 5121 |
+| R02_X | derived | | Other taxes on production and imports excluding excise duties | R02 − R02_A | — |
+| R06_E | 2 | D.611 | Employers' actual social contributions | T2 D611 / main D611REC | 2200 |
+| R06_H | 2 | D.613 | Households' actual social contributions | T2 D613 / main D613REC | 2100 + 2300 |
+| R06_X | derived | D.612 + D.614 − D.61SC | Imputed and supplementary social contributions | R06 − R06_E − R06_H | — |
+
+Forecasts: OBR per-duty receipts and the EFO NICs-by-class table (GBR); the Steuerschätzung federal excises plus beer duty (DEU); none for France (PDF-only, OQ-5) or for the FRA/DEU contribution split (no institution publishes one). §15 Q13 (one D.61 line with the imputed component flagged) is superseded: the imputed component is now its own remainder line.
+
+### 4.1b Expenditure by economic type (`classification = ESA_EXP`, v2.3)
+| Code | ESA | Label | Eurostat `gov_10a_main` / ONS ESA Table 2 (payable) |
+|---|---|---|---|
+| E01 | D.1 | Compensation of employees | D1PAY / D1 |
+| E02 | P.2 | Intermediate consumption | P2 / P2 |
+| E03 | D.62 | Social benefits other than social transfers in kind | D62PAY / D62 |
+| E04 | D.632 | Social transfers in kind — purchased market production | D632PAY / D632 |
+| E05 | D.41 (uses) | Interest payable (gross accrued; `d41_gross_accrued`, V20) | D41PAY / D41 |
+| E06 | D.3 | Subsidies | D3PAY / D3P |
+| E07 | D.29 + D.5 + (D.4 − D.41) + D.7 + D.8 | Other current expenditure | derived |
+| E08 | P.5 + NP | Gross capital formation and net acquisition of non-produced assets | derived |
+| E09 | D.9 | Capital transfers payable | D9PAY / D9 |
+| TE_ESA | total | Total expenditure (ESA main aggregates; = TE for FRA/DEU, = the balance anchor's TE for GBR) | TE / OTE |
+
+Identity: `E01 + … + E09 = TE_ESA` exactly in anchor years (V2). Forecast and backward sources: AMECO chapter 16 carries each line on the same ESA concept (UWCG, UCTGI, UYTGH, UYTGM, UYIG, UYVG, UUOG; UIGG0 and UKOG as §7.8 partial proxies for E08/E09) — crosswalk `EC_AMECO_to_ESA_EXP.csv`. The tree is a second cut of the same money as the COFOG tree: never add an E line to a GF line; it is excluded from the §8.3 decomposition by construction.
 
 ### 4.2 Revenue (`classification = ESA_REV`)
 | Code | ESA | Label | Eurostat / ONS reference (verify) |
