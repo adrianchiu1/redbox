@@ -1,5 +1,112 @@
 # HANDOFF.md
 
+Rewritten 2026-09-20, end of session 12 (the US/Japan replication
+assessment and its kickoff specification, on
+`claude/us-japan-replication-assessment-t5s0ak` branched from `main` at
+a48d759).
+
+## Session 12 (2026-09-20): replication scoped and specified; nothing built
+
+- `REPLICATION_SCOPING.md` — what replicating the package for `USA` and
+  `JPN` takes: every source tested live from the sandbox, the code audit
+  (routing by `iso3` literals, the countries config unread, the
+  countries × lines cross product), effort (≈ 30 engineering-days first
+  country incl. the generalisation, ≈ 20 second), ten questions.
+- `REPLICATION_KICKOFF.md` — specification v2.4 addendum, adopted by
+  D-S14-001 on the ten defaults: decisions D18–D27, per-country cells,
+  data-model additions, §7/§8 amendments, V41–V45, the config keys and
+  the `AnchorFamily` interface, stages R0 / U0–U6 / J0–J6 / UD0–UD5 /
+  JD0–JD5 with gates, seed register, country traps, Q-K1–Q-K6.
+- `DECISIONS.md` D-S14-001; `OPEN_QUESTIONS.md` OQ-12 resolved, OQ-13
+  opened (cbo.gov and ssa.gov blocked).
+- **No source registered, no snapshot taken, no code, config or test
+  changed.** The parent package state is exactly session 11's (below).
+
+## Current stage
+
+Parent stages 0–6 complete on the 123-line universe (session 11). Debt
+extension unchanged. **Next stage: R0 — generalise the package (kickoff
+§12, D27), against GBR/FRA/DEU only.**
+
+## Blocked on whom
+
+Nothing blocks R0. Q-K1–Q-K6 run on their defaults (kickoff §15). OQ-13
+(blocked US hosts) matters only for the long US legs, not for R0–U6.
+OQ-6/OQ-8/OQ-9 unchanged.
+
+## Exact next command (Stage R0)
+
+Branch from `main` after this branch is merged (or from this branch):
+
+```
+git checkout -b claude/replication-r0-generalise
+pip install -e ".[dev,forecast,notebook]"
+ggfiscal build && ggfiscal reconcile && ggfiscal validate && ggfiscal report && ggfiscal flatten
+git stash -u   # or copy data/canonical and deliverables aside: the byte-identity baseline
+```
+
+Then implement kickoff §12 Stage R0 in this order, re-running the chain
+after each step and diffing `data/canonical/` and `deliverables/` against
+the baseline (only `run_id` may differ):
+
+1. `config/countries.yaml`: add `anchor_family`, `lines_absent: {}`,
+   `fy_to_cy_weights`, `perimeter_break` for the three countries;
+   `config.COUNTRIES` and the pandera `iso3`/`currency` checks read config
+   (`config.py:10`, `model.py:42,51`); the three `COUNTRY_NAME` copies
+   (`publish/flatten.py:40`, `forecast/statistical.py:54`,
+   `tools/build_chartsite.py:65`) and `manifest.FLAT_FILES` from config.
+2. `standardise/families.py`: `AnchorFamily` protocol; `EurostatFamily`
+   and `OnsFamily` wrapping today's readers; `config.family(iso3)`; the
+   twelve routing sites (`build.py:68,103,172,230,264,544`;
+   `coverage.py:43,66,89,184,208`; `reconcile/bridge.py:46`;
+   `reconcile/recon_v0.py:45,67`; `validate/stage1.py:263`;
+   `validate/stage3.py:189`) call it. A family that is not configured
+   raises, never falls through.
+3. Structural zeros (D20): `lines_absent` → `structural_zero` rows, V41;
+   `runner.check_s0_line_universe`, `validate/stage1._sum_check`,
+   `reconcile/dynamics.decompose`, `forecast/balance.py:80-83,196`,
+   `tests/stage_1/test_gate1.py:31-34` tolerate declared absences.
+4. Period basis: `forward.fy_to_cy(weights)` from config;
+   `source_period_basis` from the register (`build.py:348,403,460`);
+   `period_basis.trees`, FY labelling and an empty `fy_cy_bridge.csv`
+   (D19, V42).
+5. `weo_perimeter_gap_expected` in `bridge.py:147-156` and
+   `stage5.py:31`; `perimeter_break` in `stitch/backward.py:25`.
+6. GFS COFOG/SOO backward legs generic (`backward.py:95-116`).
+7. `tools/update_notebooks_s11.py` seeds a new country's books by copy
+   and inserts chartbook blocks; `tools/build_chartsite.py` reads
+   countries from config.
+8. Debt engine: `debt/intermediates.official_totals` explicit per
+   country (no `else`); `register.COUNTRY_MODULES`,
+   `aggregates.class_aggregates`, `chains._subsector_items`,
+   `reference.py`, `validate.check_v31` from config/per-country modules.
+
+Gate R0: byte identity (run_id excepted), `python3 -m pytest -q` green,
+`validate` ERROR = 0 with session 11's WARN count, D-S15-001.. in
+`DECISIONS.md`, this file rewritten with U0's exact next command.
+
+## Facts not to rediscover (session 12)
+
+- OECD flows verified 2026-09-20: `DSD_NASEC10@DF_TABLE12_{EXP,REV,BAL},1.1`
+  and `@DF_TABLE10,1.1`, 13-dim key `A.{iso3}.S13..........`, same
+  pattern as T11. USA 1970–2024 CY; JPN T12 2005–2024 CY, T10 1994–2024
+  FY, T11 2005–2024 FY (labelled by starting year, equal to IMF GFS and
+  ESRI FY cell-for-cell).
+- Fiscal Data needs literal brackets in `page[size]` (curl `-g`); OMB
+  needs browser headers; BEA's API needs a key (use the TXT flat files);
+  cbo.gov and ssa.gov are bot-blocked, CBO's GitHub mirror is open.
+- AMECO chapters 6/16/18 carry USA and JPN on ESA names with values equal
+  to OECD T12; JPN 2025 is NA in the Spring 2026 file.
+- Japan's two D.41 concepts: FISIM-adjusted 7,368 bn (ESRI/OECD/AMECO)
+  vs unadjusted 8,657 bn (IMF GFS) in FY2023.
+- Research downloads from the scoping session live outside the repo and
+  are not D8 snapshots; U0/J0 re-pull everything.
+
+---
+
+# Previous handoff (session 11, 2026-09-19) — the parent package state
+
+
 Rewritten 2026-09-19, end of session 11 (pensions, social benefits and the
 economic tree, on `claude/redbox-social-benefits-pensions-f52j5a` branched
 from `main` at 8b99c74).

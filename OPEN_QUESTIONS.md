@@ -347,7 +347,7 @@ can stand in for obr.uk **for EFO documents**, softening OQ-6(d) for each new
 EFO round. It does not cover the PSF databank or supplementary tables, which
 remain obr.uk-only.
 
-## OQ-12 — Replicating the package for the United States and Japan (NEW, scoping; ten decisions)
+## OQ-12 — Replicating the package for the United States and Japan — **RESOLVED 2026-09-20 (D-S14-001: all ten questions on their defaults; `REPLICATION_KICKOFF.md` adopted)**
 Raised 2026-09-20. The committee asked what it would take to replicate the
 package (three trees, ledger, WEO reconciliation, debt extension) for `USA`
 and `JPN`. The answer is `REPLICATION_SCOPING.md`: source-by-source
@@ -362,3 +362,15 @@ fiscal-year only and its projections are PDF-only Japanese. **Ask:** answer
 Q-R1 (anchor), Q-R2 (Japan's COFOG basis) and Q-R10 (scope of the first
 cut) first; the rest can follow the defaults. Nothing has been registered
 or pulled into the D8 store.
+
+## OQ-13 — Blocked US hosts gate the long US legs (NEW, standing; from D24)
+Raised 2026-09-20. `www.cbo.gov` (DataDome challenge) and `www.ssa.gov`
+(Akamai) return 403 to every request from this environment. The US build
+proceeds on CBO's GitHub mirror of its baselines and on the CMS Medicare
+trustees' CSVs (both open). Behind the block sit the CBO 10-year workbooks
+(outlays by function), the NIPA-basis federal projection tables, the 30-year
+Long-Term Budget Outlook, and the OASDI Trustees' single-year tables — the
+sources that would give US `GF10_2`, `GF07` and `R06` a long maximum leg.
+**Ask:** allowlist the two hosts, or hand-retrieve the files as was done
+for the OBR (D-S7-001), when the committee wants those legs. No action
+needed for Stages R0–U6 as specified.

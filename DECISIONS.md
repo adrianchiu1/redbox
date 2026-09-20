@@ -2130,3 +2130,44 @@ fidelity test). One merged test was loosened to its own claim: the WEO's
 z-score against the benchmark cone is asserted inside the 80% band
 (|z| < 1.28, which is what §4.6 says) rather than below 1.0 — France 2031
 is 1.10 after the pension split, still inside.
+
+## D-S14-001 — The committee took the replication scoping note's ten questions on their defaults; `REPLICATION_KICKOFF.md` (specification v2.4 addendum) adopted as the governing plan for the United States and Japan (serves parent §0–§2, §16; resolves OQ-12; session 12, 2026-09-20)
+
+**Context.** `REPLICATION_SCOPING.md` (2026-09-20) set out, from sources
+tested live, what replicating the package for `USA` and `JPN` requires,
+audited the code, estimated the effort and tabled ten questions
+Q-R1–Q-R10 with build defaults. The committee answered "let's do this" on
+the defaults and asked for the plan to be written here.
+
+**Decision.** `REPLICATION_KICKOFF.md` governs USA and JPN matters; where
+it is silent the parent and the debt specification govern. Its decisions
+D18–D27 record the ten answers:
+
+| Q | Answer (default) | Kickoff decision |
+|---|---|---|
+| Q-R1 anchor | OECD SNA Tables 11/12/10 (the NSO's own data on the SNA framework); NIPA/ESRI as same-institution secondary | D18 |
+| Q-R2 Japan's COFOG basis | published FY-labelled with a FY/CY bridge on TE as a deliverable; no anchor converted | D19 |
+| Q-R3 structural zeros | zero rows typed `structural_zero` (USA R01, E04, GF05) | D20 |
+| Q-R4 Japan's D.41 | FISIM-adjusted (ESA concept); unadjusted reported as the wedge | D21 |
+| Q-R5 sub-perimeter forecasts | rank-4 proxies, maximum only, grade C (B at ≥ 0.90 coverage) | D22 |
+| Q-R6 PDF tables | admitted when machine-extracted with reproduced printed totals | D23 |
+| Q-R7 blocked hosts | proceed on CBO's mirror and CMS; cbo.gov and ssa.gov registered blocked with the hand-retrieval route | D24 |
+| Q-R8 Japanese positions | reconstructed from flows, grade B, validated against BoJ holdings, by-type totals and the live snapshot | D25 |
+| Q-R9 US Level II | BEA sub-functions as `level2_proxy_actual`, grade B | D26 |
+| Q-R10 scope | both countries specified; build order R0 → USA fiscal → go/no-go → JPN fiscal → debt extensions | §1, D27 |
+
+Both countries are in the specification so that the one-off
+generalisation (Stage R0) is designed once for fiscal-year anchors, a
+third anchor family and structural zeros; the Japanese build is staged
+behind the US Gate U6 (Q-K6 default lets J0's harvest run earlier).
+
+**Consequences.** Six new committee questions (Q-K1–Q-K6) carry defaults
+in kickoff §15. New validation tests V41–V45 and amendments to V9, V17,
+V24. New `observation_type` value `structural_zero`; new deliverable
+`fy_cy_bridge.csv`. No number changes for GBR, FRA or DEU: Gate R0's
+acceptance is byte identity of the canonical layer and the bundle.
+`OPEN_QUESTIONS.md` OQ-12 is resolved by this entry; OQ-13 (the blocked
+US hosts as the trigger for the long US legs) is opened.
+
+**Nothing built.** No source registered in `config/sources.yaml`, no
+snapshot taken, no code changed in this session.
