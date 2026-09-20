@@ -35,6 +35,7 @@ countries:
     lines_absent: {}                  # D20: no structural zeros
     weo_perimeter_gap_expected: true   # §8.2: small stable perimeter gap expected
     perimeter_break: null
+    backward_legs: {}                 # no IMF GFS backward leg (ONS history reaches 1995 itself)
   FRA:
     name: France
     currency: EUR
@@ -52,6 +53,7 @@ countries:
     lines_absent: {}                  # D20: no structural zeros
     weo_perimeter_gap_expected: false
     perimeter_break: null
+    backward_legs: {}                 # no IMF GFS backward leg (Eurostat history reaches 1995 itself)
   DEU:
     name: Germany
     currency: EUR
@@ -69,6 +71,14 @@ countries:
     lines_absent: {}                  # D20: no structural zeros
     weo_perimeter_gap_expected: false
     perimeter_break: 1991             # reunification (§14): never extend below
+    backward_legs:                    # generic IMF GFS legs (§6.1(2): the same national data
+                                      # redistributed), enabled per country (R0 step 6, D-S15-006)
+      gfs_cofog:                      # COFOG Level I 1991-94 and every Level II line with a gfs_indicator
+        level1_note: "IMF GFS COFOG: redistribution of the same Destatis ESA data (boundary ratio ~1.0 at 1995); XDC levels"
+        level2_note: "IMF GFS COFOG group {indicator}: redistribution of the same Destatis ESA data (coverage measured at the boundary); XDC levels"
+      gfs_soo: null                   # ESA_EXP lines via the lines.yaml gfs_soo codes: available, not enabled
+                                      # (AMECO reaches the 1991 break; enabling it would add a leg after AMECO)
+
 # Tolerances (§15 Q4 defaults, as stated)
 tolerances:
   imf_gfs_reconciliation_pct: 0.5      # V1

@@ -94,29 +94,31 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
             ameco]
     else:
         out[("COFOG", "GF01_7")] = [ameco]
-    # --- DEU expenditure 1991-94 via IMF GFS COFOG (§6.1(2): same national data) ---
-    if iso3 == "DEU":
+    # --- IMF GFS COFOG legs (§6.1(2): the same national data redistributed),
+    # generic and enabled per country by countries.yaml.backward_legs.gfs_cofog
+    # (R0 step 6; DEU: expenditure 1991-94 below Eurostat's 1995 start). Level
+    # I lines take the {code}_T series; every Level II line with a GFS group
+    # indicator (GF1020_T, GF1050_T; none for 04.5) is registered as the
+    # candidate for the years the anchor's Level II lacks (DEU 1995-99) —
+    # measured live the GFS groups also start in 2000, so nothing is applied
+    # and the crosswalk row records the stop. The concept notes are the
+    # country's own (measured boundary ratio), from config.
+    gfs_cofog = config.backward_legs(iso3).get("gfs_cofog")
+    if gfs_cofog:
         for n in range(1, 11):
             code = f"GF{n:02d}"
             out[("COFOG", code)] = [ExtSource(
                 "IMF_GFS", R.gfs_series(iso3, "cofog", f"{code}_T"),
-                "IMF GFS COFOG: redistribution of the same Destatis ESA data "
-                "(boundary ratio ~1.0 at 1995); XDC levels", GFS_XWALK,
+                gfs_cofog["level1_note"], GFS_XWALK,
                 break_before=config.perimeter_break(iso3))]
-        # COFOG Level II groups (D-S13-002/005): GFS group series where one
-        # exists (GF1020_T, GF1050_T; none for 04.5) — registered as the
-        # candidate for the years Eurostat DEU Level II lacks (1995-99);
-        # measured live the GFS groups also start in 2000, so nothing is
-        # applied and the crosswalk row records the stop
         for split in config.level2_splits("COFOG"):
             for l2 in split["level2s"]:
                 ind = split["meta"][l2]["gfs_indicator"]
                 if l2 != "GF01_7" and ind:
                     out[("COFOG", l2)] = [ExtSource(
                         "IMF_GFS", R.gfs_series(iso3, "cofog", ind),
-                        f"IMF GFS COFOG group {ind}: redistribution of the same "
-                        "Destatis ESA data (coverage measured at the boundary); "
-                        "XDC levels", GFS_XWALK, break_before=config.perimeter_break(iso3))]
+                        gfs_cofog["level2_note"].format(indicator=ind), GFS_XWALK,
+                        break_before=config.perimeter_break(iso3))]
     # --- Revenue Level II lines via OECD RS (D-S13-005): excise duties
     # (5121), employers' (2200) and employees'/self-employed (2100)
     # contributions — same crosswalk discipline as the parent lines (D15)
@@ -170,6 +172,22 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
             AMECO_EXP_XWALK, unit_factor=1000.0,
             break_before=config.perimeter_break(iso3),
             concept_flag="d41_gross_accrued" if code == "E05" else "")]
+    # --- IMF GFS SOO legs for the ESA_EXP lines (the GFSM expense items
+    # registered as `gfs_soo` in lines.yaml), generic and enabled per country
+    # by countries.yaml.backward_legs.gfs_soo (R0 step 6; no country enables
+    # it yet — AMECO reaches every configured break). Applied after AMECO,
+    # so it only ever extends below AMECO's own start.
+    gfs_soo = config.backward_legs(iso3).get("gfs_soo")
+    if gfs_soo:
+        for code, meta in config.tree_lines("ESA_EXP").items():
+            ind = meta.get("gfs_soo")
+            if config.is_total(meta) or not ind:
+                continue
+            out.setdefault(("ESA_EXP", code), []).append(ExtSource(
+                "IMF_GFS", R.gfs_series(iso3, "soo", ind),
+                gfs_soo["note"].format(indicator=ind, label=meta["label"]), GFS_XWALK,
+                break_before=config.perimeter_break(iso3),
+                concept_flag="d41_gross_accrued" if code == "E05" else ""))
     return out
 
 

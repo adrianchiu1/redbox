@@ -93,6 +93,14 @@ def perimeter_break(iso3: str) -> int | None:
     return int(b) if b is not None else None
 
 
+def backward_legs(iso3: str) -> dict:
+    """R0 step 6: the generic backward legs enabled for the country
+    (`backward_legs` in countries.yaml): `gfs_cofog` (IMF GFS COFOG Level I
+    and Level II group series, with the country's concept notes) and
+    `gfs_soo` (IMF GFS SOO items of the ESA_EXP lines). Empty = none."""
+    return dict(country(iso3).get("backward_legs") or {})
+
+
 def weo_perimeter_gap_expected(iso3: str) -> bool:
     """§8.2 / V24: True where the anchor perimeter differs from the WEO's
     (GBR: public sector vs general government), so the NLB gap is classified
