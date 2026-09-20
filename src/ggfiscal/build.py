@@ -60,29 +60,12 @@ def _sum_codes(series: list[pd.Series]) -> pd.Series:
 
 def _revenue_level2(iso3: str, code: str, meta: dict) -> tuple[pd.Series, str, str]:
     """(series, source_id, concept note) for a revenue Level II line from its
-    lines.yaml anchor cells: ONS ESA Table 2 receivable rows or NTL table 9
-    codes (GBR); gov_10a_main or gov_10a_taxag items (FRA/DEU). taxag/NTL
-    cells sit in a different table from the parent's main/T2 aggregate, so
-    their transmission-timing drift (D-S1-002) lands in the derived
-    remainder, never in the identity."""
-    if iso3 == "GBR":
-        spec = meta["ons"]
-        codes = spec["codes"]
-        if spec["table"] == "t2":
-            d = spec.get("direction", "receivable")
-            return (_sum_codes([R.ons_t2_series(c, d) for c in codes]),
-                    "ONS_GG_RECEIPTS", f"ESA Table 2 {' + '.join(codes)} receivable")
-        return (_sum_codes([R.ons_tax_series(c) for c in codes]), "ONS_TAX_DETAIL",
-                f"NTL table 9 {' + '.join(codes)} (per-tax detail table; the parent "
-                "comes from ESA Table 2, so any drift lands in the remainder)")
-    spec = meta["eurostat"]
-    codes = spec["codes"]
-    if spec["dataset"] == "gov_10a_main":
-        return (_sum_codes([R.eurostat_main(iso3, c) for c in codes]), "EUROSTAT_GOV10A_MAIN",
-                f"gov_10a_main {' + '.join(codes)}")
-    return (_sum_codes([R.eurostat_taxag(iso3, c) for c in codes]), "EUROSTAT_GOV10A_TAXAG",
-            f"gov_10a_taxag {' + '.join(codes)} (detail table; the parent comes from "
-            "gov_10a_main, so any drift lands in the remainder, D-S1-002)")
+    lines.yaml anchor cells, served by the country's anchor family (ONS ESA
+    Table 2 receivable rows or NTL table 9 codes; gov_10a_main or
+    gov_10a_taxag items). A detail-table cell sits in a different table from
+    the parent's aggregate, so its transmission-timing drift (D-S1-002) lands
+    in the derived remainder, never in the identity."""
+    return config.family(iso3).revenue_level2(iso3, meta)
 
 
 def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
@@ -100,62 +83,16 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                              "notes": notes, "per_year": per_year or {}}
 
     out = {}
-    if iso3 == "GBR":
-        cof = R.ons_cofog
-        exp_src = "ONS_ESA_T11"
-        t2 = lambda c, d="receivable": R.ons_t2_series(c, d)  # noqa: E731
-        rev_src = "ONS_GG_RECEIPTS"
-        rev = {
-            "R01": (t2("D211"), "anchor_actual", ""),
-            "R02": ((t2("D2") - t2("D211")).dropna(), "derived_actual",
-                    "derived D.2 - D.211"),
-            "R03": (t2("D51M"), "anchor_actual",
-                    "D51M households incl. holding gains; crosswalk: NICs are D.61 not here"),
-            "R04": (t2("D51O"), "anchor_actual", "D51O corporations incl. holding gains"),
-            "R05": ((t2("D5") - t2("D51M") - t2("D51O") + t2("D91")).dropna(),
-                    "derived_actual", "derived D.5 - R03 - R04 + D.91 (D.59 inside D.5)"),
-            "R06": (t2("D61"), "anchor_actual", "NICs are D.61 (§14)"),
-            "R07": (t2("D41"), "anchor_actual", ""),
-            "R08": ((t2("D4") - t2("D41")).dropna(), "derived_actual",
-                    "derived D.4 - D.41 resources"),
-            "R09": ((t2("P11", "") + t2("P12", "") + t2("P131", "")).dropna(),
-                    "derived_actual", "derived P.11 + P.12 + P.131"),
-            "R10": ((t2("D39R") + t2("D7") + t2("D9") - t2("D91")).dropna(),
-                    "derived_actual", "derived D.39 + D.7 + (D.9 - D.91) resources"),
-        }
-        tr = t2("OTR", "")
-        te_cofog = cof("_T")
-    else:
-        cof = lambda c: R.eurostat_cofog(iso3, c)  # noqa: E731
-        exp_src = "EUROSTAT_GOV10A_EXP"
-        # All revenue lines from gov_10a_main's own REC codes: gov_10a_taxag
-        # values drift from the main table in the freshest years (FRA 2024:
-        # 0.5% on D.2), which breaks the V22 identity against the main table's
-        # TR. Within gov_10a_main the identity is exact in every year,
-        # provisional 2025 included. taxag remains the detail/verification
-        # source (D59/D91 breakdowns) — see DECISIONS D-S1-002.
-        em = lambda c: R.eurostat_main(iso3, c)  # noqa: E731
-        rev_src = "EUROSTAT_GOV10A_MAIN"
-        rev = {
-            "R01": (em("D211REC"), "anchor_actual", ""),
-            "R02": ((em("D2REC") - em("D211REC")).dropna(), "derived_actual",
-                    "derived D.2 - D.211"),
-            "R03": (em("D51A_C1REC"), "anchor_actual", "CSG is D.5 -> here, not R06 (§14)"
-                    if iso3 == "FRA" else ""),
-            "R04": (em("D51B_C2REC"), "anchor_actual", ""),
-            "R05": ((em("D5REC") - em("D51A_C1REC") - em("D51B_C2REC")
-                     + em("D91REC")).dropna(),
-                    "derived_actual", "derived D.5 - R03 - R04 + D.91 (D.59 inside D.5)"),
-            "R06": (em("D61REC"), "anchor_actual", ""),
-            "R07": (em("D41REC"), "anchor_actual", ""),
-            "R08": ((em("D4REC") - em("D41REC")).dropna(), "derived_actual",
-                    "derived D.4 - D.41 resources"),
-            "R09": (em("P11_P12_P131"), "anchor_actual", ""),
-            "R10": ((em("D39REC") + em("D7REC") + em("D92REC") + em("D99REC")).dropna(),
-                    "derived_actual", "derived D.39 + D.7 + D.92 + D.99 resources"),
-        }
-        tr = em("TR")
-        te_cofog = cof("TOTAL")
+    # every anchor cell comes from the country's anchor family (D27, R0):
+    # the COFOG table, the main-aggregates table (revenue lines per the D1
+    # mapping, the ESA_EXP items, the balance totals) and the tax detail
+    fam = config.family(iso3)
+    cof = lambda c: fam.cofog(iso3, c)  # noqa: E731
+    exp_src = fam.expenditure_source
+    rev_src = fam.main_source
+    rev = fam.revenue_lines(iso3)
+    tr = fam.revenue_total(iso3)
+    te_cofog = fam.cofog_total(iso3)
 
     for n in range(1, 11):
         code = f"GF{n:02d}"
@@ -169,16 +106,9 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     # DEU), ONS ESA Table 2 payable rows (GBR). Sums are derived_actual;
     # the identity E01..E09 = TE_ESA is exact by construction (V2).
     esa_meta = L["expenditure_esa"]
-    esa_src = "ONS_GG_RECEIPTS" if iso3 == "GBR" else "EUROSTAT_GOV10A_MAIN"
+    esa_src = fam.main_source
     for code, meta in esa_meta.items():
-        if iso3 == "GBR":
-            spec = meta["ons_t2"]
-            plus = [R.ons_t2_series(c, d) for c, d in spec.get("plus", [])]
-            minus = [R.ons_t2_series(c, d) for c, d in spec.get("minus", [])]
-        else:
-            spec = meta["eurostat_main"]
-            plus = [R.eurostat_main(iso3, c) for c in spec.get("plus", [])]
-            minus = [R.eurostat_main(iso3, c) for c in spec.get("minus", [])]
+        plus, minus = fam.esa_exp_parts(iso3, meta)
         series = plus[0]
         for s in plus[1:]:
             series = series + s
@@ -227,8 +157,7 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
             else:
                 series, src_line, concept_txt = _revenue_level2(iso3, l2, meta)
             if meta["fallback"] == "d41_payable":
-                d41pay = (R.ons_t2_series("D41", "payable") if iso3 == "GBR"
-                          else R.eurostat_main(iso3, "D41PAY"))
+                d41pay = fam.d41_payable(iso3)
                 for y in sorted(set(parent_series.index) - set(series.index)):
                     if y in d41pay.index:
                         series.loc[y] = float(d41pay[y])
@@ -261,9 +190,8 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
 
 
 def gdp_series(iso3: str) -> tuple[pd.Series, str]:
-    if iso3 == "GBR":
-        return R.ons_gdp(), "ONS_GDP"
-    return R.eurostat_gdp(iso3), "EUROSTAT_NAMA10_GDP"
+    """(nominal GDP, source_id) from the country's anchor family."""
+    return config.family(iso3).gdp(iso3)
 
 
 def _imf_recon(iso3: str, classification: str, line_code: str) -> pd.Series:
@@ -541,14 +469,10 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                                  "years (D10 / D-S13-005)",
                     })
         # balance ledger from the balance anchor's own TR/TE/B9 (V23 exact)
-        if iso3 == "GBR":
-            btr, bte, b9 = (R.ons_t2_series("OTR", ""), R.ons_t2_series("OTE", ""),
-                            R.ons_t2_series("B9", ""))
-            bal_src = "ONS_GG_RECEIPTS"
-        else:
-            btr, bte, b9 = (R.eurostat_main(iso3, "TR"), R.eurostat_main(iso3, "TE"),
-                            R.eurostat_main(iso3, "B9"))
-            bal_src = "EUROSTAT_GOV10A_MAIN"
+        fam = config.family(iso3)
+        totals_b = fam.totals(iso3)
+        btr, bte, b9 = totals_b["TR"], totals_b["TE"], totals_b["B9"]
+        bal_src = fam.main_source
         gf017 = series_map[("COFOG", "GF01_7")]["series"]
         r07 = series_map[("ESA_REV", "R07")]["series"]
         for year in sorted(set(btr.index) & set(bte.index)):

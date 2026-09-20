@@ -42,24 +42,9 @@ COLUMNS = [
 
 
 def anchor_aggregates(iso3: str) -> dict[str, pd.Series]:
-    """TR, TE, NLB, GDP, GF01_7, R07 from the country's anchors, LCU millions."""
-    if iso3 == "GBR":
-        return {
-            "TR": R.ons_t2_series("OTR", ""),
-            "TE": R.ons_t2_series("OTE", ""),
-            "NLB": R.ons_t2_series("B9", ""),
-            "GDP": R.ons_gdp(),
-            "GF01_7": R.ons_cofog("GF0107"),
-            "R07": R.ons_t2_series("D41", "receivable"),
-        }
-    return {
-        "TR": R.eurostat_main(iso3, "TR"),
-        "TE": R.eurostat_main(iso3, "TE"),
-        "NLB": R.eurostat_main(iso3, "B9"),
-        "GDP": R.eurostat_gdp(iso3),
-        "GF01_7": R.eurostat_cofog(iso3, "GF0107"),
-        "R07": R.eurostat_main(iso3, "D41REC"),
-    }
+    """TR, TE, NLB, GDP, GF01_7, R07 from the country's anchors, LCU millions
+    (served by the anchor family, D27)."""
+    return config.family(iso3).bridge_aggregates(iso3)
 
 
 def weo_aggregates(vintage: str, iso3: str) -> dict[str, pd.Series]:

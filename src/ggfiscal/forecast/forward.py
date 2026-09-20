@@ -87,16 +87,20 @@ class Declaration:
 
 # ---------- period conversion and interpolation primitives ----------
 
-def fy_to_cy(fy: pd.Series) -> pd.Series:
-    """§7.10 (GBR forecast sources only): CY_t = 0.25 × FY_{t-1/t} + 0.75 ×
-    FY_{t/t+1}, with FY series indexed by the calendar year the fiscal year
-    starts in (FY 2026-27 -> index 2026). Conversion consumes one horizon year.
-    Exercised by the OBR/PESA sources since the OQ-6 partial unblock
-    (D-S7-001/002)."""
+def fy_to_cy(fy: pd.Series, weights: tuple[float, float] | None = None) -> pd.Series:
+    """§7.10: CY_t = w0 × FY_{t-1/t} + w1 × FY_{t/t+1}, with FY series indexed
+    by the calendar year the fiscal year starts in (FY 2026-27 -> index 2026).
+    Conversion consumes one horizon year. The weights are the country's
+    `fy_to_cy_weights` (config.fy_to_cy_weights: 0.25/0.75 for April–March
+    sources, 0.75/0.25 for October–September; D19, R0) — pass them from the
+    calling country; the default is the April–March pair the GBR sources
+    have always used. Exercised by the OBR/PESA sources since the OQ-6
+    partial unblock (D-S7-001/002)."""
+    w0, w1 = weights if weights is not None else (0.25, 0.75)
     out = {}
     for t in fy.index:
         if (t - 1) in fy.index:
-            out[t] = 0.25 * float(fy[t - 1]) + 0.75 * float(fy[t])
+            out[t] = w0 * float(fy[t - 1]) + w1 * float(fy[t])
     return pd.Series(out).sort_index()
 
 

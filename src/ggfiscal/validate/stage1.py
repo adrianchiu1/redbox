@@ -251,8 +251,6 @@ def check_v20() -> list[Finding]:
 
 def check_v21() -> list[Finding]:
     """Level II 01.7 vs D.41 payable within 5% where both exist (WARN)."""
-    from ggfiscal.standardise import readers as R
-
     out = []
     tol = config.tolerances()["level2_vs_d41_pct"]
     df = _tables()["strict"]
@@ -260,8 +258,7 @@ def check_v21() -> list[Finding]:
         l2 = df[(df.iso3 == iso3) & (df.line_code == "GF01_7")
                 & (df.observation_type == "anchor_actual")] \
             .set_index("year").value_lcu_mn
-        d41 = (R.ons_t2_series("D41", "payable") if iso3 == "GBR"
-               else R.eurostat_main(iso3, "D41PAY"))
+        d41 = config.family(iso3).d41_payable(iso3)
         for y in l2.index.intersection(d41.index):
             diff = abs(l2[y] - d41[y]) / abs(l2[y]) * 100 if l2[y] else 0.0
             if diff > tol:

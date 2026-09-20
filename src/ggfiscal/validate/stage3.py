@@ -178,21 +178,14 @@ def check_v13() -> list[Finding]:
 
 
 def _envelopes(iso3: str) -> tuple[pd.Series, pd.Series]:
-    """(TR, TE) envelope levels in LCU mn per year (D4). FRA/DEU: AMECO
-    URTG/UUTG. GBR: OBR PS current receipts / TME per §15 Q12's OBR-primary
-    default, exercisable since the OQ-6 partial unblock (D-S7-002) — public
-    sector perimeter (PSCR ≈ 0.97 × GG TR, TME ≈ 0.95 × GG TE, stable), FY
-    converted per §7.10; AMECO remains the cross-check."""
-    from ggfiscal.forecast.forward import fy_to_cy
-    from ggfiscal.standardise.readers import ameco_series, obr_databank
+    """(TR, TE) envelope levels in LCU mn per year (D4), from the country's
+    primary `envelope_forecast` source (forecast.envelopes; OBR public
+    sector receipts / TME FY-converted per §7.10 for GBR, AMECO URTG/UUTG
+    for FRA/DEU — AMECO remains the cross-check where OBR is primary)."""
+    from ggfiscal.forecast.envelopes import official_envelope
 
-    if iso3 == "GBR":
-        return (fy_to_cy(obr_databank("Aggregates (£bn)",
-                                      "Public sector current receipts")) * 1000.0,
-                fy_to_cy(obr_databank("Aggregates (£bn)",
-                                      "Total managed expenditure")) * 1000.0)
-    return (ameco_series(iso3, "URTG", 16) * 1000.0,
-            ameco_series(iso3, "UUTG", 16) * 1000.0)
+    env = official_envelope(iso3)
+    return env["TR"], env["TE"]
 
 
 def check_v15() -> list[Finding]:

@@ -1,0 +1,192 @@
+"""Stage R0 (REPLICATION_KICKOFF.md §12, D27; D-S15-001..): the package is
+generalised by configuration and readers. These tests need no harvest —
+they pin the config keys, the anchor-family protocol and registry, the
+"family not configured" error, the period-basis helpers and the
+structural-zero plumbing's empty state for the three existing countries."""
+
+import pytest
+
+from ggfiscal import config
+from ggfiscal.standardise import families as F
+from ggfiscal.standardise import readers as R
+
+
+# ---------------------------------------------------------------- config keys
+
+def test_country_list_is_read_from_countries_yaml_in_file_order():
+    assert config.COUNTRIES == tuple(config.countries())
+    assert config.COUNTRIES == ("GBR", "FRA", "DEU")
+
+
+def test_every_country_carries_the_r0_keys():
+    for iso3, cfg in config.countries().items():
+        for key in ("name", "currency", "anchor_family", "anchors", "gdp_source",
+                    "lines_absent", "period_basis", "fy_to_cy_weights",
+                    "envelope_forecast", "weo_perimeter_gap_expected", "perimeter_break"):
+            assert key in cfg, (iso3, key)
+        assert config.country_names()[iso3] == cfg["name"]
+
+
+def test_r0_values_for_the_three_countries_change_no_behaviour():
+    assert config.country("GBR")["anchor_family"] == "ons"
+    assert config.country("FRA")["anchor_family"] == "eurostat"
+    assert config.country("DEU")["anchor_family"] == "eurostat"
+    for iso3 in config.COUNTRIES:
+        assert config.lines_absent(iso3) == {}
+        assert config.fy_to_cy_weights(iso3) == (0.25, 0.75)
+        for cls in config.TREES:
+            assert config.tree_period_basis(iso3, cls) == "CY"
+        assert config.period_basis(iso3)["anchor"] == "CY"
+    assert config.perimeter_break("DEU") == 1991
+    assert config.perimeter_break("GBR") is None and config.perimeter_break("FRA") is None
+    assert config.weo_perimeter_gap_expected("GBR") is True
+    assert not config.weo_perimeter_gap_expected("FRA")
+    assert not config.weo_perimeter_gap_expected("DEU")
+    assert config.currencies() == ["GBP", "EUR"]
+    assert config.country_names() == {"GBR": "United Kingdom", "FRA": "France",
+                                      "DEU": "Germany"}
+
+
+def test_unconfigured_country_raises_a_clear_error_everywhere():
+    with pytest.raises(KeyError, match="not configured in config/countries.yaml"):
+        config.country("USA")
+    with pytest.raises(KeyError):
+        config.lines_absent("USA")
+    with pytest.raises(KeyError):
+        config.fy_to_cy_weights("JPN")
+
+
+def test_the_schema_admits_exactly_the_configured_countries_and_currencies():
+    import pandas as pd
+
+    from ggfiscal.model import _in_countries, _in_currencies
+
+    assert _in_countries(pd.Series(["GBR", "FRA", "DEU"])).all()
+    assert not _in_countries(pd.Series(["USA"])).any()
+    assert _in_currencies(pd.Series(["GBP", "EUR"])).all()
+    assert not _in_currencies(pd.Series(["USD"])).any()
+
+
+def test_country_name_copies_and_flat_files_come_from_config():
+    from ggfiscal import manifest as M
+    from ggfiscal.forecast import statistical
+    from ggfiscal.publish import flatten
+
+    assert flatten.COUNTRY_NAME == config.country_names()
+    assert statistical.COUNTRY_NAME == config.country_names()
+    strict = [f for f in M.FLAT_FILES if "/strict_" in f]
+    assert strict == [f"deliverables/strict_{iso3}.csv" for iso3 in config.COUNTRIES]
+
+
+# ------------------------------------------------------------ anchor families
+
+PROTOCOL_METHODS = ("cofog", "cofog_total", "main", "tax", "d41_payable", "gdp",
+                    "totals", "level2")
+SITE_METHODS = ("d41_receivable", "revenue_lines", "revenue_total", "revenue_coverage",
+                "revenue_level2", "esa_exp_parts", "recon_revenue", "bridge_aggregates")
+
+
+def test_family_registry_and_protocol():
+    assert set(F.FAMILIES) == {"ons", "eurostat"}
+    for name, cls in F.FAMILIES.items():
+        fam = cls()
+        assert fam.name == name
+        assert isinstance(fam, F.AnchorFamily)
+        for m in PROTOCOL_METHODS + SITE_METHODS:
+            assert callable(getattr(fam, m)), (name, m)
+        for attr in ("expenditure_source", "main_source", "tax_source",
+                     "interest_history_source", "revenue_cell_key", "esa_exp_key"):
+            assert getattr(fam, attr), (name, attr)
+
+
+def test_config_family_routes_each_country_to_its_configured_family():
+    assert isinstance(config.family("GBR"), F.OnsFamily)
+    assert isinstance(config.family("FRA"), F.EurostatFamily)
+    assert isinstance(config.family("DEU"), F.EurostatFamily)
+    assert config.family("FRA") is config.family("DEU")        # one instance per family
+    assert config.family("GBR").expenditure_source == "ONS_ESA_T11"
+    assert config.family("FRA").expenditure_source == "EUROSTAT_GOV10A_EXP"
+    assert config.family("GBR").gdp("GBR")[1] == "ONS_GDP"
+    assert config.family("DEU").gdp("DEU")[1] == "EUROSTAT_NAMA10_GDP"
+
+
+def test_unconfigured_family_raises_and_never_falls_through(monkeypatch):
+    """Gate R0: a dry config.family("USA") raises a clear "family not
+    configured" error — an unknown country, a country block without
+    `anchor_family`, and a family name with no implementation all raise;
+    none of them returns another country's family."""
+    with pytest.raises(KeyError, match="not configured"):
+        config.family("USA")
+    base = config.countries()
+    monkeypatch.setattr(config, "countries",
+                        lambda: {**base, "USA": {"currency": "USD", "name": "United States"}})
+    with pytest.raises(F.FamilyNotConfigured, match="no `anchor_family`"):
+        config.family("USA")
+    monkeypatch.setattr(config, "countries",
+                        lambda: {**base, "USA": {"currency": "USD", "name": "United States",
+                                                 "anchor_family": "oecd_sna"}})
+    with pytest.raises(F.FamilyNotConfigured, match="not implemented"):
+        config.family("USA")
+
+
+def test_families_wrap_the_existing_readers_unchanged():
+    """The family methods are the same reader calls the routing sites made
+    before R0 (byte identity of the canonical layer rests on this)."""
+    ons, eu = F.OnsFamily(), F.EurostatFamily()
+    assert ons.cofog("GBR", "GF01").equals(R.ons_cofog("GF01"))
+    assert ons.cofog_total("GBR").equals(R.ons_cofog("_T"))
+    assert ons.main("GBR", "D41", "payable").equals(R.ons_t2_series("D41", "payable"))
+    assert ons.d41_payable("GBR").equals(R.ons_t2_series("D41", "payable"))
+    assert ons.tax("GBR", "D211").equals(R.ons_tax_series("D211"))
+    assert ons.totals("GBR")["TE"].equals(R.ons_t2_series("OTE", ""))
+    for iso3 in ("FRA", "DEU"):
+        assert eu.cofog(iso3, "GF01").equals(R.eurostat_cofog(iso3, "GF01"))
+        assert eu.cofog_total(iso3).equals(R.eurostat_cofog(iso3, "TOTAL"))
+        assert eu.main(iso3, "D41PAY").equals(R.eurostat_main(iso3, "D41PAY"))
+        assert eu.tax(iso3, "D211").equals(R.eurostat_taxag(iso3, "D211"))
+        assert eu.totals(iso3)["B9"].equals(R.eurostat_main(iso3, "B9"))
+        assert eu.gdp(iso3)[0].equals(R.eurostat_gdp(iso3))
+    # Level II: a COFOG line's own cell; None for a line with no cell
+    assert ons.level2("GBR", "GF01_7").equals(R.ons_cofog("GF0107"))
+    assert eu.level2("FRA", "GF10_2").equals(R.eurostat_cofog("FRA", "GF1002"))
+    assert eu.level2("FRA", "GF01") is None
+
+
+def test_no_routing_site_decides_by_country_literal():
+    """The twelve routing sites of REPLICATION_SCOPING.md §6 F1 call the
+    family: no site reads an ONS or Eurostat anchor reader directly, and no
+    `iso3 == "GBR"` anchor routing remains. The one country literal left in
+    `coverage.line_sources` is the GF10_2 forecast-candidate declaration
+    (Ageing Report for FRA/DEU, the OBR historical series for GBR) — a
+    per-country source declaration of the kind forward.py and backward.py
+    carry (kickoff C4/C5), not anchor routing."""
+    import inspect
+
+    from ggfiscal import build, coverage
+    from ggfiscal.reconcile import bridge, recon_v0
+    from ggfiscal.validate import stage1, stage3
+
+    for mod, fn in ((build, "anchor_series"), (build, "_revenue_level2"),
+                    (build, "gdp_series"), (build, "build"),
+                    (coverage, "_cofog_sources"), (coverage, "line_sources"),
+                    (bridge, "anchor_aggregates"), (recon_v0, "_anchor_cofog"),
+                    (recon_v0, "compute"), (stage1, "check_v21"), (stage3, "_envelopes")):
+        src = inspect.getsource(getattr(mod, fn))
+        assert "R.ons_" not in src and "R.eurostat_" not in src, (mod.__name__, fn)
+        literals = src.count('iso3 == "GBR"') + src.count('iso3 in ("FRA", "DEU")')
+        allowed = 2 if (mod, fn) == (coverage, "line_sources") else 0
+        assert literals == allowed, (mod.__name__, fn, literals)
+    src = inspect.getsource(coverage.line_sources)
+    for lit in ('iso3 == "GBR"', 'iso3 in ("FRA", "DEU")'):
+        i = src.index(lit)
+        assert 'l2 == "GF10_2"' in src[i - 40:i], "only the GF10_2 candidates may name a country"
+
+
+def test_envelope_source_is_config_not_a_country_literal():
+    from ggfiscal.forecast import envelopes as E
+
+    assert E.envelope_source("GBR") == "OBR_EFO_LATEST"
+    assert E.envelope_source("FRA") == "EC_AMECO"
+    assert set(E.ENVELOPE_READERS) >= {"OBR_EFO_LATEST", "EC_AMECO"}
+    with pytest.raises(KeyError):
+        E.envelope_source("USA")
