@@ -346,3 +346,19 @@ cleanly here, while `obr.uk` returned 403 as usual. The gov.uk asset mirror
 can stand in for obr.uk **for EFO documents**, softening OQ-6(d) for each new
 EFO round. It does not cover the PSF databank or supplementary tables, which
 remain obr.uk-only.
+
+## OQ-12 — Replicating the package for the United States and Japan (NEW, scoping; ten decisions)
+Raised 2026-09-20. The committee asked what it would take to replicate the
+package (three trees, ledger, WEO reconciliation, debt extension) for `USA`
+and `JPN`. The answer is `REPLICATION_SCOPING.md`: source-by-source
+findings tested live from the sandbox, the code audit, an effort estimate
+(≈ 30 engineering-days for the first country including a one-off
+generalisation of the package, ≈ 20 for the second) and ten questions
+Q-R1–Q-R10 with build defaults. Headlines: the US has no COFOG Level II and
+no general-government forecaster but fully machine-readable anchors from
+1970 and a complete Treasury register from 1979; Japan has Level II from
+FY2005 and a 100-year pension valuation but every functional table is
+fiscal-year only and its projections are PDF-only Japanese. **Ask:** answer
+Q-R1 (anchor), Q-R2 (Japan's COFOG basis) and Q-R10 (scope of the first
+cut) first; the rest can follow the defaults. Nothing has been registered
+or pulled into the D8 store.
