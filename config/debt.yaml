@@ -8,6 +8,34 @@ perimeter:                       # DD1 — what enters the register
 
 instrument_classes: [fixed_bullet, floating, inflation_linked, bill, other]   # DD2
 
+# R0 step 8 (D-S15-008): the per-country engine modules. Every country the
+# debt engine builds is named here explicitly; a country absent from this
+# mapping has no debt layer and every engine entry point raises for it —
+# nothing falls through to another country's path. Module specs are
+# `module` (its `build` / `class_aggregates` function) or `module:function`,
+# under ggfiscal.debt. Listed in the order the engines have always
+# concatenated the countries (DEU, GBR, FRA) so a rebuild keeps its row order.
+countries:
+  DEU:
+    register: register_deu
+    aggregates: "aggregates:deu_class_aggregates"
+    official_totals: "intermediates:official_totals_deu"
+    subsector_source: EUROSTAT_GOV10A_MAIN_S1311     # S.1312-S.1314 D.41 / B.9 chain items (chains._subsector_items)
+    v31_official: {kind: eurostat_gd_f3}              # V31: Eurostat S1311 GD_F3 debt securities as the independent stock
+  GBR:
+    register: register_gbr
+    aggregates: aggregates_gbr
+    official_totals: "intermediates:official_totals_gbr"
+    subsector_source: null                            # no S.1312-S.1314 published on the ONS side
+    v31_official: {kind: same_source,
+                   note: "aggregate gilt and bill stocks are the ONS PSA8A_1 rows themselves (same source); independent cross-check awaits the DMO register"}
+  FRA:
+    register: register_fra
+    aggregates: aggregates_fra
+    official_totals: "intermediates:official_totals_fra"
+    subsector_source: EUROSTAT_GOV10A_MAIN_S1311
+    v31_official: {kind: eurostat_gd_f3}
+
 # office sub-type -> class; extended as readers meet new labels
 sub_types:
   gilt_conventional: fixed_bullet

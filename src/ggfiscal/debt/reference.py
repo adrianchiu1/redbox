@@ -14,6 +14,8 @@ import warnings
 
 import pandas as pd
 
+from ggfiscal import config
+
 from ggfiscal.standardise.readers import latest_snapshots
 
 CURVE_KINDS = {"UK_GLC_NOMINAL": "nominal", "UK_GLC_REAL": "real",
@@ -67,7 +69,11 @@ def build_reference_series(run_id: str, include_curves: bool = True) -> pd.DataF
         frames.append(_rows(sid, E.ea_money_market(tenor), "pct_pa", "EUROSTAT_IRT",
                             _sha("EUROSTAT_IRT", f"irt_st_m_IRT_M{tenor[0]}"), None,
                             "monthly average; EA aggregate retropolated before 1999"))
-    for iso3, sid in (("FRA", "FR_IR3"), ("DEU", "DE_IR3"), ("GBR", "GB_IR3")):
+    # the OECD FINMARK short and long rates of every country whose
+    # reference_series entry names one (config/debt.yaml; R0 step 8)
+    finmark = [(cfg["key"].split(".")[0], sid) for sid, cfg in config.debt()["reference_series"].items()
+               if cfg.get("statistical") == "OECD_FINMARK" and str(cfg.get("key", "")).endswith("IR3TIB")]
+    for iso3, sid in finmark:
         frames.append(_rows(sid, E.oecd_rate(iso3, "IR3TIB"), "pct_pa", "OECD_FINMARK",
                             _sha("OECD_FINMARK", f"FINMARK_IR3TIB_{iso3}"), None, "monthly average, national 3-month rate"))
         frames.append(_rows(sid.replace("IR3", "LT10"), E.oecd_rate(iso3, "IRLT"), "pct_pa", "OECD_FINMARK",

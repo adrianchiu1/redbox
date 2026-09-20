@@ -34,7 +34,14 @@ STEP_C = {"interest": "C_s13_gf01_7", "financing": "C_s13_nlb"}
 
 
 def _subsector_items(iso3: str, chain: str, year: int) -> list[ChainItem]:
-    if iso3 not in ("FRA", "DEU"):
+    """Step-C items of the other general-government sub-sectors, from the
+    source named in config/debt.yaml `countries.<iso3>.subsector_source`
+    (R0 step 8; Eurostat gov_10a_main S.1312-S.1314 for FRA/DEU, none for
+    GBR)."""
+    from ggfiscal.debt.countries import country_cfg
+
+    source = country_cfg(iso3).get("subsector_source")
+    if not source:
         return []
     from ggfiscal.debt.readers import eurostat_insee_oecd as E
     fn = E.d41pay if chain == "interest" else E.b9
@@ -49,7 +56,7 @@ def _subsector_items(iso3: str, chain: str, year: int) -> list[ChainItem]:
             # financing chain runs in net-borrowing sign (+ = borrowing) = −B.9
             v = float(s[year]) if chain == "interest" else -float(s[year])
             items.append(ChainItem(STEP_C[chain], f"{label}_{'d41' if chain == 'interest' else 'net_borrowing'}",
-                                   v, "official", "EUROSTAT_GOV10A_MAIN_S1311",
+                                   v, "official", source,
                                    "accrued" if chain == "interest" else "accrued, net borrowing = -B.9"))
     return items
 

@@ -33,7 +33,7 @@ import pandas as pd
 import pandera.pandas as pa
 from pandera.pandas import Column
 
-from ggfiscal.debt.model import GRADES, INSTRUMENT_CLASSES, ISO3
+from ggfiscal.debt.model import GRADES, INSTRUMENT_CLASSES, _in_countries
 from ggfiscal.standardise.readers import latest_snapshots
 
 MEASURES = ["stock_year_end", "stock_gross_umlauf", "own_holdings", "gross_issuance",
@@ -45,7 +45,7 @@ COLUMNS = ["run_id", "iso3", "year", "instrument_class", "sub_type", "measure", 
 SCHEMA = pa.DataFrameSchema(
     {
         "run_id": Column(str),
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "year": Column(int, pa.Check.in_range(1900, 2100)),
         "instrument_class": Column(str, pa.Check.isin(AGG_CLASSES)),
         "sub_type": Column(str),
@@ -224,13 +224,16 @@ def _slug(label: str) -> str:
 # ------------------------------------------------------------------ all
 
 def class_aggregates(run_id: str) -> pd.DataFrame:
-    frames = [deu_class_aggregates(run_id)]
-    for mod in ("aggregates_gbr", "aggregates_fra"):
-        try:
-            m = __import__(f"ggfiscal.debt.{mod}", fromlist=["class_aggregates"])
-        except ImportError:
-            continue
-        frames.append(m.class_aggregates(run_id))
+    """Every country's class-level aggregates, each from the builder named
+    in config/debt.yaml `countries.<iso3>.aggregates` (R0 step 8), in the
+    file's order; a country without one contributes nothing."""
+    from ggfiscal.debt.countries import builder, configured
+
+    frames = []
+    for iso3 in configured():
+        fn = builder(iso3, "aggregates", "class_aggregates")
+        if fn is not None:
+            frames.append(fn(run_id))
     out = pd.concat(frames, ignore_index=True)
     return SCHEMA.validate(out.sort_values(["iso3", "year", "instrument_class", "sub_type", "measure"])
                            .reset_index(drop=True))
