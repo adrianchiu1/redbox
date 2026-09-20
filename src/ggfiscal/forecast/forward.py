@@ -271,18 +271,24 @@ PESA_NOTE = ("HMT PESA 2026 table 1.9: MoD total DEL (RDEL+CDEL), budgeting "
              "share is >= 90%")
 
 
-def _obr_gdp_levels() -> pd.Series:
-    """OBR's own nominal GDP path (databank, FY -> CY per §7.10), £mn."""
-    return fy_to_cy(R.obr_databank("Aggregates (£bn)",
-                                   "Nominal GDP (£ billion)")) * 1000.0
+def _obr_gdp_levels(iso3: str) -> pd.Series:
+    """OBR's own nominal GDP path (databank, FY -> CY per §7.10 with the
+    country's weights), £mn."""
+    from ggfiscal import config
+
+    return fy_to_cy(R.obr_databank("Aggregates (£bn)", "Nominal GDP (£ billion)"),
+                    config.fy_to_cy_weights(iso3)) * 1000.0
 
 
-def _obr_receipts(labels: list[str], note_extra: str, *,
+def _obr_receipts(iso3: str, labels: list[str], note_extra: str, *,
                   extra_fy: pd.Series | None = None,
                   residual: str | None = None) -> FcSource:
     """Composite of OBR databank per-tax series (£bn FY), converted per
-    §7.10. `extra_fy` adds a component available only in the EFO annex
-    tables (business rates)."""
+    §7.10 with the country's weights. `extra_fy` adds a component available
+    only in the EFO annex tables (business rates)."""
+    from ggfiscal import config
+
+    w = config.fy_to_cy_weights(iso3)
     fy = None
     for label in labels:
         s = R.obr_databank("Receipts (£bn)", label)
@@ -291,7 +297,7 @@ def _obr_receipts(labels: list[str], note_extra: str, *,
         fy = fy + extra_fy
     composite = len(labels) + (extra_fy is not None) > 1
     return FcSource(
-        source_id="OBR_EFO_LATEST", series=fy_to_cy(fy.dropna()) * 1000.0,
+        source_id="OBR_EFO_LATEST", series=fy_to_cy(fy.dropna(), w) * 1000.0,
         # horizon: FY 2030-31 touches calendar 2031; V10 nets the §7.10
         # conversion loss, and the CY series itself ends at 2030
         kind="level", horizon_year=2031, last_actual_year=2024,
@@ -299,7 +305,7 @@ def _obr_receipts(labels: list[str], note_extra: str, *,
                      + (f"; {note_extra}" if note_extra else "")
                      + (f"; {CONSTRUCTED_NOTE}" if composite else ""),
         crosswalk_version=OBR_REV_XWALK,
-        gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+        gdp_levels=_obr_gdp_levels(iso3), gdp_source_id="OBR_EFO_LATEST",
         concept_flag="public_sector_perimeter",
         period_conversion_method="fy_weighted_quarters",
         observation_type="composite_forecast" if composite else "direct_forecast",
@@ -422,15 +428,18 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         r02a.residual_method = config.residual_method(iso3, "R02_A")
         out[("ESA_REV", "R02_A")] = [r02a]
     if iso3 == "GBR":
+        w = config.fy_to_cy_weights(iso3)   # §7.10 weights of the country's FY sources
         # OQ-6 partial unblock (D-S7-001/002): OBR EFO March 2026 receipts
         # composites (membership per the ONS national tax list evidence,
         # validated by measured §9.2 coverage) and the PESA MoD DEL plan.
         out[("ESA_REV", "R01")] = [_obr_receipts(
+            iso3,
             ["VAT (net of VAT refunds)", "VAT refunds"],
             "D.211 = VAT plus VAT refunds (the anchor's accrued D.211 "
             "includes refunded VAT; measured 0.99 on the GG anchor)",
             residual=config.residual_method(iso3, "R01"))]
         out[("ESA_REV", "R02")] = [_obr_receipts(
+            iso3,
             ["Fuel duties", "Stamp duty land tax", "Stamp taxes on shares",
              "Tobacco duties", "Alcohol duties", "Vehicle excise duties",
              "Air passenger duty", "Insurance premium tax",
@@ -442,6 +451,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
             extra_fy=R.obr_fy("annex-tables", "TA.5", "Business rates"),
             residual=config.residual_method(iso3, "R02"))]
         out[("ESA_REV", "R03")] = [_obr_receipts(
+            iso3,
             ["Pay as your earn (PAYE) income tax",
              "Self assessed (SA) income tax", "Other income tax",
              "Capital gains tax"],
@@ -449,6 +459,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
             "plus CGT per the national tax list",
             residual=config.residual_method(iso3, "R03"))]
         out[("ESA_REV", "R04")] = [_obr_receipts(
+            iso3,
             ["Onshore corporation tax", "Offshore corporation tax",
              "Petroleum revenue tax", "Energy profits levy",
              "Diverted profits tax"],
@@ -456,6 +467,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
             "EGL per the databank definition) + offshore + PRT + EPL + DPT",
             residual=config.residual_method(iso3, "R04"))]
         out[("ESA_REV", "R05")] = [_obr_receipts(
+            iso3,
             ["Council tax", "Inheritance tax", "Licence fee receipts"],
             "partial composite for D.5-other + D.59 + D.91: council tax and "
             "licence fee (D.59) plus inheritance tax (D.91); no forecast "
@@ -465,6 +477,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         # R02_A excise duties (D-S13-005): the three duty streams that make
         # up D.214A per the national tax list; measured against NTL D214A
         out[("ESA_REV", "R02_A")] = [_obr_receipts(
+            iso3,
             ["Fuel duties", "Tobacco duties", "Alcohol duties",
              "Air passenger duty", "Climate change levy and carbon price floor",
              "Environmental levies"],
@@ -493,7 +506,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
                 part = R.obr_fy("detailed-receipts", "3.4", label)
                 fy = part if fy is None else fy + part
             out[("ESA_REV", line)] = [FcSource(
-                source_id="OBR_EFO_LATEST", series=fy_to_cy(fy.dropna()) * 1000.0,
+                source_id="OBR_EFO_LATEST", series=fy_to_cy(fy.dropna(), w) * 1000.0,
                 kind="level", horizon_year=2031, last_actual_year=2024,
                 concept_note=f"{OBR_NOTE}; EFO table 3.4 {what}; compulsory "
                              "NICs only — the anchor's D.611/D.613 rows are on "
@@ -501,13 +514,14 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
                              + (CONSTRUCTED_NOTE if len(labels) > 1 else
                                 "single official series"),
                 crosswalk_version=OBR_REV_XWALK,
-                gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+                gdp_levels=_obr_gdp_levels(iso3), gdp_source_id="OBR_EFO_LATEST",
                 concept_flag="public_sector_perimeter",
                 period_conversion_method="fy_weighted_quarters",
                 observation_type="composite_forecast" if len(labels) > 1 else "direct_forecast",
                 residual_method=config.residual_method(iso3, line) if len(labels) > 1 else None)]
         # D12 chains: AMECO (later vintage) through 2027, OBR beyond
         out[("ESA_REV", "R06")].append(_obr_receipts(
+            iso3,
             ["National insurance contributions (NICs)"],
             "NICs only — the anchor's D.61 additionally includes imputed "
             "(unfunded public service) and voluntary contributions, so the "
@@ -518,7 +532,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         cg_di = R.obr_databank("Aggregates (£bn)",
                                "Central government debt interest")
         out[("COFOG", "GF01_7")].append(FcSource(
-            source_id="OBR_EFO_LATEST", series=fy_to_cy(cg_di) * 1000.0,
+            source_id="OBR_EFO_LATEST", series=fy_to_cy(cg_di, w) * 1000.0,
             kind="level", horizon_year=2031, last_actual_year=2024,
             concept_note="OBR central government debt interest, net of APF "
                          "(PSF basis): differs from GG gross accrued D.41 by "
@@ -526,17 +540,18 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
                          "— measured share drifts 0.67-1.28 across the "
                          "overlap, outside every band",
             crosswalk_version=OBR_COFOG_XWALK,
-            gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+            gdp_levels=_obr_gdp_levels(iso3), gdp_source_id="OBR_EFO_LATEST",
             concept_flag="public_sector_perimeter",
             period_conversion_method="fy_weighted_quarters"))
         out[("ESA_REV", "R07")] = [_obr_receipts(
+            iso3,
             ["Public sector interest and dividend receipts"],
             "PS interest AND dividends receivable vs the anchor's GG D.41 "
             "resources — dividends and the PS perimeter push the share "
             "outside the bands; recorded, not applied")]
         welfare = R.obr_fy("annex-tables", "TA.7", "Welfare spending")
         gf10_obr = FcSource(
-            source_id="OBR_EFO_LATEST", series=fy_to_cy(welfare) * 1000.0,
+            source_id="OBR_EFO_LATEST", series=fy_to_cy(welfare, w) * 1000.0,
             kind="level", horizon_year=2031, last_actual_year=2024,
             concept_note="EFO welfare spending (AME): dominant cash-benefit "
                          "component of GF10, but the EFO table starts at FY "
@@ -545,7 +560,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
                          "measurable (§9.2), not applied; a welfare series "
                          "in the PSF databank would fix this",
             crosswalk_version=OBR_COFOG_XWALK,
-            gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+            gdp_levels=_obr_gdp_levels(iso3), gdp_source_id="OBR_EFO_LATEST",
             concept_flag="public_sector_perimeter",
             period_conversion_method="fy_weighted_quarters",
             observation_type="proxy_forecast", max_only=True,
@@ -557,7 +572,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         state_pension = R.obr_fy("detailed-expenditure", "4.9", "State pension")
         if not state_pension.empty:
             out[("COFOG", "GF10_2")] = [FcSource(
-                source_id="OBR_EFO_LATEST", series=fy_to_cy(state_pension) * 1000.0,
+                source_id="OBR_EFO_LATEST", series=fy_to_cy(state_pension, w) * 1000.0,
                 kind="level", horizon_year=2031, last_actual_year=2024,
                 concept_note="EFO 4.9 State pension (AME, public sector): the "
                              "dominant cash component of COFOG 10.2, but the "
@@ -567,7 +582,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
                              "a state-pension FY history would fix this "
                              "(OQ-6 b)",
                 crosswalk_version=OBR_COFOG_XWALK,
-                gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+                gdp_levels=_obr_gdp_levels(iso3), gdp_source_id="OBR_EFO_LATEST",
                 concept_flag="public_sector_perimeter",
                 period_conversion_method="fy_weighted_quarters",
                 observation_type="proxy_forecast", max_only=True,
@@ -575,11 +590,11 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         out[("COFOG", "GF02")] = [FcSource(
             source_id="HMT_PESA",
             series=fy_to_cy(R.obr_fy("chapter-1", "Table_1_9", "Defence",
-                                     source_id="HMT_PESA")),
+                                     source_id="HMT_PESA"), w),
             # FY 2028-29 touches calendar 2029; V10 nets the conversion loss
             kind="level", horizon_year=2029, last_actual_year=2025,
             concept_note=PESA_NOTE, crosswalk_version=OBR_COFOG_XWALK,
-            gdp_levels=_obr_gdp_levels(), gdp_source_id="OBR_EFO_LATEST",
+            gdp_levels=_obr_gdp_levels(iso3), gdp_source_id="OBR_EFO_LATEST",
             concept_flag="public_sector_perimeter",
             period_conversion_method="fy_weighted_quarters")]
     return out

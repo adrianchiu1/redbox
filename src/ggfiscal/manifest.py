@@ -48,6 +48,7 @@ DELIVERABLES = [
     "data/canonical/stitch_boundaries.csv",
     "data/canonical/forecast_boundaries.csv",
     "data/canonical/forecast_declarations.csv",
+    "data/canonical/fy_cy_bridge.csv",      # D19 (R0): empty until a FY-labelled tree exists
     "reports/source_register.csv",
     "reports/validation_report.html",
     "reports/reconciliation_report.html",
@@ -67,6 +68,7 @@ FLAT_FILES = [
     "deliverables/weo_reconciliation.csv",
     "deliverables/series_catalogue.csv",
     "deliverables/data_dictionary.csv",
+    "deliverables/fy_cy_bridge.csv",        # D19 (R0)
     *[f"deliverables/strict_{iso3}.csv" for iso3 in config.COUNTRIES],   # one per country (D-S15-001)
     # debt extension (DEBT_KICKOFF.md DD12) — present once `ggfiscal debt build` has run
     "deliverables/debt_reference_series.csv",

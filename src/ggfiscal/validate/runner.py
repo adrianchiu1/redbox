@@ -32,7 +32,7 @@ V_SUITE_STAGE = {
     "V9": 1, "V10": 3, "V11": 3, "V12": 1, "V13": 2, "V14": 1, "V15": 3,
     "V16": 3, "V17": 4, "V18": 3, "V19": 1, "V20": 1, "V21": 1, "V22": 1,
     "V23": 1, "V24": 5, "V25": 2, "V26": 1, "V27": 5, "V28": 5,
-    "V41": 1,   # R0 (REPLICATION_KICKOFF.md §10): structural zeros (D20)
+    "V41": 1, "V42": 1,   # R0 (REPLICATION_KICKOFF.md §10): structural zeros (D20), FY trees (D19)
 }
 
 

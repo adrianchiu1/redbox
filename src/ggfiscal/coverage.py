@@ -133,7 +133,8 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
                     entries.append(("EC_AGEING_2024", R.ar_series(iso3, "pensions"),
                                     "forecast source; AWG gross public pensions, % GDP"))
                 if l2 == "GF10_2" and iso3 == "GBR":
-                    entries.append(("OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners"),
+                    entries.append(("OBR_HIST_PF",
+                                    R.obr_hist_pf_cy("o/w pensioners", config.fy_to_cy_weights(iso3)),
                                     "backward extension candidate; public-sector pensioner "
                                     "spending, FY converted (D-S13-005)"))
             else:

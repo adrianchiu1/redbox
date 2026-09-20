@@ -252,6 +252,55 @@ def _oecd_recon(iso3: str, classification: str, line_code: str) -> pd.Series:
     return R.oecd_rs_heading(iso3, _RS_HEADINGS[line_code])
 
 
+FY_CY_BRIDGE_COLUMNS = [
+    "iso3", "classification", "year", "fy_label", "te_fy_lcu_mn", "te_cy_lcu_mn",
+    "gap_lcu_mn", "timing_component_lcu_mn", "residual_lcu_mn",
+    "fy_source_id", "cy_source_id", "source_vintage", "run_id",
+]
+
+
+def fy_cy_timing_component(iso3: str, year: int) -> float | None:
+    """D19: the timing component of the FY/CY gap on total expenditure,
+    derived from the institution's quarterly general-government accounts.
+    No quarterly reader exists yet (the ESRI reader arrives with Stage J1),
+    so the component is None and the whole gap is published as residual —
+    never allocated."""
+    return None
+
+
+def fy_cy_bridge_rows(iso3: str, series_map: dict, run_id: str) -> list[dict]:
+    """D19: for every FY-labelled tree of the country, TE on the FY basis
+    (the tree's own total, labelled by the starting year) beside TE on the
+    CY basis (the balance anchor's TE, from the anchor family), the gap, the
+    quarterly-derived timing component where a reader provides one, and
+    the residual. Additive per year (V42). Empty for a country whose trees
+    are all CY (GBR, FRA, DEU)."""
+    rows = []
+    fam = config.family(iso3)
+    for cls in config.TREES:
+        if config.tree_period_basis(iso3, cls) != "FY":
+            continue
+        total = config.total_code(cls)
+        te_fy = series_map[(cls, total)]["series"]
+        fy_src = series_map[(cls, total)]["source_id"]
+        te_cy = fam.totals(iso3)["TE"]
+        cy_src = fam.main_source
+        release, vintage = _release(fy_src)
+        for year in sorted(int(y) for y in te_fy.index):
+            cy_v = float(te_cy[year]) if year in te_cy.index else None
+            fy_v = float(te_fy[year])
+            gap = (fy_v - cy_v) if cy_v is not None else None
+            timing = fy_cy_timing_component(iso3, year)
+            residual = (gap - (timing or 0.0)) if gap is not None else None
+            rows.append({"iso3": iso3, "classification": cls, "year": year,
+                         "fy_label": config.fy_label(iso3, year, cls),
+                         "te_fy_lcu_mn": fy_v, "te_cy_lcu_mn": cy_v, "gap_lcu_mn": gap,
+                         "timing_component_lcu_mn": timing, "residual_lcu_mn": residual,
+                         "fy_source_id": fy_src, "cy_source_id": cy_src,
+                         "source_vintage": vintage, "run_id": run_id})
+    return rows
+
+
 def build_run_id() -> str:
     return dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
@@ -270,9 +319,11 @@ def build(run_id: str | None = None) -> dict[str, Path]:
     boundary_rows: list[dict] = []
     forecast_boundary_rows: list[dict] = []
     declaration_rows: list[dict] = []
+    bridge_rows: list[dict] = []
     for iso3 in config.COUNTRIES:
         series_map = anchor_series(iso3)
         gdp, gdp_src = gdp_series(iso3)
+        bridge_rows += fy_cy_bridge_rows(iso3, series_map, run_id)
         # each tree's share denominator is its own total (TE, TE_ESA, TR)
         totals = {cls: series_map[(cls, code)]["series"] for cls, code in total_codes.items()}
         total_srcs = {cls: series_map[(cls, code)]["source_id"]
@@ -303,7 +354,8 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "iso3": iso3, "classification": classification,
                         "line_code": line_code, "line_level": meta["line_level"],
                         "line_label": meta["line_label"], "year": year,
-                        "native_period": str(year), "source_period_basis": "CY",
+                        "native_period": config.fy_label(iso3, year, classification),
+                        "source_period_basis": config.tree_period_basis(iso3, classification),
                         "value_lcu_mn": float(value), "currency": currency[iso3],
                         "gdp_lcu_mn": gdp_v, "gdp_source_id": gdp_src,
                         "pct_gdp": round(100 * value / gdp_v, 6) if gdp_v else None,
@@ -358,7 +410,8 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "iso3": iso3, "classification": classification,
                         "line_code": line_code, "line_level": meta["line_level"],
                         "line_label": meta["line_label"], "year": year,
-                        "native_period": str(year), "source_period_basis": "CY",
+                        "native_period": config.fy_label(iso3, year, classification),
+                        "source_period_basis": config.tree_period_basis(iso3, classification),
                         "value_lcu_mn": er["value"], "currency": currency[iso3],
                         "gdp_lcu_mn": gdp_v, "gdp_source_id": gdp_src,
                         "pct_gdp": (round(100 * er["value"] / gdp_v, 6)
@@ -420,7 +473,8 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "iso3": iso3, "classification": classification,
                         "line_code": line_code, "line_level": meta["line_level"],
                         "line_label": meta["line_label"], "year": year,
-                        "native_period": str(year), "source_period_basis": "CY",
+                        "native_period": config.fy_label(iso3, year, classification),
+                        "source_period_basis": config.tree_period_basis(iso3, classification),
                         "value_lcu_mn": er["value"], "currency": currency[iso3],
                         "gdp_lcu_mn": gdp_v, "gdp_source_id": src.gdp_source_id or None,
                         "pct_gdp": (round(100 * er["value"] / gdp_v, 6)
@@ -478,7 +532,8 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "iso3": iso3, "classification": cls,
                         "line_code": rem, "line_level": "derived",
                         "line_label": meta_x["line_label"], "year": year,
-                        "native_period": str(year), "source_period_basis": "CY",
+                        "native_period": config.fy_label(iso3, year, cls),
+                        "source_period_basis": config.tree_period_basis(iso3, cls),
                         "value_lcu_mn": value, "currency": currency[iso3],
                         "gdp_lcu_mn": gdp_v, "gdp_source_id": gdp_src,
                         "pct_gdp": round(100 * value / gdp_v, 6) if gdp_v else None,
@@ -553,6 +608,12 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         ["iso3", "classification", "line_code"])
     declarations.to_csv(canonical / "forecast_declarations.csv", index=False)
     out["forecast_declarations"] = canonical / "forecast_declarations.csv"
+    # D19: the FY/CY bridge on total expenditure — one row per (country,
+    # year) of every FY-labelled tree; empty (header only) while no country
+    # publishes a FY tree
+    bridge = pd.DataFrame(bridge_rows, columns=FY_CY_BRIDGE_COLUMNS)
+    bridge.to_csv(canonical / "fy_cy_bridge.csv", index=False)
+    out["fy_cy_bridge"] = canonical / "fy_cy_bridge.csv"
     # §11.6 deliverable 9 (Stage 4): the final coverage matrix, assembled from
     # what was just written
     from ggfiscal.coverage import write_matrix

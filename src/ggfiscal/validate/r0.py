@@ -132,4 +132,4 @@ def check_v42() -> list[Finding]:
                     f"fy_cy_bridge additive in {n_bridge} rows (D19)")]
 
 
-IMPLEMENTED = {"V41": check_v41}   # V42 registered with the D19 plumbing (step 4)
+IMPLEMENTED = {"V41": check_v41, "V42": check_v42}

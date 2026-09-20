@@ -250,3 +250,112 @@ def test_structural_zero_plumbing_is_empty_for_the_three_countries():
     assert "structural_zero" in OBSERVATION_TYPES
     for iso3 in config.COUNTRIES:
         assert config.absent_lines(iso3) == {}
+
+
+# ------------------------------------------------------------- period basis
+
+def test_fy_to_cy_takes_the_country_weights():
+    """§7.10 generalised (D19): the weights are per country. The default pair
+    is the April–March one the GBR sources always used; an October–September
+    source (US federal) takes 0.75/0.25."""
+    import pandas as pd
+
+    from ggfiscal.forecast.forward import fy_to_cy
+
+    fy = pd.Series({2025: 100.0, 2026: 200.0, 2027: 300.0})
+    default = fy_to_cy(fy)
+    gbr = fy_to_cy(fy, config.fy_to_cy_weights("GBR"))
+    assert default.equals(gbr)
+    assert gbr[2026] == 0.25 * 100 + 0.75 * 200
+    us = fy_to_cy(fy, (0.75, 0.25))
+    assert list(us.index) == [2026, 2027]
+    assert us[2026] == 0.75 * 100 + 0.25 * 200 and us[2027] == 0.75 * 200 + 0.25 * 300
+    from ggfiscal.debt.intermediates import fy_to_cy as debt_fy_to_cy
+    assert debt_fy_to_cy(fy, (0.25, 0.75)).to_dict() == gbr.to_dict()
+
+
+def test_source_period_basis_comes_from_the_register():
+    for sid in ("OBR_EFO_LATEST", "OBR_PSF_DATABANK", "OBR_HIST_PF", "HMT_PESA", "OBR_FRS"):
+        assert config.source_period_basis(sid) == "FY", sid
+    for sid in ("EC_AMECO", "EUROSTAT_GOV10A_MAIN", "ONS_ESA_T11", "IMF_GFS", "EC_DSM"):
+        assert config.source_period_basis(sid) == "CY", sid
+    assert config.source_period_basis("NOT_A_SOURCE") == "CY"
+
+
+def test_row_labels_follow_the_tree_basis(monkeypatch):
+    """D19: a CY tree labels rows by calendar year; a FY-labelled tree by
+    FY + starting year, stamped FY on every row."""
+    assert config.fy_label("GBR", 2023, "COFOG") == "2023"
+    base = config.countries()
+    monkeypatch.setattr(config, "countries", lambda: {
+        **base, "GBR": {**base["GBR"], "period_basis": {
+            "anchor": "CY", "trees": {"expenditure": "FY"}, "fy_start_month": 4,
+            "fy_label": "start_year"}}})
+    assert config.tree_period_basis("GBR", "COFOG") == "FY"
+    assert config.tree_period_basis("GBR", "ESA_REV") == "CY"     # defaults stay CY
+    assert config.fy_label("GBR", 2023, "COFOG") == "FY2023"
+    assert config.fy_label("GBR", 2023, "ESA_REV") == "2023"
+
+
+@pytest.mark.skipif(not R.latest_snapshots(), reason="no snapshots harvested")
+def test_fy_cy_bridge_is_built_and_empty_for_cy_trees(monkeypatch):
+    """The FY/CY bridge (D19) is empty while every tree is CY, and fills —
+    additively — the moment a tree is declared FY-labelled."""
+    from ggfiscal.build import FY_CY_BRIDGE_COLUMNS, anchor_series, fy_cy_bridge_rows
+
+    series = anchor_series("FRA")
+    assert fy_cy_bridge_rows("FRA", series, "test") == []
+    base = config.countries()
+    monkeypatch.setattr(config, "countries", lambda: {
+        **base, "FRA": {**base["FRA"], "period_basis": {
+            "anchor": "CY", "trees": {"expenditure": "FY"}}}})
+    rows = fy_cy_bridge_rows("FRA", series, "test")
+    assert rows and set(rows[0]) == set(FY_CY_BRIDGE_COLUMNS)
+    te = series[("COFOG", "TE")]["series"]
+    assert [r["year"] for r in rows] == [int(y) for y in te.index]
+    for r in rows:
+        assert r["fy_label"] == f"FY{r['year']}"
+        assert r["te_fy_lcu_mn"] == float(te[r["year"]])
+        if r["te_cy_lcu_mn"] is not None:
+            assert abs(r["gap_lcu_mn"] - (r["te_fy_lcu_mn"] - r["te_cy_lcu_mn"])) < 1e-9
+            assert r["timing_component_lcu_mn"] is None
+            assert r["residual_lcu_mn"] == r["gap_lcu_mn"]
+
+
+def test_v41_and_v42_are_registered_from_stage_1():
+    from ggfiscal.validate import r0
+    from ggfiscal.validate.runner import V_SUITE_STAGE
+
+    assert V_SUITE_STAGE["V41"] == 1 and V_SUITE_STAGE["V42"] == 1
+    assert set(r0.IMPLEMENTED) == {"V41", "V42"}
+
+
+# ------------------------------------------------ perimeter rules from config
+
+def test_perimeter_rules_are_read_from_config_not_country_literals():
+    import inspect
+
+    from ggfiscal.reconcile import bridge
+    from ggfiscal.stitch import backward
+    from ggfiscal.validate import stage5
+
+    for mod, fn in ((bridge, "compute"), (stage5, "check_v24")):
+        src = inspect.getsource(getattr(mod, fn))
+        assert 'iso3 == "GBR"' not in src, (mod.__name__, fn)
+    # the backward registry keeps per-country *source* declarations (the
+    # ONS D.41 and OBR pensioner legs are GBR sources); the break is config
+    assert "DEU_BREAK" not in inspect.getsource(backward)
+    assert not hasattr(backward, "DEU_BREAK")
+    assert "perimeter_sigma_pct_te" in config.tolerances()
+    assert "gbr_perimeter_sigma_pct_te" not in config.tolerances()
+
+
+@pytest.mark.skipif(not R.latest_snapshots(), reason="no snapshots harvested")
+def test_every_extension_source_stops_at_the_configured_perimeter_break():
+    from ggfiscal.stitch.backward import extensions_for
+
+    for iso3 in config.COUNTRIES:
+        want = config.perimeter_break(iso3)
+        for key, sources in extensions_for(iso3).items():
+            for src in sources:
+                assert src.break_before == want, (iso3, key, src.source_id)

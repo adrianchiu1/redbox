@@ -290,6 +290,18 @@ FORECAST_COMPONENT = {
 }
 
 
+def _flat_fy_cy_bridge() -> pd.DataFrame:
+    """D19: the FY/CY bridge on total expenditure, verbatim from the canonical
+    layer with the country name added; header only while every tree is CY."""
+    from ggfiscal.build import FY_CY_BRIDGE_COLUMNS
+
+    path = config.repo_root() / "data" / "canonical" / "fy_cy_bridge.csv"
+    df = pd.read_csv(path) if path.exists() else pd.DataFrame(columns=FY_CY_BRIDGE_COLUMNS)
+    df = df.reindex(columns=FY_CY_BRIDGE_COLUMNS)
+    df.insert(1, "country", df.iso3.map(COUNTRY_NAME))
+    return df
+
+
 def _flat_reconciliation() -> pd.DataFrame:
     hist = _canonical("deficit_dynamics.csv").rename(
         columns={"series_variant": "variant", "kind": "side"})
@@ -700,6 +712,24 @@ def _build_dictionary(country_columns: dict[str, list[tuple[str, str]]]
         "measure": "Unit of contribution_pp on that row.",
         "component_meaning": "Plain-language meaning of component.",
     })
+    _dict_rows("fy_cy_bridge.csv", {
+        **{k: _SHARED[k] for k in ("iso3", "country", "year")},
+        "classification": "The FY-labelled tree the row bridges (D19).",
+        "fy_label": "Fiscal-year label of the row (FY + starting year).",
+        "te_fy_lcu_mn": "Total expenditure of the FY-labelled tree, fiscal-year "
+                        "basis, LCU millions.",
+        "te_cy_lcu_mn": "Total expenditure of the balance anchor, calendar-year "
+                        "basis, LCU millions, same starting year.",
+        "gap_lcu_mn": "te_fy_lcu_mn - te_cy_lcu_mn.",
+        "timing_component_lcu_mn": "The part of the gap explained by the quarterly "
+                                   "general-government accounts (blank where no "
+                                   "quarterly reader exists).",
+        "residual_lcu_mn": "gap_lcu_mn - timing_component_lcu_mn; never allocated.",
+        "fy_source_id": "Publisher of the FY-basis total.",
+        "cy_source_id": "Publisher of the CY-basis total.",
+        "source_vintage": "Register vintage of the FY-basis source.",
+        "run_id": "Run that produced the bridge.",
+    })
     _dict_rows("series_catalogue.csv", {
         **{k: _SHARED[k] for k in ("iso3", "country", "line_code",
                                    "line_label", "line_level", "currency")},
@@ -988,6 +1018,10 @@ DESCRIPTIONS = {
     "series_catalogue.csv":
         "one row per published series: span, grades, sources, the recipe that "
         "built it, and why it ends",
+    "fy_cy_bridge.csv":
+        "the FY/CY bridge on total expenditure for every fiscal-year-labelled "
+        "tree (D19): TE on both bases, the gap, its timing component and the "
+        "residual — header only while every tree is calendar-year",
     "data_dictionary.csv":
         "every column of every file above, described",
     "statistical_forecasts.csv":
@@ -1051,6 +1085,7 @@ def write() -> dict[str, Path]:
         "weo_levels_bridge.csv": _flat_levels_bridge(),
         "weo_reconciliation.csv": _flat_reconciliation(),
         "series_catalogue.csv": _flat_catalogue(trees),
+        "fy_cy_bridge.csv": _flat_fy_cy_bridge(),
         **countries,
         **debt_files,
         "data_dictionary.csv": dictionary,

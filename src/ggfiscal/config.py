@@ -109,6 +109,26 @@ def period_basis(iso3: str) -> dict:
     return pb
 
 
+def source_period_basis(source_id: str) -> str:
+    """The register's period basis of a source (`period_basis` in
+    sources.yaml; CY unless declared FY). R0: the build stamps every row
+    with its tree's published basis; V42 uses this to police §7.14 (no
+    CY-basis source chained onto a FY-labelled tree, and a FY-basis source
+    enters a CY tree only converted per §7.10)."""
+    basis = (sources().get(source_id) or {}).get("period_basis", "CY")
+    if basis not in ("CY", "FY"):
+        raise ValueError(f"{source_id}: period_basis must be CY or FY, got {basis!r}")
+    return basis
+
+
+def fy_label(iso3: str, year: int, classification: str) -> str:
+    """native_period label of a row: the calendar year on a CY tree; on a
+    FY-labelled tree `FY{start_year}` (D19: fy_label = start_year)."""
+    if tree_period_basis(iso3, classification) == "FY":
+        return f"FY{int(year)}"
+    return str(int(year))
+
+
 def tree_period_basis(iso3: str, classification: str) -> str:
     """The published basis of one tree for one country (CY or FY)."""
     basis = period_basis(iso3)["trees"][TREES[classification]]

@@ -32,15 +32,15 @@ def _sha(source_id: str, part: str) -> str | None:
     return e["sha256"] if e else None
 
 
-def fy_to_cy(fy: pd.Series) -> pd.Series:
-    """§7.10: CY_t = 0.25 × FY_{t−1/t} + 0.75 × FY_{t/t+1}, FY indexed by its
-    starting calendar year. Consumes one year at the end."""
+def fy_to_cy(fy: pd.Series, weights: tuple[float, float] | None = None) -> pd.Series:
+    """§7.10: CY_t = w0 × FY_{t−1/t} + w1 × FY_{t/t+1}, FY indexed by its
+    starting calendar year, with the country's `fy_to_cy_weights` (R0: the
+    parent package's conversion, one implementation). Consumes one year at
+    the end."""
+    from ggfiscal.forecast.forward import fy_to_cy as _fy_to_cy
+
     fy = fy.sort_index().astype(float)
-    out = {}
-    for t in fy.index:
-        if (t - 1) in fy.index:
-            out[t] = 0.25 * fy[t - 1] + 0.75 * fy[t]
-    return pd.Series(out, dtype=float)
+    return _fy_to_cy(fy, weights).astype(float)
 
 
 def _row(iso3, year, chain, step, value, source, basis, period_basis="CY",
@@ -101,7 +101,8 @@ def _gbr_interest(years) -> list[dict]:
             fy_total[start] = float(tot.iloc[0])
             fy_cash[start] = float(cash.iloc[0]) if not cash.empty else None
             editions[start] = (part, e["sha256"])
-    cy = fy_to_cy(pd.Series(fy_total)) if fy_total else pd.Series(dtype=float)
+    cy = (fy_to_cy(pd.Series(fy_total), config.fy_to_cy_weights("GBR")) if fy_total
+          else pd.Series(dtype=float))
     for y in years:
         if y in cy.index:
             rows.append(_row("GBR", y, "interest", "A_cg_cash", cy[y], "HMT_NLF", "accrued_nlf_finance_costs",

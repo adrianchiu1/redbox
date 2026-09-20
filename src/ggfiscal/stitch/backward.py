@@ -142,7 +142,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
     # a C-band leg: maximum_extension only, to 1979
     if iso3 == "GBR":
         out[("COFOG", "GF10_2")] = [ExtSource(
-            "OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners"),
+            "OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners", config.fy_to_cy_weights(iso3)),
             "OBR historical public finances database, Social Security o/w "
             "pensioners (IFS-based FY series 1978-79 to 2022-23, public sector, "
             "£mn), converted FY->CY per §7.10; pensioner cash benefits vs COFOG "

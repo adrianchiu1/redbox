@@ -694,12 +694,13 @@ def obr_hist_pf_fy(column: str) -> pd.Series:
     return _year_series(vals.items())
 
 
-def obr_hist_pf_cy(column: str) -> pd.Series:
-    """The same column converted to calendar years per §7.10."""
+def obr_hist_pf_cy(column: str, weights: tuple[float, float] | None = None) -> pd.Series:
+    """The same column converted to calendar years per §7.10 with the
+    calling country's `fy_to_cy_weights` (R0)."""
     from ggfiscal.forecast.forward import fy_to_cy
 
     fy = obr_hist_pf_fy(column)
-    return fy_to_cy(fy) if len(fy) else fy
+    return fy_to_cy(fy, weights) if len(fy) else fy
 
 
 def obr_fy_with_history(history: pd.Series, forecast: pd.Series) -> pd.Series:
