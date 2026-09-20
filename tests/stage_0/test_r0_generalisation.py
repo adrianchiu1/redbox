@@ -190,3 +190,63 @@ def test_envelope_source_is_config_not_a_country_literal():
     assert set(E.ENVELOPE_READERS) >= {"OBR_EFO_LATEST", "EC_AMECO"}
     with pytest.raises(KeyError):
         E.envelope_source("USA")
+
+
+# ---------------------------------------------------------- structural zeros
+
+def test_absent_lines_resolve_to_a_tree_and_reject_unknown_codes(monkeypatch):
+    base = config.countries()
+    assert config.absent_lines("GBR") == {}
+    monkeypatch.setattr(config, "countries", lambda: {
+        **base, "GBR": {**base["GBR"], "lines_absent": {"R01": "no VAT (test)",
+                                                        "GF05": "no function (test)"}}})
+    assert config.absent_lines("GBR") == {("ESA_REV", "R01"): "no VAT (test)",
+                                          ("COFOG", "GF05"): "no function (test)"}
+    monkeypatch.setattr(config, "countries", lambda: {
+        **base, "GBR": {**base["GBR"], "lines_absent": {"TR": "a total"}}})
+    with pytest.raises(ValueError, match="not a granular line"):
+        config.absent_lines("GBR")
+
+
+@pytest.mark.skipif(not R.latest_snapshots(), reason="no snapshots harvested")
+def test_structural_zero_plumbing_is_exercised_on_a_declared_absence(monkeypatch):
+    """D20 (empty for GBR/FRA/DEU): declare one absence on a copy of the
+    config and check the anchor layer publishes zero rows in every anchor
+    year of the tree, typed structural_zero, with the reason — and that the
+    identity check treats the line as zero."""
+    import pandas as pd
+
+    from ggfiscal.build import anchor_series
+    from ggfiscal.validate.stage1 import _with_structural_zeros
+
+    base = config.countries()
+    monkeypatch.setattr(config, "countries", lambda: {
+        **base, "FRA": {**base["FRA"], "lines_absent": {"R01": "no VAT (test)",
+                                                        "GF10_5": "no group (test)"}}})
+    series = anchor_series("FRA")
+    tr = series[("ESA_REV", "TR")]["series"]
+    r01 = series[("ESA_REV", "R01")]
+    assert r01["observation_type"] == "structural_zero"
+    assert r01["notes"] == "structural zero (D20): no VAT (test)"
+    assert list(r01["series"].index) == list(tr.index) and (r01["series"] == 0).all()
+    assert r01["source_id"] == series[("ESA_REV", "TR")]["source_id"]
+    gf10_5 = series[("COFOG", "GF10_5")]
+    gf10 = series[("COFOG", "GF10")]["series"]
+    assert gf10_5["observation_type"] == "structural_zero"
+    assert list(gf10_5["series"].index) == list(gf10.index)
+    # the remainder absorbs the whole parent less the other Level II line
+    rem = series[("COFOG", "GF10_X")]["series"]
+    gf10_2 = series[("COFOG", "GF10_2")]["series"]
+    common = rem.index.intersection(gf10_2.index)
+    assert ((gf10[common] - gf10_2[common]) - rem[common]).abs().max() < 1e-6
+    piv = pd.DataFrame({"R02": [1.0, 2.0]}, index=[2000, 2001])
+    filled = _with_structural_zeros(piv, "FRA", ["R01", "R02"])
+    assert (filled["R01"] == 0).all()
+
+
+def test_structural_zero_plumbing_is_empty_for_the_three_countries():
+    from ggfiscal.model import OBSERVATION_TYPES
+
+    assert "structural_zero" in OBSERVATION_TYPES
+    for iso3 in config.COUNTRIES:
+        assert config.absent_lines(iso3) == {}

@@ -40,7 +40,7 @@ from ggfiscal import config
 COUNTRY_NAME = config.country_names()   # from countries.yaml (D-S15-001)
 
 # Observation types that carry their own value (no growth chaining).
-ANCHOR_TYPES = {"anchor_actual", "derived_actual", "level2_proxy_actual"}
+ANCHOR_TYPES = {"anchor_actual", "derived_actual", "level2_proxy_actual", "structural_zero"}
 
 OBS_LABEL = {
     "anchor_actual": "anchor outturn",
@@ -50,6 +50,7 @@ OBS_LABEL = {
     "direct_forecast": "official forecast",
     "proxy_forecast": "proxy forecast",
     "composite_forecast": "composite forecast",
+    "structural_zero": "structural zero (D20)",
 }
 
 TREE_COLUMNS = [

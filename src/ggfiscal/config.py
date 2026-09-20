@@ -63,6 +63,20 @@ def lines_absent(iso3: str) -> dict[str, str]:
     return dict(country(iso3).get("lines_absent") or {})
 
 
+def absent_lines(iso3: str) -> dict[tuple[str, str], str]:
+    """lines_absent resolved to (classification, line_code) -> reason. Every
+    declared code must be a granular line of one tree (a total or an unknown
+    code is a config error, raised here)."""
+    out = {}
+    for code, reason in lines_absent(iso3).items():
+        cls = [c for c in TREES if code in granular_lines(c)]
+        if len(cls) != 1:
+            raise ValueError(f"{iso3}: lines_absent entry {code!r} is not a granular line "
+                             f"of exactly one tree (found in {cls})")
+        out[(cls[0], code)] = str(reason)
+    return out
+
+
 def fy_to_cy_weights(iso3: str) -> tuple[float, float]:
     """§7.10 conversion weights [FY t-1/t, FY t/t+1] for the country's
     fiscal-year sources (0.25/0.75 April–March; 0.75/0.25 October–September)."""

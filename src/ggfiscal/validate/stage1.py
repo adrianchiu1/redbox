@@ -49,6 +49,15 @@ def check_v1() -> list[Finding]:
     return out
 
 
+def _with_structural_zeros(piv: pd.DataFrame, iso3: str, lines: list[str]) -> pd.DataFrame:
+    """D20: a line the country declares absent is zero in every year of the
+    identity — the column is added or filled with 0.0 (no-op for GBR/FRA/DEU)."""
+    absent = {code for (_, code) in config.absent_lines(iso3)}
+    for code in absent & set(lines):
+        piv[code] = piv[code].fillna(0.0) if code in piv.columns else 0.0
+    return piv
+
+
 def _sum_check(check_id: str, lines: list[str], total_code: str) -> list[Finding]:
     out = []
     tol = config.tolerances()["sum_to_total_pct"]
@@ -59,6 +68,7 @@ def _sum_check(check_id: str, lines: list[str], total_code: str) -> list[Finding
                                   values="value_lcu_mn")
             if total_code not in piv.columns:
                 continue
+            piv = _with_structural_zeros(piv, iso3, lines)
             years = [y for y in piv.index
                      if all(c in piv.columns and pd.notna(piv[c][y]) for c in lines)
                      and pd.notna(piv[total_code][y])]

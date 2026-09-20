@@ -47,6 +47,7 @@ OBSERVATION_TYPES = [
     "anchor_actual", "level2_proxy_actual", "derived_actual", "imf_actual",
     "stitched_actual", "direct_forecast", "composite_forecast",
     "proxy_forecast", "official_benchmark_interpolation",
+    "structural_zero",   # D20 (R0): a line the anchor institution defines as zero
 ]
 
 SCHEMA = pa.DataFrameSchema(

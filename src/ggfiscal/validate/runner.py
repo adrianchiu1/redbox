@@ -32,6 +32,7 @@ V_SUITE_STAGE = {
     "V9": 1, "V10": 3, "V11": 3, "V12": 1, "V13": 2, "V14": 1, "V15": 3,
     "V16": 3, "V17": 4, "V18": 3, "V19": 1, "V20": 1, "V21": 1, "V22": 1,
     "V23": 1, "V24": 5, "V25": 2, "V26": 1, "V27": 5, "V28": 5,
+    "V41": 1,   # R0 (REPLICATION_KICKOFF.md §10): structural zeros (D20)
 }
 
 
@@ -62,8 +63,12 @@ def check_s0_line_universe() -> list[Finding]:
     if n != want or len(set(universe)) != n:
         return [Finding("S0_LINES", "ERROR", "-",
                         f"line universe has {n} series; config implies {want}")]
+    # D20: declared structural zeros stay members of the universe (published
+    # as zero rows); they are named here, never counted as missing
+    absent = sum(len(config.absent_lines(iso3)) for iso3 in config.COUNTRIES)
+    tail = f"; {absent} declared structural zero(s) (D20)" if absent else ""
     return [Finding("S0_LINES", "OK", "-",
-                    f"{n} line series enumerated ({len(config.COUNTRIES)} countries x {per_country})")]
+                    f"{n} line series enumerated ({len(config.COUNTRIES)} countries x {per_country}){tail}")]
 
 
 def check_s0_register() -> list[Finding]:
@@ -161,9 +166,10 @@ def run_all() -> list[Finding]:
     from ggfiscal.validate.stage3 import IMPLEMENTED as S3
     from ggfiscal.validate.stage4 import IMPLEMENTED as S4
     from ggfiscal.validate.stage5 import IMPLEMENTED as S5
+    from ggfiscal.validate.r0 import IMPLEMENTED as R0
     # later stages override where they extend a check (S3: V6/V13 both
     # directions; S5: V26 history + forecast additivity)
-    IMPLEMENTED = {**S1, **S2, **S3, **S4, **S5}
+    IMPLEMENTED = {**S1, **S2, **S3, **S4, **S5, **R0}
     for vid, first_stage in sorted(V_SUITE_STAGE.items(), key=lambda kv: int(kv[0][1:])):
         if stage < first_stage:
             findings.append(Finding(vid, "SKIP", "-",

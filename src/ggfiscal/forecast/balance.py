@@ -111,6 +111,12 @@ def _leg(tree: pd.DataFrame, forecasts: pd.DataFrame, iso3: str, line: str):
     standard error of that path (zero where the path is a published one)."""
     g = tree.query("iso3 == @iso3 and line_code == @line").dropna(
         subset=["pct_gdp"])
+    if line in config.lines_absent(iso3):
+        # D20: a structural zero is 0% of GDP in every year, with no error
+        years = tree.query("iso3 == @iso3").year
+        actual = pd.Series(0.0, index=range(int(years.min()), int(years.max()) + 1))
+        path = pd.Series(0.0, index=range(int(actual.index.max()) + 1, HORIZON + 1))
+        return actual, path, pd.Series(0.0, index=path.index), "structural_zero", HORIZON
     actual = (g[g.basis == "actual"].sort_values("year")
               .set_index("year").pct_gdp)
     official = g[g.basis == "forecast"].sort_values("year")

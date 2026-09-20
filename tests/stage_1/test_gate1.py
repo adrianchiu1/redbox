@@ -19,19 +19,25 @@ def built():
         build()
 
 
-def test_all_99_lines_plus_totals_present_in_both_variants():
+def test_all_lines_plus_totals_present_in_both_variants():
+    """Every granular line of every tree plus the tree's total, per country
+    (the 123-line universe of D-S13-001/005 for the three countries). A line
+    the country declares absent (D20) is present too — as structural_zero
+    rows, zero in every anchor year — so the expected set is the tree's
+    full line list either way."""
+    assert {f"GF{n:02d}" for n in range(1, 11)} | {"GF01_7", "GF01_X", "GF04_5", "GF04_X",
+                                                   "GF10_2", "GF10_5", "GF10_X"} \
+        == set(config.granular_lines("COFOG"))
     for variant in ("strict", "maximum_extension"):
-        exp = load_canonical("COFOG", variant)
-        esa = load_canonical("ESA_EXP", variant)
-        rev = load_canonical("ESA_REV", variant)
-        for iso3 in config.COUNTRIES:
-            exp_lines = set(exp[exp.iso3 == iso3].line_code)
-            esa_lines = set(esa[esa.iso3 == iso3].line_code)
-            rev_lines = set(rev[rev.iso3 == iso3].line_code)
-            assert exp_lines == {f"GF{n:02d}" for n in range(1, 11)} | {"GF01_7", "GF01_X", "GF04_5", "GF04_X", "GF10_2", "GF10_5", "GF10_X"} | {"TE"}, (iso3, variant)
-            assert esa_lines == {f"E{n:02d}" for n in range(1, 10)} | {"TE_ESA"}, \
-                (iso3, variant)
-            assert rev_lines == {f"R{n:02d}" for n in range(1, 11)} | {"R02_A", "R02_X", "R06_E", "R06_H", "R06_X"} | {"TR"}, (iso3, variant)
+        for cls in config.TREES:
+            df = load_canonical(cls, variant)
+            want = set(config.granular_lines(cls)) | {config.total_code(cls)}
+            for iso3 in config.COUNTRIES:
+                sub = df[df.iso3 == iso3]
+                assert set(sub.line_code) == want, (iso3, cls, variant)
+                zeros = sub[sub.observation_type == "structural_zero"]
+                assert set(zeros.line_code) == {c for (k, c) in config.absent_lines(iso3)
+                                                if k == cls}, (iso3, cls, variant)
 
 
 def test_schema_validates():

@@ -68,10 +68,24 @@ def _revenue_level2(iso3: str, code: str, meta: dict) -> tuple[pd.Series, str, s
     return config.family(iso3).revenue_level2(iso3, meta)
 
 
+def _zero_series(years) -> pd.Series:
+    """A structural zero (D20): 0.0 in every given year."""
+    return pd.Series(0.0, index=sorted(int(y) for y in years), dtype=float)
+
+
+def structural_zero_note(reason: str) -> str:
+    return f"structural zero (D20): {reason}"
+
+
 def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     """(classification, line_code) -> {series, source_id, observation_type,
-    line_level, concept_flag, notes} — anchor cells only."""
+    line_level, concept_flag, notes} — anchor cells only. Lines the country
+    declares in `lines_absent` (D20) are zero in every anchor year of their
+    tree (the years the tree's total covers), typed structural_zero, grade A,
+    with the declared reason as the note; the identities run over them
+    unchanged. Empty for GBR/FRA/DEU."""
     L = config.lines()
+    absent = config.absent_lines(iso3)
     exp_meta = L["expenditure"]
     rev_meta = L["revenue"]
 
@@ -128,6 +142,17 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                       rev_meta[code]["label"], concept=concept, notes=notes)])
     out.update([m("ESA_REV", "TR", tr, rev_src, "anchor_actual", "total",
                   "Total revenue")])
+    # D20 structural zeros on Level I / revenue lines: zero in every anchor
+    # year of the tree, from the tree's total's source (Level II lines are
+    # handled inside the split loop, over the parent's years)
+    for (cls, code), reason in absent.items():
+        meta = L[config.TREES[cls]][code]
+        if str(meta.get("level", "1")) == "2":
+            continue
+        tot = out[(cls, config.total_code(cls))]
+        out.update([m(cls, code, _zero_series(tot["series"].index), tot["source_id"],
+                      "structural_zero", str(meta.get("level", "1")), meta["label"],
+                      notes=structural_zero_note(reason))])
     # Level II splits (config.level2_splits(): GF01_7/GF01_X per D10,
     # GF10_2 per D-S13-002, GF10_5/GF04_5 and the revenue splits R02_A,
     # R06_E/R06_H per D-S13-005). Each Level II line comes from the anchor's
@@ -148,7 +173,11 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
             meta = split["meta"][l2]
             per_year: dict[int, dict] = {}
             interest = l2 == "GF01_7"
-            if cls == "COFOG":
+            if (cls, l2) in absent:
+                series = _zero_series(parent_series.index)
+                src_line = src_id
+                concept_txt = structural_zero_note(absent[(cls, l2)])
+            elif cls == "COFOG":
                 series = cof(meta["eurostat_cofog"])
                 cofog_code = meta["eurostat_cofog"]
                 concept_txt = (f"COFOG {cofog_code[2:4]}.{int(cofog_code[4:6])} from the "
@@ -156,7 +185,7 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                 src_line = src_id
             else:
                 series, src_line, concept_txt = _revenue_level2(iso3, l2, meta)
-            if meta["fallback"] == "d41_payable":
+            if meta["fallback"] == "d41_payable" and (cls, l2) not in absent:
                 d41pay = fam.d41_payable(iso3)
                 for y in sorted(set(parent_series.index) - set(series.index)):
                     if y in d41pay.index:
@@ -169,7 +198,8 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                 fallback_years.update(per_year)
             series = series.sort_index()
             l2_series_all[l2] = series
-            out.update([m(cls, l2, series, src_line, "anchor_actual", "2",
+            out.update([m(cls, l2, series, src_line,
+                          "structural_zero" if (cls, l2) in absent else "anchor_actual", "2",
                           tree_meta[l2]["label"],
                           concept="d41_gross_accrued" if interest else "",
                           notes=concept_txt + (" (D10)" if interest else ""),
@@ -305,10 +335,11 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         # --- Stage 2: backward extension (§7.3-7.4, D6, D15) ---
         stitched_vals: dict[str, dict[tuple[str, str], dict[int, tuple[float, str]]]] = {
             "strict": {}, "maximum_extension": {}}
+        absent = config.absent_lines(iso3)
         for (classification, line_code), sources in extensions_for(iso3).items():
             meta = series_map.get((classification, line_code))
-            if meta is None:
-                continue
+            if meta is None or (classification, line_code) in absent:
+                continue   # a structural zero is never extended (D20)
             ext_rows, bnds = extend_line(iso3, classification, line_code,
                                          meta["series"], sources)
             boundary_rows += bnds
@@ -365,10 +396,14 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         from ggfiscal.forecast.forward import declarations_for, extend_forward, forecasts_for
 
         declaration_rows.extend(dataclasses.asdict(dec) for dec in declarations_for(iso3))
+        declaration_rows.extend(
+            {"iso3": iso3, "classification": cls, "line_code": code,
+             "status": "structural_zero", "note": structural_zero_note(reason)}
+            for (cls, code), reason in absent.items())
         for (classification, line_code), sources in forecasts_for(iso3).items():
             meta = series_map.get((classification, line_code))
-            if meta is None:
-                continue
+            if meta is None or (classification, line_code) in absent:
+                continue   # a structural zero is never forecast (D20)
             fc_rows, fbnds = extend_forward(iso3, classification, line_code,
                                             meta["series"], sources, gdp)
             forecast_boundary_rows += fbnds

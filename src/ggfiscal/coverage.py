@@ -154,6 +154,19 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
             (anchor, _intersect(parent_series, *components),
              f"derived {parent} - {' - '.join(split['level2s'])}; years where all exist")]
 
+    # D20: a declared structural zero is covered by its declaration — zero in
+    # every anchor year of its tree, the reason as the note (empty for the
+    # existing three countries)
+    from ggfiscal.build import _zero_series, anchor_series, structural_zero_note
+
+    absent = config.absent_lines(iso3)
+    if absent:
+        totals = {cls: anchor_series(iso3)[(cls, config.total_code(cls))]["series"]
+                  for cls in config.TREES}
+        for (cls, code), reason in absent.items():
+            out[(cls, code)] = [("structural_zero", _zero_series(totals[cls].index),
+                                 structural_zero_note(reason))]
+
     return out
 
 
