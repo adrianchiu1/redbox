@@ -51,7 +51,7 @@ COLUMNS = [
     "model", "fit_first_year", "fit_last_year", "n_obs", "run_id",
 ]
 
-COUNTRY_NAME = {"GBR": "United Kingdom", "FRA": "France", "DEU": "Germany"}
+COUNTRY_NAME = config.country_names()   # from countries.yaml (D-S15-001)
 
 
 def _quiet() -> None:

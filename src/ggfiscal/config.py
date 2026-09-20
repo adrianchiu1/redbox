@@ -7,7 +7,14 @@ from pathlib import Path
 
 import yaml
 
-COUNTRIES = ("GBR", "FRA", "DEU")
+
+def __getattr__(name: str):
+    """`config.COUNTRIES` — the country list, read from config/countries.yaml
+    in file order (D27, D-S15-001). Lazy (PEP 562) so importing the package
+    outside a checkout still works; every routing site iterates this."""
+    if name == "COUNTRIES":
+        return tuple(countries())
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def repo_root(start: Path | None = None) -> Path:
@@ -27,6 +34,82 @@ def _load(name: str) -> dict:
 
 def countries() -> dict:
     return _load("countries")["countries"]
+
+
+def country(iso3: str) -> dict:
+    """One country's block of countries.yaml; a clear error for a country
+    that is not configured (never a fall-through to another country)."""
+    try:
+        return countries()[iso3]
+    except KeyError:
+        raise KeyError(f"country {iso3!r} is not configured in config/countries.yaml "
+                       f"(configured: {', '.join(countries())})") from None
+
+
+def country_names() -> dict[str, str]:
+    """iso3 -> display name (the one COUNTRY_NAME map, D-S15-001)."""
+    return {iso3: cfg["name"] for iso3, cfg in countries().items()}
+
+
+def currencies() -> list[str]:
+    """The set of currencies the schema admits (§5: read from config)."""
+    return list(dict.fromkeys(cfg["currency"] for cfg in countries().values()))
+
+
+def lines_absent(iso3: str) -> dict[str, str]:
+    """D20: line_code -> reason for every line the anchor institution defines
+    as identically zero for this country (published as structural_zero rows;
+    empty for GBR/FRA/DEU)."""
+    return dict(country(iso3).get("lines_absent") or {})
+
+
+def fy_to_cy_weights(iso3: str) -> tuple[float, float]:
+    """§7.10 conversion weights [FY t-1/t, FY t/t+1] for the country's
+    fiscal-year sources (0.25/0.75 April–March; 0.75/0.25 October–September)."""
+    w = country(iso3).get("fy_to_cy_weights")
+    if not w or len(w) != 2 or abs(sum(w) - 1.0) > 1e-9:
+        raise ValueError(f"{iso3}: fy_to_cy_weights must be two weights summing to 1, got {w!r}")
+    return float(w[0]), float(w[1])
+
+
+def perimeter_break(iso3: str) -> int | None:
+    """§7.12 / §14: the year below which no line of this country is extended
+    (DEU 1991, reunification); None where there is no break."""
+    b = country(iso3).get("perimeter_break")
+    return int(b) if b is not None else None
+
+
+def weo_perimeter_gap_expected(iso3: str) -> bool:
+    """§8.2 / V24: True where the anchor perimeter differs from the WEO's
+    (GBR: public sector vs general government), so the NLB gap is classified
+    by its stability rather than its size."""
+    return bool(country(iso3).get("weo_perimeter_gap_expected", False))
+
+
+def period_basis(iso3: str) -> dict:
+    """D19: {anchor: CY|FY, trees: {expenditure|expenditure_esa|revenue: CY|FY},
+    fy_start_month, fy_label} — every tree CY unless the country says otherwise."""
+    pb = dict(country(iso3).get("period_basis") or {})
+    pb.setdefault("anchor", "CY")
+    pb["trees"] = {**{key: "CY" for key in TREES.values()}, **(pb.get("trees") or {})}
+    return pb
+
+
+def tree_period_basis(iso3: str, classification: str) -> str:
+    """The published basis of one tree for one country (CY or FY)."""
+    basis = period_basis(iso3)["trees"][TREES[classification]]
+    if basis not in ("CY", "FY"):
+        raise ValueError(f"{iso3}/{classification}: period basis must be CY or FY, got {basis!r}")
+    return basis
+
+
+def family(iso3: str):
+    """The country's anchor family (kickoff §11.3, D27): the object every
+    routing site asks for a reader. Raises standardise.families.
+    FamilyNotConfigured for an unconfigured or unimplemented family."""
+    from ggfiscal.standardise.families import for_country
+
+    return for_country(iso3)
 
 
 def tolerances() -> dict:
@@ -152,7 +235,7 @@ def line_universe() -> list[tuple[str, str, str]]:
     remainders), the ESA_EXP economic lines and the ESA_REV lines. Totals
     (TE, TE_ESA, TR) and ledger quantities are not members."""
     out = []
-    for iso3 in COUNTRIES:
+    for iso3 in countries():
         for classification in TREES:
             out += [(iso3, classification, c) for c in granular_lines(classification)]
     return out

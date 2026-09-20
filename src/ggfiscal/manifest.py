@@ -67,9 +67,7 @@ FLAT_FILES = [
     "deliverables/weo_reconciliation.csv",
     "deliverables/series_catalogue.csv",
     "deliverables/data_dictionary.csv",
-    "deliverables/strict_GBR.csv",
-    "deliverables/strict_FRA.csv",
-    "deliverables/strict_DEU.csv",
+    *[f"deliverables/strict_{iso3}.csv" for iso3 in config.COUNTRIES],   # one per country (D-S15-001)
     # debt extension (DEBT_KICKOFF.md DD12) — present once `ggfiscal debt build` has run
     "deliverables/debt_reference_series.csv",
     "deliverables/debt_official_totals.csv",

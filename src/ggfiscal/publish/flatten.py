@@ -37,7 +37,7 @@ import pandas as pd
 
 from ggfiscal import config
 
-COUNTRY_NAME = {"GBR": "United Kingdom", "FRA": "France", "DEU": "Germany"}
+COUNTRY_NAME = config.country_names()   # from countries.yaml (D-S15-001)
 
 # Observation types that carry their own value (no growth chaining).
 ANCHOR_TYPES = {"anchor_actual", "derived_actual", "level2_proxy_actual"}
