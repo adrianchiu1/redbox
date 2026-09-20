@@ -20,6 +20,8 @@
 countries:
   GBR:
     name: United Kingdom
+    prose_name: the United Kingdom   # how prose joins the name (chart site)
+    aliases: [United Kingdom, UK, GB]  # strings a chart title may use for the country
     currency: GBP
     anchor_family: ons
     anchors:
@@ -38,6 +40,8 @@ countries:
     backward_legs: {}                 # no IMF GFS backward leg (ONS history reaches 1995 itself)
   FRA:
     name: France
+    prose_name: France
+    aliases: [France, FR]
     currency: EUR
     anchor_family: eurostat
     anchors:
@@ -56,6 +60,8 @@ countries:
     backward_legs: {}                 # no IMF GFS backward leg (Eurostat history reaches 1995 itself)
   DEU:
     name: Germany
+    prose_name: Germany
+    aliases: [Germany, DE]
     currency: EUR
     anchor_family: eurostat
     anchors:

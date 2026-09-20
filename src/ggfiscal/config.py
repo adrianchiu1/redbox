@@ -51,6 +51,16 @@ def country_names() -> dict[str, str]:
     return {iso3: cfg["name"] for iso3, cfg in countries().items()}
 
 
+def prose_names() -> dict[str, str]:
+    """iso3 -> the name as prose joins it ("the United Kingdom")."""
+    return {iso3: cfg.get("prose_name", cfg["name"]) for iso3, cfg in countries().items()}
+
+
+def country_aliases() -> dict[str, tuple[str, ...]]:
+    """iso3 -> the strings a chart title may use for the country."""
+    return {iso3: tuple(cfg.get("aliases") or [cfg["name"]]) for iso3, cfg in countries().items()}
+
+
 def currencies() -> list[str]:
     """The set of currencies the schema admits (§5: read from config)."""
     return list(dict.fromkeys(cfg["currency"] for cfg in countries().values()))

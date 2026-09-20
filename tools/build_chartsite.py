@@ -62,7 +62,15 @@ BOOKS = [
      "The debt-securities register and the interest and financing chains."),
 ]
 
-COUNTRY = {"GBR": "United Kingdom", "FRA": "France", "DEU": "Germany"}
+import sys as _sys
+
+_sys.path.insert(0, str(ROOT / "src"))
+from ggfiscal import config as _config  # noqa: E402
+
+# The countries come from config/countries.yaml (R0, D-S15-001): the names
+# for headings, the prose form for joined titles, the aliases a chart title
+# may use. A fourth country needs no edit here.
+COUNTRY = _config.country_names()
 
 # Ledger line codes are not in series_catalogue.csv; these are the readings
 # used in balance_ledger.csv and §1.3 of the chartbook.
@@ -245,9 +253,8 @@ TRAILING = re.compile(r"[\s,;:\u2014\u2013\-(]+$")
 DANGLING = re.compile(r"\s+(?:at|on|in|of|for|to|vs|from|by)$", re.I)
 
 
-JOIN_NAMES = {"GBR": "the United Kingdom"}
-ISO_ALIASES = {"GBR": ("United Kingdom", "UK", "GB"), "FRA": ("France", "FR"),
-               "DEU": ("Germany", "DE")}
+JOIN_NAMES = _config.prose_names()
+ISO_ALIASES = _config.country_aliases()
 
 
 def _join_names(isos: list[str]) -> str:
