@@ -69,7 +69,6 @@ countries:
     lines_absent: {}                  # D20: no structural zeros
     weo_perimeter_gap_expected: false
     perimeter_break: 1991             # reunification (§14): never extend below
-
 # Tolerances (§15 Q4 defaults, as stated)
 tolerances:
   imf_gfs_reconciliation_pct: 0.5      # V1
@@ -94,8 +93,9 @@ tolerances:
     # 2036 horizon (identical source, concept and seam)
     - {iso3: FRA, line_code: E05, incoming_source: EC_DSM}
     - {iso3: DEU, line_code: E05, incoming_source: EC_DSM}
-  gbr_perimeter_sigma_pct_te: 0.5      # V24 (D-S5-002): GBR NLB-gap stability —
-                                       # sigma of gap/TE across overlap years;
-                                       # D-S0-009 measured 0.36-0.42
+  perimeter_sigma_pct_te: 0.5          # V24 (D-S5-002): NLB-gap stability for a
+                                       # country with weo_perimeter_gap_expected
+                                       # (GBR) — sigma of gap/TE across overlap
+                                       # years; D-S0-009 measured 0.36-0.42
 
 variants: [strict, maximum_extension]

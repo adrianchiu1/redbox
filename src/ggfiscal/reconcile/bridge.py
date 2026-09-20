@@ -11,11 +11,14 @@ an observation. For every overlap year t <= b, in LCU millions:
 Nothing is scaled or adjusted (D13, D16): the bridge explains, it never forces.
 
 Gap classification (§8.2) is a documented heuristic at Stage 0, refined by
-V24 at Stage 5:
-  - FRA/DEU: 'revision' where |gap|/TE_anchor is within the base-bridge
-    tolerance (anchor vintage is newer than the WEO cut-off), else 'unexplained'.
-  - GBR: a perimeter gap is expected (§14); years where the NLB gap ratio sits
-    within tolerance of the country mean are 'perimeter', else 'unexplained'.
+V24 at Stage 5; the rule is chosen per country by
+`countries.yaml.weo_perimeter_gap_expected` (R0, D27):
+  - false (FRA, DEU): 'revision' where |gap|/TE_anchor is within the
+    base-bridge tolerance (anchor vintage is newer than the WEO cut-off),
+    else 'unexplained'.
+  - true (GBR): a perimeter gap is expected (§14); years where the NLB gap
+    ratio sits within tolerance of the country mean are 'perimeter', else
+    'unexplained'.
 """
 
 from __future__ import annotations
@@ -129,7 +132,7 @@ def compute(path: Path | None = None,
                 ratio = r["gap_nlb_pct_te"]
                 if ratio is None:
                     r["classification"], r["notes"] = "", "gap not computable"
-                elif iso3 == "GBR":
+                elif config.weo_perimeter_gap_expected(iso3):
                     stable = abs(ratio - mean_ratio) <= tol_pct
                     r["classification"] = "perimeter" if stable else "unexplained"
                     r["notes"] = (f"perimeter gap expected (§14); country mean "

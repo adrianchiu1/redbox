@@ -359,3 +359,42 @@ def test_every_extension_source_stops_at_the_configured_perimeter_break():
         for key, sources in extensions_for(iso3).items():
             for src in sources:
                 assert src.break_before == want, (iso3, key, src.source_id)
+
+
+# ------------------------------------------- generic IMF GFS backward legs
+
+def test_gfs_backward_legs_are_config_enabled():
+    assert config.backward_legs("GBR") == {} and config.backward_legs("FRA") == {}
+    deu = config.backward_legs("DEU")
+    assert set(deu) == {"gfs_cofog", "gfs_soo"} and deu["gfs_soo"] is None
+    assert "{indicator}" in deu["gfs_cofog"]["level2_note"]
+
+
+@pytest.mark.skipif(not R.latest_snapshots(), reason="no snapshots harvested")
+def test_gfs_legs_follow_the_config_not_a_country_literal(monkeypatch):
+    import inspect
+
+    from ggfiscal.stitch import backward
+
+    assert 'iso3 == "DEU"' not in inspect.getsource(backward.extensions_for)
+    deu = backward.extensions_for("DEU")
+    for n in range(1, 11):
+        srcs = deu[("COFOG", f"GF{n:02d}")]
+        assert [s.source_id for s in srcs] == ["IMF_GFS"] and srcs[0].break_before == 1991
+        assert srcs[0].concept_note == config.backward_legs("DEU")["gfs_cofog"]["level1_note"]
+    assert deu[("COFOG", "GF10_2")][0].concept_note.startswith("IMF GFS COFOG group GF1020_T")
+    assert ("COFOG", "GF04_5") not in deu                       # no GFS group series for 04.5
+    for iso3 in ("GBR", "FRA"):
+        ext = backward.extensions_for(iso3)
+        assert ("COFOG", "GF02") not in ext
+        assert all(s.source_id != "IMF_GFS" for v in ext.values() for s in v)
+    # enabling the SOO leg for a country appends it after AMECO on every ESA_EXP line with a code
+    base = config.countries()
+    monkeypatch.setattr(config, "countries", lambda: {
+        **base, "FRA": {**base["FRA"], "backward_legs": {
+            "gfs_soo": {"note": "IMF GFS SOO {indicator}: {label} (test)"}}}})
+    ext = backward.extensions_for("FRA")
+    e01 = ext[("ESA_EXP", "E01")]
+    assert [s.source_id for s in e01] == ["EC_AMECO", "IMF_GFS"]
+    assert e01[1].concept_note == "IMF GFS SOO G21_T: Compensation of employees (test)"
+    assert [s.source_id for s in ext[("ESA_EXP", "E03")]] == ["EC_AMECO"]   # no gfs_soo code
