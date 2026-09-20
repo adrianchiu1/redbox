@@ -45,12 +45,21 @@ def canonical(name: str) -> pd.DataFrame:
 # ------------------------------------------------------------- completeness
 
 def test_every_flat_file_is_written_and_populated():
+    """Every flat file exists with rows — except the FY/CY bridge (D19,
+    R0), which is header-only exactly while no country publishes a
+    fiscal-year-labelled tree, and populated as soon as one does."""
+    any_fy = any(config.tree_period_basis(iso3, cls) == "FY"
+                 for iso3 in config.COUNTRIES for cls in config.TREES)
     for rel in M.FLAT_FILES:
         path = ROOT / rel
         assert path.exists(), rel
         assert path.stat().st_size > 0, rel
         if path.suffix == ".csv":
-            assert len(pd.read_csv(path)) > 0, rel
+            rows = len(pd.read_csv(path))
+            if rel.endswith("fy_cy_bridge.csv") and not any_fy:
+                assert rows == 0, rel
+            else:
+                assert rows > 0, rel
 
 
 def test_run_manifest_pins_the_bundle():

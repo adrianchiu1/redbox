@@ -374,3 +374,19 @@ sources that would give US `GF10_2`, `GF07` and `R06` a long maximum leg.
 **Ask:** allowlist the two hosts, or hand-retrieve the files as was done
 for the OBR (D-S7-001), when the committee wants those legs. No action
 needed for Stages R0–U6 as specified.
+
+## OQ-14 — Gate R0's "pytest green" holds for everything this container can run; `tests/debt/` needs the debt harvest (NEW, informational; from D-S15-009)
+Raised 2026-09-20 (session 13, Stage R0). The R0 gate asks for `python3 -m
+pytest -q` green with the baseline count plus the new R0 tests. In this
+container the debt-extension snapshots (`ggfiscal debt fetch`: ONS PSF,
+INSEE, Eurostat gov_10dd, BoE, ECB/Bundesbank, …) are not harvested, and
+the session's remit allowed one harvest only (`ggfiscal fetch --all`, the
+parent's). 33 failures and 21 errors in `tests/debt/` — every one a
+`FileNotFoundError` ("no snapshot … run `ggfiscal debt fetch`") or an
+empty-frame `KeyError` — were therefore present in the baseline run before
+any R0 change and are present, unchanged, after it; no test outside
+`tests/debt/` fails, and the five new `tests/debt/test_r0_debt_config.py`
+tests pass without snapshots. The debt layer was not rebuilt in R0 (its
+`debt_*.csv` are the committed ones). **Ask:** none for the committee. The
+next session runs `ggfiscal debt fetch` before `pytest` to see the full
+suite green, or records the same skip. Not a blocker for U0.

@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-19 12:08 UTC, run 20260919T115610Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-20 07:27 UTC, run 20260920T072538Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (17 lines per country: ten Level I functions plus the Level II splits for interest (GF01_7), old-age pensions (GF10_2), unemployment (GF10_5) and transport (GF04_5) with their remainders), **expenditure by ESA economic type** (9 lines per country: compensation, intermediate consumption, social benefits in cash, social transfers in kind, interest, subsidies, other current, capital formation, capital transfers), **revenue by ESA type** (15 lines per country: ten ESA types plus the excise-duty split of R02 and the employers'/households' split of social contributions, with remainders), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 123 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -80,10 +80,11 @@ Stages 0–6 complete, all hard gates passed (§12): harvest and source verifica
 | `data/canonical/net_interest_check.csv` | 112 | §8.4 net-interest cross-check per (country, vintage, horizon) |
 | `data/canonical/coverage_matrix.csv` | 123 | §11.6(9): span, grades, sources, why each of the 123 series ends |
 | `data/canonical/crosswalks.csv` | 69 | §11.5 crosswalks concatenated (one row per mapping, keyed by file) |
-| `data/canonical/exceptions.csv` | 2225 | §10 validation findings (all rows, all severities) |
+| `data/canonical/exceptions.csv` | 2307 | §10 validation findings (all rows, all severities) |
 | `data/canonical/stitch_boundaries.csv` | 69 | §7.4 backward-stitch boundary records incl. non-applications |
 | `data/canonical/forecast_boundaries.csv` | 74 | §7.4 forward boundary records incl. withheld joins (V16) |
 | `data/canonical/forecast_declarations.csv` | 88 | D7/Gate 3: why each line carries no strict forecast |
+| `data/canonical/fy_cy_bridge.csv` | 0 |  |
 | `reports/source_register.csv` | 63 | §6.4 register generated from config/sources.yaml |
 | `reports/validation_report.html` | — | §10 suite rendered (summary, per-check outcomes, WARN tiers) |
 | `reports/reconciliation_report.html` | — | §10/Gate 5 contribution charts + explained shares |
@@ -103,7 +104,8 @@ The same numbers as above, rendered flat by `ggfiscal flatten` — no value is r
 | `deliverables/weo_levels_bridge.csv` | 398 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
 | `deliverables/weo_reconciliation.csv` | 5995 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
 | `deliverables/series_catalogue.csv` | 132 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
-| `deliverables/data_dictionary.csv` | 602 | every column of every file above, described |
+| `deliverables/data_dictionary.csv` | 616 | every column of every file above, described |
+| `deliverables/fy_cy_bridge.csv` | 0 | the FY/CY bridge on total expenditure for every fiscal-year-labelled tree (D19): TE on both bases, the gap, its timing component and the residual — header only while every tree is calendar-year |
 | `deliverables/strict_GBR.csv` | 66 | United Kingdom, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_FRA.csv` | 106 | France, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_DEU.csv` | 80 | Germany, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
@@ -285,7 +287,7 @@ Spans per line and variant, from `coverage_matrix.csv` (which adds stitch counts
 
 ## Validation
 
-Last `ggfiscal validate`: **ERROR=0, WARN=2138, OK=87, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison (V1, D-S13-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
+Last `ggfiscal validate`: **ERROR=0, WARN=2218, OK=89, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison (V1, D-S13-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
 
 ## WEO reconciliation headline
 
