@@ -2817,3 +2817,175 @@ every vintage and the IMF's documented adjustments can be tested as a third
 rule against the measured series. Until then the WARN is a standing,
 expected USA finding and `tools/byte_identity.py --check-now-scoped V24`
 names it on the gate command line. OQ-16 is marked resolved.
+
+## D-S17-004 — V44 lives in `validate/u1.py`, registered at stage 1, and is scoped to what D26 actually builds: the COFOG Level II proxies, with V19 delegated and the GFS comparison at OK (serves kickoff §10 V44, D26, §12 Gate U1)
+
+**Where.** A new `src/ggfiscal/validate/u1.py`, `"V44": 1` in
+`runner.V_SUITE_STAGE` and its `IMPLEMENTED` merged into the runner beside
+R0's. The kickoff offered `validate/r0.py` as an alternative home; a file
+per replication stage keeps each stage's additions reviewable on their own
+and matches `stage1.py .. stage5.py`.
+
+**Scope, and why each boundary is where it is.** V44 runs for every country
+whose `countries.yaml` names a `level2_source` — the config key, never a
+country literal — and reports **OK with an explicit "no proxied Level II"
+message** for the countries that do not, so three quarters of the package
+does not silently skip the check.
+
+1. **COFOG only.** The USA's *revenue* Level II lines (`R02_A`, `R06_E`,
+   `R06_H`) come from the anchor institution's own tables at
+   `anchor_actual` grade A (T10 `D214A`; T12 `D611`/`D613`). D26, and V44
+   with it, is about the COFOG groups that no US source publishes. A V44
+   that demanded grade B of the revenue splits would be wrong about the
+   data, and V1/V19 already police them.
+2. **Anchor-year rows.** Every row observed at its own anchor year and not
+   forecast must be `level2_proxy_actual`, grade B, with a concept note.
+   Stitched rows (`anchor_year != year`) and forecast rows are U2/U3 rows
+   with their own checks (V5, V13, V17); V44 counts them in its OK message
+   so their first arrival is visible rather than silently admitted. At U1
+   there are none: all 440 USA Level II rows (4 lines x 55 years x 2
+   variants) are anchor rows.
+3. **`level2_bea_function` is required of the rows that came from the
+   national table, not of all four lines.** `GF01_7` is the D10 fallback:
+   the build puts it on the anchor institution's own gross D.41 payable,
+   `concept_flag = d41_gross_accrued`, which D-S16-005 measured equal to
+   T11 `D4 x GF01` to USD 3 mn. It is a Level II proxy row — typed
+   `level2_proxy_actual` at grade B, and checked as one — sourced from the
+   anchor, not from NIPA, so stamping it with NIPA's concept flag or NIPA's
+   crosswalk would be a false provenance claim. The 330 rows that *are*
+   BEA-sourced carry both.
+4. **V19 is delegated, not duplicated.** `remainder + Σ level2 = parent`
+   is V19's arithmetic. V44 calls `check_v19()` and re-reports its ERRORs
+   for the country under V44's id; it never recomputes the same sums a
+   second way, so the two checks cannot drift apart.
+5. **The IMF GFS comparison is a memo at OK.** `GF0170_T` (USA 1980–89, the
+   only years it exists) is reported as its own OK row naming the span and
+   the measured range: the GFSM series runs **−48.2 % to −34.0 %** against
+   the built Level II value. Never WARN, never ERROR — D26 says reported,
+   not used, and V1 already carries the per-year WARN rows.
+
+**Negative-case coverage.** `tests/stage_1/test_u1_usa.py` breaks one
+column at a time on one USA Level II line (`observation_type`,
+`quality_grade`, `notes`, `concept_flag`, `crosswalk_version`) and asserts
+V44 ERRORs, scoped to that line. A check that only passes on good data is
+not a check.
+
+## D-S17-005 — The §11.5 crosswalk that documents a row's mapping travels with the row: `crosswalk_version` on the USA D26 proxy rows (serves COFOG_KICKOFF.md §11.5, kickoff §11.4, D26)
+
+**Decision.** `crosswalks/OECD_T11_to_COFOG.csv` (11 rows) and
+`crosswalks/BEA_NIPA_to_COFOG.csv` (4 rows) complete the §11.4 list for the
+USA history, on the §11.5 columns, at `crosswalk_version` **1.0** with
+`reviewer` **stage-u1-build**. `build.write_crosswalks` picks both up with
+no change (it globs `crosswalks/*.csv`); `crosswalks.csv` goes 93 → 108
+rows over 17 files.
+
+*On the version string.* The session brief asked for "crosswalk_version
+stage-u1-1.0" and, in the same breath, for the rows to point at
+`BEA_NIPA_to_COFOG:**1.0**`. Those agree only if the file's version is
+`1.0`, so the stage marker is recorded where the existing files record it —
+the `reviewer` column (`stage-u0-build`, `stage2-build`, `stage11-build`
+are the precedents) — and the version column stays a bare version, which is
+what a "version bump → rebuild" rule needs it to be.
+
+**The row stamp.** `standardise/proxies.py` gains a `Level2Proxy` record
+(source_id, cell key, reader, **crosswalk**) so the mapping's documentation
+is part of the same config-keyed routing, and `config.crosswalk_version()`
+reads the version out of the file itself (raising if a file carries none or
+several) rather than repeating it in code. `build.anchor_series` stamps
+`<stem>:<version>` on the proxy rows through the existing `per_year`
+override, and the row assembly reads `crosswalk_version` from that override
+instead of hard-coding `None`.
+
+**Measured consequence, checked before and after.** 330 USA rows (GF10_2,
+GF10_5, GF04_5 x 55 years x 2 variants) gain one metadata column, `''` →
+`BEA_NIPA_to_COFOG:1.0`, in `expenditure_long_{strict,maximum_extension}.csv`
+and `deliverables/expenditure_cofog.csv`. **No value moves**: a column-by-
+column diff of all seven canonical CSVs against the session baseline shows
+`crosswalk_version` as the only differing column and `USA` as the only
+differing `iso3`; `value_lcu_mn`, `pct_gdp`, grades, types and notes are
+identical in every row, for the USA as for the other three.
+`deliverables/strict_USA.csv` is a wide values file and is unchanged.
+So U1 added documentation, not values — the stage's one allowed USA change
+was not needed.
+
+**What the two files record.** `OECD_T11_to_COFOG` is the identity mapping
+(D18: the OECD Table 11 codes *are* the COFOG divisions, no allocation
+judgement), and carries the two findings a reader must not miss: `GF05` is a
+**structural zero** — Table 11 publishes no environmental-protection rows
+for the USA at all, the nine published functions sum to `_T` to USD 0.002
+mn, so 05 is zero by additivity, not missing (D20, V41) — and `_T` is **not**
+Table 12's `OTE`: the wedge runs −665.0 mn (2002) to +1,334.8 mn (2010), at
+most 261 ppm of `_T`, measured, reported, and never absorbed (D13/D16; the
+COFOG tree publishes `_T`, the ledger publishes `OTE`, and no identity mixes
+them). `BEA_NIPA_to_COFOG` records the four D26 cells with their measured
+shares of the parent (2024 / 2000 / 1990): GF01_7 0.6962 / 0.7260 / 0.7773
+**registered but NOT applied** (the build takes the D10 fallback so the line
+stays on the anchor's ESA concept; the NIPA cell is the cross-check, ratio
+1.0000–1.0321 against T12 D.41), GF10_2 0.5815 / 0.5459 / 0.5689 (wider than
+10.2 by 10.3's survivors), GF10_5 0.0161 / 0.0315 / 0.0457 (cyclical, no
+stable share assumed), GF04_5 0.2685 / 0.2418 / 0.2556 with the OQ-15 note
+(a floor on 04.5, not an estimate of it — D-S17-002).
+
+## D-S17-006 — `stage_reached: 1` for the USA; the small multiples and the §8.3 history decomposition need no change for a USD country (serves kickoff §12 Stage U1, D-S16-008)
+
+**Stage.** `countries.yaml` USA `stage_reached: 0 → 1`. Behaviourally inert
+by design: no site in the package gates on stage 1 (`build.build` runs
+backward legs from 2 and forecast legs from 3; `explanation.compute`
+decomposes the forecast side for `countries_at_stage(3)`), so
+`countries_at_stage(2)` and `(3)` remain `GBR, FRA, DEU` and the canonical
+layer is unchanged by the switch. U2 and U3 raise it after reviewing the
+legs it turns on.
+
+**Small multiples — inspected, not assumed, and not changed.**
+`report/small_multiples.py` already renders one column per configured
+country and plots **`pct_gdp`** in every panel (the ledger row plots
+NLB/GDP x 100), each subplot on its own y axis. The USD-vs-EUR scale
+difference therefore never reaches the chart: USA TE is 39.6 % of GDP
+beside FRA 57.0 %, on figures of USD 11.6 tn and EUR 1.67 tn. The rendered
+`reports/small_multiples_stage1.html` carries 42 USA traces — all 41 lines
+plus NLB — the same as every other country, and the column title `USA`.
+The brief's conditional ("if the small multiples need a change for the USD
+scale, make it in the renderer, never in the data") does not arise, and no
+change was made for its own sake.
+
+**§8.3 history decomposition — runs wider than the gate asks.**
+`reconcile/dynamics.decompose` iterates `config.COUNTRIES` and needs only
+the 20 Level I lines plus GDP, all of which the USA has from 1970. It
+produces **1971–2024** for the USA (2,422 rows per the two variants),
+comfortably covering Gate U1's 2001–2024, and **V26 passes with exact
+additivity in both variants** (0 failures; 2024 strict: line contributions
+sum to −0.090417 pp = `NLB_CHANGE_SUM`, with `ANCHOR_B9_DELTA` +0.003576
+and the WEO `GGXCNL` change +0.028700 reported beside it as memos, never
+allocated to lines).
+
+## D-S17-007 — Gate U1 record: what was built, what was measured, and what is unchanged (serves kickoff §12 Gate U1)
+
+| criterion | result |
+|---|---|
+| 41 USA lines plus the ledger 1970–2024 from anchors | **holds**: 41 granular (line, tree) series x 55 years, 2,420 strict rows — `anchor_actual` 1,430, `derived_actual` 605, `level2_proxy_actual` 220, `structural_zero` 165; grades A 2,035 / B 385; no forecast row and no stitched row. Ledger 1970–2024, 55 rows, `NI` complete. Coverage matrix 41/41 USA lines, 164/164 overall |
+| V1–V4, V7–V9, V12, V14, V19–V23, V41, V44 green for the USA | **holds**: zero USA-scoped ERRORs on every one of them, and zero ERRORs anywhere. V2/V3/V4/V7/V8/V9/V12/V14/V19/V20/V22/V23/V41 each report one OK row covering all four countries; V44 reports its OK summary plus the GFS memo. WARN-tier findings that remain are the intended visibility recorded at U0: V1 258 USA rows (the GFSM-vs-SNA wedges on E01/E02/E05/GF01/GF01_7/GF03/GF04/GF08/GF09) and V21's 30 rows, which are the pre-existing FRA/DEU interest seams — the USA has no V21 row because its `GF01_7` *is* D.41 by the D10 fallback, so the comparison V21 makes is degenerate, not skipped |
+| small multiples render | **holds**: 42 USA traces (41 lines + NLB) in `reports/small_multiples_stage1.html`, one column per country, all panels in % of GDP (D-S17-006) |
+| §8.3 history decomposition 2001–2024 runs and passes V26 | **holds**: USA 1971–2024, V26 exact in both variants (D-S17-006) |
+| GBR/FRA/DEU byte-identical (run_id excepted) | **holds**: `python3 tools/byte_identity.py /tmp/gg_baseline --countries GBR,FRA,DEU --new-crosswalk OECD_T11_to_COFOG --new-crosswalk BEA_NIPA_to_COFOG --new-checks V44` → OK. Verified adversarially: the same command **fails** with either allowance dropped (`crosswalks.csv` shape 108 vs 93; `exceptions.csv` rows other than the new OK checks differ), so the gate is passing on the named exceptions, not on a loosened comparison. `tools/byte_identity.py` itself is untouched at U1 |
+| no USA anchor value changes | **holds**: column-by-column diff of all seven canonical CSVs and every deliverable against the pre-change baseline — the only difference anywhere is `crosswalk_version` on 330 USA rows (D-S17-005). Every `value_lcu_mn` identical |
+| `ggfiscal validate` ERROR = 0 | **holds**: ERROR=0, WARN=2959, OK=103, SKIP=0 (baseline this session: ERROR=0, WARN=2959, OK=101; the two added OK rows are V44's summary and its memo). The WARN count is container-dependent through `S0_SNAPSHOTS` and is identical to this session's own baseline |
+| `python3 -m pytest -q` | **317 passed**, 80 skipped — the session baseline's 299 plus the 18 new `tests/stage_1/test_u1_usa.py` tests. 33 failed / 21 errors, every one in `tests/debt/` for absent debt snapshots, identical to the baseline run before any U1 change (OQ-14; `ggfiscal debt fetch` was deliberately not run, so `exceptions.csv` and the snapshot manifest stay comparable across the stage) |
+
+**Baseline this session** (established before any edit, after `ggfiscal
+fetch --all`: 118 pulls, 0 failures): chain green; ERROR=0, WARN=2959,
+OK=101; pytest 299 passed / 80 skipped / 33 failed / 21 errors; and all
+seven canonical CSVs reproduced the committed layer byte-for-byte except
+`run_id` — for the USA as for GBR/FRA/DEU, confirming the U0 layer is
+reproducible in a fresh container.
+
+**Rules held.** No `elif iso3 ==` anywhere (the U0 test greps the package
+for a USA literal and still passes); V44 and the crosswalk stamp are keyed
+by `countries.yaml level2_source` through `proxies.LEVEL2_PROXY_READERS`,
+never by a country; `forward.py` and `backward.py` untouched; the readers
+of GBR/FRA/DEU untouched; no notebook touched; the debt engine untouched;
+`tools/byte_identity.py` untouched.
+
+**Nothing blocked.** Every Gate U1 criterion is met; no criterion was
+weakened and no test skipped. OQ-13 (the blocked US hosts) still gates the
+U4 long legs and is not a U1 criterion; OQ-14 is unchanged and is the only
+reason the full `pytest` is not green in this container.

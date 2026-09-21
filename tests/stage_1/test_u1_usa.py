@@ -229,10 +229,11 @@ def test_gate_u1_usa_has_41_lines_and_the_ledger_from_anchors_1970_2024():
 
 
 @needs_harvest
-def test_gate_u1_small_multiples_render_a_usa_column_for_every_line():
+def test_gate_u1_small_multiples_render_a_usa_column_for_every_line(tmp_path):
     from ggfiscal.report import small_multiples as SM
 
-    dest = SM.write(config.repo_root() / "reports" / "small_multiples_stage1.html")
+    # render to tmp_path: a test never rewrites a committed deliverable
+    dest = SM.write(tmp_path / "small_multiples_stage1.html")
     html = dest.read_text(encoding="utf-8")
     assert len(SM.LINE_ORDER) == 41
     for code in SM.LINE_ORDER:
