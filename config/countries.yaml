@@ -84,6 +84,29 @@ countries:
         level2_note: "IMF GFS COFOG group {indicator}: redistribution of the same Destatis ESA data (coverage measured at the boundary); XDC levels"
       gfs_soo: null                   # ESA_EXP lines via the lines.yaml gfs_soo codes: available, not enabled
                                       # (AMECO reaches the 1991 break; enabling it would add a leg after AMECO)
+  USA:                                # REPLICATION_KICKOFF.md §11.1 (Stage U0, D-S16-001)
+    name: United States
+    prose_name: the United States
+    aliases: [United States, US, USA]
+    currency: USD
+    anchor_family: oecd_sna           # D18: BEA's data on the SNA 2008 framework as the OECD publishes them
+    anchors: {expenditure: OECD_T11, expenditure_esa: OECD_T12_EXP,
+              revenue: OECD_T12_REV, balance: OECD_T12_BAL, tax_detail: OECD_T10}
+    gdp_source: OECD_T1
+    secondary_national: BEA_NIPA
+    interest_anchor: d41              # no Level II table; D26 proxy = D.41
+    level2_source: BEA_NIPA_T316      # D26: Level II from NIPA Table 3.16 sub-functions (readers_bea)
+    lines_absent:                     # D20
+      R01: "no value-added tax; D.211 = 0 in OECD T12"
+      E04: "Medicare and Medicaid are D.62 in the SNA presentation; D.632 = 0"
+      GF05: "BEA has no environmental-protection function; components in 04 and 06"
+    period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}
+    fy_to_cy_weights: [0.75, 0.25]    # federal Oct–Sep sources
+    envelope_forecast: [EC_AMECO, OECD_EO]
+    period_basis_forecast: CY         # AMECO / OECD EO are CY; the federal FY sources convert per §7.10
+    weo_perimeter_gap_expected: true  # §8.2: WEO's GFSM-basis US series carry documented adjustments
+    perimeter_break: null
+    backward_legs: {}
 
 # Tolerances (§15 Q4 defaults, as stated)
 tolerances:

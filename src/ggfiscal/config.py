@@ -275,10 +275,24 @@ def level2_splits(classification: str | None = None) -> list[dict]:
                                      "eurostat": l2[c].get("eurostat"),
                                      "ons": l2[c].get("ons"),
                                      "oecd_rs": l2[c].get("oecd_rs"),
+                                     # kickoff §4, §11.4 (U0): the OECD SNA family's
+                                     # cells and the BEA NIPA Level II proxy cells (D26)
+                                     "oecd_t11": l2[c].get("oecd_t11"),
+                                     "oecd_t12": l2[c].get("oecd_t12"),
+                                     "oecd_t10": l2[c].get("oecd_t10"),
+                                     "bea_nipa": l2[c].get("bea_nipa"),
                                      "fallback": l2[c].get("fallback"),
                                      "grade_on_fallback": l2[c].get("grade_on_fallback", "B")}
                                  for c in codes}})
     return out
+
+
+def level2_source(iso3: str) -> str | None:
+    """D26: the register id of the secondary national table that serves a
+    country's COFOG Level II lines where its anchor family publishes no
+    Level II table (`level2_source` in countries.yaml; USA: BEA NIPA Table
+    3.16). None where the anchor's own Level II table is the source."""
+    return country(iso3).get("level2_source") or None
 
 
 def line_universe() -> list[tuple[str, str, str]]:
