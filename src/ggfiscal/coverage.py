@@ -37,13 +37,16 @@ def _intersect(*series: pd.Series) -> pd.Series:
     return series[0].loc[idx]
 
 
+# The anchor family's own description of its cells in the coverage matrix
+COFOG_ANCHOR_NOTE = {"ons": "anchor; OTE per function", "eurostat": "anchor; na_item TE"}
+D41_FALLBACK_NOTE = {"ons": "D10 fallback concept: GG D.41 payable, accrued",
+                     "eurostat": "D10 fallback concept: GG D.41 payable"}
+
+
 def _cofog_sources(iso3: str, gf: str, gfs_ind: str) -> list[tuple[str, pd.Series, str]]:
     """(source_id, series, note) candidates for one COFOG line."""
-    out = []
-    if iso3 == "GBR":
-        out.append(("ONS_ESA_T11", R.ons_cofog(gf), "anchor; OTE per function"))
-    else:
-        out.append(("EUROSTAT_GOV10A_EXP", R.eurostat_cofog(iso3, gf), "anchor; na_item TE"))
+    fam = config.family(iso3)
+    out = [(fam.expenditure_source, fam.cofog(iso3, gf), COFOG_ANCHOR_NOTE[fam.name])]
     out.append(("OECD_T11", R.oecd_t11_cofog(iso3, gf), "secondary; S13 XDC OTE"))
     out.append(("IMF_GFS", R.gfs_series(iso3, "cofog", gfs_ind),
                 "reconciliation; GFSM XDC"))
@@ -53,6 +56,7 @@ def _cofog_sources(iso3: str, gf: str, gfs_ind: str) -> list[tuple[str, pd.Serie
 def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, str]]]:
     """All measured source series per (classification, line_code) for a country."""
     out: dict[tuple[str, str], list[tuple[str, pd.Series, str]]] = {}
+    fam = config.family(iso3)
 
     # --- COFOG Level I ---
     for n in range(1, 11):
@@ -63,16 +67,9 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
     for code, meta in config.tree_lines("ESA_EXP").items():
         if config.is_total(meta):
             continue
-        if iso3 == "GBR":
-            spec = meta["ons_t2"]
-            parts = [R.ons_t2_series(c, d) for c, d in spec.get("plus", [])] + \
-                    [R.ons_t2_series(c, d) for c, d in spec.get("minus", [])]
-            anchor_id = "ONS_GG_RECEIPTS"
-        else:
-            spec = meta["eurostat_main"]
-            parts = [R.eurostat_main(iso3, c) for c in spec.get("plus", [])] + \
-                    [R.eurostat_main(iso3, c) for c in spec.get("minus", [])]
-            anchor_id = "EUROSTAT_GOV10A_MAIN"
+        plus, minus = fam.esa_exp_parts(iso3, meta)
+        parts = plus + minus
+        anchor_id = fam.main_source
         entries = [(anchor_id, _intersect(*parts) if len(parts) > 1 else parts[0],
                     f"anchor; {meta['esa']}")]
         if meta.get("ameco"):
@@ -85,62 +82,9 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
                             f"reconciliation; GFSM {meta['gfs_soo']}"))
         out[("ESA_EXP", code)] = entries
 
-    # --- Revenue ---
-    if iso3 == "GBR":
-        t2 = lambda c, d="receivable": R.ons_t2_series(c, d)  # noqa: E731
-        ntl = R.ons_tax_series
-        rev: dict[str, list[tuple[str, pd.Series, str]]] = {
-            "R01": [("ONS_GG_RECEIPTS", t2("D211"), "anchor; D.211 receivable"),
-                    ("ONS_TAX_DETAIL", ntl("D211"), "NTL detail")],
-            "R02": [("ONS_GG_RECEIPTS", _intersect(t2("D2"), t2("D211")),
-                     "derived D.2 - D.211")],
-            "R03": [("ONS_GG_RECEIPTS", t2("D51M"),
-                     "D51M = household income taxes incl. holding gains"),
-                    ("ONS_TAX_DETAIL", ntl("D51M"), "NTL detail")],
-            "R04": [("ONS_GG_RECEIPTS", t2("D51O"),
-                     "D51O = corporate income taxes incl. holding gains"),
-                    ("ONS_TAX_DETAIL", ntl("D51O"), "NTL detail")],
-            "R05": [("ONS_GG_RECEIPTS",
-                     _intersect(t2("D5"), t2("D51M"), t2("D51O"), t2("D59"), t2("D91")),
-                     "derived D.5 - D.51M - D.51O + D.59 + D.91")],
-            "R06": [("ONS_GG_RECEIPTS", t2("D61"), "anchor; D.61 receivable")],
-            "R07": [("ONS_GG_RECEIPTS", t2("D41"), "anchor; D.41 receivable, accrued")],
-            "R08": [("ONS_GG_RECEIPTS", _intersect(t2("D4"), t2("D41")),
-                     "derived D.4 - D.41 receivable")],
-            "R09": [("ONS_GG_RECEIPTS",
-                     _intersect(t2("P11", ""), t2("P12", ""), t2("P131", "")),
-                     "derived P.11 + P.12 + P.131")],
-            "R10": [("ONS_GG_RECEIPTS",
-                     _intersect(t2("D39R"), t2("D7"), t2("D9"), t2("D91")),
-                     "derived D.39 + D.7 + (D.9 - D.91) receivable")],
-        }
-    else:
-        em = lambda c: R.eurostat_main(iso3, c)  # noqa: E731
-        et = lambda c: R.eurostat_taxag(iso3, c)  # noqa: E731
-        rev = {
-            "R01": [("EUROSTAT_GOV10A_MAIN", em("D211REC"), "anchor; D.211 (D-S1-002)"),
-                    ("EUROSTAT_GOV10A_TAXAG", et("D211"), "detail/verification")],
-            "R02": [("EUROSTAT_GOV10A_MAIN", _intersect(em("D2REC"), em("D211REC")),
-                     "derived D.2 - D.211")],
-            "R03": [("EUROSTAT_GOV10A_MAIN", em("D51A_C1REC"),
-                     "anchor; household income taxes incl. holding gains"),
-                    ("EUROSTAT_GOV10A_TAXAG", et("D51A_C1"), "detail/verification")],
-            "R04": [("EUROSTAT_GOV10A_MAIN", em("D51B_C2REC"),
-                     "anchor; corporate income taxes incl. holding gains"),
-                    ("EUROSTAT_GOV10A_TAXAG", et("D51B_C2"), "detail/verification")],
-            "R05": [("EUROSTAT_GOV10A_MAIN",
-                     _intersect(em("D5REC"), em("D51A_C1REC"), em("D51B_C2REC"),
-                                em("D91REC")),
-                     "derived D.5 - R03 - R04 + D.91 (D.59 inside D.5)")],
-            "R06": [("EUROSTAT_GOV10A_MAIN", em("D61REC"), "anchor; D.61 resources")],
-            "R07": [("EUROSTAT_GOV10A_MAIN", em("D41REC"), "anchor; D.41 resources")],
-            "R08": [("EUROSTAT_GOV10A_MAIN", _intersect(em("D4REC"), em("D41REC")),
-                     "derived D.4 - D.41 resources")],
-            "R09": [("EUROSTAT_GOV10A_MAIN", em("P11_P12_P131"), "anchor")],
-            "R10": [("EUROSTAT_GOV10A_MAIN",
-                     _intersect(em("D39REC"), em("D7REC"), em("D92REC"), em("D99REC")),
-                     "derived D.39 + D.7 + D.92 + D.99 resources")],
-        }
+    # --- Revenue: the D1 mapping's anchor cells and detail-table candidates,
+    # per the anchor family ---
+    rev: dict[str, list[tuple[str, pd.Series, str]]] = fam.revenue_coverage(iso3)
 
     # OECD RS headings (backward extension, D15) and GFS SOO (reconciliation)
     rs = lambda h: R.oecd_rs_heading(iso3, h)  # noqa: E731
@@ -181,19 +125,16 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
                 if not meta["gfs_indicator"]:
                     entries = [e for e in entries if e[0] != "IMF_GFS"]
                 if l2 == "GF01_7":
-                    if iso3 == "GBR":
-                        entries.append(("ONS_PSF_INTEREST", R.ons_t2_series("D41", "payable"),
-                                        "D10 fallback concept: GG D.41 payable, accrued"))
-                    else:
-                        entries.append(("EUROSTAT_GOV10A_MAIN", R.eurostat_main(iso3, "D41PAY"),
-                                        "D10 fallback concept: GG D.41 payable"))
+                    entries.append((fam.interest_history_source, fam.d41_payable(iso3),
+                                    D41_FALLBACK_NOTE[fam.name]))
                     entries.append(("EC_AMECO", R.ameco_series(iso3, "UYIG", 16),
                                     "envelope forecast source; ESA gross GG interest (D.41 pay)"))
                 if l2 == "GF10_2" and iso3 in ("FRA", "DEU"):
                     entries.append(("EC_AGEING_2024", R.ar_series(iso3, "pensions"),
                                     "forecast source; AWG gross public pensions, % GDP"))
                 if l2 == "GF10_2" and iso3 == "GBR":
-                    entries.append(("OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners"),
+                    entries.append(("OBR_HIST_PF",
+                                    R.obr_hist_pf_cy("o/w pensioners", config.fy_to_cy_weights(iso3)),
                                     "backward extension candidate; public-sector pensioner "
                                     "spending, FY converted (D-S13-005)"))
             else:
@@ -205,15 +146,27 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
             out[(cls, l2)] = entries
             components.append(entries[0][1])
         if cls == "COFOG":
-            parent_series = (R.ons_cofog(parent) if iso3 == "GBR"
-                             else R.eurostat_cofog(iso3, parent))
-            anchor = "ONS_ESA_T11" if iso3 == "GBR" else "EUROSTAT_GOV10A_EXP"
+            parent_series = fam.cofog(iso3, parent)
+            anchor = fam.expenditure_source
         else:
             parent_series = out[(cls, parent)][0][1] if (cls, parent) in out else pd.Series(dtype=float)
             anchor = out[(cls, parent)][0][0] if (cls, parent) in out else ""
         out[(cls, split["remainder"])] = [
             (anchor, _intersect(parent_series, *components),
              f"derived {parent} - {' - '.join(split['level2s'])}; years where all exist")]
+
+    # D20: a declared structural zero is covered by its declaration — zero in
+    # every anchor year of its tree, the reason as the note (empty for the
+    # existing three countries)
+    from ggfiscal.build import _zero_series, anchor_series, structural_zero_note
+
+    absent = config.absent_lines(iso3)
+    if absent:
+        totals = {cls: anchor_series(iso3)[(cls, config.total_code(cls))]["series"]
+                  for cls in config.TREES}
+        for (cls, code), reason in absent.items():
+            out[(cls, code)] = [("structural_zero", _zero_series(totals[cls].index),
+                                 structural_zero_note(reason))]
 
     return out
 

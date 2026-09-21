@@ -32,15 +32,15 @@ def _sha(source_id: str, part: str) -> str | None:
     return e["sha256"] if e else None
 
 
-def fy_to_cy(fy: pd.Series) -> pd.Series:
-    """§7.10: CY_t = 0.25 × FY_{t−1/t} + 0.75 × FY_{t/t+1}, FY indexed by its
-    starting calendar year. Consumes one year at the end."""
+def fy_to_cy(fy: pd.Series, weights: tuple[float, float] | None = None) -> pd.Series:
+    """§7.10: CY_t = w0 × FY_{t−1/t} + w1 × FY_{t/t+1}, FY indexed by its
+    starting calendar year, with the country's `fy_to_cy_weights` (R0: the
+    parent package's conversion, one implementation). Consumes one year at
+    the end."""
+    from ggfiscal.forecast.forward import fy_to_cy as _fy_to_cy
+
     fy = fy.sort_index().astype(float)
-    out = {}
-    for t in fy.index:
-        if (t - 1) in fy.index:
-            out[t] = 0.25 * fy[t - 1] + 0.75 * fy[t]
-    return pd.Series(out, dtype=float)
+    return _fy_to_cy(fy, weights).astype(float)
 
 
 def _row(iso3, year, chain, step, value, source, basis, period_basis="CY",
@@ -101,7 +101,8 @@ def _gbr_interest(years) -> list[dict]:
             fy_total[start] = float(tot.iloc[0])
             fy_cash[start] = float(cash.iloc[0]) if not cash.empty else None
             editions[start] = (part, e["sha256"])
-    cy = fy_to_cy(pd.Series(fy_total)) if fy_total else pd.Series(dtype=float)
+    cy = (fy_to_cy(pd.Series(fy_total), config.fy_to_cy_weights("GBR")) if fy_total
+          else pd.Series(dtype=float))
     for y in years:
         if y in cy.index:
             rows.append(_row("GBR", y, "interest", "A_cg_cash", cy[y], "HMT_NLF", "accrued_nlf_finance_costs",
@@ -175,13 +176,46 @@ def _deu_step_a(years, chain: str) -> list[dict]:
                  notes=s.attrs.get("note")) for y in years]
 
 
+# ------------------------------------------------------- per-country totals
+
+def official_totals_gbr(years) -> list[dict]:
+    """GBR: HMT NLF / ONS NMFX (interest), ONS CGNCR / PSA6B_2 (financing)."""
+    return _gbr_interest(years) + _gbr_financing(years)
+
+
+def official_totals_fra(years) -> list[dict]:
+    """FRA: the finance-ministry step A is blocked (OQ-8); Eurostat S1311
+    D.41 payable and B.9 at step B."""
+    return (_blocked_rows("FRA", "interest", "A_cg_cash", "FRA_PLF_P117", "cash_budgetaire", years)
+            + _eurostat_rows("FRA", years, "interest", "B_s1311_d41", "D41PAY")
+            + _blocked_rows("FRA", "financing", "A_cg_cash_requirement", "FRA_AFT_FINANCEMENT", "cash", years)
+            + _eurostat_rows("FRA", years, "financing", "B_s1311_b9", "B9"))
+
+
+def official_totals_deu(years) -> list[dict]:
+    """DEU: BMF Datenportal at step A, Eurostat S1311 at step B."""
+    return (_deu_step_a(years, "interest")
+            + _eurostat_rows("DEU", years, "interest", "B_s1311_d41", "D41PAY")
+            + _deu_step_a(years, "financing")
+            + _eurostat_rows("DEU", years, "financing", "B_s1311_b9", "B9"))
+
+
 # ---------------------------------------------------------------- public
 
 def official_totals(run_id: str, first_year: int | None = None) -> pd.DataFrame:
     """One row per (country, year, chain, step) from the first year the
-    package carries either GF01_7 or NLB (or `first_year`) to the last."""
+    package carries either GF01_7 or NLB (or `first_year`) to the last.
+    Step C is the package for every country; steps A and B come from the
+    country's own builder named in config/debt.yaml `countries`
+    (`official_totals`, R0 step 8) — a country without one raises, it never
+    takes another country's sources."""
+    from ggfiscal.debt.countries import builder
+
     rows: list[dict] = []
     for iso3 in config.COUNTRIES:
+        build_ab = builder(iso3, "official_totals", "official_totals")
+        if build_ab is None:
+            raise LookupError(f"{iso3}: config/debt.yaml countries.{iso3}.official_totals names no builder")
         g = package_gf01_7(iso3)
         n = package_nlb(iso3)
         start = first_year or int(min(g.index.min(), n.index.min()))
@@ -191,19 +225,7 @@ def official_totals(run_id: str, first_year: int | None = None) -> pd.DataFrame:
                       notes="expenditure_long_strict GF01_7, actuals only") for y in years]
         rows += [_row(iso3, y, "financing", "C_s13_nlb", n.get(y), "package_NLB", "accrued",
                       notes="balance_ledger strict NLB") for y in years]
-        if iso3 == "GBR":
-            rows += _gbr_interest(years)
-            rows += _gbr_financing(years)
-        elif iso3 == "FRA":
-            rows += _blocked_rows("FRA", "interest", "A_cg_cash", "FRA_PLF_P117", "cash_budgetaire", years)
-            rows += _eurostat_rows("FRA", years, "interest", "B_s1311_d41", "D41PAY")
-            rows += _blocked_rows("FRA", "financing", "A_cg_cash_requirement", "FRA_AFT_FINANCEMENT", "cash", years)
-            rows += _eurostat_rows("FRA", years, "financing", "B_s1311_b9", "B9")
-        else:
-            rows += _deu_step_a(years, "interest")
-            rows += _eurostat_rows("DEU", years, "interest", "B_s1311_d41", "D41PAY")
-            rows += _deu_step_a(years, "financing")
-            rows += _eurostat_rows("DEU", years, "financing", "B_s1311_b9", "B9")
+        rows += build_ab(years)
     out = pd.DataFrame(rows, columns=COLUMNS)
     out.insert(0, "run_id", run_id)
     return out.sort_values(["iso3", "chain", "year", "step"]).reset_index(drop=True)

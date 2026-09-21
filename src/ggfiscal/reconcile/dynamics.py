@@ -46,6 +46,11 @@ def decompose(variant: str = "strict") -> pd.DataFrame:
                                               values="value_lcu_mn")
         r = rev[rev.iso3 == iso3].pivot_table(index="year", columns="line_code",
                                               values="value_lcu_mn")
+        # D20: a declared structural zero is 0 in every year of the decomposition
+        for (cls, code) in config.absent_lines(iso3):
+            piv = e if cls == "COFOG" else r if cls == "ESA_REV" else None
+            if piv is not None:
+                piv[code] = piv[code].fillna(0.0) if code in piv.columns else 0.0
         gdp = exp[exp.iso3 == iso3].groupby("year").gdp_lcu_mn.first()
         led = ledger[(ledger.iso3 == iso3) & (ledger.series_variant == variant)] \
             .set_index("year")

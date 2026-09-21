@@ -2130,3 +2130,316 @@ fidelity test). One merged test was loosened to its own claim: the WEO's
 z-score against the benchmark cone is asserted inside the 80% band
 (|z| < 1.28, which is what §4.6 says) rather than below 1.0 — France 2031
 is 1.10 after the pension split, still inside.
+
+## D-S14-001 — The committee took the replication scoping note's ten questions on their defaults; `REPLICATION_KICKOFF.md` (specification v2.4 addendum) adopted as the governing plan for the United States and Japan (serves parent §0–§2, §16; resolves OQ-12; session 12, 2026-09-20)
+
+**Context.** `REPLICATION_SCOPING.md` (2026-09-20) set out, from sources
+tested live, what replicating the package for `USA` and `JPN` requires,
+audited the code, estimated the effort and tabled ten questions
+Q-R1–Q-R10 with build defaults. The committee answered "let's do this" on
+the defaults and asked for the plan to be written here.
+
+**Decision.** `REPLICATION_KICKOFF.md` governs USA and JPN matters; where
+it is silent the parent and the debt specification govern. Its decisions
+D18–D27 record the ten answers:
+
+| Q | Answer (default) | Kickoff decision |
+|---|---|---|
+| Q-R1 anchor | OECD SNA Tables 11/12/10 (the NSO's own data on the SNA framework); NIPA/ESRI as same-institution secondary | D18 |
+| Q-R2 Japan's COFOG basis | published FY-labelled with a FY/CY bridge on TE as a deliverable; no anchor converted | D19 |
+| Q-R3 structural zeros | zero rows typed `structural_zero` (USA R01, E04, GF05) | D20 |
+| Q-R4 Japan's D.41 | FISIM-adjusted (ESA concept); unadjusted reported as the wedge | D21 |
+| Q-R5 sub-perimeter forecasts | rank-4 proxies, maximum only, grade C (B at ≥ 0.90 coverage) | D22 |
+| Q-R6 PDF tables | admitted when machine-extracted with reproduced printed totals | D23 |
+| Q-R7 blocked hosts | proceed on CBO's mirror and CMS; cbo.gov and ssa.gov registered blocked with the hand-retrieval route | D24 |
+| Q-R8 Japanese positions | reconstructed from flows, grade B, validated against BoJ holdings, by-type totals and the live snapshot | D25 |
+| Q-R9 US Level II | BEA sub-functions as `level2_proxy_actual`, grade B | D26 |
+| Q-R10 scope | both countries specified; build order R0 → USA fiscal → go/no-go → JPN fiscal → debt extensions | §1, D27 |
+
+Both countries are in the specification so that the one-off
+generalisation (Stage R0) is designed once for fiscal-year anchors, a
+third anchor family and structural zeros; the Japanese build is staged
+behind the US Gate U6 (Q-K6 default lets J0's harvest run earlier).
+
+**Consequences.** Six new committee questions (Q-K1–Q-K6) carry defaults
+in kickoff §15. New validation tests V41–V45 and amendments to V9, V17,
+V24. New `observation_type` value `structural_zero`; new deliverable
+`fy_cy_bridge.csv`. No number changes for GBR, FRA or DEU: Gate R0's
+acceptance is byte identity of the canonical layer and the bundle.
+`OPEN_QUESTIONS.md` OQ-12 is resolved by this entry; OQ-13 (the blocked
+US hosts as the trigger for the long US legs) is opened.
+
+**Nothing built.** No source registered in `config/sources.yaml`, no
+snapshot taken, no code changed in this session.
+
+## D-S15-001 — Stage R0 opened: `config/countries.yaml` is the single source of country routing; the country list, currency schema, display names and per-country flat files come from it (serves REPLICATION_KICKOFF.md §11.1, §12 Stage R0, D27; session 13, 2026-09-20)
+
+**Context.** Kickoff §12 Stage R0 and the scoping note's F1: the country
+list was a tuple in `config.py`, the pandera `iso3`/`currency` checks were
+literals, the display-name map was copied three times, and
+`manifest.FLAT_FILES` named `strict_{GBR,FRA,DEU}.csv` by hand. R0's
+acceptance is that none of the three countries' numbers moves.
+
+**Decision.** `countries.yaml` carries, per country, `name`, `prose_name`,
+`aliases`, `currency`, `anchor_family`, `lines_absent`, `period_basis`
+(anchor and per-tree), `fy_to_cy_weights`, `weo_perimeter_gap_expected`,
+`perimeter_break` and `backward_legs`, beside the keys it already had.
+`config.COUNTRIES` is read from the file in file order (a lazy module
+attribute, so importing the package outside a checkout still works), and
+every new key has an accessor (`config.country`, `country_names`,
+`prose_names`, `country_aliases`, `currencies`, `lines_absent`,
+`absent_lines`, `period_basis`, `tree_period_basis`, `fy_label`,
+`fy_to_cy_weights`, `weo_perimeter_gap_expected`, `perimeter_break`,
+`backward_legs`, `source_period_basis`, `family`). An unconfigured
+country raises `KeyError` naming the file and the configured countries.
+The pandera `iso3` and `currency` checks (parent and debt schemas) are
+evaluated against config at validation time; `publish.flatten`,
+`forecast.statistical`, `report.readme`, `tools/build_chartsite.py` and
+`tools/update_notebooks_s11.py` take their country lists and names from
+`config.country_names()`; `manifest.FLAT_FILES` enumerates
+`strict_{iso3}.csv` from `config.COUNTRIES`.
+
+**Values for GBR/FRA/DEU** are the ones that change no behaviour
+(kickoff §11.1's closing paragraph): `anchor_family: ons | eurostat`,
+`lines_absent: {}`, every tree `CY`, `fy_to_cy_weights: [0.25, 0.75]`,
+`perimeter_break: 1991` for DEU and null otherwise, `backward_legs`
+enabling only DEU's existing GFS COFOG leg.
+
+**Evidence.** Chain re-run after the step: `data/canonical/` and
+`deliverables/` byte-identical to the session baseline except `run_id`;
+`ggfiscal validate` OK=87 WARN=2218 ERROR=0 (the baseline counts).
+
+## D-S15-002 — Anchor families: the `AnchorFamily` interface of kickoff §11.3, `OnsFamily` and `EurostatFamily` wrapping the existing readers unchanged, and every routing site calling `config.family(iso3)` (serves D27, kickoff §11.3, scoping §6 F1)
+
+**Decision.** `standardise/families.py` defines the protocol (`cofog`,
+`cofog_total`, `main`, `tax`, `d41_payable`, `gdp`, `totals`, `level2`)
+and the two implementations. Beyond the protocol, a family also carries
+the institution-specific cell arithmetic that used to sit inline at the
+routing sites — the D1 revenue mapping (`revenue_lines`, `revenue_total`),
+the ESA_EXP item lists (`esa_exp_parts`), the revenue Level II cells
+(`revenue_level2`), the reconciliation and coverage candidate lists
+(`recon_revenue`, `revenue_coverage`), the §8.2 aggregates
+(`bridge_aggregates`) and its source ids — because those are exactly the
+places that decided by `iso3 == "GBR"`, and a family is meant to be the
+complete answer to "which cells build this country's trees". Every
+series a family returns is the same reader call the site made before, so
+the canonical layer is byte-identical (a test pins each wrapper against
+its reader). `config.family(iso3)` resolves `anchor_family` through the
+registry `families.FAMILIES`; a country without the key, or naming a
+family the module does not implement, raises `FamilyNotConfigured` — the
+gate's dry `config.family("USA")` — and nothing falls through.
+
+**Sites.** `build.anchor_series` / `_revenue_level2` / `gdp_series` /
+`build` (ledger totals), `coverage._cofog_sources` / `line_sources`,
+`reconcile/bridge.anchor_aggregates`, `reconcile/recon_v0._anchor_cofog`
+/ `compute`, `validate/stage1.check_v21`. The forecast-envelope choice in
+`validate/stage3._envelopes` and its twin
+`reconcile/explanation._official_totals` (both `iso3 == "GBR"`) now go
+through `forecast/envelopes.py`, keyed by the first entry of the
+country's `envelope_forecast` (OBR databank / AMECO readers; an envelope
+source with no reader raises). The GF10_2 forecast-candidate declaration
+in `coverage.line_sources` (Ageing Report for FRA/DEU, the OBR historical
+series for GBR) keeps its country names: it is a per-country *source*
+declaration of the kind `forward.py` and `backward.py` carry (kickoff
+C4/C5 per-country work), not anchor routing; the test says so.
+
+**Not done, deliberately.** The GBR revenue cell codes (D51M, D51O, D39R,
+…) stay in `OnsFamily.revenue_lines` rather than moving into `lines.yaml`
+`ons:` blocks: moving them is a per-line config refactor with its own
+review, and the OECD family for USA/JPN will need SNA cell codes that do
+not exist in `lines.yaml` either (scoping §6, "ESA-keyed line cells").
+The family is where a third institution's mapping will live, and the
+`lines.yaml` `oecd_t12` cells of §11.4 land with U1/J1.
+
+**Evidence.** Anchors, coverage candidates and bridge aggregates dumped
+from the step-1 code and from the family-routed code are identical for
+all three countries; chain byte-identical; validate OK=87 WARN=2218
+ERROR=0.
+
+## D-S15-003 — Structural zeros (D20) are plumbed end to end and produce nothing for GBR/FRA/DEU (serves kickoff D20, §5, §10 V41, §12 Stage R0)
+
+**Decision.** `lines_absent` (line -> reason) resolves through
+`config.absent_lines(iso3)` to (classification, line); a code that is not
+a granular line of exactly one tree is a config error. The build
+publishes such a line as `structural_zero` rows (new
+`observation_type`): 0.0 in every anchor year of its tree — the years the
+tree's own total covers, or the parent's years for a Level II line —
+grade A, from the tree's total's source, the reason as the note, in both
+variants; it is never extended backward, never forecast, and gets a
+`structural_zero` declaration row (so the reason reaches the coverage
+matrix's `reason_series_ends` and the catalogue's `forecast_note`). The
+D10 D.41 fallback does not run on an absent interest line. V41 (ERROR,
+`validate/r0.py`) checks: every declared line has structural_zero rows in
+exactly the anchor years, none elsewhere, zero at grade A, reason carried;
+every structural_zero row is declared. The identities tolerate declared
+absences by treating the line as zero: `stage1._sum_check` (V2/V22),
+`reconcile/dynamics.decompose` (§8.3), `forecast/balance._leg` (a zero
+leg with no error); `S0_LINES` names the declared absences and keeps them
+in the universe (published lines); `coverage.line_sources` counts a
+declaration as coverage (Gate U0's "or a `lines_absent` entry");
+`tests/stage_1/test_gate1.py` derives its expected line sets from config.
+`publish.flatten` labels the type ("structural zero (D20)"). The data
+dictionary's text listing the observation types is unchanged until a
+bundle carries one — the dictionary describes the bundle.
+
+**Exercised.** A test declares `R01` and `GF10_5` absent on a
+monkeypatched copy of the config and checks the zero rows, the remainder
+arithmetic and the identity fill; for the real config every helper is
+empty and V41 reports "no lines_absent declared".
+
+**Evidence.** Chain byte-identical except the one new `V41` OK row in
+`exceptions.csv`; validate OK=88 WARN=2218 ERROR=0.
+
+## D-S15-004 — Period basis per country and per tree (D19, §7.10): conversion weights from config, `source_period_basis` and `native_period` from the tree's published basis, the register's `period_basis` policed by V42, and `fy_cy_bridge.csv` published empty (serves kickoff D19, §5, §7.10, §10 V42, §11.4)
+
+**Decision.**
+- `forward.fy_to_cy(fy, weights)` takes the country's `fy_to_cy_weights`;
+  every OBR/PESA conversion in `forward.py`, the OBR pensioner leg in
+  `backward.py`/`coverage.py` (`readers.obr_hist_pf_cy(column, weights)`),
+  the envelope readers and the debt engine's NLF conversion
+  (`debt/intermediates.fy_to_cy`, now delegating to the one
+  implementation) pass them. The default pair stays 0.25/0.75, so the
+  parent §7.10 numbers are unchanged; 0.75/0.25 is a config value for an
+  October–September country.
+- `sources.yaml` gains `period_basis` (FY on OBR_EFO_LATEST, OBR_FRS,
+  OBR_PSF_DATABANK, OBR_HIST_PF, HMT_PESA; CY by default);
+  `config.source_period_basis(sid)` reads it.
+- Every canonical row is stamped `source_period_basis` = the published
+  basis of its tree (`countries.yaml period_basis.trees`) and
+  `native_period` = `FY{start_year}` on a FY-labelled tree, the calendar
+  year otherwise. **Why the tree's basis and not the source's:** the rows
+  the OBR sources produce are calendar-year values (converted per §7.10,
+  flagged `is_period_converted` with `period_conversion_method`), and
+  stamping them FY from the register would both misdescribe the value and
+  change ~700 published cells. The register basis is what V42 polices:
+  no CY-basis source is chained onto a FY-labelled tree (§7.14), and a
+  FY-basis register source enters a CY tree only through a conversion
+  (checked on forecast rows, which carry the flag; the OBR pensioner
+  backward leg converts inside its reader and its stitched rows carry no
+  conversion flag — a pre-existing gap noted, not changed).
+- `fy_cy_bridge.csv` (canonical and bundle, in `manifest.DELIVERABLES`
+  and `FLAT_FILES`, described in the data dictionary): one row per
+  (country, FY-labelled tree, year) with TE on the FY basis (the tree's
+  total), TE on the CY basis (the balance anchor's TE from the family),
+  the gap, `timing_component_lcu_mn` from
+  `build.fy_cy_timing_component` (a hook returning None until a quarterly
+  reader exists — the whole gap is residual, never allocated) and the
+  residual. V42 checks additivity per row. Header only for the three
+  countries; a test declares FRA's COFOG tree FY on a copy of the config
+  and checks the rows fill additively.
+
+**Evidence.** Forecast and extension source registries dumped before and
+after are identical; chain byte-identical except the `V42` OK row, the
+new empty file and the 14 data-dictionary rows and README lines that
+describe it; validate OK=89 WARN=2218 ERROR=0.
+
+## D-S15-005 — The WEO perimeter rule and the perimeter break are config (serves kickoff §8.2, §10 V24 amended, §7.12; scoping G5)
+
+`reconcile/bridge.compute` classifies the base-year NLB gap by
+`weo_perimeter_gap_expected` (stability about the country mean where a
+perimeter gap is expected; size against the base-bridge tolerance
+otherwise); `validate/stage5.check_v24` picks its rule the same way, and
+the tolerance key is renamed `perimeter_sigma_pct_te` (it applies to any
+country with the flag). `stitch/backward.py` stops every extension source
+at `config.perimeter_break(iso3)`; `DEU_BREAK` is gone. Chain
+byte-identical; validate OK=89 WARN=2218 ERROR=0.
+
+## D-S15-006 — The IMF GFS COFOG and SOO backward legs are generic and enabled per country (serves kickoff §12 Stage R0 "GFS COFOG/SOO backward legs generic"; scoping G6)
+
+`countries.yaml backward_legs.gfs_cofog` enables, for a country, the IMF
+GFS COFOG Level I legs (`{code}_T`) and the Level II group legs
+(`gfs_indicator` lines other than GF01_7), with the country's own concept
+notes in config (they carry measured facts — "boundary ratio ~1.0 at
+1995" is DEU's); `backward_legs.gfs_soo` enables the GFS SOO legs of the
+ESA_EXP lines (`gfs_soo` codes in `lines.yaml`), appended after AMECO so
+they only ever extend below AMECO's own start. DEU enables `gfs_cofog`
+(its existing 1991–94 leg, notes and registry order unchanged); no
+country enables `gfs_soo` — AMECO reaches every configured break, and
+enabling it would add a leg, i.e. a number. The `iso3 == "DEU"` block is
+gone; a test enables `gfs_soo` for FRA on a copy of the config and checks
+the appended sources. Chain byte-identical; validate OK=89 WARN=2218
+ERROR=0.
+
+## D-S15-007 — Notebook and chart-site tooling take their countries from config; a new country's books are seeded by copy (serves kickoff §11.4 "notebooks seeded by copy", §12 Stage R0; scoping G7)
+
+`tools/update_notebooks_s11.py`: the country list, names and section
+numbers come from `countries.yaml`. A country with no chartbook block is
+seeded by copying the last configured country's section (panel, COFOG
+charts, revenue heading, ledger charts) and its WEO sub-section,
+retargeted (ISO literal, name, section number), outputs stripped, with
+the later top-level sections renumbered — prose cross-references such as
+"§4.4" are left for the author of the country's U6 pass. A country with
+no forecast books gets each book from the last configured country's
+preamble and setup cells plus one section per line (`_series_cells`, so
+fan cells appear only where a benchmark exists); the ESA book follows
+from the expenditure book as before. `tools/build_chartsite.py` reads
+names, prose names and title aliases (`prose_name`, `aliases` in
+`countries.yaml`) from config. A test seeds a fourth country on a
+temporary copy of the notebooks and pins that the existing books are
+unchanged cell for cell (modulo section numbers) and that the tool is
+idempotent on the committed books; the committed notebooks and their
+outputs are untouched.
+
+## D-S15-008 — The debt engine is explicit per country through `config/debt.yaml countries`; the `else` branch of `intermediates.official_totals` is removed (serves kickoff §12 Stage R0 "Debt engine"; scoping D1)
+
+`config/debt.yaml` gains `countries`: per country the register module,
+the aggregates builder, the official-totals builder (`module` or
+`module:function` under `ggfiscal.debt`, resolved by
+`debt/countries.py`), the sub-sector chain source and the V31
+cross-check kind. `intermediates.official_totals` calls the country's
+builder (`official_totals_gbr` / `_fra` / `_deu`, the former branches as
+functions) after the package's step C, and raises
+`DebtCountryNotConfigured` for a country without one — checked before
+any data is read. `register.country_modules()` replaces
+`COUNTRY_MODULES`; `aggregates.class_aggregates` iterates the configured
+builders; `chains._subsector_items` reads `subsector_source` (None for
+GBR); `validate.check_v31` runs the Eurostat GD_F3 comparison where the
+kind is `eurostat_gd_f3` and reports the same-source note where it is
+`same_source`; `reference.py` enumerates the OECD FINMARK rates from the
+`reference_series` entries. The mapping is listed in the engines'
+historical order (DEU, GBR, FRA) so a rebuild keeps its row order. A
+stale import of the removed `debt.model.ISO3` in `debt/aggregates.py`
+(from D-S15-001's schema change) is fixed here — it was masked by the
+debt tests failing on absent snapshots (D-S15-009).
+
+**Not verified by rebuild.** The debt layer is not part of the R0 chain
+and its inputs (`ggfiscal debt fetch`) are not harvested in this
+container, so `debt_*.csv` were not regenerated; the routing is verified
+by tests that resolve every configured builder to the function that ran
+before and by reading the diff. The committed `debt_*.csv` are unchanged.
+
+## D-S15-009 — Gate R0 record: what was measured, what is byte-identical, and the two exceptions (serves kickoff §12 Gate R0)
+
+**Baseline (this container, 2026-09-20).** The refetchable D8 snapshots
+were absent; `ggfiscal fetch --all` ran once (80 pulls, 0 failures,
+manifest appended). The rebuilt canonical layer was identical to the
+committed one except `run_id`. Baseline `ggfiscal validate`: OK=87
+WARN=2218 ERROR=0 (session 11 recorded WARN=2092 on its own harvest; the
+count is vintage- and container-dependent, see S0_SNAPSHOTS). Baseline
+`python3 -m pytest -q`: 253 passed, 80 skipped, 33 failed, 21 errors —
+every failure and error in `tests/debt/`, all `FileNotFoundError` /
+empty-frame `KeyError` for debt snapshots (`run ggfiscal debt fetch`),
+none in the parent package.
+
+**After the eight steps.** Each step's chain (`build`, `reconcile`,
+`validate`, `report`, `flatten`) ran against a frozen copy of `src/` and
+was diffed against the baseline copy of `data/canonical/` and
+`deliverables/`: every file byte-identical except `run_id`, with exactly
+these additions — (a) `exceptions.csv` gains the OK rows of the two new
+checks V41 and V42 (OK=89, WARN and ERROR unchanged), (b) the new
+`fy_cy_bridge.csv` (canonical and bundle, header only), its 14 rows in
+`data_dictionary.csv` and the two README lines that list it and the
+dictionary's row count. No value of any series, ledger, bridge,
+decomposition, catalogue or matrix moved. `ggfiscal validate` ERROR=0
+with the baseline WARN count. `python3 -m pytest -q`: 285 passed, 80 skipped, 33 failed, 21 errors — the 253 passed of the baseline plus the 32 new R0 tests, and the same 54 debt tests failing for the same absent snapshots; two pre-R0 tests were updated to the R0 spec (the flat-file completeness test admits the header-only bridge while no tree is FY-labelled; the suite-count test lists V41/V42 beside V1–V28) — the
+baseline plus the new R0 tests (`tests/stage_0/test_r0_generalisation.py`
+24 tests: config keys, family protocol and registry, the
+unconfigured-family error, structural zeros, period basis, perimeter
+rules, GFS legs; `tests/deliverables/test_r0_notebook_tooling.py` 3;
+`tests/debt/test_r0_debt_config.py` 5), the same debt tests failing for
+the same absent snapshots. The gate's "pytest green" therefore holds for
+everything this container can run and is stated, not claimed, for
+`tests/debt/` — OPEN_QUESTIONS.md OQ-14 records it.
+
+**No country added, no source registered, no data pulled beyond the
+parent harvest, no notebook output touched.**

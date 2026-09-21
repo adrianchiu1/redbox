@@ -127,9 +127,11 @@ def check_register_stage() -> list[Finding]:
 
 def check_v31_stock_vs_official() -> list[Finding]:
     """Σ in-register aggregate stock at 31 Dec vs an independent official stock
-    of central-government debt securities (Eurostat S1311 GD_F3 for FRA/DEU;
-    ONS BKPM+BKPJ for GBR is the same source as the aggregate rows — reported
-    as a same-source identity)."""
+    of central-government debt securities, per config/debt.yaml
+    `countries.<iso3>.v31_official` (R0 step 8): `eurostat_gd_f3` compares
+    against Eurostat S1311 GD_F3 (FRA/DEU); `same_source` reports the
+    identity with its note (GBR: ONS BKPM+BKPJ are the aggregate rows'
+    own source)."""
     agg = _load("debt_class_aggregates")
     if agg is None:
         return [Finding("V31", "SKIP", "-", "aggregates not built")]
@@ -140,7 +142,12 @@ def check_v31_stock_vs_official() -> list[Finding]:
         from ggfiscal.debt.readers import eurostat_insee_oecd as E
     except Exception:  # pragma: no cover
         E = None
-    for iso3 in ("FRA", "DEU"):
+    from ggfiscal.debt.countries import configured
+
+    v31 = {iso3: (cfg.get("v31_official") or {}) for iso3, cfg in configured().items()}
+    for iso3, spec in v31.items():
+        if spec.get("kind") != "eurostat_gd_f3":
+            continue
         a = agg[(agg["iso3"] == iso3) & (agg["measure"] == "stock_year_end") & agg["in_register"]]
         if a.empty or E is None:
             out.append(Finding("V31", "SKIP", iso3, "no in-register stock rows"))
@@ -175,8 +182,10 @@ def check_v31_stock_vs_official() -> list[Finding]:
             out.append(Finding("V31", sev, f"{iso3}/{year}",
                                f"aggregate stock {ours:,.0f} vs Eurostat S1311 GD_F3 {theirs:,.0f}: {diff:+.2f}% "
                                f"(tol {tol[iso3]}%; perimeter: État vs S.1311 incl. ODAC for FRA)"))
-    out.append(Finding("V31", "OK", "GBR", "aggregate gilt and bill stocks are the ONS PSA8A_1 rows themselves (same source); "
-                                          "independent cross-check awaits the DMO register"))
+    for iso3, spec in v31.items():
+        if spec.get("kind") == "same_source":
+            out.append(Finding("V31", "OK", iso3, spec.get("note", "aggregate stock rows are the "
+                                                          "official source's own rows (same source)")))
     return out
 
 

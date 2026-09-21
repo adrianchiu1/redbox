@@ -1,5 +1,178 @@
 # HANDOFF.md
 
+Rewritten 2026-09-20, end of session 13 (Stage R0 — generalise the package,
+on `claude/gg-fiscal-stage-r0-5w734a` branched from
+`claude/us-japan-replication-assessment-t5s0ak` at 9a451a7).
+
+## Session 13 (2026-09-20): Stage R0 complete — the package is generalised by configuration and readers; no country added, no number changed
+
+The eight R0 steps of REPLICATION_KICKOFF.md §12 (D27, D20, D19 plumbing,
+the config flags, the generic GFS legs, the tooling, the debt engine) are
+built, each verified by a full chain re-run against a frozen copy of
+`src/` and a diff of `data/canonical/` and `deliverables/` against the
+session baseline, and recorded as **D-S15-001 .. D-S15-009** in
+`DECISIONS.md`. One commit per step on this branch.
+
+- `config/countries.yaml` is the single source of country routing:
+  `name`, `prose_name`, `aliases`, `currency`, `anchor_family`,
+  `lines_absent`, `period_basis`, `fy_to_cy_weights`,
+  `weo_perimeter_gap_expected`, `perimeter_break`, `backward_legs`;
+  `config.COUNTRIES` and every accessor read it; `config/debt.yaml
+  countries` does the same for the debt engine.
+- `standardise/families.py`: `AnchorFamily` (kickoff §11.3), `OnsFamily`,
+  `EurostatFamily`, `config.family(iso3)`; the twelve routing sites call
+  it; `config.family("USA")` raises `KeyError` (unknown country) and a
+  country whose family is unimplemented raises `FamilyNotConfigured` —
+  never a fall-through. `forecast/envelopes.py` chooses the envelope by
+  `envelope_forecast`.
+- D20: `structural_zero` rows, V41, tolerant identities — empty here.
+  D19: per-tree period basis, `FY{start_year}` labels, register
+  `period_basis`, weights per country, `fy_cy_bridge.csv` (canonical and
+  bundle, header only), V42.
+- Generic IMF GFS COFOG/SOO backward legs, enabled by config (DEU only).
+- `tools/update_notebooks_s11.py` seeds a fourth country's books by copy
+  (tested on a temporary copy; committed notebooks untouched);
+  `tools/build_chartsite.py` reads countries from config;
+  `tools/byte_identity.py` is the gate script.
+- Debt engine: `intermediates.official_totals` has no `else`; register,
+  aggregates, chains, reference and V31 route through `debt/countries.py`.
+
+## Gate R0 (D-S15-009)
+
+| criterion | result |
+|---|---|
+| byte identity of `data/canonical/` and `deliverables/` (run_id excepted) | **holds** after every step; the only additions are the V41/V42 OK rows in `exceptions.csv` and the new empty `fy_cy_bridge.csv` with its 14 data-dictionary rows and README lines |
+| `ggfiscal validate` | ERROR=0, WARN=2218 (the baseline count), OK=89 (87 + V41 + V42) |
+| `python3 -m pytest -q` | 285 passed, 80 skipped, 33 failed, 21 errors — the 253 passed of the baseline plus the 32 new R0 tests, and the same 54 debt tests failing for the same absent snapshots; two pre-R0 tests were updated to the R0 spec (the flat-file completeness test admits the header-only bridge while no tree is FY-labelled; the suite-count test lists V41/V42 beside V1–V28); baseline in this container 253 passed / 80 skipped / 33 failed / 21 errors, every failure in `tests/debt/` for absent debt snapshots (OQ-14) — unchanged by R0 |
+| dry `config.family("USA")` | raises, no fall-through (tested) |
+
+The baseline for the identity check was built in this container from a
+fresh `ggfiscal fetch --all` (80 pulls, 0 failures; the raw D8 snapshots
+were absent). That rebuild reproduced the committed canonical layer to
+the byte except `run_id`. The regenerated data, reports and manifest are
+committed with this handoff.
+
+## Current stage
+
+Parent stages 0–6 complete on the 123-line universe; debt extension
+unchanged (not rebuilt here). **Stage R0 complete. Next stage: U0 —
+verify and harvest the United States (kickoff §12).**
+
+## Blocked on whom
+
+Nothing blocks U0. OQ-13 (cbo.gov, ssa.gov) matters for the long US legs
+only. OQ-14 is informational (run `ggfiscal debt fetch` before a full
+`pytest` to see `tests/debt/` green). Q-K1–Q-K6 run on their defaults.
+
+## Exact next command (Stage U0)
+
+Branch from `main` after this branch is merged (or from this branch):
+
+```
+git checkout -b claude/replication-u0-harvest-usa
+pip install -e ".[dev,forecast,notebook]"
+ggfiscal fetch --all                      # the parent's 80 pulls; then the U0 additions below
+mkdir -p /tmp/gg_baseline && cp -r data/canonical /tmp/gg_baseline/canonical && cp -r deliverables /tmp/gg_baseline/deliverables
+```
+
+Then, in this order (kickoff §12 Stage U0, §11.1, §11.2, §11.3, §13.1):
+
+1. `config/countries.yaml`: add the `USA` block of §11.1 verbatim
+   (`anchor_family: oecd_sna`, `lines_absent` R01/E04/GF05 with their
+   reasons, `fy_to_cy_weights: [0.75, 0.25]`, `weo_perimeter_gap_expected:
+   true`, `perimeter_break: null`, `backward_legs: {}`, plus `name`,
+   `prose_name`, `aliases`, `envelope_forecast: [EC_AMECO, OECD_EO]`).
+   `config.COUNTRIES` becomes four; `config.family("USA")` now raises
+   `FamilyNotConfigured("… 'oecd_sna' is not implemented …")` — that is
+   the next item.
+2. `standardise/readers_oecd.py` (`_oecd_frame` over T11/T12/T10/T1,
+   UNIT_MULT-scaled) and `OecdSnaFamily` in `standardise/families.py`
+   registered as `FAMILIES["oecd_sna"]`, implementing the protocol plus
+   the site methods (`revenue_lines`, `revenue_total`, `esa_exp_parts`,
+   `revenue_level2`, `revenue_coverage`, `recon_revenue`,
+   `d41_receivable`) from `lines.yaml` `oecd_t12` / `oecd_t10` cells
+   (§11.4) — the ESA_REV and ESA_EXP cell codes for SNA items are the
+   first judgement item (scoping §6 C1).
+3. `config/sources.yaml`: every §13.1 USA entry (OECD_T12_EXP/REV/BAL,
+   OECD_T10, OECD_T1, BEA_NIPA, OECD_EO, CBO_BASELINE, OMB_BUDGET,
+   CMS_TRUSTEES; CBO_SITE and SSA_TRUSTEES `status: blocked`, D24), USA
+   added to the `countries` of OECD_T11, OECD_RS, IMF_GFS, IMF_WEO,
+   EC_AMECO; `ingest/endpoints.py`: the §11.2 endpoints (Fiscal Data needs
+   literal brackets, OMB browser headers, BEA TXT flat files).
+4. `ggfiscal fetch --all && ggfiscal coverage` — Gate U0: all 41 USA
+   lines covered by ≥ 1 source or a `lines_absent` entry; the §8.2 bridge
+   on the latest WEO vintage (`ggfiscal reconcile`);
+   `reports/source_verification_USA.md`.
+5. `ggfiscal build && ggfiscal reconcile && ggfiscal validate && ggfiscal report && ggfiscal flatten`
+   then `python3 tools/byte_identity.py /tmp/gg_baseline` restricted to
+   GBR/FRA/DEU is the standing rule for every later stage: their numbers
+   never move. (The USA rows are new; the script reports files that
+   gained rows — compare the three countries' subsets.)
+6. `python3 -m pytest -q` (with `ggfiscal debt fetch` first if the debt
+   suite is wanted green, OQ-14).
+
+## Facts not to rediscover (session 13)
+
+- **The chain must not be re-run while `src/` is being edited.** Each
+  R0 step's chain ran against a frozen copy (`PYTHONPATH=<copy>`; the
+  editable install stays behind it on `sys.path`), so the next step could
+  be written while the previous one verified. `tools/byte_identity.py`
+  is the diff; it needs the baseline copy made *before* the change.
+- `config.COUNTRIES` is a lazy module attribute (PEP 562) — `from
+  ggfiscal.config import COUNTRIES` works but freezes the tuple at import;
+  prefer `config.COUNTRIES` at call time in anything that a test may
+  monkeypatch (`config.countries`).
+- A test that adds a country does it by monkeypatching `config.countries`
+  (every accessor derives from it); see `tests/stage_0/
+  test_r0_generalisation.py` and `tests/deliverables/
+  test_r0_notebook_tooling.py` for the pattern.
+- Row order in the canonical CSVs is the insertion order of
+  `extensions_for` / `forecasts_for` keys — a registry refactor must keep
+  the key order or the CSV reorders (it did not; a dump of the registries
+  before and after was compared).
+- `source_period_basis` on a row is the *tree's* published basis, not the
+  source's (D-S15-004 says why); the register's `period_basis` is what V42
+  polices. An OBR forecast row is CY, converted, flagged.
+- The GF10_2 forecast-candidate block in `coverage.line_sources` and the
+  per-country source blocks of `forward.py` / `backward.py` still name
+  countries: they are source declarations, not anchor routing; the
+  kickoff's C4/C5 per-country work is where USA/JPN sources go.
+- `notebooks/*.ipynb` were not touched. `tools/update_notebooks_s11.py`
+  rebuilds the companion books WITHOUT outputs on every run — do not run
+  it on the real notebooks unless you re-execute them afterwards.
+- `reports/source_register.csv` does not carry the new `period_basis`
+  register key (its column list is fixed in `register.py`); add the
+  column when the register is next regenerated for publication.
+- Validate's WARN count is container-dependent through `S0_SNAPSHOTS`
+  ("snapshot file missing locally" for pulls recorded in other
+  containers): 2218 here, 2092 in session 11.
+
+---
+
+# Previous handoffs
+
+## Facts not to rediscover (session 12)
+
+- OECD flows verified 2026-09-20: `DSD_NASEC10@DF_TABLE12_{EXP,REV,BAL},1.1`
+  and `@DF_TABLE10,1.1`, 13-dim key `A.{iso3}.S13..........`, same
+  pattern as T11. USA 1970–2024 CY; JPN T12 2005–2024 CY, T10 1994–2024
+  FY, T11 2005–2024 FY (labelled by starting year, equal to IMF GFS and
+  ESRI FY cell-for-cell).
+- Fiscal Data needs literal brackets in `page[size]` (curl `-g`); OMB
+  needs browser headers; BEA's API needs a key (use the TXT flat files);
+  cbo.gov and ssa.gov are bot-blocked, CBO's GitHub mirror is open.
+- AMECO chapters 6/16/18 carry USA and JPN on ESA names with values equal
+  to OECD T12; JPN 2025 is NA in the Spring 2026 file.
+- Japan's two D.41 concepts: FISIM-adjusted 7,368 bn (ESRI/OECD/AMECO)
+  vs unadjusted 8,657 bn (IMF GFS) in FY2023.
+- Research downloads from the scoping session live outside the repo and
+  are not D8 snapshots; U0/J0 re-pull everything.
+
+---
+
+# Previous handoff (session 11, 2026-09-19) — the parent package state
+
+
 Rewritten 2026-09-19, end of session 11 (pensions, social benefits and the
 economic tree, on `claude/redbox-social-benefits-pensions-f52j5a` branched
 from `main` at 8b99c74).

@@ -11,6 +11,19 @@ from __future__ import annotations
 import pandera.pandas as pa
 from pandera.pandas import Column
 
+from ggfiscal import config
+
+
+def _in_countries(s):
+    """iso3 admitted = config.COUNTRIES (§5, D27): evaluated at validation
+    time so a country added to countries.yaml is admitted without a code change."""
+    return s.isin(config.COUNTRIES)
+
+
+def _in_currencies(s):
+    return s.isin(config.currencies())
+
+
 COLUMNS = [
     "series_id", "iso3", "classification", "line_code", "line_level",
     "line_label", "year", "native_period", "source_period_basis",
@@ -34,12 +47,13 @@ OBSERVATION_TYPES = [
     "anchor_actual", "level2_proxy_actual", "derived_actual", "imf_actual",
     "stitched_actual", "direct_forecast", "composite_forecast",
     "proxy_forecast", "official_benchmark_interpolation",
+    "structural_zero",   # D20 (R0): a line the anchor institution defines as zero
 ]
 
 SCHEMA = pa.DataFrameSchema(
     {
         "series_id": Column(str),
-        "iso3": Column(str, pa.Check.isin(["GBR", "FRA", "DEU"])),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "classification": Column(str, pa.Check.isin(["COFOG", "ESA_EXP", "ESA_REV", "BALANCE"])),
         "line_code": Column(str),
         "line_level": Column(str, pa.Check.isin(["1", "2", "derived", "total"])),
@@ -48,7 +62,7 @@ SCHEMA = pa.DataFrameSchema(
         "native_period": Column(str),
         "source_period_basis": Column(str, pa.Check.isin(["CY", "FY"])),
         "value_lcu_mn": Column(float, nullable=False),  # V14: missing stays missing (absent row)
-        "currency": Column(str, pa.Check.isin(["GBP", "EUR"])),
+        "currency": Column(str, pa.Check(_in_currencies, error="currency not in countries.yaml")),
         "gdp_lcu_mn": Column(float, nullable=True),
         "gdp_source_id": Column(str, nullable=True),
         "pct_gdp": Column(float, nullable=True),

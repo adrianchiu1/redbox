@@ -3,9 +3,10 @@ per-security register, compute interest by security (§7), the maturity
 profile and issuance-by-bucket tables (DD7), and hand the computed register
 sums to the chains.
 
-Country builders live in `register_{iso3}.py` and expose
+Country builders live in `register_{iso3}.py`, named per country in
+config/debt.yaml `countries.<iso3>.register` (R0 step 8), and expose
 `build(run_id) -> {"debt_securities", "debt_positions", "debt_flows",
-"debt_index_ratios"}`; a country without a builder (or whose office is
+"debt_index_ratios"}`; a country declaring no builder (or whose office is
 still unreachable) simply contributes no rows, and the chains fall back to
 the DD8 aggregate layer for it.
 """
@@ -20,17 +21,24 @@ from ggfiscal.debt import maturity as M
 from ggfiscal.debt import model
 
 REGISTER_TABLES = ("debt_securities", "debt_positions", "debt_flows", "debt_index_ratios")
-COUNTRY_MODULES = {"DEU": "register_deu", "GBR": "register_gbr", "FRA": "register_fra"}
+
+
+def country_modules() -> dict[str, str]:
+    """iso3 -> register module, from config/debt.yaml `countries` (R0 step
+    8), in the file's order; a country declaring no register module is
+    absent (it contributes no rows and the chains use the DD8 layer)."""
+    from ggfiscal.debt.countries import configured
+
+    return {iso3: cfg["register"] for iso3, cfg in configured().items() if cfg.get("register")}
 
 
 def collect(run_id: str) -> dict[str, pd.DataFrame]:
+    from ggfiscal.debt.countries import resolve
+
     parts: dict[str, list[pd.DataFrame]] = {t: [] for t in REGISTER_TABLES}
-    for iso3, mod in COUNTRY_MODULES.items():
-        try:
-            m = __import__(f"ggfiscal.debt.{mod}", fromlist=["build"])
-        except ImportError:
-            continue
-        out = m.build(run_id)
+    for iso3, mod in country_modules().items():
+        build = resolve(mod, "build")
+        out = build(run_id)
         for t in REGISTER_TABLES:
             df = out.get(t)
             if df is not None and len(df):

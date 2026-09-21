@@ -3,10 +3,27 @@
 #                  d41    = GG gross D.41 payable from the same institution (D10).
 # Set programmatically in Stage 0 once Level II coverage is measured; the
 # values below are the D10 defaults (level2 where the anchor publishes L2).
+#
+# Since Stage R0 (REPLICATION_KICKOFF.md §11.1, D27; D-S15-001) this file is
+# the single source of country routing: the country list itself
+# (`config.COUNTRIES`), `name`, `currency` (the pandera schema reads both),
+# `anchor_family` (which reader family serves every anchor cell —
+# `config.family(iso3)`; an unconfigured family raises, never falls through
+# to another country's path), `lines_absent` (D20 structural zeros, line ->
+# reason; empty here), `period_basis` (D19: the anchor's basis and each
+# tree's published basis; every tree CY here), `fy_to_cy_weights` (§7.10:
+# [weight of FY t-1/t, weight of FY t/t+1] for this country's fiscal-year
+# sources), `weo_perimeter_gap_expected` (§8.2 / V24 rule) and
+# `perimeter_break` (§7.12: never extend a line below this year; DEU 1991,
+# reunification). A fourth country is one more block here plus its readers.
 
 countries:
   GBR:
+    name: United Kingdom
+    prose_name: the United Kingdom   # how prose joins the name (chart site)
+    aliases: [United Kingdom, UK, GB]  # strings a chart title may use for the country
     currency: GBP
+    anchor_family: ons
     anchors:
       expenditure: ONS_ESA_T11
       revenue: ONS_GG_RECEIPTS
@@ -15,9 +32,18 @@ countries:
     interest_anchor: level2       # provisional — Stage 0 measures L2 coverage
     envelope_forecast: [OBR_EFO_LATEST, EC_AMECO]   # §15 Q12 default: OBR primary, AMECO cross-check
     period_basis_forecast: FY     # OBR/HMT Apr–Mar; convert per §7.10
+    period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}   # D19
+    fy_to_cy_weights: [0.25, 0.75]    # §7.10: April–March sources
+    lines_absent: {}                  # D20: no structural zeros
     weo_perimeter_gap_expected: true   # §8.2: small stable perimeter gap expected
+    perimeter_break: null
+    backward_legs: {}                 # no IMF GFS backward leg (ONS history reaches 1995 itself)
   FRA:
+    name: France
+    prose_name: France
+    aliases: [France, FR]
     currency: EUR
+    anchor_family: eurostat
     anchors:
       expenditure: EUROSTAT_GOV10A_EXP
       revenue: EUROSTAT_GOV10A_MAIN   # + EUROSTAT_GOV10A_TAXAG for tax detail
@@ -26,9 +52,18 @@ countries:
     interest_anchor: level2
     envelope_forecast: [EC_AMECO, EC_DSM]
     period_basis_forecast: CY
+    period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}   # D19
+    fy_to_cy_weights: [0.25, 0.75]    # §7.10 default (no FY source in use)
+    lines_absent: {}                  # D20: no structural zeros
     weo_perimeter_gap_expected: false
+    perimeter_break: null
+    backward_legs: {}                 # no IMF GFS backward leg (Eurostat history reaches 1995 itself)
   DEU:
+    name: Germany
+    prose_name: Germany
+    aliases: [Germany, DE]
     currency: EUR
+    anchor_family: eurostat
     anchors:
       expenditure: EUROSTAT_GOV10A_EXP
       revenue: EUROSTAT_GOV10A_MAIN
@@ -37,7 +72,18 @@ countries:
     interest_anchor: level2
     envelope_forecast: [EC_AMECO, EC_DSM]
     period_basis_forecast: CY
+    period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}   # D19
+    fy_to_cy_weights: [0.25, 0.75]    # §7.10 default (no FY source in use)
+    lines_absent: {}                  # D20: no structural zeros
     weo_perimeter_gap_expected: false
+    perimeter_break: 1991             # reunification (§14): never extend below
+    backward_legs:                    # generic IMF GFS legs (§6.1(2): the same national data
+                                      # redistributed), enabled per country (R0 step 6, D-S15-006)
+      gfs_cofog:                      # COFOG Level I 1991-94 and every Level II line with a gfs_indicator
+        level1_note: "IMF GFS COFOG: redistribution of the same Destatis ESA data (boundary ratio ~1.0 at 1995); XDC levels"
+        level2_note: "IMF GFS COFOG group {indicator}: redistribution of the same Destatis ESA data (coverage measured at the boundary); XDC levels"
+      gfs_soo: null                   # ESA_EXP lines via the lines.yaml gfs_soo codes: available, not enabled
+                                      # (AMECO reaches the 1991 break; enabling it would add a leg after AMECO)
 
 # Tolerances (§15 Q4 defaults, as stated)
 tolerances:
@@ -63,8 +109,9 @@ tolerances:
     # 2036 horizon (identical source, concept and seam)
     - {iso3: FRA, line_code: E05, incoming_source: EC_DSM}
     - {iso3: DEU, line_code: E05, incoming_source: EC_DSM}
-  gbr_perimeter_sigma_pct_te: 0.5      # V24 (D-S5-002): GBR NLB-gap stability —
-                                       # sigma of gap/TE across overlap years;
-                                       # D-S0-009 measured 0.36-0.42
+  perimeter_sigma_pct_te: 0.5          # V24 (D-S5-002): NLB-gap stability for a
+                                       # country with weo_perimeter_gap_expected
+                                       # (GBR) — sigma of gap/TE across overlap
+                                       # years; D-S0-009 measured 0.36-0.42
 
 variants: [strict, maximum_extension]

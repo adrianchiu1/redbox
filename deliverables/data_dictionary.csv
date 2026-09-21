@@ -148,6 +148,20 @@ weo_reconciliation.csv,component,"What the row is: covered_line for a published 
 weo_reconciliation.csv,contribution_pp,"Contribution in percentage points of GDP, signed so that contributions sum to the change in NLB/GDP. Units differ for explained_share and the growth components — see measure."
 weo_reconciliation.csv,measure,Unit of contribution_pp on that row.
 weo_reconciliation.csv,component_meaning,Plain-language meaning of component.
+fy_cy_bridge.csv,iso3,"Country (GBR, FRA, DEU)."
+fy_cy_bridge.csv,country,"Country name, for readability."
+fy_cy_bridge.csv,year,Calendar year. Sources on a fiscal year are converted first (§7.10) and flagged in derivation.
+fy_cy_bridge.csv,classification,The FY-labelled tree the row bridges (D19).
+fy_cy_bridge.csv,fy_label,Fiscal-year label of the row (FY + starting year).
+fy_cy_bridge.csv,te_fy_lcu_mn,"Total expenditure of the FY-labelled tree, fiscal-year basis, LCU millions."
+fy_cy_bridge.csv,te_cy_lcu_mn,"Total expenditure of the balance anchor, calendar-year basis, LCU millions, same starting year."
+fy_cy_bridge.csv,gap_lcu_mn,te_fy_lcu_mn - te_cy_lcu_mn.
+fy_cy_bridge.csv,timing_component_lcu_mn,The part of the gap explained by the quarterly general-government accounts (blank where no quarterly reader exists).
+fy_cy_bridge.csv,residual_lcu_mn,gap_lcu_mn - timing_component_lcu_mn; never allocated.
+fy_cy_bridge.csv,fy_source_id,Publisher of the FY-basis total.
+fy_cy_bridge.csv,cy_source_id,Publisher of the CY-basis total.
+fy_cy_bridge.csv,source_vintage,Register vintage of the FY-basis source.
+fy_cy_bridge.csv,run_id,Run that produced the bridge.
 series_catalogue.csv,iso3,"Country (GBR, FRA, DEU)."
 series_catalogue.csv,country,"Country name, for readability."
 series_catalogue.csv,line_code,"Series code. COFOG: GF01-GF10 (Level I); Level II splits GF01_7 interest (remainder GF01_X), GF10_2 old age i.e. pensions and GF10_5 unemployment (remainder GF10_X), GF04_5 transport (remainder GF04_X); TE (total expenditure). ESA revenue: R01-R10 with the Level II splits R02_A excise duties (remainder R02_X) and R06_E employers' / R06_H households' actual social contributions (remainder R06_X, the imputed and supplementary part); TR (total revenue). ESA economic expenditure: E01 compensation of employees, E02 intermediate consumption, E03 social benefits in cash (D.62), E04 social transfers in kind purchased (D.632), E05 interest, E06 subsidies, E07 other current, E08 capital formation, E09 capital transfers, TE_ESA (their total). A remainder plus its Level II lines equals the parent exactly; remainders are never forecast."

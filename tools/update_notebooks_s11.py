@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -28,16 +29,27 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 NB = ROOT / "notebooks"
-COUNTRIES = ("GBR", "FRA", "DEU")
-SECTION = {"GBR": 1, "FRA": 2, "DEU": 3}
-NAME = {"GBR": "United Kingdom", "FRA": "France", "DEU": "Germany"}
-CAT = pd.read_csv(ROOT / "deliverables" / "series_catalogue.csv")
-FC = pd.read_csv(ROOT / "deliverables" / "statistical_forecasts.csv")
-LABEL = dict(zip(CAT.line_code, CAT.line_label))
-ESA_LINES = [f"E{n:02d}" for n in range(1, 10)]
 
 sys.path.insert(0, str(ROOT / "src"))
 from ggfiscal import config  # noqa: E402
+
+# The countries, their names and their section numbers come from
+# config/countries.yaml in file order (R0 step 7, D-S15-007). A country
+# with no chartbook block and no forecast books yet is SEEDED: its
+# chartbook blocks are copied from the last configured country that has
+# them and its forecast books are built from that country's preamble and
+# setup cells — then the ordinary per-line insertion runs. Later top-level
+# sections of the chartbook are renumbered; prose cross-references to
+# them (§4.x) are left for the author.
+COUNTRIES = tuple(config.COUNTRIES)
+SECTION = {iso3: i + 1 for i, iso3 in enumerate(COUNTRIES)}
+NAME = config.country_names()
+CAT = pd.read_csv(ROOT / "deliverables" / "series_catalogue.csv")
+FC = pd.read_csv(ROOT / "deliverables" / "statistical_forecasts.csv")
+LABEL = dict(zip(CAT.line_code, CAT.line_label))
+if not LABEL:   # a bundle without a catalogue row yet: the config labels
+    LABEL = {c: m["label"] for cls in config.TREES for c, m in config.tree_lines(cls).items()}
+ESA_LINES = config.level1_lines("ESA_EXP")
 
 PARENT = {}
 for sp in config.level2_splits():
@@ -94,9 +106,76 @@ def _after_block(cells, start):
 
 # ------------------------------------------------------------- chartbook
 
+def _country_block(cells, iso3):
+    """[start, end) of a country's top-level chartbook section
+    (`# n. Name (ISO)` up to the next `---\n\n# ` heading)."""
+    start = next(i for i, c in enumerate(cells)
+                 if c["cell_type"] == "markdown" and src(c).endswith(f"({iso3})")
+                 and src(c).startswith("---"))
+    end = next((i for i in range(start + 1, len(cells))
+                if cells[i]["cell_type"] == "markdown" and src(cells[i]).startswith("---\n\n# ")),
+               len(cells))
+    return start, end
+
+
+def _retarget(cell, tpl, iso3):
+    """A deep copy of `cell` with the template country's literals, name and
+    section number replaced by the new country's, and no outputs."""
+    c = copy.deepcopy(cell)
+    text = "".join(c["source"])
+    text = text.replace(f'"{tpl}"', f'"{iso3}"').replace(f"({tpl})", f"({iso3})")
+    text = text.replace(NAME[tpl], NAME[iso3])
+    text = re.sub(rf"^(#+ ){SECTION[tpl]}(\.\d*)", rf"\g<1>{SECTION[iso3]}\2", text, flags=re.M)
+    c["source"] = text
+    if c["cell_type"] == "code":
+        c["outputs"], c["execution_count"] = [], None
+    return c
+
+
+def _renumber_after(cells, first_index, delta):
+    """Shift the section number of every top-level heading (and its
+    sub-headings) from `first_index` on by `delta`."""
+    for c in cells[first_index:]:
+        if c["cell_type"] != "markdown":
+            continue
+        text = "".join(c["source"])
+        text = re.sub(r"^(---\n\n# |## )(\d+)(\.)",
+                      lambda m: f"{m.group(1)}{int(m.group(2)) + delta}{m.group(3)}", text, flags=re.M)
+        c["source"] = text
+
+
+def seed_chartbook_country(cells, iso3):
+    """Insert a new country's chartbook blocks by copying the last
+    configured country that has them: the country section (panel, COFOG
+    charts, revenue heading, ledger charts) after the last country section,
+    and its WEO comparison sub-section after the last one of those."""
+    have = [c for c in COUNTRIES if c != iso3
+            and any(src(x) == f'panel("{c}", "expenditure")' for x in cells)]
+    if not have:
+        raise KeyError("no country block to copy from")
+    tpl = have[-1]
+    start, end = _country_block(cells, tpl)
+    block = [_retarget(c, tpl, iso3) for c in cells[start:end]]
+    _renumber_after(cells, end, 1)
+    cells[end:end] = block
+    # the WEO comparison sub-section (## n.k Name + three weo_chart cells)
+    i = index_of(cells, f'weo_chart("{tpl}", "nlb")')
+    j = next(k for k, c in enumerate(cells) if k < i
+             and re.fullmatch(rf"## \d+\.\d+ {re.escape(NAME[tpl])}", src(c)))
+    sub = [_retarget(c, tpl, iso3) for c in cells[j:i + 1]]
+    head = "".join(sub[0]["source"])
+    num = re.match(r"## (\d+)\.(\d+)", head)
+    sub[0]["source"] = head.replace(f"## {num.group(1)}.{num.group(2)}",
+                                    f"## {num.group(1)}.{int(num.group(2)) + 1}", 1)
+    cells[i + 1:i + 1] = sub
+
+
 def chartbook():
     nb = load("chartbook.ipynb")
     cells = nb["cells"]
+    for iso3 in COUNTRIES:
+        if not any(src(c) == f'panel("{iso3}", "expenditure")' for c in cells):
+            seed_chartbook_country(cells, iso3)
     # the revenue tree moves to chartbook_revenue.ipynb (D-S13-006): drop its
     # chart cells and section headings here so the main book stays under the
     # size GitHub renders
@@ -424,10 +503,30 @@ def _fix_setup(cells):
         setup["source"] = s
 
 
+def seed_forecast_book(iso3, tree):
+    """A new country's forecast book from the last configured country that
+    has one: its preamble (name replaced) and setup cell, then one section
+    per line of the tree — the same cells `_series_cells` inserts."""
+    cls = {"expenditure": "COFOG", "revenue": "ESA_REV"}[tree]
+    have = [c for c in COUNTRIES if c != iso3 and (NB / f"forecasts_{c}_{tree}.ipynb").exists()]
+    if not have:
+        raise KeyError(f"no forecasts_*_{tree}.ipynb to copy from")
+    tpl = have[-1]
+    base = load(f"forecasts_{tpl}_{tree}.ipynb")
+    cells = base["cells"]
+    preamble = _retarget(cells[0], tpl, iso3)
+    setup = _retarget(cells[index_of(cells, "from pathlib import Path")], tpl, iso3)
+    nb = copy.deepcopy(base)
+    nb["cells"] = [preamble, setup]
+    for line in ordered(cls):
+        nb["cells"] += _series_cells(iso3, line)
+    return nb
+
+
 def forecast_book(iso3, tree):
     cls = {"expenditure": "COFOG", "revenue": "ESA_REV"}[tree]
     name = f"forecasts_{iso3}_{tree}.ipynb"
-    nb = load(name)
+    nb = load(name) if (NB / name).exists() else seed_forecast_book(iso3, tree)
     cells = nb["cells"]
     _fix_setup(cells)
     lines = ordered(cls)

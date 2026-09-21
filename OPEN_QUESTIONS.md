@@ -346,3 +346,47 @@ cleanly here, while `obr.uk` returned 403 as usual. The gov.uk asset mirror
 can stand in for obr.uk **for EFO documents**, softening OQ-6(d) for each new
 EFO round. It does not cover the PSF databank or supplementary tables, which
 remain obr.uk-only.
+
+## OQ-12 — Replicating the package for the United States and Japan — **RESOLVED 2026-09-20 (D-S14-001: all ten questions on their defaults; `REPLICATION_KICKOFF.md` adopted)**
+Raised 2026-09-20. The committee asked what it would take to replicate the
+package (three trees, ledger, WEO reconciliation, debt extension) for `USA`
+and `JPN`. The answer is `REPLICATION_SCOPING.md`: source-by-source
+findings tested live from the sandbox, the code audit, an effort estimate
+(≈ 30 engineering-days for the first country including a one-off
+generalisation of the package, ≈ 20 for the second) and ten questions
+Q-R1–Q-R10 with build defaults. Headlines: the US has no COFOG Level II and
+no general-government forecaster but fully machine-readable anchors from
+1970 and a complete Treasury register from 1979; Japan has Level II from
+FY2005 and a 100-year pension valuation but every functional table is
+fiscal-year only and its projections are PDF-only Japanese. **Ask:** answer
+Q-R1 (anchor), Q-R2 (Japan's COFOG basis) and Q-R10 (scope of the first
+cut) first; the rest can follow the defaults. Nothing has been registered
+or pulled into the D8 store.
+
+## OQ-13 — Blocked US hosts gate the long US legs (NEW, standing; from D24)
+Raised 2026-09-20. `www.cbo.gov` (DataDome challenge) and `www.ssa.gov`
+(Akamai) return 403 to every request from this environment. The US build
+proceeds on CBO's GitHub mirror of its baselines and on the CMS Medicare
+trustees' CSVs (both open). Behind the block sit the CBO 10-year workbooks
+(outlays by function), the NIPA-basis federal projection tables, the 30-year
+Long-Term Budget Outlook, and the OASDI Trustees' single-year tables — the
+sources that would give US `GF10_2`, `GF07` and `R06` a long maximum leg.
+**Ask:** allowlist the two hosts, or hand-retrieve the files as was done
+for the OBR (D-S7-001), when the committee wants those legs. No action
+needed for Stages R0–U6 as specified.
+
+## OQ-14 — Gate R0's "pytest green" holds for everything this container can run; `tests/debt/` needs the debt harvest (NEW, informational; from D-S15-009)
+Raised 2026-09-20 (session 13, Stage R0). The R0 gate asks for `python3 -m
+pytest -q` green with the baseline count plus the new R0 tests. In this
+container the debt-extension snapshots (`ggfiscal debt fetch`: ONS PSF,
+INSEE, Eurostat gov_10dd, BoE, ECB/Bundesbank, …) are not harvested, and
+the session's remit allowed one harvest only (`ggfiscal fetch --all`, the
+parent's). 33 failures and 21 errors in `tests/debt/` — every one a
+`FileNotFoundError` ("no snapshot … run `ggfiscal debt fetch`") or an
+empty-frame `KeyError` — were therefore present in the baseline run before
+any R0 change and are present, unchanged, after it; no test outside
+`tests/debt/` fails, and the five new `tests/debt/test_r0_debt_config.py`
+tests pass without snapshots. The debt layer was not rebuilt in R0 (its
+`debt_*.csv` are the committed ones). **Ask:** none for the committee. The
+next session runs `ggfiscal debt fetch` before `pytest` to see the full
+suite green, or records the same skip. Not a blocker for U0.

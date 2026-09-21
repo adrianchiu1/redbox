@@ -42,9 +42,8 @@ def _diff_row(iso3: str, line: str, comparator: str, a_name: str, c_name: str,
 
 
 def _anchor_cofog(iso3: str, cofog: str) -> tuple[str, pd.Series]:
-    if iso3 == "GBR":
-        return "ONS_ESA_T11", R.ons_cofog(cofog)
-    return "EUROSTAT_GOV10A_EXP", R.eurostat_cofog(iso3, cofog)
+    fam = config.family(iso3)
+    return fam.expenditure_source, fam.cofog(iso3, cofog)
 
 
 def compute(dir_: Path | None = None) -> list[Path]:
@@ -64,18 +63,7 @@ def compute(dir_: Path | None = None) -> list[Path]:
             if row:
                 imf_rows.append(row)
         # anchor vs OECD RS headings (concept wedge, D15/D17)
-        if iso3 == "GBR":
-            rev = {"R01": R.ons_t2_series("D211", "receivable"),
-                   "R03": R.ons_t2_series("D51M", "receivable"),
-                   "R04": R.ons_t2_series("D51O", "receivable"),
-                   "R06": R.ons_t2_series("D61", "receivable")}
-            a_name = "ONS_GG_RECEIPTS"
-        else:
-            rev = {"R01": R.eurostat_taxag(iso3, "D211"),
-                   "R03": R.eurostat_taxag(iso3, "D51A_C1"),
-                   "R04": R.eurostat_taxag(iso3, "D51B_C2"),
-                   "R06": R.eurostat_main(iso3, "D61REC")}
-            a_name = "EUROSTAT_GOV10A_TAXAG/MAIN"
+        rev, a_name = config.family(iso3).recon_revenue(iso3)
         for line, heading in (("R01", "T_5111"), ("R03", "T_1100"),
                               ("R04", "T_1200"), ("R06", "T_2000")):
             row = _diff_row(iso3, line, "OECD_RS", a_name, heading, rev[line],

@@ -8,7 +8,14 @@ from __future__ import annotations
 import pandera.pandas as pa
 from pandera.pandas import Column
 
-ISO3 = ["GBR", "FRA", "DEU"]
+from ggfiscal import config
+
+
+def _in_countries(s):
+    """iso3 admitted = config.COUNTRIES (D27, D-S15-001), read at validation time."""
+    return s.isin(config.COUNTRIES)
+
+
 CURRENCIES = ["GBP", "EUR", "USD", "CHF", "JPY", "DEM", "FRF"]
 INSTRUMENT_CLASSES = ["fixed_bullet", "floating", "inflation_linked", "bill", "other"]
 FLOW_TYPES = ["auction", "syndication", "tap", "tender", "conversion_in",
@@ -40,7 +47,7 @@ def _provenance() -> dict:
 
 SECURITIES = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "security_id": Column(str),
         "isin": Column(str, nullable=True),
         "name": Column(str),
@@ -68,7 +75,7 @@ SECURITIES = pa.DataFrameSchema(
 
 POSITIONS = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "security_id": Column(str),
         "as_of": Column("datetime64[ns]"),
         "nominal_lcu_mn": Column(float),
@@ -86,7 +93,7 @@ POSITIONS = pa.DataFrameSchema(
 
 FLOWS = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "security_id": Column(str),
         "settlement_date": Column("datetime64[ns]"),
         "flow_type": Column(str, pa.Check.isin(FLOW_TYPES)),
@@ -119,7 +126,7 @@ REFERENCE_SERIES = pa.DataFrameSchema(
 
 INDEX_RATIOS = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "security_id": Column(str),
         "date": Column("datetime64[ns]"),
         "reference_index": Column(float, nullable=True),
@@ -132,7 +139,7 @@ INDEX_RATIOS = pa.DataFrameSchema(
 
 INTEREST_BY_SECURITY = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "security_id": Column(str),
         "year": Column(int, pa.Check.in_range(1900, 2100)),
         "basis": Column(str, pa.Check.isin(INTEREST_BASES)),
@@ -154,7 +161,7 @@ INTEREST_BY_SECURITY = pa.DataFrameSchema(
 def _chain_schema(steps: list[str]) -> pa.DataFrameSchema:
     return pa.DataFrameSchema(
         {
-            "iso3": Column(str, pa.Check.isin(ISO3)),
+            "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
             "year": Column(int, pa.Check.in_range(1900, 2100)),
             "step": Column(str, pa.Check.isin(steps)),
             "item": Column(str),
@@ -173,7 +180,7 @@ FINANCING_RECONCILIATION = _chain_schema(FINANCING_STEPS)
 
 MATURITY_PROFILE = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "as_of": Column("datetime64[ns]"),
         "instrument_class": Column(str, pa.Check.isin(INSTRUMENT_CLASSES)),
         "bucket": Column(str, pa.Check.isin(BUCKETS)),
@@ -189,7 +196,7 @@ MATURITY_PROFILE = pa.DataFrameSchema(
 
 ISSUANCE_BY_BUCKET = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "year": Column(int, pa.Check.in_range(1900, 2100)),
         "instrument_class": Column(str, pa.Check.isin(INSTRUMENT_CLASSES)),
         "bucket": Column(str, pa.Check.isin(BUCKETS)),
@@ -204,7 +211,7 @@ ISSUANCE_BY_BUCKET = pa.DataFrameSchema(
 
 OFFICIAL_HOLDINGS = pa.DataFrameSchema(
     {
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "holder": Column(str, pa.Check.isin(HOLDERS)),
         "security_id": Column(str),          # or "AGG"
         "as_of": Column("datetime64[ns]"),
@@ -232,7 +239,7 @@ TABLES = {
 OFFICIAL_TOTALS = pa.DataFrameSchema(
     {
         "run_id": Column(str),
-        "iso3": Column(str, pa.Check.isin(ISO3)),
+        "iso3": Column(str, pa.Check(_in_countries, error="iso3 not in config.COUNTRIES")),
         "year": Column(int, pa.Check.in_range(1900, 2100)),
         "chain": Column(str, pa.Check.isin(["interest", "financing"])),
         "step": Column(str, pa.Check.isin(INTEREST_STEPS + FINANCING_STEPS)),

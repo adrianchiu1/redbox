@@ -290,6 +290,7 @@ sources:
   # ---------- Forecast (Stage 3+; registered now, verified before use) ----------
 
   OBR_EFO_LATEST:
+    period_basis: FY            # April–March, labelled by the starting year (§7.10; R0: read by the build and V42)
     institution: OBR
     object: Economic and Fiscal Outlook March 2026 — annex tables A.1-A.12 + detailed forecast tables (receipts, expenditure, aggregates incl. 6.3 GG transactions, debt interest, economy, long-term determinants)
     countries: [GBR]
@@ -308,6 +309,7 @@ sources:
              raw bytes committed to git since no machine fetch path exists"
 
   OBR_FRS:
+    period_basis: FY            # April–March, labelled by the starting year (§7.10; R0: read by the build and V42)
     institution: OBR
     object: Fiscal Risks and Sustainability, July 2025 — chapter charts and tables (% GDP long-term projections)
     countries: [GBR]
@@ -325,6 +327,7 @@ sources:
              OQ-6) — re-check when access exists"
 
   OBR_PSF_DATABANK:
+    period_basis: FY            # April–March, labelled by the starting year (§7.10; R0: read by the build and V42)
     institution: OBR
     object: Public sector finances aggregates databank (August 2026) — long FY history of PS aggregates incl. welfare spending, debt interest, receipts
     countries: [GBR]
@@ -337,6 +340,7 @@ sources:
                    note: "hand-retrieved by AC 2026-09-05 (D-S7-001)"}
 
   OBR_HIST_PF:
+    period_basis: FY            # April–March, labelled by the starting year (§7.10; R0: read by the build and V42)
     institution: OBR
     object: Historical public finances database — long-run UK fiscal history (candidate for the OQ-5 pre-1987 interest quick win; not yet used)
     countries: [GBR]
@@ -348,6 +352,7 @@ sources:
                    future backward-extension work, no rows built from it yet"}
 
   HMT_PESA:
+    period_basis: FY            # April–March, labelled by the starting year (§7.10; R0: read by the build and V42)
     institution: HMT
     object: "PESA 2026 (July 2026), chapter 1: departmental budgets — MoD RDEL+CDEL outturns 2021-22..2025-26 + SR plans to 2028-29 (table 1.9, £mn)"
     countries: [GBR]

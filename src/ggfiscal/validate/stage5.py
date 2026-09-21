@@ -18,17 +18,19 @@ def _canonical(name: str) -> pd.DataFrame:
 
 
 def check_v24() -> list[Finding]:
-    """§8.2/V24 (WARN): FRA/DEU level gaps (TR, TE, NLB) within the
-    base-bridge tolerance (% of TE) in all overlap years; GBR perimeter
-    component stable — sigma of the NLB gap ratio below config."""
+    """§8.2/V24 (WARN), rule per country from `weo_perimeter_gap_expected`
+    (R0): where no perimeter gap is expected (FRA, DEU) the level gaps (TR,
+    TE, NLB) stay within the base-bridge tolerance (% of TE) in all overlap
+    years; where one is expected (GBR) the perimeter component is stable —
+    sigma of the NLB gap ratio below `perimeter_sigma_pct_te`."""
     tol = config.tolerances()["base_bridge_pct_of_te"]
-    sigma_tol = config.tolerances()["gbr_perimeter_sigma_pct_te"]
+    sigma_tol = config.tolerances()["perimeter_sigma_pct_te"]
     br = _canonical("weo_base_bridge")
     if br.empty:
         return [Finding("V24", "SKIP", "-", "no bridge computed")]
     out = []
     for (iso3, vintage), g in br.groupby(["iso3", "weo_vintage"]):
-        if iso3 == "GBR":
+        if config.weo_perimeter_gap_expected(iso3):
             ratios = g.gap_nlb_pct_te.dropna()
             sigma = float(ratios.std()) if len(ratios) > 1 else 0.0
             if sigma > sigma_tol:

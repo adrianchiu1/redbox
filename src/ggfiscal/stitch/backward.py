@@ -3,8 +3,9 @@
 Y_t = Y_{t+1} × X_t / X_{t+1} for t < F: growth of the extension source,
 never its level. Sources are applied sequentially (§7.4) — each transition
 writes a boundary record. Extension stops (§7.12) at a missing, zero or
-negative source value, or at a configured perimeter break (DEU 1991:
-pre-reunification data is West Germany — a different universe, §14).
+negative source value, or at the country's configured perimeter break
+(`countries.yaml.perimeter_break`; DEU 1991: pre-reunification data is
+West Germany — a different universe, §14).
 
 Grading (§9, D6): coverage_share = extension_value / anchor_value in the
 last common year (§9.2, unit-adjusted). 0.9 <= share <= 1.1 -> B (minor
@@ -22,7 +23,9 @@ import pandas as pd
 from ggfiscal import config
 from ggfiscal.standardise import readers as R
 
-DEU_BREAK = 1991  # reunification: never extend a DEU line below this (§14)
+# The perimeter break (§7.12, §14: DEU 1991, reunification) is
+# `countries.yaml.perimeter_break`, read per country (R0, D27): every
+# extension source of a country stops at it.
 
 RS_XWALK = "OECD_RS_to_ESA_REV:1.0"
 AMECO_XWALK = "EC_AMECO_to_INTEREST:1.0"
@@ -51,7 +54,7 @@ def _rs(iso3: str, heading: str, label: str) -> ExtSource:
     return ExtSource(
         source_id="OECD_RS", series=R.oecd_rs_heading(iso3, heading),
         concept_note=f"{label}: {RS_NOTE}", crosswalk_version=RS_XWALK,
-        break_before=DEU_BREAK if iso3 == "DEU" else None)
+        break_before=config.perimeter_break(iso3))
 
 
 def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
@@ -65,7 +68,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
         "OECD 5000 minus 5111 (goods & services taxes excl. VAT): " + RS_NOTE
         + "; excludes D.29-type recurrent property taxes on producers "
           "(OECD 4000) — coverage measured", RS_XWALK,
-        break_before=DEU_BREAK if iso3 == "DEU" else None)]
+        break_before=config.perimeter_break(iso3))]
     out[("ESA_REV", "R03")] = [_rs(iso3, "T_1100", "OECD 1100 personal income taxes")]
     out[("ESA_REV", "R04")] = [_rs(iso3, "T_1200", "OECD 1200 corporate income taxes")]
     out[("ESA_REV", "R05")] = [_rs(
@@ -80,7 +83,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
         "AMECO UYIG: ESA gross GG interest payable (D.41), Commission "
         "redistribution of national accounts; same gross accrued concept",
         AMECO_XWALK, unit_factor=1000.0,  # AMECO chapter files are Mrd (bn)
-        break_before=DEU_BREAK if iso3 == "DEU" else None,
+        break_before=config.perimeter_break(iso3),
         concept_flag="d41_gross_accrued")
     if iso3 == "GBR":
         out[("COFOG", "GF01_7")] = [
@@ -91,29 +94,31 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
             ameco]
     else:
         out[("COFOG", "GF01_7")] = [ameco]
-    # --- DEU expenditure 1991-94 via IMF GFS COFOG (§6.1(2): same national data) ---
-    if iso3 == "DEU":
+    # --- IMF GFS COFOG legs (§6.1(2): the same national data redistributed),
+    # generic and enabled per country by countries.yaml.backward_legs.gfs_cofog
+    # (R0 step 6; DEU: expenditure 1991-94 below Eurostat's 1995 start). Level
+    # I lines take the {code}_T series; every Level II line with a GFS group
+    # indicator (GF1020_T, GF1050_T; none for 04.5) is registered as the
+    # candidate for the years the anchor's Level II lacks (DEU 1995-99) —
+    # measured live the GFS groups also start in 2000, so nothing is applied
+    # and the crosswalk row records the stop. The concept notes are the
+    # country's own (measured boundary ratio), from config.
+    gfs_cofog = config.backward_legs(iso3).get("gfs_cofog")
+    if gfs_cofog:
         for n in range(1, 11):
             code = f"GF{n:02d}"
             out[("COFOG", code)] = [ExtSource(
                 "IMF_GFS", R.gfs_series(iso3, "cofog", f"{code}_T"),
-                "IMF GFS COFOG: redistribution of the same Destatis ESA data "
-                "(boundary ratio ~1.0 at 1995); XDC levels", GFS_XWALK,
-                break_before=DEU_BREAK)]
-        # COFOG Level II groups (D-S13-002/005): GFS group series where one
-        # exists (GF1020_T, GF1050_T; none for 04.5) — registered as the
-        # candidate for the years Eurostat DEU Level II lacks (1995-99);
-        # measured live the GFS groups also start in 2000, so nothing is
-        # applied and the crosswalk row records the stop
+                gfs_cofog["level1_note"], GFS_XWALK,
+                break_before=config.perimeter_break(iso3))]
         for split in config.level2_splits("COFOG"):
             for l2 in split["level2s"]:
                 ind = split["meta"][l2]["gfs_indicator"]
                 if l2 != "GF01_7" and ind:
                     out[("COFOG", l2)] = [ExtSource(
                         "IMF_GFS", R.gfs_series(iso3, "cofog", ind),
-                        f"IMF GFS COFOG group {ind}: redistribution of the same "
-                        "Destatis ESA data (coverage measured at the boundary); "
-                        "XDC levels", GFS_XWALK, break_before=DEU_BREAK)]
+                        gfs_cofog["level2_note"].format(indicator=ind), GFS_XWALK,
+                        break_before=config.perimeter_break(iso3))]
     # --- Revenue Level II lines via OECD RS (D-S13-005): excise duties
     # (5121), employers' (2200) and employees'/self-employed (2100)
     # contributions — same crosswalk discipline as the parent lines (D15)
@@ -133,7 +138,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
                 out[("ESA_REV", l2)] = [ExtSource(
                     "OECD_RS", series.dropna(),
                     f"OECD {' + '.join(h[2:] for h in headings)} {label}: " + RS_NOTE,
-                    RS_XWALK, break_before=DEU_BREAK if iso3 == "DEU" else None)]
+                    RS_XWALK, break_before=config.perimeter_break(iso3))]
     # --- GBR GF10_2 via the OBR historical public finances database
     # (D-S13-005, committee-approved OQ-10 b): public-sector pensioner
     # spending, FY converted per §7.10, growth only; measured 0.67 of COFOG
@@ -142,7 +147,7 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
     # a C-band leg: maximum_extension only, to 1979
     if iso3 == "GBR":
         out[("COFOG", "GF10_2")] = [ExtSource(
-            "OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners"),
+            "OBR_HIST_PF", R.obr_hist_pf_cy("o/w pensioners", config.fy_to_cy_weights(iso3)),
             "OBR historical public finances database, Social Security o/w "
             "pensioners (IFS-based FY series 1978-79 to 2022-23, public sector, "
             "£mn), converted FY->CY per §7.10; pensioner cash benefits vs COFOG "
@@ -165,8 +170,24 @@ def extensions_for(iso3: str) -> dict[tuple[str, str], list[ExtSource]]:
             + ("; partial component (§7.8), coverage measured"
                if meta.get("ameco_partial") else ""),
             AMECO_EXP_XWALK, unit_factor=1000.0,
-            break_before=DEU_BREAK if iso3 == "DEU" else None,
+            break_before=config.perimeter_break(iso3),
             concept_flag="d41_gross_accrued" if code == "E05" else "")]
+    # --- IMF GFS SOO legs for the ESA_EXP lines (the GFSM expense items
+    # registered as `gfs_soo` in lines.yaml), generic and enabled per country
+    # by countries.yaml.backward_legs.gfs_soo (R0 step 6; no country enables
+    # it yet — AMECO reaches every configured break). Applied after AMECO,
+    # so it only ever extends below AMECO's own start.
+    gfs_soo = config.backward_legs(iso3).get("gfs_soo")
+    if gfs_soo:
+        for code, meta in config.tree_lines("ESA_EXP").items():
+            ind = meta.get("gfs_soo")
+            if config.is_total(meta) or not ind:
+                continue
+            out.setdefault(("ESA_EXP", code), []).append(ExtSource(
+                "IMF_GFS", R.gfs_series(iso3, "soo", ind),
+                gfs_soo["note"].format(indicator=ind, label=meta["label"]), GFS_XWALK,
+                break_before=config.perimeter_break(iso3),
+                concept_flag="d41_gross_accrued" if code == "E05" else ""))
     return out
 
 

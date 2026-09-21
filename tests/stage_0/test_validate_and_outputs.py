@@ -13,7 +13,9 @@ def test_validate_no_errors_at_stage_0():
 
 
 def test_v_suite_all_28_accounted_for():
-    assert len(runner.V_SUITE_STAGE) == 28
+    """The parent's V1-V28 plus the R0 additions V41 and V42 (kickoff §10;
+    V29-V40 are the debt extension's, run by `ggfiscal debt validate`)."""
+    assert set(runner.V_SUITE_STAGE) == {f"V{n}" for n in range(1, 29)} | {"V41", "V42"}
     findings = runner.run_all()
     reported = {f.check_id for f in findings}
     for vid in runner.V_SUITE_STAGE:

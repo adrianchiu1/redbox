@@ -75,7 +75,7 @@ def _debt_section(root: Path) -> list[str]:
               for c in ("interest", "financing")}
     agg = pd.read_csv(root / "data" / "canonical" / "debt_class_aggregates.csv")
     rows = []
-    for iso3 in ("GBR", "FRA", "DEU"):
+    for iso3 in config.COUNTRIES:
         cells = [iso3]
         for c in ("interest", "financing"):
             df = chains[c]
@@ -132,7 +132,7 @@ def _register_rows(root: Path) -> list[str]:
     out = ["Per-security register (stage D2–D4) per country:", "",
            "| country | securities | classes | year-end positions | flows | register source |",
            "|---|---|---|---|---|---|"]
-    for iso3 in ("GBR", "FRA", "DEU"):
+    for iso3 in config.COUNTRIES:
         s = secs[secs["iso3"] == iso3]
         if s.empty:
             out.append(f"| {iso3} | — | — | — | — | aggregate layer only (OQ-8) |")
