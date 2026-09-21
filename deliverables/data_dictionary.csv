@@ -437,6 +437,57 @@ strict_DEU.csv,LEDGER_TE - Total expenditure (balance anchor),Total expenditure 
 strict_DEU.csv,NLB - Net lending (+) / net borrowing (-),Net lending (+) / net borrowing (-) = LEDGER_TR - LEDGER_TE (ESA B.9). Outturn years only.
 strict_DEU.csv,NI - Net interest (GF01_7 - R07),Net interest = GF01_7 - R07. Blank where one leg has no value.
 strict_DEU.csv,PB - Primary balance (NLB + NI),Primary balance = NLB + NI. Outturn years only.
+strict_USA.csv,year,Calendar year. One row per year from the country's first published year to the last year any strict series reaches.
+strict_USA.csv,GDP - Gross domestic product at current market prices,"Gross domestic product at current market prices, from the country's registered GDP source. Divide by it for ratios."
+strict_USA.csv,GF01 - General public services,"General public services (GF01), strict variant, millions of national currency."
+strict_USA.csv,GF01_7 - Public debt transactions (interest),"Public debt transactions (interest) (GF01_7), strict variant, millions of national currency."
+strict_USA.csv,GF01_X - General public services excluding interest,"General public services excluding interest (GF01_X): the identity GF01 - GF01_7, never forecast (D10)."
+strict_USA.csv,GF02 - Defence,"Defence (GF02), strict variant, millions of national currency."
+strict_USA.csv,GF03 - Public order and safety,"Public order and safety (GF03), strict variant, millions of national currency."
+strict_USA.csv,GF04 - Economic affairs,"Economic affairs (GF04), strict variant, millions of national currency."
+strict_USA.csv,GF04_5 - Transport,Transport (GF04_5): COFOG group 04.5 from the anchor's own Level II table.
+strict_USA.csv,GF04_X - Economic affairs excluding transport,"Economic affairs excluding transport (GF04_X): the identity GF04 - GF04_5, never forecast."
+strict_USA.csv,GF05 - Environmental protection,"Environmental protection (GF05), strict variant, millions of national currency."
+strict_USA.csv,GF06 - Housing and community amenities,"Housing and community amenities (GF06), strict variant, millions of national currency."
+strict_USA.csv,GF07 - Health,"Health (GF07), strict variant, millions of national currency."
+strict_USA.csv,GF08 - Recreation culture and religion,"Recreation culture and religion (GF08), strict variant, millions of national currency."
+strict_USA.csv,GF09 - Education,"Education (GF09), strict variant, millions of national currency."
+strict_USA.csv,GF10 - Social protection,"Social protection (GF10), strict variant, millions of national currency."
+strict_USA.csv,GF10_2 - Old age (pensions),Old age (GF10_2): COFOG group 10.2 from the anchor's own Level II table — the pensions line (old-age cash benefits plus the administration and in-kind services of the function).
+strict_USA.csv,GF10_5 - Unemployment,"Unemployment (GF10_5): COFOG group 10.5 from the anchor's own Level II table — unemployment benefits and services. Note the UK books Universal Credit under 10.7, so its 10.5 is small."
+strict_USA.csv,GF10_X - Social protection excluding old age and unemployment,"Social protection excluding old age and unemployment (GF10_X): the identity GF10 - GF10_2 - GF10_5, never forecast."
+strict_USA.csv,TE - Total expenditure,Total expenditure (TE) from the COFOG tree's expenditure anchor. Not the same series as LEDGER_TE — see that column.
+strict_USA.csv,E01 - Compensation of employees,"Compensation of employees (E01), strict variant, millions of national currency."
+strict_USA.csv,E02 - Intermediate consumption,"Intermediate consumption (E02), strict variant, millions of national currency."
+strict_USA.csv,E03 - Social benefits other than social transfers in kind,"Social benefits other than social transfers in kind (E03, ESA D.62): cash benefits — pensions, unemployment, family, sickness and other benefits — across every function. The economic-type counterpart of the COFOG GF10 line."
+strict_USA.csv,E04 - Social transfers in kind (purchased market production),"Social transfers in kind (purchased market production) (E04), strict variant, millions of national currency."
+strict_USA.csv,E05 - Interest payable,"Interest payable (E05, ESA D.41 uses): the economic-type counterpart of GF01_7 (COFOG 01.7); the two differ by FISIM and consolidation treatment (V21)."
+strict_USA.csv,E06 - Subsidies,"Subsidies (E06), strict variant, millions of national currency."
+strict_USA.csv,E07 - Other current expenditure,"Other current expenditure (E07), strict variant, millions of national currency."
+strict_USA.csv,E08 - Gross capital formation and net acquisition of non-produced assets,"Gross capital formation and net acquisition of non-produced assets (E08), strict variant, millions of national currency."
+strict_USA.csv,E09 - Capital transfers payable,"Capital transfers payable (E09), strict variant, millions of national currency."
+strict_USA.csv,TE_ESA - Total expenditure (ESA main aggregates),"Total expenditure from the ESA main-aggregates table (the sum of E01-E09). For FRA/DEU identical to TE; for GBR it is the ESA Table 2 total, the same series as LEDGER_TE."
+strict_USA.csv,R01 - Value added tax,"Value added tax (R01), strict variant, millions of national currency."
+strict_USA.csv,R02 - Other taxes on production and imports,"Other taxes on production and imports (R02), strict variant, millions of national currency."
+strict_USA.csv,R02_A - Excise duties,"Excise duties (R02_A, ESA D.214A): fuel, tobacco, alcohol and other excises, from the anchor institution's per-tax table (NTL table 9 / gov_10a_taxag)."
+strict_USA.csv,R02_X - Other taxes on production and imports excluding excise duties,"Other taxes on production and imports excluding excise duties (R02_X): the identity R02 - R02_A, never forecast; carries any drift between the per-tax table and the main aggregate."
+strict_USA.csv,R03 - Taxes on household income,"Taxes on household income (R03), strict variant, millions of national currency."
+strict_USA.csv,R04 - Taxes on corporate income,"Taxes on corporate income (R04), strict variant, millions of national currency."
+strict_USA.csv,R05 - Other current taxes and capital taxes,"Other current taxes and capital taxes (R05), strict variant, millions of national currency."
+strict_USA.csv,R06 - Net social contributions,"Net social contributions (R06), strict variant, millions of national currency."
+strict_USA.csv,R06_E - Employers' actual social contributions,"Employers' actual social contributions (R06_E, ESA D.611)."
+strict_USA.csv,R06_H - Households' actual social contributions,"Households' actual social contributions (R06_H, ESA D.613): employees, self-employed and non-employed persons."
+strict_USA.csv,R06_X - Imputed and supplementary social contributions (D.612 + D.614 - D.61SC),"Imputed and supplementary social contributions (R06_X): the identity R06 - R06_E - R06_H = D.612 + D.614 - D.61SC, never forecast; may be negative in principle."
+strict_USA.csv,R07 - Interest receivable,"Interest receivable (R07), strict variant, millions of national currency."
+strict_USA.csv,R08 - Other property income,"Other property income (R08), strict variant, millions of national currency."
+strict_USA.csv,R09 - Sales of goods and services,"Sales of goods and services (R09), strict variant, millions of national currency."
+strict_USA.csv,R10 - Other current and capital transfers receivable,"Other current and capital transfers receivable (R10), strict variant, millions of national currency."
+strict_USA.csv,TR - Total revenue,Total revenue (TR) from the ESA tree's revenue anchor. Not the same series as LEDGER_TR — see that column.
+strict_USA.csv,LEDGER_TR - Total revenue (balance anchor),Total revenue as published by the balance anchor. For GBR this is a different ONS table from the TR column and the two differ by up to ~0.5%; for FRA/DEU they agree to rounding. Outturn years only.
+strict_USA.csv,LEDGER_TE - Total expenditure (balance anchor),Total expenditure as published by the balance anchor. Same caveat as LEDGER_TR against the TE column.
+strict_USA.csv,NLB - Net lending (+) / net borrowing (-),Net lending (+) / net borrowing (-) = LEDGER_TR - LEDGER_TE (ESA B.9). Outturn years only.
+strict_USA.csv,NI - Net interest (GF01_7 - R07),Net interest = GF01_7 - R07. Blank where one leg has no value.
+strict_USA.csv,PB - Primary balance (NLB + NI),Primary balance = NLB + NI. Outturn years only.
 debt_reference_series.csv,run_id,Build run that produced the row (data/manifest/run_{run_id}.json).
 debt_reference_series.csv,series_id,"Reference series id (DEBT_KICKOFF.md §4.2), e.g. UK_RPI, FR_CPI_XT, EA_HICP_XT, UK_SONIA, EA_MM_3M, UK_GLC_NOMINAL_10Y."
 debt_reference_series.csv,date,Observation date (month start for monthly indices; the fixing date for daily rates; month-end for curves).

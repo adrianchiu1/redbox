@@ -2000,6 +2000,1217 @@ DEU,strict,2024,GF10,-0.7565515672899842,expenditure,nan
 DEU,strict,2024,NLB_CHANGE_SUM,-0.15456400285323435,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
 DEU,strict,2024,ANCHOR_B9_DELTA,1.6653345369377348e-15,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
 DEU,strict,2024,WEO_GGXCNL_DELTA,-0.16887562560779468,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,1971,R01,0.0,revenue,nan
+USA,strict,1971,R02,0.11013954390212688,revenue,nan
+USA,strict,1971,R03,-0.8636779805658079,revenue,nan
+USA,strict,1971,R04,0.07628764381019705,revenue,nan
+USA,strict,1971,R05,0.042236326167763724,revenue,nan
+USA,strict,1971,R06,0.08042808382426117,revenue,nan
+USA,strict,1971,R07,-0.005531205685393309,revenue,nan
+USA,strict,1971,R08,-0.029767868974758718,revenue,nan
+USA,strict,1971,R09,0.05861670515924372,revenue,nan
+USA,strict,1971,R10,-0.002345287494335364,revenue,nan
+USA,strict,1971,GF01,-0.14576995884132138,expenditure,nan
+USA,strict,1971,GF02,0.8224236503111728,expenditure,nan
+USA,strict,1971,GF03,-0.07232989493475908,expenditure,nan
+USA,strict,1971,GF04,0.04457402603774974,expenditure,nan
+USA,strict,1971,GF05,-0.0,expenditure,nan
+USA,strict,1971,GF06,-0.060411822529716705,expenditure,nan
+USA,strict,1971,GF07,-0.17243627279875418,expenditure,nan
+USA,strict,1971,GF08,-0.006782556212503801,expenditure,nan
+USA,strict,1971,GF09,-0.187992599153438,expenditure,nan
+USA,strict,1971,GF10,-0.5322459201228334,expenditure,nan
+USA,strict,1971,NLB_CHANGE_SUM,-0.8445853881011067,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1971,ANCHOR_B9_DELTA,5.590220080176067e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1972,R01,0.0,revenue,nan
+USA,strict,1972,R02,-0.1893775042007384,revenue,nan
+USA,strict,1972,R03,0.9439654646874268,revenue,nan
+USA,strict,1972,R04,0.06820176209120891,revenue,nan
+USA,strict,1972,R05,0.025235185010866017,revenue,nan
+USA,strict,1972,R06,0.2362563560105016,revenue,nan
+USA,strict,1972,R07,-0.02011642461295796,revenue,nan
+USA,strict,1972,R08,-0.039665324663956975,revenue,nan
+USA,strict,1972,R09,0.08848284572257684,revenue,nan
+USA,strict,1972,R10,0.019620666065004726,revenue,nan
+USA,strict,1972,GF01,-0.04560643580618362,expenditure,nan
+USA,strict,1972,GF02,0.32636456390469776,expenditure,nan
+USA,strict,1972,GF03,-0.03699887569007642,expenditure,nan
+USA,strict,1972,GF04,0.08704852471675198,expenditure,nan
+USA,strict,1972,GF05,-0.0,expenditure,nan
+USA,strict,1972,GF06,9.303476485433143e-05,expenditure,nan
+USA,strict,1972,GF07,-0.1234621703734333,expenditure,nan
+USA,strict,1972,GF08,0.00567706937823001,expenditure,nan
+USA,strict,1972,GF09,-0.01396929278872222,expenditure,nan
+USA,strict,1972,GF10,-0.05432740626239024,expenditure,nan
+USA,strict,1972,NLB_CHANGE_SUM,1.2774220379536598,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1972,ANCHOR_B9_DELTA,7.817935903098316e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1973,R01,0.0,revenue,nan
+USA,strict,1973,R02,-0.21394688277056872,revenue,nan
+USA,strict,1973,R03,-0.37160731269821473,revenue,nan
+USA,strict,1973,R04,0.1334311157546897,revenue,nan
+USA,strict,1973,R05,-0.0790338567555597,revenue,nan
+USA,strict,1973,R06,0.6768225607140937,revenue,nan
+USA,strict,1973,R07,0.05912952179104548,revenue,nan
+USA,strict,1973,R08,0.06224701725082659,revenue,nan
+USA,strict,1973,R09,-0.02021803152523656,revenue,nan
+USA,strict,1973,R10,-0.014932897225479339,revenue,nan
+USA,strict,1973,GF01,-0.13448153340802974,expenditure,nan
+USA,strict,1973,GF02,0.7244115396197438,expenditure,nan
+USA,strict,1973,GF03,0.009067153670700052,expenditure,nan
+USA,strict,1973,GF04,0.5992954892859899,expenditure,nan
+USA,strict,1973,GF05,-0.0,expenditure,nan
+USA,strict,1973,GF06,-0.014209649833468643,expenditure,nan
+USA,strict,1973,GF07,-0.08740505997778467,expenditure,nan
+USA,strict,1973,GF08,-0.0016919424098189514,expenditure,nan
+USA,strict,1973,GF09,0.09322223866691515,expenditure,nan
+USA,strict,1973,GF10,-0.16123972777106754,expenditure,nan
+USA,strict,1973,NLB_CHANGE_SUM,1.2588597423787755,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1973,ANCHOR_B9_DELTA,-1.6938336435678991e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1974,R01,0.0,revenue,nan
+USA,strict,1974,R02,-0.1407944468421074,revenue,nan
+USA,strict,1974,R03,0.49096675007120477,revenue,nan
+USA,strict,1974,R04,-0.16067493148304407,revenue,nan
+USA,strict,1974,R05,-0.06350428535371912,revenue,nan
+USA,strict,1974,R06,0.21469659518493292,revenue,nan
+USA,strict,1974,R07,0.11240362797845316,revenue,nan
+USA,strict,1974,R08,0.06736931127963602,revenue,nan
+USA,strict,1974,R09,0.06349789209364222,revenue,nan
+USA,strict,1974,R10,0.011474872336255304,revenue,nan
+USA,strict,1974,GF01,-0.35231832732848384,expenditure,nan
+USA,strict,1974,GF02,0.0802970893561114,expenditure,nan
+USA,strict,1974,GF03,-0.058994519187677806,expenditure,nan
+USA,strict,1974,GF04,0.20834093176856847,expenditure,nan
+USA,strict,1974,GF05,-0.0,expenditure,nan
+USA,strict,1974,GF06,-0.05856103582584805,expenditure,nan
+USA,strict,1974,GF07,-0.2402841524892986,expenditure,nan
+USA,strict,1974,GF08,-0.030806003882335748,expenditure,nan
+USA,strict,1974,GF09,-0.1571156547372339,expenditure,nan
+USA,strict,1974,GF10,-0.5725372866506407,expenditure,nan
+USA,strict,1974,NLB_CHANGE_SUM,-0.586543573711585,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1974,ANCHOR_B9_DELTA,6.033681998474094e-09,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1975,R01,0.0,revenue,nan
+USA,strict,1975,R02,-0.053344248756499735,revenue,nan
+USA,strict,1975,R03,-1.0028468669788835,revenue,nan
+USA,strict,1975,R04,-0.2907934640632236,revenue,nan
+USA,strict,1975,R05,-0.032304020221550406,revenue,nan
+USA,strict,1975,R06,-0.21385150289591898,revenue,nan
+USA,strict,1975,R07,0.025136666195369785,revenue,nan
+USA,strict,1975,R08,-0.040901749994975894,revenue,nan
+USA,strict,1975,R09,-0.023344255110029424,revenue,nan
+USA,strict,1975,R10,0.011562082838377204,revenue,nan
+USA,strict,1975,GF01,-0.24566337500450536,expenditure,nan
+USA,strict,1975,GF02,0.17500419759398436,expenditure,nan
+USA,strict,1975,GF03,-0.06352385084708728,expenditure,nan
+USA,strict,1975,GF04,-0.4941062010315279,expenditure,nan
+USA,strict,1975,GF05,-0.0,expenditure,nan
+USA,strict,1975,GF06,-0.009109204743018573,expenditure,nan
+USA,strict,1975,GF07,-0.26655964961209283,expenditure,nan
+USA,strict,1975,GF08,-0.02467627775800405,expenditure,nan
+USA,strict,1975,GF09,-0.3150323579904045,expenditure,nan
+USA,strict,1975,GF10,-1.0687271419517557,expenditure,nan
+USA,strict,1975,NLB_CHANGE_SUM,-3.9330812203317462,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1975,ANCHOR_B9_DELTA,-1.824119498117227e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1976,R01,0.0,revenue,nan
+USA,strict,1976,R02,-0.21567837065800122,revenue,nan
+USA,strict,1976,R03,0.47207503182353644,revenue,nan
+USA,strict,1976,R04,0.41238923789353177,revenue,nan
+USA,strict,1976,R05,-0.001994512073948476,revenue,nan
+USA,strict,1976,R06,0.10773249350795877,revenue,nan
+USA,strict,1976,R07,-0.07901583363531493,revenue,nan
+USA,strict,1976,R08,-0.01388482547661678,revenue,nan
+USA,strict,1976,R09,-0.043919033307020586,revenue,nan
+USA,strict,1976,R10,0.013389451168558048,revenue,nan
+USA,strict,1976,GF01,0.05495048571372563,expenditure,nan
+USA,strict,1976,GF02,0.4332634617285336,expenditure,nan
+USA,strict,1976,GF03,0.031031151290174426,expenditure,nan
+USA,strict,1976,GF04,0.35166645894788784,expenditure,nan
+USA,strict,1976,GF05,-0.0,expenditure,nan
+USA,strict,1976,GF06,0.02200449702475073,expenditure,nan
+USA,strict,1976,GF07,-0.00873266063620634,expenditure,nan
+USA,strict,1976,GF08,0.012596894484054105,expenditure,nan
+USA,strict,1976,GF09,0.25503917493909234,expenditure,nan
+USA,strict,1976,GF10,0.21261565656500864,expenditure,nan
+USA,strict,1976,NLB_CHANGE_SUM,2.0155287592997038,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1976,ANCHOR_B9_DELTA,2.676747330454532e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1977,R01,0.0,revenue,nan
+USA,strict,1977,R02,-0.1445569388979301,revenue,nan
+USA,strict,1977,R03,0.3027085399519139,revenue,nan
+USA,strict,1977,R04,0.10920400288265374,revenue,nan
+USA,strict,1977,R05,0.04156668687580771,revenue,nan
+USA,strict,1977,R06,0.025730857035821675,revenue,nan
+USA,strict,1977,R07,0.017962482229734456,revenue,nan
+USA,strict,1977,R08,-0.035215264789401936,revenue,nan
+USA,strict,1977,R09,-0.01857248730237869,revenue,nan
+USA,strict,1977,R10,0.01871357121752209,revenue,nan
+USA,strict,1977,GF01,0.09632823909951072,expenditure,nan
+USA,strict,1977,GF02,0.18153980148188364,expenditure,nan
+USA,strict,1977,GF03,0.02289792991495721,expenditure,nan
+USA,strict,1977,GF04,-0.0014476687394078536,expenditure,nan
+USA,strict,1977,GF05,-0.0,expenditure,nan
+USA,strict,1977,GF06,0.03061716684251833,expenditure,nan
+USA,strict,1977,GF07,-0.003112756497739705,expenditure,nan
+USA,strict,1977,GF08,0.019633513738056628,expenditure,nan
+USA,strict,1977,GF09,0.28994703094072305,expenditure,nan
+USA,strict,1977,GF10,0.32221673762338754,expenditure,nan
+USA,strict,1977,NLB_CHANGE_SUM,1.2761614436076325,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1977,ANCHOR_B9_DELTA,4.856913295991916e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1978,R01,0.0,revenue,nan
+USA,strict,1978,R02,-0.4021105239004466,revenue,nan
+USA,strict,1978,R03,0.27292678911706586,revenue,nan
+USA,strict,1978,R04,0.029637409048280383,revenue,nan
+USA,strict,1978,R05,-0.14655944544852115,revenue,nan
+USA,strict,1978,R06,0.14961658366270392,revenue,nan
+USA,strict,1978,R07,0.10436861913659651,revenue,nan
+USA,strict,1978,R08,0.012355994575590466,revenue,nan
+USA,strict,1978,R09,-0.00469416960242261,revenue,nan
+USA,strict,1978,R10,0.020125496078551464,revenue,nan
+USA,strict,1978,GF01,-0.041462029072576734,expenditure,nan
+USA,strict,1978,GF02,0.238163942715134,expenditure,nan
+USA,strict,1978,GF03,0.025422092384921706,expenditure,nan
+USA,strict,1978,GF04,-0.1577214669824932,expenditure,nan
+USA,strict,1978,GF05,-0.0,expenditure,nan
+USA,strict,1978,GF06,-0.02148238155914835,expenditure,nan
+USA,strict,1978,GF07,0.002238270869246717,expenditure,nan
+USA,strict,1978,GF08,-0.0002058305308206762,expenditure,nan
+USA,strict,1978,GF09,0.28178767140822764,expenditure,nan
+USA,strict,1978,GF10,0.4840151312361235,expenditure,nan
+USA,strict,1978,NLB_CHANGE_SUM,0.8464221531360129,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1978,ANCHOR_B9_DELTA,-1.4954192164573499e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1979,R01,0.0,revenue,nan
+USA,strict,1979,R02,-0.4124123516719064,revenue,nan
+USA,strict,1979,R03,0.4838052587738048,revenue,nan
+USA,strict,1979,R04,-0.2570255974659274,revenue,nan
+USA,strict,1979,R05,-0.029809660112968973,revenue,nan
+USA,strict,1979,R06,0.23068400976335654,revenue,nan
+USA,strict,1979,R07,0.15816255094571186,revenue,nan
+USA,strict,1979,R08,0.08657062439550808,revenue,nan
+USA,strict,1979,R09,0.06272064474773555,revenue,nan
+USA,strict,1979,R10,0.006747887203273481,revenue,nan
+USA,strict,1979,GF01,-0.053792406013782046,expenditure,nan
+USA,strict,1979,GF02,0.01922219824129906,expenditure,nan
+USA,strict,1979,GF03,0.011199918823724848,expenditure,nan
+USA,strict,1979,GF04,0.12039096123237017,expenditure,nan
+USA,strict,1979,GF05,-0.0,expenditure,nan
+USA,strict,1979,GF06,-0.01258203125530273,expenditure,nan
+USA,strict,1979,GF07,-0.04101402991958589,expenditure,nan
+USA,strict,1979,GF08,0.009739084022316246,expenditure,nan
+USA,strict,1979,GF09,0.09711552955621108,expenditure,nan
+USA,strict,1979,GF10,0.021913239590766465,expenditure,nan
+USA,strict,1979,NLB_CHANGE_SUM,0.5016358308566047,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1979,ANCHOR_B9_DELTA,2.585562850265788e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1980,R01,0.0,revenue,nan
+USA,strict,1980,R02,0.15624910569809886,revenue,nan
+USA,strict,1980,R03,0.2603659292973168,revenue,nan
+USA,strict,1980,R04,-0.43846199048389184,revenue,nan
+USA,strict,1980,R05,0.019132305967444526,revenue,nan
+USA,strict,1980,R06,0.0025673633058553857,revenue,nan
+USA,strict,1980,R07,0.1641952448000389,revenue,nan
+USA,strict,1980,R08,0.12051676476894195,revenue,nan
+USA,strict,1980,R09,0.09977771548396533,revenue,nan
+USA,strict,1980,R10,0.024110461723023374,revenue,nan
+USA,strict,1980,GF01,-0.3525911856051417,expenditure,nan
+USA,strict,1980,GF02,-0.32479286042032884,expenditure,nan
+USA,strict,1980,GF03,-0.030455189664141923,expenditure,nan
+USA,strict,1980,GF04,-0.12003617044040946,expenditure,nan
+USA,strict,1980,GF05,-0.0,expenditure,nan
+USA,strict,1980,GF06,-0.0514151195913342,expenditure,nan
+USA,strict,1980,GF07,-0.25828083669409074,expenditure,nan
+USA,strict,1980,GF08,-0.0006161486297179362,expenditure,nan
+USA,strict,1980,GF09,-0.027431619574989907,expenditure,nan
+USA,strict,1980,GF10,-0.6698388709465666,expenditure,nan
+USA,strict,1980,NLB_CHANGE_SUM,-1.427005101005928,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1980,ANCHOR_B9_DELTA,4.7242897038834997e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1981,R01,0.0,revenue,nan
+USA,strict,1981,R02,0.336560537205563,revenue,nan
+USA,strict,1981,R03,0.30236751190811234,revenue,nan
+USA,strict,1981,R04,-0.46475426921249624,revenue,nan
+USA,strict,1981,R05,-0.029783779253935664,revenue,nan
+USA,strict,1981,R06,0.28688048732351396,revenue,nan
+USA,strict,1981,R07,0.13816124751236408,revenue,nan
+USA,strict,1981,R08,0.0539611975307914,revenue,nan
+USA,strict,1981,R09,0.0005105234304747519,revenue,nan
+USA,strict,1981,R10,0.0033350294178197994,revenue,nan
+USA,strict,1981,GF01,-0.2304664853082894,expenditure,nan
+USA,strict,1981,GF02,-0.2514011951145409,expenditure,nan
+USA,strict,1981,GF03,-0.0011915245391734205,expenditure,nan
+USA,strict,1981,GF04,0.14782142856303512,expenditure,nan
+USA,strict,1981,GF05,-0.0,expenditure,nan
+USA,strict,1981,GF06,0.02620487242847346,expenditure,nan
+USA,strict,1981,GF07,-0.10632274279156612,expenditure,nan
+USA,strict,1981,GF08,0.010869088965558557,expenditure,nan
+USA,strict,1981,GF09,0.18146402594030608,expenditure,nan
+USA,strict,1981,GF10,0.0285586680486144,expenditure,nan
+USA,strict,1981,NLB_CHANGE_SUM,0.43277462205462525,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1981,ANCHOR_B9_DELTA,-4.707666425851631e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1982,R01,0.0,revenue,nan
+USA,strict,1982,R02,-0.1423188900254127,revenue,nan
+USA,strict,1982,R03,-0.18726970871868615,revenue,nan
+USA,strict,1982,R04,-0.661074887896565,revenue,nan
+USA,strict,1982,R05,0.021450322858398724,revenue,nan
+USA,strict,1982,R06,0.14422321058096543,revenue,nan
+USA,strict,1982,R07,0.18734127685720633,revenue,nan
+USA,strict,1982,R08,0.032648241323924354,revenue,nan
+USA,strict,1982,R09,0.20418832990876032,revenue,nan
+USA,strict,1982,R10,0.054087798957634964,revenue,nan
+USA,strict,1982,GF01,-0.6296294254602306,expenditure,nan
+USA,strict,1982,GF02,-0.5969971033130697,expenditure,nan
+USA,strict,1982,GF03,-0.09350004704448603,expenditure,nan
+USA,strict,1982,GF04,-0.012857311409692623,expenditure,nan
+USA,strict,1982,GF05,-0.0,expenditure,nan
+USA,strict,1982,GF06,-0.02186874697784674,expenditure,nan
+USA,strict,1982,GF07,-0.2806858815674773,expenditure,nan
+USA,strict,1982,GF08,-0.0018280450413645042,expenditure,nan
+USA,strict,1982,GF09,-0.11322819870429532,expenditure,nan
+USA,strict,1982,GF10,-0.4999490495644132,expenditure,nan
+USA,strict,1982,NLB_CHANGE_SUM,-2.5972681152366492,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1982,ANCHOR_B9_DELTA,-1.2049302879901802e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1983,R01,0.0,revenue,nan
+USA,strict,1983,R02,0.03947209404813745,revenue,nan
+USA,strict,1983,R03,-0.9044060797108205,revenue,nan
+USA,strict,1983,R04,0.302150032916379,revenue,nan
+USA,strict,1983,R05,-0.07595271532687764,revenue,nan
+USA,strict,1983,R06,-0.03065390737627821,revenue,nan
+USA,strict,1983,R07,0.03820928843302346,revenue,nan
+USA,strict,1983,R08,-0.08214688798271448,revenue,nan
+USA,strict,1983,R09,0.03425341888408512,revenue,nan
+USA,strict,1983,R10,0.022127265430866173,revenue,nan
+USA,strict,1983,GF01,-0.09751342375472344,expenditure,nan
+USA,strict,1983,GF02,-0.11559816892102656,expenditure,nan
+USA,strict,1983,GF03,-0.008288400727847998,expenditure,nan
+USA,strict,1983,GF04,-0.06588100642336142,expenditure,nan
+USA,strict,1983,GF05,-0.0,expenditure,nan
+USA,strict,1983,GF06,0.02915457324221063,expenditure,nan
+USA,strict,1983,GF07,-0.08692073812911413,expenditure,nan
+USA,strict,1983,GF08,0.008572377151442982,expenditure,nan
+USA,strict,1983,GF09,0.10528333977552345,expenditure,nan
+USA,strict,1983,GF10,0.15741753642861817,expenditure,nan
+USA,strict,1983,NLB_CHANGE_SUM,-0.7307214020424782,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1983,ANCHOR_B9_DELTA,1.7438210058173809e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1984,R01,0.0,revenue,nan
+USA,strict,1984,R02,-0.06802156576859175,revenue,nan
+USA,strict,1984,R03,-0.34814432215738156,revenue,nan
+USA,strict,1984,R04,0.19747449595277738,revenue,nan
+USA,strict,1984,R05,-0.024447175877624194,revenue,nan
+USA,strict,1984,R06,0.15765772398647349,revenue,nan
+USA,strict,1984,R07,0.036694333488148864,revenue,nan
+USA,strict,1984,R08,0.012585531847158268,revenue,nan
+USA,strict,1984,R09,-0.06554983513960035,revenue,nan
+USA,strict,1984,R10,0.019949108368036254,revenue,nan
+USA,strict,1984,GF01,-0.13243626887139287,expenditure,nan
+USA,strict,1984,GF02,0.10203315073336883,expenditure,nan
+USA,strict,1984,GF03,0.023059576143832222,expenditure,nan
+USA,strict,1984,GF04,0.2495158656900899,expenditure,nan
+USA,strict,1984,GF05,-0.0,expenditure,nan
+USA,strict,1984,GF06,0.01701347803310868,expenditure,nan
+USA,strict,1984,GF07,0.07870241351187052,expenditure,nan
+USA,strict,1984,GF08,-0.006801778311168929,expenditure,nan
+USA,strict,1984,GF09,0.1266881777125542,expenditure,nan
+USA,strict,1984,GF10,0.7358841699227986,expenditure,nan
+USA,strict,1984,NLB_CHANGE_SUM,1.1118570792644575,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1984,ANCHOR_B9_DELTA,2.9912048984392925e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1985,R01,0.0,revenue,nan
+USA,strict,1985,R02,-0.07533002075274658,revenue,nan
+USA,strict,1985,R03,0.2806990344030147,revenue,nan
+USA,strict,1985,R04,-0.11725393041429333,revenue,nan
+USA,strict,1985,R05,-5.3138588317590274e-05,revenue,nan
+USA,strict,1985,R06,0.10767076997003633,revenue,nan
+USA,strict,1985,R07,0.1261403290804191,revenue,nan
+USA,strict,1985,R08,-0.0034624429860395135,revenue,nan
+USA,strict,1985,R09,0.07019325646606782,revenue,nan
+USA,strict,1985,R10,0.05157382064078196,revenue,nan
+USA,strict,1985,GF01,-0.28196001525945397,expenditure,nan
+USA,strict,1985,GF02,-0.1941894969258902,expenditure,nan
+USA,strict,1985,GF03,-0.04958803507289604,expenditure,nan
+USA,strict,1985,GF04,-0.12105172935506434,expenditure,nan
+USA,strict,1985,GF05,-0.0,expenditure,nan
+USA,strict,1985,GF06,-0.008551379863200922,expenditure,nan
+USA,strict,1985,GF07,-0.0299339182601846,expenditure,nan
+USA,strict,1985,GF08,0.0030611153193369715,expenditure,nan
+USA,strict,1985,GF09,-0.06743760818821443,expenditure,nan
+USA,strict,1985,GF10,0.15363395582372458,expenditure,nan
+USA,strict,1985,NLB_CHANGE_SUM,-0.15583943396292005,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1985,ANCHOR_B9_DELTA,-5.868456217916762e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1986,R01,0.0,revenue,nan
+USA,strict,1986,R02,-0.040394615098349185,revenue,nan
+USA,strict,1986,R03,-0.07684599532340741,revenue,nan
+USA,strict,1986,R04,0.12230655406884339,revenue,nan
+USA,strict,1986,R05,0.012995144851650053,revenue,nan
+USA,strict,1986,R06,0.139976180439573,revenue,nan
+USA,strict,1986,R07,0.03168111675990529,revenue,nan
+USA,strict,1986,R08,-0.042576550119404005,revenue,nan
+USA,strict,1986,R09,0.0685795570476544,revenue,nan
+USA,strict,1986,R10,0.03306683187312819,revenue,nan
+USA,strict,1986,GF01,-0.024341142372337476,expenditure,nan
+USA,strict,1986,GF02,-0.07171521192001484,expenditure,nan
+USA,strict,1986,GF03,-0.050664762605332966,expenditure,nan
+USA,strict,1986,GF04,-0.08088793153994134,expenditure,nan
+USA,strict,1986,GF05,-0.0,expenditure,nan
+USA,strict,1986,GF06,-0.0041144503004683815,expenditure,nan
+USA,strict,1986,GF07,-0.0919661683913317,expenditure,nan
+USA,strict,1986,GF08,-0.009985150188443741,expenditure,nan
+USA,strict,1986,GF09,-0.13173459387470707,expenditure,nan
+USA,strict,1986,GF10,0.02266695491180415,expenditure,nan
+USA,strict,1986,NLB_CHANGE_SUM,-0.19395423178117965,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1986,ANCHOR_B9_DELTA,3.372623690600651e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1987,R01,0.0,revenue,nan
+USA,strict,1987,R02,0.09706465171080564,revenue,nan
+USA,strict,1987,R03,0.5223573000777624,revenue,nan
+USA,strict,1987,R04,0.3157514007618992,revenue,nan
+USA,strict,1987,R05,0.005190687961040361,revenue,nan
+USA,strict,1987,R06,0.028854150471691042,revenue,nan
+USA,strict,1987,R07,-0.15357862589902121,revenue,nan
+USA,strict,1987,R08,-0.05792275755631595,revenue,nan
+USA,strict,1987,R09,0.03899821205611623,revenue,nan
+USA,strict,1987,R10,-0.004422373742455753,revenue,nan
+USA,strict,1987,GF01,0.19703763108599864,expenditure,nan
+USA,strict,1987,GF02,0.045902790017042505,expenditure,nan
+USA,strict,1987,GF03,-0.0378623718061185,expenditure,nan
+USA,strict,1987,GF04,-0.03246418168005305,expenditure,nan
+USA,strict,1987,GF05,-0.0,expenditure,nan
+USA,strict,1987,GF06,-0.012133118018201657,expenditure,nan
+USA,strict,1987,GF07,-0.09044831719311058,expenditure,nan
+USA,strict,1987,GF08,-0.0017773735767665118,expenditure,nan
+USA,strict,1987,GF09,-0.05068423639415648,expenditure,nan
+USA,strict,1987,GF10,0.19796625441416554,expenditure,nan
+USA,strict,1987,NLB_CHANGE_SUM,1.007829722690322,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1987,ANCHOR_B9_DELTA,-3.6176722728598065e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1988,R01,0.0,revenue,nan
+USA,strict,1988,R02,-0.007055793605111049,revenue,nan
+USA,strict,1988,R03,-0.4188759699489425,revenue,nan
+USA,strict,1988,R04,0.035482689350673294,revenue,nan
+USA,strict,1988,R05,-0.005234011651428141,revenue,nan
+USA,strict,1988,R06,0.2487949129763578,revenue,nan
+USA,strict,1988,R07,-0.0055157715620896,revenue,nan
+USA,strict,1988,R08,-0.06827495208813865,revenue,nan
+USA,strict,1988,R09,0.04223183947161188,revenue,nan
+USA,strict,1988,R10,-0.0251485709405805,revenue,nan
+USA,strict,1988,GF01,0.16409764991206638,expenditure,nan
+USA,strict,1988,GF02,0.3869060861846678,expenditure,nan
+USA,strict,1988,GF03,-0.036930097490794206,expenditure,nan
+USA,strict,1988,GF04,0.2788287166285659,expenditure,nan
+USA,strict,1988,GF05,-0.0,expenditure,nan
+USA,strict,1988,GF06,-0.007178158744641956,expenditure,nan
+USA,strict,1988,GF07,-0.01835803365104957,expenditure,nan
+USA,strict,1988,GF08,-0.0003483472792425741,expenditure,nan
+USA,strict,1988,GF09,-0.024241879045940745,expenditure,nan
+USA,strict,1988,GF10,0.11748936239337204,expenditure,nan
+USA,strict,1988,NLB_CHANGE_SUM,0.6566696709093555,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1988,ANCHOR_B9_DELTA,7.29786499009677e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1989,R01,0.0,revenue,nan
+USA,strict,1989,R02,-0.08100823182718431,revenue,nan
+USA,strict,1989,R03,0.40499835076729385,revenue,nan
+USA,strict,1989,R04,-0.16405748288971478,revenue,nan
+USA,strict,1989,R05,0.007917955624136587,revenue,nan
+USA,strict,1989,R06,-0.07650863656913365,revenue,nan
+USA,strict,1989,R07,-0.02850846120095417,revenue,nan
+USA,strict,1989,R08,0.03906259448912064,revenue,nan
+USA,strict,1989,R09,0.08013990559405312,revenue,nan
+USA,strict,1989,R10,0.04420090435878653,revenue,nan
+USA,strict,1989,GF01,-0.05079879953603511,expenditure,nan
+USA,strict,1989,GF02,0.35632805741866513,expenditure,nan
+USA,strict,1989,GF03,-0.06802387206256924,expenditure,nan
+USA,strict,1989,GF04,0.0559973719824261,expenditure,nan
+USA,strict,1989,GF05,-0.0,expenditure,nan
+USA,strict,1989,GF06,-0.0027289602651830135,expenditure,nan
+USA,strict,1989,GF07,-0.1926229570464802,expenditure,nan
+USA,strict,1989,GF08,-0.00549162631191388,expenditure,nan
+USA,strict,1989,GF09,-0.12990583955825516,expenditure,nan
+USA,strict,1989,GF10,0.026413226636148868,expenditure,nan
+USA,strict,1989,NLB_CHANGE_SUM,0.2154034996032074,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1989,ANCHOR_B9_DELTA,2.341344244871646e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1990,R01,0.0,revenue,nan
+USA,strict,1990,R02,0.05682301473839413,revenue,nan
+USA,strict,1990,R03,-0.08692370169048197,revenue,nan
+USA,strict,1990,R04,-0.16162397398510503,revenue,nan
+USA,strict,1990,R05,0.04195387365264914,revenue,nan
+USA,strict,1990,R06,0.0517010260865855,revenue,nan
+USA,strict,1990,R07,-0.04423628788547181,revenue,nan
+USA,strict,1990,R08,0.015583711568422417,revenue,nan
+USA,strict,1990,R09,0.11589620273302903,revenue,nan
+USA,strict,1990,R10,0.03269278640248224,revenue,nan
+USA,strict,1990,GF01,-0.1811024004206671,expenditure,nan
+USA,strict,1990,GF02,0.12190129018964449,expenditure,nan
+USA,strict,1990,GF03,-0.08390494533159279,expenditure,nan
+USA,strict,1990,GF04,-0.10140448836304661,expenditure,nan
+USA,strict,1990,GF05,-0.0,expenditure,nan
+USA,strict,1990,GF06,-0.027330838700760987,expenditure,nan
+USA,strict,1990,GF07,-0.29916930513374584,expenditure,nan
+USA,strict,1990,GF08,-0.01413509679164377,expenditure,nan
+USA,strict,1990,GF09,-0.15420465676986087,expenditure,nan
+USA,strict,1990,GF10,-0.22196457814644271,expenditure,nan
+USA,strict,1990,NLB_CHANGE_SUM,-0.9394483678476127,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1990,ANCHOR_B9_DELTA,-3.314011653987592e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1991,R01,0.0,revenue,nan
+USA,strict,1991,R02,0.29561891574263616,revenue,nan
+USA,strict,1991,R03,-0.4212449474555069,revenue,nan
+USA,strict,1991,R04,-0.1302935055356974,revenue,nan
+USA,strict,1991,R05,-0.007651088023565532,revenue,nan
+USA,strict,1991,R06,0.10852038539393982,revenue,nan
+USA,strict,1991,R07,-0.08163146421526005,revenue,nan
+USA,strict,1991,R08,-0.05052360116297259,revenue,nan
+USA,strict,1991,R09,0.19843051572671633,revenue,nan
+USA,strict,1991,R10,0.11903786893098538,revenue,nan
+USA,strict,1991,GF01,0.4172161619151113,expenditure,nan
+USA,strict,1991,GF02,0.08800789845858983,expenditure,nan
+USA,strict,1991,GF03,-0.0948249970998398,expenditure,nan
+USA,strict,1991,GF04,-0.04013148840854436,expenditure,nan
+USA,strict,1991,GF05,-0.0,expenditure,nan
+USA,strict,1991,GF06,-0.028973204244649945,expenditure,nan
+USA,strict,1991,GF07,-0.5656660246703332,expenditure,nan
+USA,strict,1991,GF08,-0.007676213937398736,expenditure,nan
+USA,strict,1991,GF09,-0.19262062150651113,expenditure,nan
+USA,strict,1991,GF10,-0.4918083439767962,expenditure,nan
+USA,strict,1991,NLB_CHANGE_SUM,-0.886213754069097,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1991,ANCHOR_B9_DELTA,-1.7269722329960047e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1992,R01,0.0,revenue,nan
+USA,strict,1992,R02,-0.009192010017970709,revenue,nan
+USA,strict,1992,R03,-0.17469386930478586,revenue,nan
+USA,strict,1992,R04,0.10642914080408392,revenue,nan
+USA,strict,1992,R05,-0.002787511339768633,revenue,nan
+USA,strict,1992,R06,-0.008684557138224913,revenue,nan
+USA,strict,1992,R07,-0.20216536434526175,revenue,nan
+USA,strict,1992,R08,-0.08722023381120282,revenue,nan
+USA,strict,1992,R09,0.09715069831219558,revenue,nan
+USA,strict,1992,R10,0.04825581677045682,revenue,nan
+USA,strict,1992,GF01,-0.425352593331077,expenditure,nan
+USA,strict,1992,GF02,0.4170509761216974,expenditure,nan
+USA,strict,1992,GF03,-0.04187907786869054,expenditure,nan
+USA,strict,1992,GF04,-0.005211504453463828,expenditure,nan
+USA,strict,1992,GF05,-0.0,expenditure,nan
+USA,strict,1992,GF06,-0.00792586297394442,expenditure,nan
+USA,strict,1992,GF07,-0.3782218419236365,expenditure,nan
+USA,strict,1992,GF08,0.005239756701910705,expenditure,nan
+USA,strict,1992,GF09,-0.020500670031679824,expenditure,nan
+USA,strict,1992,GF10,-0.3308285218786705,expenditure,nan
+USA,strict,1992,NLB_CHANGE_SUM,-1.020537229708033,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1992,ANCHOR_B9_DELTA,-1.0185296785980569e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1993,R01,0.0,revenue,nan
+USA,strict,1993,R02,-0.07763289209546664,revenue,nan
+USA,strict,1993,R03,0.072761021496702,revenue,nan
+USA,strict,1993,R04,0.2399708430114618,revenue,nan
+USA,strict,1993,R05,0.002353229464059376,revenue,nan
+USA,strict,1993,R06,-0.01680734342236201,revenue,nan
+USA,strict,1993,R07,-0.08749509755181431,revenue,nan
+USA,strict,1993,R08,-0.027812990361212892,revenue,nan
+USA,strict,1993,R09,0.12251441480232786,revenue,nan
+USA,strict,1993,R10,0.03046956670986643,revenue,nan
+USA,strict,1993,GF01,0.2901443112747107,expenditure,nan
+USA,strict,1993,GF02,0.4766475999918217,expenditure,nan
+USA,strict,1993,GF03,-0.044300763174013116,expenditure,nan
+USA,strict,1993,GF04,-0.029997349073095092,expenditure,nan
+USA,strict,1993,GF05,-0.0,expenditure,nan
+USA,strict,1993,GF06,-0.009625391664167936,expenditure,nan
+USA,strict,1993,GF07,-0.23861128572878962,expenditure,nan
+USA,strict,1993,GF08,0.006082611954600931,expenditure,nan
+USA,strict,1993,GF09,0.021439892895338403,expenditure,nan
+USA,strict,1993,GF10,0.08745371585137801,expenditure,nan
+USA,strict,1993,NLB_CHANGE_SUM,0.8175540943813455,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1993,ANCHOR_B9_DELTA,9.067952899677323e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1994,R01,0.0,revenue,nan
+USA,strict,1994,R02,0.14649354574434864,revenue,nan
+USA,strict,1994,R03,0.05515950979732703,revenue,nan
+USA,strict,1994,R04,0.10289056587974577,revenue,nan
+USA,strict,1994,R05,0.020162488749248756,revenue,nan
+USA,strict,1994,R06,0.014298037723523005,revenue,nan
+USA,strict,1994,R07,-0.07288713783088155,revenue,nan
+USA,strict,1994,R08,0.03966465314084199,revenue,nan
+USA,strict,1994,R09,0.04549643832193473,revenue,nan
+USA,strict,1994,R10,0.016451575646798944,revenue,nan
+USA,strict,1994,GF01,0.25370264267111087,expenditure,nan
+USA,strict,1994,GF02,0.39650621629731125,expenditure,nan
+USA,strict,1994,GF03,-0.01767505290178953,expenditure,nan
+USA,strict,1994,GF04,0.10968612596250413,expenditure,nan
+USA,strict,1994,GF05,-0.0,expenditure,nan
+USA,strict,1994,GF06,0.04080816157076405,expenditure,nan
+USA,strict,1994,GF07,-0.07425329825450772,expenditure,nan
+USA,strict,1994,GF08,0.0023638488102385637,expenditure,nan
+USA,strict,1994,GF09,0.04471256214947025,expenditure,nan
+USA,strict,1994,GF10,0.20805363040859587,expenditure,nan
+USA,strict,1994,NLB_CHANGE_SUM,1.331634513886585,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1994,ANCHOR_B9_DELTA,-8.147821071169403e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1995,R01,0.0,revenue,nan
+USA,strict,1995,R02,-0.17959587627400797,revenue,nan
+USA,strict,1995,R03,0.29540673579392246,revenue,nan
+USA,strict,1995,R04,0.1743921559821296,revenue,nan
+USA,strict,1995,R05,-0.01710445344778634,revenue,nan
+USA,strict,1995,R06,0.0017405980429430201,revenue,nan
+USA,strict,1995,R07,0.03237037598458996,revenue,nan
+USA,strict,1995,R08,0.014593377836283339,revenue,nan
+USA,strict,1995,R09,0.046754812073063895,revenue,nan
+USA,strict,1995,R10,-0.05411370599546313,revenue,nan
+USA,strict,1995,GF01,-0.1630305950233113,expenditure,nan
+USA,strict,1995,GF02,0.290686948063535,expenditure,nan
+USA,strict,1995,GF03,-0.03900853090445591,expenditure,nan
+USA,strict,1995,GF04,0.1953822942237303,expenditure,nan
+USA,strict,1995,GF05,-0.0,expenditure,nan
+USA,strict,1995,GF06,-0.025751001244554185,expenditure,nan
+USA,strict,1995,GF07,-0.1596642429618378,expenditure,nan
+USA,strict,1995,GF08,-0.006255022517574933,expenditure,nan
+USA,strict,1995,GF09,-0.11786489703590336,expenditure,nan
+USA,strict,1995,GF10,0.06153744754316681,expenditure,nan
+USA,strict,1995,NLB_CHANGE_SUM,0.3504764201384695,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1995,ANCHOR_B9_DELTA,-5.508151262323402e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1996,R01,0.0,revenue,nan
+USA,strict,1996,R02,-0.10897211794445444,revenue,nan
+USA,strict,1996,R03,0.5969594294306448,revenue,nan
+USA,strict,1996,R04,0.06607016652432074,revenue,nan
+USA,strict,1996,R05,0.012153336669679018,revenue,nan
+USA,strict,1996,R06,-0.09926748425508475,revenue,nan
+USA,strict,1996,R07,0.010811852583608554,revenue,nan
+USA,strict,1996,R08,-0.04307639640399028,revenue,nan
+USA,strict,1996,R09,-0.036858915282698274,revenue,nan
+USA,strict,1996,R10,0.06057095219303256,revenue,nan
+USA,strict,1996,GF01,0.24872371449049802,expenditure,nan
+USA,strict,1996,GF02,0.17492963768985167,expenditure,nan
+USA,strict,1996,GF03,-0.01479583129291931,expenditure,nan
+USA,strict,1996,GF04,0.06002353081602657,expenditure,nan
+USA,strict,1996,GF05,-0.0,expenditure,nan
+USA,strict,1996,GF06,0.0133375557716006,expenditure,nan
+USA,strict,1996,GF07,0.01128513754124344,expenditure,nan
+USA,strict,1996,GF08,-0.003429169762125036,expenditure,nan
+USA,strict,1996,GF09,0.03457764146744674,expenditure,nan
+USA,strict,1996,GF10,0.16040752233248967,expenditure,nan
+USA,strict,1996,NLB_CHANGE_SUM,1.1434505625691702,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1996,ANCHOR_B9_DELTA,-3.7758606286075747e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1997,R01,0.0,revenue,nan
+USA,strict,1997,R02,-0.06325550488402859,revenue,nan
+USA,strict,1997,R03,0.4907011635933031,revenue,nan
+USA,strict,1997,R04,0.0023305976009448115,revenue,nan
+USA,strict,1997,R05,0.0277744016818059,revenue,nan
+USA,strict,1997,R06,-0.028772103418042705,revenue,nan
+USA,strict,1997,R07,-0.03656596381811962,revenue,nan
+USA,strict,1997,R08,-0.006673465826341485,revenue,nan
+USA,strict,1997,R09,-0.09481361868430224,revenue,nan
+USA,strict,1997,R10,-0.020162196543992324,revenue,nan
+USA,strict,1997,GF01,0.3032556757029875,expenditure,nan
+USA,strict,1997,GF02,0.26565999306877097,expenditure,nan
+USA,strict,1997,GF03,0.003740335428158853,expenditure,nan
+USA,strict,1997,GF04,0.12458099068727232,expenditure,nan
+USA,strict,1997,GF05,-0.0,expenditure,nan
+USA,strict,1997,GF06,0.049270333681250125,expenditure,nan
+USA,strict,1997,GF07,0.13823228233169893,expenditure,nan
+USA,strict,1997,GF08,-0.003810562263947912,expenditure,nan
+USA,strict,1997,GF09,0.015485633987896708,expenditure,nan
+USA,strict,1997,GF10,0.2586587634082746,expenditure,nan
+USA,strict,1997,NLB_CHANGE_SUM,1.4256367557335892,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1997,ANCHOR_B9_DELTA,4.6631409023056847e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1998,R01,0.0,revenue,nan
+USA,strict,1998,R02,-0.07440432098945876,revenue,nan
+USA,strict,1998,R03,0.5328315818358353,revenue,nan
+USA,strict,1998,R04,-0.1777941680063344,revenue,nan
+USA,strict,1998,R05,0.0417356958628665,revenue,nan
+USA,strict,1998,R06,0.04529509772742829,revenue,nan
+USA,strict,1998,R07,-0.06254047713108776,revenue,nan
+USA,strict,1998,R08,0.04164596359546341,revenue,nan
+USA,strict,1998,R09,-0.0590170011284509,revenue,nan
+USA,strict,1998,R10,0.02520498975727096,revenue,nan
+USA,strict,1998,GF01,0.35248498820290297,expenditure,nan
+USA,strict,1998,GF02,0.21084267301036477,expenditure,nan
+USA,strict,1998,GF03,-0.028147292184865433,expenditure,nan
+USA,strict,1998,GF04,-0.0139674860325803,expenditure,nan
+USA,strict,1998,GF05,-0.0,expenditure,nan
+USA,strict,1998,GF06,0.047310391198715926,expenditure,nan
+USA,strict,1998,GF07,0.20315428595318943,expenditure,nan
+USA,strict,1998,GF08,0.00032832217784729487,expenditure,nan
+USA,strict,1998,GF09,-0.058121050953011816,expenditure,nan
+USA,strict,1998,GF10,0.1351271650693528,expenditure,nan
+USA,strict,1998,NLB_CHANGE_SUM,1.1619693579654484,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1998,ANCHOR_B9_DELTA,1.1150038424112552e-05,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,1999,R01,0.0,revenue,nan
+USA,strict,1999,R02,-0.06220329331590446,revenue,nan
+USA,strict,1999,R03,0.15803098885027317,revenue,nan
+USA,strict,1999,R04,-0.040324175014716176,revenue,nan
+USA,strict,1999,R05,0.033018236748273526,revenue,nan
+USA,strict,1999,R06,-0.026405654162132974,revenue,nan
+USA,strict,1999,R07,-0.033153371201931174,revenue,nan
+USA,strict,1999,R08,-0.034312770379029335,revenue,nan
+USA,strict,1999,R09,-0.06634173268945456,revenue,nan
+USA,strict,1999,R10,0.029690338678020275,revenue,nan
+USA,strict,1999,GF01,0.4547469620674399,expenditure,nan
+USA,strict,1999,GF02,0.02794817974005083,expenditure,nan
+USA,strict,1999,GF03,-0.037837842042633824,expenditure,nan
+USA,strict,1999,GF04,-0.22602415357181813,expenditure,nan
+USA,strict,1999,GF05,-0.0,expenditure,nan
+USA,strict,1999,GF06,0.027431201909096023,expenditure,nan
+USA,strict,1999,GF07,0.1170801078678313,expenditure,nan
+USA,strict,1999,GF08,0.002185689182997424,expenditure,nan
+USA,strict,1999,GF09,-0.05063911324538692,expenditure,nan
+USA,strict,1999,GF10,0.15616752342438034,expenditure,nan
+USA,strict,1999,NLB_CHANGE_SUM,0.42905712284535524,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,1999,ANCHOR_B9_DELTA,-0.0017740339766958435,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2000,R01,0.0,revenue,nan
+USA,strict,2000,R02,-0.08170145207685303,revenue,nan
+USA,strict,2000,R03,0.5339060706546563,revenue,nan
+USA,strict,2000,R04,-0.05280687523167328,revenue,nan
+USA,strict,2000,R05,-0.07055577423676196,revenue,nan
+USA,strict,2000,R06,0.0199828661389706,revenue,nan
+USA,strict,2000,R07,0.03258238653282702,revenue,nan
+USA,strict,2000,R08,0.0083733169682184,revenue,nan
+USA,strict,2000,R09,0.03210018904292733,revenue,nan
+USA,strict,2000,R10,0.04477136230506065,revenue,nan
+USA,strict,2000,GF01,0.2925992836209763,expenditure,nan
+USA,strict,2000,GF02,0.09665677605303138,expenditure,nan
+USA,strict,2000,GF03,-0.022140852418962853,expenditure,nan
+USA,strict,2000,GF04,-0.03590670474988844,expenditure,nan
+USA,strict,2000,GF05,-0.0,expenditure,nan
+USA,strict,2000,GF06,0.047297532358604816,expenditure,nan
+USA,strict,2000,GF07,-0.004440003327062236,expenditure,nan
+USA,strict,2000,GF08,-0.010919285668336892,expenditure,nan
+USA,strict,2000,GF09,-0.08587529123897791,expenditure,nan
+USA,strict,2000,GF10,0.07385639481049533,expenditure,nan
+USA,strict,2000,NLB_CHANGE_SUM,0.8177799395372514,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2000,ANCHOR_B9_DELTA,-0.0004554749456727736,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2001,R01,0.0,revenue,nan
+USA,strict,2001,R02,-0.03537067126339888,revenue,nan
+USA,strict,2001,R03,-0.34757729865746295,revenue,nan
+USA,strict,2001,R04,-0.6614911706701414,revenue,nan
+USA,strict,2001,R05,-0.015971009720175487,revenue,nan
+USA,strict,2001,R06,0.04399496455666091,revenue,nan
+USA,strict,2001,R07,-0.08602138157216885,revenue,nan
+USA,strict,2001,R08,0.027024393193800712,revenue,nan
+USA,strict,2001,R09,0.16354920491314234,revenue,nan
+USA,strict,2001,R10,0.04592255547248552,revenue,nan
+USA,strict,2001,GF01,0.13122848014169644,expenditure,nan
+USA,strict,2001,GF02,-0.12791998054300613,expenditure,nan
+USA,strict,2001,GF03,-0.08840880829401494,expenditure,nan
+USA,strict,2001,GF04,-0.18563160787314834,expenditure,nan
+USA,strict,2001,GF05,-0.0,expenditure,nan
+USA,strict,2001,GF06,-0.018293702236684382,expenditure,nan
+USA,strict,2001,GF07,-0.539381301188998,expenditure,nan
+USA,strict,2001,GF08,-0.015234521267665961,expenditure,nan
+USA,strict,2001,GF09,-0.25745732254107284,expenditure,nan
+USA,strict,2001,GF10,-0.21182394571255814,expenditure,nan
+USA,strict,2001,NLB_CHANGE_SUM,-2.1788631232627105,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2001,ANCHOR_B9_DELTA,-0.003442466396806676,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2002,R01,0.0,revenue,nan
+USA,strict,2002,R02,0.07746179150920768,revenue,nan
+USA,strict,2002,R03,-2.085068917831917,revenue,nan
+USA,strict,2002,R04,-0.16294998425334886,revenue,nan
+USA,strict,2002,R05,-0.01134619274826814,revenue,nan
+USA,strict,2002,R06,-0.053805366656690945,revenue,nan
+USA,strict,2002,R07,-0.14466759750145514,revenue,nan
+USA,strict,2002,R08,-0.05202040323849799,revenue,nan
+USA,strict,2002,R09,0.098502041378868,revenue,nan
+USA,strict,2002,R10,0.005112127872391667,revenue,nan
+USA,strict,2002,GF01,0.12551066396263438,expenditure,nan
+USA,strict,2002,GF02,-0.33117059279357197,expenditure,nan
+USA,strict,2002,GF03,-0.0560750849996728,expenditure,nan
+USA,strict,2002,GF04,0.02317580492199184,expenditure,nan
+USA,strict,2002,GF05,-0.0,expenditure,nan
+USA,strict,2002,GF06,-0.04241069908194686,expenditure,nan
+USA,strict,2002,GF07,-0.3696843643400366,expenditure,nan
+USA,strict,2002,GF08,-0.009078861022637904,expenditure,nan
+USA,strict,2002,GF09,-0.061030107754818375,expenditure,nan
+USA,strict,2002,GF10,-0.40516270715448277,expenditure,nan
+USA,strict,2002,NLB_CHANGE_SUM,-3.4547084497322516,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2002,ANCHOR_B9_DELTA,-0.0004234041234640884,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2002,WEO_GGXCNL_DELTA,-3.2770176595630542,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2003,R01,0.0,revenue,nan
+USA,strict,2003,R02,0.07780363333366735,revenue,nan
+USA,strict,2003,R03,-0.8658818205852916,revenue,nan
+USA,strict,2003,R04,0.39759492589433854,revenue,nan
+USA,strict,2003,R05,-0.047733330209907054,revenue,nan
+USA,strict,2003,R06,-0.07406070162964129,revenue,nan
+USA,strict,2003,R07,-0.10463405983796893,revenue,nan
+USA,strict,2003,R08,-0.02175229068317056,revenue,nan
+USA,strict,2003,R09,0.031176651620851148,revenue,nan
+USA,strict,2003,R10,0.012322759054051065,revenue,nan
+USA,strict,2003,GF01,0.007939235709854275,expenditure,nan
+USA,strict,2003,GF02,-0.36818111812792764,expenditure,nan
+USA,strict,2003,GF03,0.03980230872056914,expenditure,nan
+USA,strict,2003,GF04,-0.035820620225292255,expenditure,nan
+USA,strict,2003,GF05,-0.0,expenditure,nan
+USA,strict,2003,GF06,-0.014227635244486343,expenditure,nan
+USA,strict,2003,GF07,-0.19288796298718158,expenditure,nan
+USA,strict,2003,GF08,0.014073534072900091,expenditure,nan
+USA,strict,2003,GF09,0.03134344297760355,expenditure,nan
+USA,strict,2003,GF10,-0.01334109398491018,expenditure,nan
+USA,strict,2003,NLB_CHANGE_SUM,-1.126464142131942,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2003,ANCHOR_B9_DELTA,0.01582420827343456,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2003,WEO_GGXCNL_DELTA,-0.9493394651220094,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2004,R01,0.0,revenue,nan
+USA,strict,2004,R02,0.07355351033145746,revenue,nan
+USA,strict,2004,R03,-0.17937957537925847,revenue,nan
+USA,strict,2004,R04,0.37189224894782874,revenue,nan
+USA,strict,2004,R05,0.04609996528129653,revenue,nan
+USA,strict,2004,R06,-0.012953789786279701,revenue,nan
+USA,strict,2004,R07,-0.026341988212342637,revenue,nan
+USA,strict,2004,R08,-0.028274663868418884,revenue,nan
+USA,strict,2004,R09,-0.030037218862605936,revenue,nan
+USA,strict,2004,R10,0.024498646200537058,revenue,nan
+USA,strict,2004,GF01,0.20924289161626322,expenditure,nan
+USA,strict,2004,GF02,-0.11811794719431487,expenditure,nan
+USA,strict,2004,GF03,0.021904455046256252,expenditure,nan
+USA,strict,2004,GF04,0.12801529779636125,expenditure,nan
+USA,strict,2004,GF05,-0.0,expenditure,nan
+USA,strict,2004,GF06,-0.034674790256359125,expenditure,nan
+USA,strict,2004,GF07,-0.12192718623997012,expenditure,nan
+USA,strict,2004,GF08,0.00959410124736033,expenditure,nan
+USA,strict,2004,GF09,0.07485449973607256,expenditure,nan
+USA,strict,2004,GF10,0.22921889028328507,expenditure,nan
+USA,strict,2004,NLB_CHANGE_SUM,0.6371673466871688,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2004,ANCHOR_B9_DELTA,-0.0003790231477576178,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2004,WEO_GGXCNL_DELTA,0.5268494561445736,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2005,R01,0.0,revenue,nan
+USA,strict,2005,R02,0.12218751352460616,revenue,nan
+USA,strict,2005,R03,0.7198227992146742,revenue,nan
+USA,strict,2005,R04,0.6293648900634851,revenue,nan
+USA,strict,2005,R05,-0.013342572198509362,revenue,nan
+USA,strict,2005,R06,-0.08980416836805588,revenue,nan
+USA,strict,2005,R07,0.04050690789208656,revenue,nan
+USA,strict,2005,R08,0.027100810942100706,revenue,nan
+USA,strict,2005,R09,-0.02665761929190741,revenue,nan
+USA,strict,2005,R10,-0.0010776551597351663,revenue,nan
+USA,strict,2005,GF01,-0.089213340163289,expenditure,nan
+USA,strict,2005,GF02,-0.022222367705188734,expenditure,nan
+USA,strict,2005,GF03,0.032087313553319854,expenditure,nan
+USA,strict,2005,GF04,-0.046191611831263024,expenditure,nan
+USA,strict,2005,GF05,-0.0,expenditure,nan
+USA,strict,2005,GF06,-0.1545566047754008,expenditure,nan
+USA,strict,2005,GF07,0.024262059304291927,expenditure,nan
+USA,strict,2005,GF08,0.0009737846674782481,expenditure,nan
+USA,strict,2005,GF09,0.08276820097474977,expenditure,nan
+USA,strict,2005,GF10,0.08674622559073225,expenditure,nan
+USA,strict,2005,NLB_CHANGE_SUM,1.322754566234175,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2005,ANCHOR_B9_DELTA,-0.0016685169192405258,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2005,WEO_GGXCNL_DELTA,1.1687500877491086,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2006,R01,0.0,revenue,nan
+USA,strict,2006,R02,-0.010953228163697315,revenue,nan
+USA,strict,2006,R03,0.5389479249537463,revenue,nan
+USA,strict,2006,R04,0.24816167722897242,revenue,nan
+USA,strict,2006,R05,-0.041946416834333713,revenue,nan
+USA,strict,2006,R06,-0.02284382371520316,revenue,nan
+USA,strict,2006,R07,0.099402979264794,revenue,nan
+USA,strict,2006,R08,0.04663641912877056,revenue,nan
+USA,strict,2006,R09,-0.008665123485517012,revenue,nan
+USA,strict,2006,R10,-0.016950736736529894,revenue,nan
+USA,strict,2006,GF01,-0.06611163844108675,expenditure,nan
+USA,strict,2006,GF02,0.027699136923536177,expenditure,nan
+USA,strict,2006,GF03,-0.003079977001267317,expenditure,nan
+USA,strict,2006,GF04,0.19897955564259703,expenditure,nan
+USA,strict,2006,GF05,-0.0,expenditure,nan
+USA,strict,2006,GF06,0.21024161196184837,expenditure,nan
+USA,strict,2006,GF07,-0.16398072885156906,expenditure,nan
+USA,strict,2006,GF08,-0.0006278684332515754,expenditure,nan
+USA,strict,2006,GF09,0.006948013633927691,expenditure,nan
+USA,strict,2006,GF10,0.07400997351053318,expenditure,nan
+USA,strict,2006,NLB_CHANGE_SUM,1.1158677505862702,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2006,ANCHOR_B9_DELTA,-0.0012815919970097234,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2006,WEO_GGXCNL_DELTA,1.0389434854989135,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2007,R01,0.0,revenue,nan
+USA,strict,2007,R02,-0.05349582614287973,revenue,nan
+USA,strict,2007,R03,0.4922861390483632,revenue,nan
+USA,strict,2007,R04,-0.39868148648197144,revenue,nan
+USA,strict,2007,R05,-0.03648157416360435,revenue,nan
+USA,strict,2007,R06,-0.03599010553025639,revenue,nan
+USA,strict,2007,R07,0.057044757791804325,revenue,nan
+USA,strict,2007,R08,0.040122275664417756,revenue,nan
+USA,strict,2007,R09,-0.017469657170550434,revenue,nan
+USA,strict,2007,R10,0.007873000208605783,revenue,nan
+USA,strict,2007,GF01,-0.11894658004282799,expenditure,nan
+USA,strict,2007,GF02,-0.03890496821473896,expenditure,nan
+USA,strict,2007,GF03,-0.04569287829259,expenditure,nan
+USA,strict,2007,GF04,-0.11687188758231978,expenditure,nan
+USA,strict,2007,GF05,-0.0,expenditure,nan
+USA,strict,2007,GF06,-0.040024516874178316,expenditure,nan
+USA,strict,2007,GF07,-0.25874422853509466,expenditure,nan
+USA,strict,2007,GF08,-0.008008628005393365,expenditure,nan
+USA,strict,2007,GF09,-0.07929105752225718,expenditure,nan
+USA,strict,2007,GF10,0.00485532710978176,expenditure,nan
+USA,strict,2007,NLB_CHANGE_SUM,-0.6464218947356898,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2007,ANCHOR_B9_DELTA,-0.0008564806436902606,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2007,WEO_GGXCNL_DELTA,-0.8769541356026453,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2008,R01,0.0,revenue,nan
+USA,strict,2008,R02,-0.0559696868679363,revenue,nan
+USA,strict,2008,R03,-0.0789354777765941,revenue,nan
+USA,strict,2008,R04,-0.9639234655292462,revenue,nan
+USA,strict,2008,R05,-0.0147345821579391,revenue,nan
+USA,strict,2008,R06,0.04961464827088202,revenue,nan
+USA,strict,2008,R07,-0.1132513776518517,revenue,nan
+USA,strict,2008,R08,-0.0044223026559118105,revenue,nan
+USA,strict,2008,R09,0.067581320491783,revenue,nan
+USA,strict,2008,R10,0.05961205312161946,revenue,nan
+USA,strict,2008,GF01,0.07359070399336129,expenditure,nan
+USA,strict,2008,GF02,-0.3505588029438747,expenditure,nan
+USA,strict,2008,GF03,-0.09877548249770593,expenditure,nan
+USA,strict,2008,GF04,-0.3890505292703156,expenditure,nan
+USA,strict,2008,GF05,-0.0,expenditure,nan
+USA,strict,2008,GF06,-0.04543380384000985,expenditure,nan
+USA,strict,2008,GF07,-0.29467713192666417,expenditure,nan
+USA,strict,2008,GF08,-0.008783386158748912,expenditure,nan
+USA,strict,2008,GF09,-0.19275280267311012,expenditure,nan
+USA,strict,2008,GF10,-1.0009482318592418,expenditure,nan
+USA,strict,2008,NLB_CHANGE_SUM,-3.361818337931504,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2008,ANCHOR_B9_DELTA,-0.00331591762986827,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2008,WEO_GGXCNL_DELTA,-3.6994715558135964,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2009,R01,0.0,revenue,nan
+USA,strict,2009,R02,-0.015081609712724875,revenue,nan
+USA,strict,2009,R03,-2.2779694725553523,revenue,nan
+USA,strict,2009,R04,-0.3489174777720918,revenue,nan
+USA,strict,2009,R05,-0.025363991473949285,revenue,nan
+USA,strict,2009,R06,-0.029938303582455195,revenue,nan
+USA,strict,2009,R07,-0.07519927648606019,revenue,nan
+USA,strict,2009,R08,0.18565937777829197,revenue,nan
+USA,strict,2009,R09,0.21905529373627275,revenue,nan
+USA,strict,2009,R10,0.12948053164604928,revenue,nan
+USA,strict,2009,GF01,-0.40361129368459636,expenditure,nan
+USA,strict,2009,GF02,-0.30942114872424403,expenditure,nan
+USA,strict,2009,GF03,-0.08836166576081696,expenditure,nan
+USA,strict,2009,GF04,-0.13034591968786868,expenditure,nan
+USA,strict,2009,GF05,-0.0,expenditure,nan
+USA,strict,2009,GF06,-0.62001532028035,expenditure,nan
+USA,strict,2009,GF07,-0.720584450435148,expenditure,nan
+USA,strict,2009,GF08,-0.007230838681193761,expenditure,nan
+USA,strict,2009,GF09,-0.3026099943176583,expenditure,nan
+USA,strict,2009,GF10,-0.9320354278505527,expenditure,nan
+USA,strict,2009,NLB_CHANGE_SUM,-5.752490987844448,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2009,ANCHOR_B9_DELTA,-0.0038273163693096635,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2009,WEO_GGXCNL_DELTA,-6.564345434125432,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2010,R01,0.0,revenue,nan
+USA,strict,2010,R02,-0.028133145908676438,revenue,nan
+USA,strict,2010,R03,0.2664062462191072,revenue,nan
+USA,strict,2010,R04,0.40017838121785676,revenue,nan
+USA,strict,2010,R05,-0.041197252957084686,revenue,nan
+USA,strict,2010,R06,-0.12479286644426352,revenue,nan
+USA,strict,2010,R07,-0.0446229317813982,revenue,nan
+USA,strict,2010,R08,0.18632342011218944,revenue,nan
+USA,strict,2010,R09,-0.02504966651943885,revenue,nan
+USA,strict,2010,R10,-0.05699220751646493,revenue,nan
+USA,strict,2010,GF01,0.025165918583502922,expenditure,nan
+USA,strict,2010,GF02,-0.05834794867292589,expenditure,nan
+USA,strict,2010,GF03,0.05531914439742408,expenditure,nan
+USA,strict,2010,GF04,0.21738450328120731,expenditure,nan
+USA,strict,2010,GF05,-0.0,expenditure,nan
+USA,strict,2010,GF06,0.3283117058519554,expenditure,nan
+USA,strict,2010,GF07,-0.11303300457464055,expenditure,nan
+USA,strict,2010,GF08,0.01621795313251624,expenditure,nan
+USA,strict,2010,GF09,0.04413526223359804,expenditure,nan
+USA,strict,2010,GF10,-0.34083294589440094,expenditure,nan
+USA,strict,2010,NLB_CHANGE_SUM,0.7064405647600632,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2010,ANCHOR_B9_DELTA,0.010459067511204068,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2010,WEO_GGXCNL_DELTA,2.1842985033186824,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2011,R01,0.0,revenue,nan
+USA,strict,2011,R02,0.011178352781213152,revenue,nan
+USA,strict,2011,R03,1.1021420021725195,revenue,nan
+USA,strict,2011,R04,-0.018328589055270975,revenue,nan
+USA,strict,2011,R05,-0.03946912314432092,revenue,nan
+USA,strict,2011,R06,-0.6653464505202822,revenue,nan
+USA,strict,2011,R07,-0.058740157142336394,revenue,nan
+USA,strict,2011,R08,-0.021651649838590453,revenue,nan
+USA,strict,2011,R09,0.009429860949264346,revenue,nan
+USA,strict,2011,R10,-0.01617854328558512,revenue,nan
+USA,strict,2011,GF01,-0.04281253154681669,expenditure,nan
+USA,strict,2011,GF02,0.15567012780543857,expenditure,nan
+USA,strict,2011,GF03,0.07726712258848759,expenditure,nan
+USA,strict,2011,GF04,0.17636017169858978,expenditure,nan
+USA,strict,2011,GF05,-0.0,expenditure,nan
+USA,strict,2011,GF06,0.1173236584014645,expenditure,nan
+USA,strict,2011,GF07,0.029115389802930602,expenditure,nan
+USA,strict,2011,GF08,0.021634523488783072,expenditure,nan
+USA,strict,2011,GF09,0.19687480229048926,expenditure,nan
+USA,strict,2011,GF10,0.3877428385546569,expenditure,nan
+USA,strict,2011,NLB_CHANGE_SUM,1.4222118060006343,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2011,ANCHOR_B9_DELTA,-0.0006913363603358036,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2011,WEO_GGXCNL_DELTA,1.2770214688098636,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2012,R01,0.0,revenue,nan
+USA,strict,2012,R02,-0.08550555480780764,revenue,nan
+USA,strict,2012,R03,-0.0254701737721727,revenue,nan
+USA,strict,2012,R04,0.25597519664934054,revenue,nan
+USA,strict,2012,R05,0.023987385498849215,revenue,nan
+USA,strict,2012,R06,-0.02786658800832814,revenue,nan
+USA,strict,2012,R07,-0.068713456820393,revenue,nan
+USA,strict,2012,R08,0.07098241195999068,revenue,nan
+USA,strict,2012,R09,-0.09668696468868379,revenue,nan
+USA,strict,2012,R10,-0.08570671395721971,revenue,nan
+USA,strict,2012,GF01,0.17972146211463827,expenditure,nan
+USA,strict,2012,GF02,0.3235444964874885,expenditure,nan
+USA,strict,2012,GF03,0.09450738190190967,expenditure,nan
+USA,strict,2012,GF04,0.1683870813733418,expenditure,nan
+USA,strict,2012,GF05,-0.0,expenditure,nan
+USA,strict,2012,GF06,0.16704911461836439,expenditure,nan
+USA,strict,2012,GF07,0.1560809266322724,expenditure,nan
+USA,strict,2012,GF08,0.01775696914613715,expenditure,nan
+USA,strict,2012,GF09,0.24380199978908806,expenditure,nan
+USA,strict,2012,GF10,0.4584827905664085,expenditure,nan
+USA,strict,2012,NLB_CHANGE_SUM,1.7703277646832243,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2012,ANCHOR_B9_DELTA,-0.001964378566093661,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2012,WEO_GGXCNL_DELTA,1.6017353318481296,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2013,R01,0.0,revenue,nan
+USA,strict,2013,R02,0.03496705894087543,revenue,nan
+USA,strict,2013,R03,0.6582398733841782,revenue,nan
+USA,strict,2013,R04,0.08401199592751943,revenue,nan
+USA,strict,2013,R05,0.03367146568001643,revenue,nan
+USA,strict,2013,R06,0.6957739202734556,revenue,nan
+USA,strict,2013,R07,-0.004413506683177432,revenue,nan
+USA,strict,2013,R08,0.5661968079233975,revenue,nan
+USA,strict,2013,R09,-0.02397686650448816,revenue,nan
+USA,strict,2013,R10,0.04982061911853412,revenue,nan
+USA,strict,2013,GF01,0.3331166708842377,expenditure,nan
+USA,strict,2013,GF02,0.4543733295098343,expenditure,nan
+USA,strict,2013,GF03,0.05051738548359809,expenditure,nan
+USA,strict,2013,GF04,0.11417784162006187,expenditure,nan
+USA,strict,2013,GF05,-0.0,expenditure,nan
+USA,strict,2013,GF06,0.13091361935742668,expenditure,nan
+USA,strict,2013,GF07,0.04002482817064695,expenditure,nan
+USA,strict,2013,GF08,0.007177282767698674,expenditure,nan
+USA,strict,2013,GF09,0.042332999679897676,expenditure,nan
+USA,strict,2013,GF10,0.1230288015131531,expenditure,nan
+USA,strict,2013,NLB_CHANGE_SUM,3.389954127046866,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2013,ANCHOR_B9_DELTA,-0.006210337898090668,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2013,WEO_GGXCNL_DELTA,3.5530570930803265,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2014,R01,0.0,revenue,nan
+USA,strict,2014,R02,0.004468741731240844,revenue,nan
+USA,strict,2014,R03,0.21380462420546587,revenue,nan
+USA,strict,2014,R04,0.16318311234877897,revenue,nan
+USA,strict,2014,R05,-0.021716521521875996,revenue,nan
+USA,strict,2014,R06,0.008807656203600744,revenue,nan
+USA,strict,2014,R07,0.0011205158862519736,revenue,nan
+USA,strict,2014,R08,-0.46650636667992534,revenue,nan
+USA,strict,2014,R09,-0.018490846792563326,revenue,nan
+USA,strict,2014,R10,0.14217124360609862,revenue,nan
+USA,strict,2014,GF01,0.1428099155734039,expenditure,nan
+USA,strict,2014,GF02,0.27260959733115403,expenditure,nan
+USA,strict,2014,GF03,0.020410673144350897,expenditure,nan
+USA,strict,2014,GF04,0.09765820200508674,expenditure,nan
+USA,strict,2014,GF05,-0.0,expenditure,nan
+USA,strict,2014,GF06,0.01861786320515599,expenditure,nan
+USA,strict,2014,GF07,-0.2665659067530496,expenditure,nan
+USA,strict,2014,GF08,0.0016666676818899787,expenditure,nan
+USA,strict,2014,GF09,0.11172738073356378,expenditure,nan
+USA,strict,2014,GF10,0.2261357388394475,expenditure,nan
+USA,strict,2014,NLB_CHANGE_SUM,0.6519122907480756,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2014,ANCHOR_B9_DELTA,-7.70614298861716e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2014,WEO_GGXCNL_DELTA,0.5347071350260955,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2015,R01,0.0,revenue,nan
+USA,strict,2015,R02,-0.06854593338455478,revenue,nan
+USA,strict,2015,R03,0.4727815802549398,revenue,nan
+USA,strict,2015,R04,-0.14373762401151402,revenue,nan
+USA,strict,2015,R05,0.004771007239084664,revenue,nan
+USA,strict,2015,R06,0.032850434381721805,revenue,nan
+USA,strict,2015,R07,0.0033189508615239643,revenue,nan
+USA,strict,2015,R08,-0.12025805529794678,revenue,nan
+USA,strict,2015,R09,0.012921581691322653,revenue,nan
+USA,strict,2015,R10,-0.01849588985026948,revenue,nan
+USA,strict,2015,GF01,0.2003440592984948,expenditure,nan
+USA,strict,2015,GF02,0.19428725056866922,expenditure,nan
+USA,strict,2015,GF03,0.00992709959223223,expenditure,nan
+USA,strict,2015,GF04,0.15236447111722853,expenditure,nan
+USA,strict,2015,GF05,-0.0,expenditure,nan
+USA,strict,2015,GF06,0.017087594001762713,expenditure,nan
+USA,strict,2015,GF07,-0.2568532280337446,expenditure,nan
+USA,strict,2015,GF08,-0.0022961955984461893,expenditure,nan
+USA,strict,2015,GF09,0.04548342749821771,expenditure,nan
+USA,strict,2015,GF10,0.03468252175932579,expenditure,nan
+USA,strict,2015,NLB_CHANGE_SUM,0.570633052088048,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2015,ANCHOR_B9_DELTA,3.8011056766595885e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2015,WEO_GGXCNL_DELTA,0.4964942449875373,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2016,R01,0.0,revenue,nan
+USA,strict,2016,R02,0.0009570148757964692,revenue,nan
+USA,strict,2016,R03,-0.18680863471747938,revenue,nan
+USA,strict,2016,R04,-0.1639932629735323,revenue,nan
+USA,strict,2016,R05,-0.004404726441921067,revenue,nan
+USA,strict,2016,R06,0.0033347676506534363,revenue,nan
+USA,strict,2016,R07,0.009497288362852411,revenue,nan
+USA,strict,2016,R08,-0.13958721077938002,revenue,nan
+USA,strict,2016,R09,0.047572498930867346,revenue,nan
+USA,strict,2016,R10,-0.07339057580634747,revenue,nan
+USA,strict,2016,GF01,-0.0893220125258852,expenditure,nan
+USA,strict,2016,GF02,0.08809346424653725,expenditure,nan
+USA,strict,2016,GF03,0.0014906486190690432,expenditure,nan
+USA,strict,2016,GF04,-0.1292047050771794,expenditure,nan
+USA,strict,2016,GF05,-0.0,expenditure,nan
+USA,strict,2016,GF06,-0.0047247631331952256,expenditure,nan
+USA,strict,2016,GF07,-0.18036812571058658,expenditure,nan
+USA,strict,2016,GF08,-0.009574419966056286,expenditure,nan
+USA,strict,2016,GF09,-0.013680860524782623,expenditure,nan
+USA,strict,2016,GF10,0.05615983657280138,expenditure,nan
+USA,strict,2016,NLB_CHANGE_SUM,-0.7879537783977684,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2016,ANCHOR_B9_DELTA,4.756874792954946e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2016,WEO_GGXCNL_DELTA,-0.8268537692557205,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2017,R01,0.0,revenue,nan
+USA,strict,2017,R02,-0.006871697313282077,revenue,nan
+USA,strict,2017,R03,0.03245679047232941,revenue,nan
+USA,strict,2017,R04,-0.48916917199348064,revenue,nan
+USA,strict,2017,R05,1.1963490773665018,revenue,nan
+USA,strict,2017,R06,0.03250917354210292,revenue,nan
+USA,strict,2017,R07,-0.0025451141163481197,revenue,nan
+USA,strict,2017,R08,-0.034146807839477517,revenue,nan
+USA,strict,2017,R09,-0.02371808443002582,revenue,nan
+USA,strict,2017,R10,-0.029566315375065787,revenue,nan
+USA,strict,2017,GF01,0.035289663610160726,expenditure,nan
+USA,strict,2017,GF02,0.04177343967985553,expenditure,nan
+USA,strict,2017,GF03,0.03311144686634279,expenditure,nan
+USA,strict,2017,GF04,-0.00265080635988707,expenditure,nan
+USA,strict,2017,GF05,-0.0,expenditure,nan
+USA,strict,2017,GF06,-0.04392035415290239,expenditure,nan
+USA,strict,2017,GF07,0.02458679458769153,expenditure,nan
+USA,strict,2017,GF08,0.004000066811219935,expenditure,nan
+USA,strict,2017,GF09,0.0765686882497417,expenditure,nan
+USA,strict,2017,GF10,0.11821181645926826,expenditure,nan
+USA,strict,2017,NLB_CHANGE_SUM,0.9622686060647451,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2017,ANCHOR_B9_DELTA,1.5301995290317727e-05,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2017,WEO_GGXCNL_DELTA,-0.4378288160620851,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2018,R01,0.0,revenue,nan
+USA,strict,2018,R02,0.09917466082211279,revenue,nan
+USA,strict,2018,R03,-0.4107084252974971,revenue,nan
+USA,strict,2018,R04,-0.07193658142512094,revenue,nan
+USA,strict,2018,R05,-1.1947471993840069,revenue,nan
+USA,strict,2018,R06,-0.03179823178759422,revenue,nan
+USA,strict,2018,R07,0.023427876359165007,revenue,nan
+USA,strict,2018,R08,-0.13889659267444604,revenue,nan
+USA,strict,2018,R09,-0.02462949855053312,revenue,nan
+USA,strict,2018,R10,0.018199371140657263,revenue,nan
+USA,strict,2018,GF01,-0.09929436464348809,expenditure,nan
+USA,strict,2018,GF02,-0.05644756667621681,expenditure,nan
+USA,strict,2018,GF03,-0.00940090123775425,expenditure,nan
+USA,strict,2018,GF04,-0.021075009168335795,expenditure,nan
+USA,strict,2018,GF05,-0.0,expenditure,nan
+USA,strict,2018,GF06,0.057031390784654905,expenditure,nan
+USA,strict,2018,GF07,-0.010044862929327325,expenditure,nan
+USA,strict,2018,GF08,-9.694852326357258e-05,expenditure,nan
+USA,strict,2018,GF09,0.08452437662558182,expenditure,nan
+USA,strict,2018,GF10,0.10000307212382903,expenditure,nan
+USA,strict,2018,NLB_CHANGE_SUM,-1.6867154344415833,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2018,ANCHOR_B9_DELTA,-1.0450749008406035e-05,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2018,WEO_GGXCNL_DELTA,-0.5406729630685232,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2019,R01,0.0,revenue,nan
+USA,strict,2019,R02,0.06601173611741201,revenue,nan
+USA,strict,2019,R03,0.16840586408267688,revenue,nan
+USA,strict,2019,R04,-0.06302593441789034,revenue,nan
+USA,strict,2019,R05,-0.04038462538606333,revenue,nan
+USA,strict,2019,R06,0.021605673131989966,revenue,nan
+USA,strict,2019,R07,0.007819785319519885,revenue,nan
+USA,strict,2019,R08,-0.08617509458842863,revenue,nan
+USA,strict,2019,R09,-0.05149384273314336,revenue,nan
+USA,strict,2019,R10,-0.08285782501232675,revenue,nan
+USA,strict,2019,GF01,-0.10690147307860776,expenditure,nan
+USA,strict,2019,GF02,-0.1135113051385514,expenditure,nan
+USA,strict,2019,GF03,-0.012988293197765607,expenditure,nan
+USA,strict,2019,GF04,-0.014595019043369545,expenditure,nan
+USA,strict,2019,GF05,-0.0,expenditure,nan
+USA,strict,2019,GF06,0.00904558796492724,expenditure,nan
+USA,strict,2019,GF07,-0.23206535131106432,expenditure,nan
+USA,strict,2019,GF08,-0.003701189036495146,expenditure,nan
+USA,strict,2019,GF09,0.04836702332296147,expenditure,nan
+USA,strict,2019,GF10,-0.09057565067493029,expenditure,nan
+USA,strict,2019,NLB_CHANGE_SUM,-0.577019933679149,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2019,ANCHOR_B9_DELTA,-4.753077930907956e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2019,WEO_GGXCNL_DELTA,-0.47053036638487133,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2020,R01,0.0,revenue,nan
+USA,strict,2020,R02,-0.002993963061312388,revenue,nan
+USA,strict,2020,R03,0.3088843119419038,revenue,nan
+USA,strict,2020,R04,0.07790761788927653,revenue,nan
+USA,strict,2020,R05,0.027039496159622384,revenue,nan
+USA,strict,2020,R06,0.16684012326964454,revenue,nan
+USA,strict,2020,R07,-0.04919486390966444,revenue,nan
+USA,strict,2020,R08,0.09359670895934995,revenue,nan
+USA,strict,2020,R09,0.11625866400631416,revenue,nan
+USA,strict,2020,R10,-0.017489444440671985,revenue,nan
+USA,strict,2020,GF01,0.09315397567343023,expenditure,nan
+USA,strict,2020,GF02,-0.17391555237762854,expenditure,nan
+USA,strict,2020,GF03,-0.06595471228875716,expenditure,nan
+USA,strict,2020,GF04,-3.1696635211459183,expenditure,nan
+USA,strict,2020,GF05,-0.0,expenditure,nan
+USA,strict,2020,GF06,-0.02414634499442953,expenditure,nan
+USA,strict,2020,GF07,-1.0964857325858195,expenditure,nan
+USA,strict,2020,GF08,0.0055483806845287465,expenditure,nan
+USA,strict,2020,GF09,-0.17218440626040193,expenditure,nan
+USA,strict,2020,GF10,-4.410443043524161,expenditure,nan
+USA,strict,2020,NLB_CHANGE_SUM,-8.293242306004695,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2020,ANCHOR_B9_DELTA,-8.817228902557872e-08,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2020,WEO_GGXCNL_DELTA,-8.321261309533964,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2021,R01,0.0,revenue,nan
+USA,strict,2021,R02,0.04866682207638334,revenue,nan
+USA,strict,2021,R03,0.8507446492523524,revenue,nan
+USA,strict,2021,R04,0.5230027334680267,revenue,nan
+USA,strict,2021,R05,0.03229451634075512,revenue,nan
+USA,strict,2021,R06,-0.20983837323975268,revenue,nan
+USA,strict,2021,R07,-0.08318374048609331,revenue,nan
+USA,strict,2021,R08,0.0711105441248183,revenue,nan
+USA,strict,2021,R09,-0.09694648291920446,revenue,nan
+USA,strict,2021,R10,-0.02238662089487399,revenue,nan
+USA,strict,2021,GF01,0.24102517004672558,expenditure,nan
+USA,strict,2021,GF02,0.2711627968274837,expenditure,nan
+USA,strict,2021,GF03,0.14663189155348472,expenditure,nan
+USA,strict,2021,GF04,0.9254619649693929,expenditure,nan
+USA,strict,2021,GF05,-0.0,expenditure,nan
+USA,strict,2021,GF06,-0.20856613851245503,expenditure,nan
+USA,strict,2021,GF07,0.2643729035623099,expenditure,nan
+USA,strict,2021,GF08,0.023422794045895468,expenditure,nan
+USA,strict,2021,GF09,0.23717225513452053,expenditure,nan
+USA,strict,2021,GF10,0.02132444100243769,expenditure,nan
+USA,strict,2021,NLB_CHANGE_SUM,3.035472126352207,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2021,ANCHOR_B9_DELTA,-8.893153324862624e-09,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2021,WEO_GGXCNL_DELTA,2.6659730647138336,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2022,R01,0.0,revenue,nan
+USA,strict,2022,R02,-0.1247308798594901,revenue,nan
+USA,strict,2022,R03,1.0984894143725956,revenue,nan
+USA,strict,2022,R04,0.33141957248377685,revenue,nan
+USA,strict,2022,R05,-0.011445910841621993,revenue,nan
+USA,strict,2022,R06,-0.031847662451049696,revenue,nan
+USA,strict,2022,R07,-0.010299801020953198,revenue,nan
+USA,strict,2022,R08,-0.1968807674345123,revenue,nan
+USA,strict,2022,R09,0.07020500838669855,revenue,nan
+USA,strict,2022,R10,0.19108573688911973,revenue,nan
+USA,strict,2022,GF01,-0.258642200965635,expenditure,nan
+USA,strict,2022,GF02,0.23693640857883475,expenditure,nan
+USA,strict,2022,GF03,0.07354006704862089,expenditure,nan
+USA,strict,2022,GF04,2.680445021350662,expenditure,nan
+USA,strict,2022,GF05,-0.0,expenditure,nan
+USA,strict,2022,GF06,0.21179492729015234,expenditure,nan
+USA,strict,2022,GF07,0.2011809272047499,expenditure,nan
+USA,strict,2022,GF08,-0.007010358670182359,expenditure,nan
+USA,strict,2022,GF09,0.12909554970341464,expenditure,nan
+USA,strict,2022,GF10,3.647402546365512,expenditure,nan
+USA,strict,2022,NLB_CHANGE_SUM,8.230737598430693,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2022,ANCHOR_B9_DELTA,3.767564038525961e-10,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2022,WEO_GGXCNL_DELTA,7.7389390827605276,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2023,R01,0.0,revenue,nan
+USA,strict,2023,R02,-0.34935309285695354,revenue,nan
+USA,strict,2023,R03,-2.246251784930009,revenue,nan
+USA,strict,2023,R04,-0.09995943690478612,revenue,nan
+USA,strict,2023,R05,-0.009525753019058161,revenue,nan
+USA,strict,2023,R06,-0.06717897211990231,revenue,nan
+USA,strict,2023,R07,0.05792708640989658,revenue,nan
+USA,strict,2023,R08,-0.24095272982827726,revenue,nan
+USA,strict,2023,R09,-0.24213967154670252,revenue,nan
+USA,strict,2023,R10,-0.2399577776461383,revenue,nan
+USA,strict,2023,GF01,-1.0831413127716258,expenditure,nan
+USA,strict,2023,GF02,-0.05671368838220045,expenditure,nan
+USA,strict,2023,GF03,0.03661650801732759,expenditure,nan
+USA,strict,2023,GF04,-0.3502720187112309,expenditure,nan
+USA,strict,2023,GF05,-0.0,expenditure,nan
+USA,strict,2023,GF06,0.03313224961162195,expenditure,nan
+USA,strict,2023,GF07,0.09870687204066586,expenditure,nan
+USA,strict,2023,GF08,7.422837161662026e-05,expenditure,nan
+USA,strict,2023,GF09,0.09774876440057922,expenditure,nan
+USA,strict,2023,GF10,0.428045636238239,expenditure,nan
+USA,strict,2023,NLB_CHANGE_SUM,-4.233194893626938,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2023,ANCHOR_B9_DELTA,0.0007777607652013074,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2023,WEO_GGXCNL_DELTA,-4.165408722192428,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,strict,2024,R01,0.0,revenue,nan
+USA,strict,2024,R02,-0.01978578289834748,revenue,nan
+USA,strict,2024,R03,0.00044083780792875116,revenue,nan
+USA,strict,2024,R04,0.1158286372635528,revenue,nan
+USA,strict,2024,R05,0.0022798040529562,revenue,nan
+USA,strict,2024,R06,0.08860813364934411,revenue,nan
+USA,strict,2024,R07,0.06941725948191468,revenue,nan
+USA,strict,2024,R08,-0.013377929252964644,revenue,nan
+USA,strict,2024,R09,-0.04807176469313196,revenue,nan
+USA,strict,2024,R10,0.07077604750511737,revenue,nan
+USA,strict,2024,GF01,-0.04601884198671968,expenditure,nan
+USA,strict,2024,GF02,-0.07761409511211938,expenditure,nan
+USA,strict,2024,GF03,0.004853413905062456,expenditure,nan
+USA,strict,2024,GF04,0.011601347840881765,expenditure,nan
+USA,strict,2024,GF05,-0.0,expenditure,nan
+USA,strict,2024,GF06,-0.06684325019431121,expenditure,nan
+USA,strict,2024,GF07,-0.23348374077528655,expenditure,nan
+USA,strict,2024,GF08,0.002126261391908633,expenditure,nan
+USA,strict,2024,GF09,-0.028253812362228486,expenditure,nan
+USA,strict,2024,GF10,0.07710072724355366,expenditure,nan
+USA,strict,2024,NLB_CHANGE_SUM,-0.09041674713288897,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,strict,2024,ANCHOR_B9_DELTA,0.0035761833896002793,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,strict,2024,WEO_GGXCNL_DELTA,0.028699971527952617,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
 GBR,maximum_extension,1996,R01,0.11864954864768198,revenue,nan
 GBR,maximum_extension,1996,R02,-0.045114775946786256,revenue,nan
 GBR,maximum_extension,1996,R03,-0.5949722582947445,revenue,nan
@@ -4001,3 +5212,1214 @@ DEU,maximum_extension,2024,GF10,-0.7565515672899842,expenditure,nan
 DEU,maximum_extension,2024,NLB_CHANGE_SUM,-0.15456400285323435,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
 DEU,maximum_extension,2024,ANCHOR_B9_DELTA,1.6653345369377348e-15,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
 DEU,maximum_extension,2024,WEO_GGXCNL_DELTA,-0.16887562560779468,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,1971,R01,0.0,revenue,nan
+USA,maximum_extension,1971,R02,0.11013954390212688,revenue,nan
+USA,maximum_extension,1971,R03,-0.8636779805658079,revenue,nan
+USA,maximum_extension,1971,R04,0.07628764381019705,revenue,nan
+USA,maximum_extension,1971,R05,0.042236326167763724,revenue,nan
+USA,maximum_extension,1971,R06,0.08042808382426117,revenue,nan
+USA,maximum_extension,1971,R07,-0.005531205685393309,revenue,nan
+USA,maximum_extension,1971,R08,-0.029767868974758718,revenue,nan
+USA,maximum_extension,1971,R09,0.05861670515924372,revenue,nan
+USA,maximum_extension,1971,R10,-0.002345287494335364,revenue,nan
+USA,maximum_extension,1971,GF01,-0.14576995884132138,expenditure,nan
+USA,maximum_extension,1971,GF02,0.8224236503111728,expenditure,nan
+USA,maximum_extension,1971,GF03,-0.07232989493475908,expenditure,nan
+USA,maximum_extension,1971,GF04,0.04457402603774974,expenditure,nan
+USA,maximum_extension,1971,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1971,GF06,-0.060411822529716705,expenditure,nan
+USA,maximum_extension,1971,GF07,-0.17243627279875418,expenditure,nan
+USA,maximum_extension,1971,GF08,-0.006782556212503801,expenditure,nan
+USA,maximum_extension,1971,GF09,-0.187992599153438,expenditure,nan
+USA,maximum_extension,1971,GF10,-0.5322459201228334,expenditure,nan
+USA,maximum_extension,1971,NLB_CHANGE_SUM,-0.8445853881011067,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1971,ANCHOR_B9_DELTA,5.590220080176067e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1972,R01,0.0,revenue,nan
+USA,maximum_extension,1972,R02,-0.1893775042007384,revenue,nan
+USA,maximum_extension,1972,R03,0.9439654646874268,revenue,nan
+USA,maximum_extension,1972,R04,0.06820176209120891,revenue,nan
+USA,maximum_extension,1972,R05,0.025235185010866017,revenue,nan
+USA,maximum_extension,1972,R06,0.2362563560105016,revenue,nan
+USA,maximum_extension,1972,R07,-0.02011642461295796,revenue,nan
+USA,maximum_extension,1972,R08,-0.039665324663956975,revenue,nan
+USA,maximum_extension,1972,R09,0.08848284572257684,revenue,nan
+USA,maximum_extension,1972,R10,0.019620666065004726,revenue,nan
+USA,maximum_extension,1972,GF01,-0.04560643580618362,expenditure,nan
+USA,maximum_extension,1972,GF02,0.32636456390469776,expenditure,nan
+USA,maximum_extension,1972,GF03,-0.03699887569007642,expenditure,nan
+USA,maximum_extension,1972,GF04,0.08704852471675198,expenditure,nan
+USA,maximum_extension,1972,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1972,GF06,9.303476485433143e-05,expenditure,nan
+USA,maximum_extension,1972,GF07,-0.1234621703734333,expenditure,nan
+USA,maximum_extension,1972,GF08,0.00567706937823001,expenditure,nan
+USA,maximum_extension,1972,GF09,-0.01396929278872222,expenditure,nan
+USA,maximum_extension,1972,GF10,-0.05432740626239024,expenditure,nan
+USA,maximum_extension,1972,NLB_CHANGE_SUM,1.2774220379536598,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1972,ANCHOR_B9_DELTA,7.817935903098316e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1973,R01,0.0,revenue,nan
+USA,maximum_extension,1973,R02,-0.21394688277056872,revenue,nan
+USA,maximum_extension,1973,R03,-0.37160731269821473,revenue,nan
+USA,maximum_extension,1973,R04,0.1334311157546897,revenue,nan
+USA,maximum_extension,1973,R05,-0.0790338567555597,revenue,nan
+USA,maximum_extension,1973,R06,0.6768225607140937,revenue,nan
+USA,maximum_extension,1973,R07,0.05912952179104548,revenue,nan
+USA,maximum_extension,1973,R08,0.06224701725082659,revenue,nan
+USA,maximum_extension,1973,R09,-0.02021803152523656,revenue,nan
+USA,maximum_extension,1973,R10,-0.014932897225479339,revenue,nan
+USA,maximum_extension,1973,GF01,-0.13448153340802974,expenditure,nan
+USA,maximum_extension,1973,GF02,0.7244115396197438,expenditure,nan
+USA,maximum_extension,1973,GF03,0.009067153670700052,expenditure,nan
+USA,maximum_extension,1973,GF04,0.5992954892859899,expenditure,nan
+USA,maximum_extension,1973,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1973,GF06,-0.014209649833468643,expenditure,nan
+USA,maximum_extension,1973,GF07,-0.08740505997778467,expenditure,nan
+USA,maximum_extension,1973,GF08,-0.0016919424098189514,expenditure,nan
+USA,maximum_extension,1973,GF09,0.09322223866691515,expenditure,nan
+USA,maximum_extension,1973,GF10,-0.16123972777106754,expenditure,nan
+USA,maximum_extension,1973,NLB_CHANGE_SUM,1.2588597423787755,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1973,ANCHOR_B9_DELTA,-1.6938336435678991e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1974,R01,0.0,revenue,nan
+USA,maximum_extension,1974,R02,-0.1407944468421074,revenue,nan
+USA,maximum_extension,1974,R03,0.49096675007120477,revenue,nan
+USA,maximum_extension,1974,R04,-0.16067493148304407,revenue,nan
+USA,maximum_extension,1974,R05,-0.06350428535371912,revenue,nan
+USA,maximum_extension,1974,R06,0.21469659518493292,revenue,nan
+USA,maximum_extension,1974,R07,0.11240362797845316,revenue,nan
+USA,maximum_extension,1974,R08,0.06736931127963602,revenue,nan
+USA,maximum_extension,1974,R09,0.06349789209364222,revenue,nan
+USA,maximum_extension,1974,R10,0.011474872336255304,revenue,nan
+USA,maximum_extension,1974,GF01,-0.35231832732848384,expenditure,nan
+USA,maximum_extension,1974,GF02,0.0802970893561114,expenditure,nan
+USA,maximum_extension,1974,GF03,-0.058994519187677806,expenditure,nan
+USA,maximum_extension,1974,GF04,0.20834093176856847,expenditure,nan
+USA,maximum_extension,1974,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1974,GF06,-0.05856103582584805,expenditure,nan
+USA,maximum_extension,1974,GF07,-0.2402841524892986,expenditure,nan
+USA,maximum_extension,1974,GF08,-0.030806003882335748,expenditure,nan
+USA,maximum_extension,1974,GF09,-0.1571156547372339,expenditure,nan
+USA,maximum_extension,1974,GF10,-0.5725372866506407,expenditure,nan
+USA,maximum_extension,1974,NLB_CHANGE_SUM,-0.586543573711585,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1974,ANCHOR_B9_DELTA,6.033681998474094e-09,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1975,R01,0.0,revenue,nan
+USA,maximum_extension,1975,R02,-0.053344248756499735,revenue,nan
+USA,maximum_extension,1975,R03,-1.0028468669788835,revenue,nan
+USA,maximum_extension,1975,R04,-0.2907934640632236,revenue,nan
+USA,maximum_extension,1975,R05,-0.032304020221550406,revenue,nan
+USA,maximum_extension,1975,R06,-0.21385150289591898,revenue,nan
+USA,maximum_extension,1975,R07,0.025136666195369785,revenue,nan
+USA,maximum_extension,1975,R08,-0.040901749994975894,revenue,nan
+USA,maximum_extension,1975,R09,-0.023344255110029424,revenue,nan
+USA,maximum_extension,1975,R10,0.011562082838377204,revenue,nan
+USA,maximum_extension,1975,GF01,-0.24566337500450536,expenditure,nan
+USA,maximum_extension,1975,GF02,0.17500419759398436,expenditure,nan
+USA,maximum_extension,1975,GF03,-0.06352385084708728,expenditure,nan
+USA,maximum_extension,1975,GF04,-0.4941062010315279,expenditure,nan
+USA,maximum_extension,1975,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1975,GF06,-0.009109204743018573,expenditure,nan
+USA,maximum_extension,1975,GF07,-0.26655964961209283,expenditure,nan
+USA,maximum_extension,1975,GF08,-0.02467627775800405,expenditure,nan
+USA,maximum_extension,1975,GF09,-0.3150323579904045,expenditure,nan
+USA,maximum_extension,1975,GF10,-1.0687271419517557,expenditure,nan
+USA,maximum_extension,1975,NLB_CHANGE_SUM,-3.9330812203317462,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1975,ANCHOR_B9_DELTA,-1.824119498117227e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1976,R01,0.0,revenue,nan
+USA,maximum_extension,1976,R02,-0.21567837065800122,revenue,nan
+USA,maximum_extension,1976,R03,0.47207503182353644,revenue,nan
+USA,maximum_extension,1976,R04,0.41238923789353177,revenue,nan
+USA,maximum_extension,1976,R05,-0.001994512073948476,revenue,nan
+USA,maximum_extension,1976,R06,0.10773249350795877,revenue,nan
+USA,maximum_extension,1976,R07,-0.07901583363531493,revenue,nan
+USA,maximum_extension,1976,R08,-0.01388482547661678,revenue,nan
+USA,maximum_extension,1976,R09,-0.043919033307020586,revenue,nan
+USA,maximum_extension,1976,R10,0.013389451168558048,revenue,nan
+USA,maximum_extension,1976,GF01,0.05495048571372563,expenditure,nan
+USA,maximum_extension,1976,GF02,0.4332634617285336,expenditure,nan
+USA,maximum_extension,1976,GF03,0.031031151290174426,expenditure,nan
+USA,maximum_extension,1976,GF04,0.35166645894788784,expenditure,nan
+USA,maximum_extension,1976,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1976,GF06,0.02200449702475073,expenditure,nan
+USA,maximum_extension,1976,GF07,-0.00873266063620634,expenditure,nan
+USA,maximum_extension,1976,GF08,0.012596894484054105,expenditure,nan
+USA,maximum_extension,1976,GF09,0.25503917493909234,expenditure,nan
+USA,maximum_extension,1976,GF10,0.21261565656500864,expenditure,nan
+USA,maximum_extension,1976,NLB_CHANGE_SUM,2.0155287592997038,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1976,ANCHOR_B9_DELTA,2.676747330454532e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1977,R01,0.0,revenue,nan
+USA,maximum_extension,1977,R02,-0.1445569388979301,revenue,nan
+USA,maximum_extension,1977,R03,0.3027085399519139,revenue,nan
+USA,maximum_extension,1977,R04,0.10920400288265374,revenue,nan
+USA,maximum_extension,1977,R05,0.04156668687580771,revenue,nan
+USA,maximum_extension,1977,R06,0.025730857035821675,revenue,nan
+USA,maximum_extension,1977,R07,0.017962482229734456,revenue,nan
+USA,maximum_extension,1977,R08,-0.035215264789401936,revenue,nan
+USA,maximum_extension,1977,R09,-0.01857248730237869,revenue,nan
+USA,maximum_extension,1977,R10,0.01871357121752209,revenue,nan
+USA,maximum_extension,1977,GF01,0.09632823909951072,expenditure,nan
+USA,maximum_extension,1977,GF02,0.18153980148188364,expenditure,nan
+USA,maximum_extension,1977,GF03,0.02289792991495721,expenditure,nan
+USA,maximum_extension,1977,GF04,-0.0014476687394078536,expenditure,nan
+USA,maximum_extension,1977,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1977,GF06,0.03061716684251833,expenditure,nan
+USA,maximum_extension,1977,GF07,-0.003112756497739705,expenditure,nan
+USA,maximum_extension,1977,GF08,0.019633513738056628,expenditure,nan
+USA,maximum_extension,1977,GF09,0.28994703094072305,expenditure,nan
+USA,maximum_extension,1977,GF10,0.32221673762338754,expenditure,nan
+USA,maximum_extension,1977,NLB_CHANGE_SUM,1.2761614436076325,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1977,ANCHOR_B9_DELTA,4.856913295991916e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1978,R01,0.0,revenue,nan
+USA,maximum_extension,1978,R02,-0.4021105239004466,revenue,nan
+USA,maximum_extension,1978,R03,0.27292678911706586,revenue,nan
+USA,maximum_extension,1978,R04,0.029637409048280383,revenue,nan
+USA,maximum_extension,1978,R05,-0.14655944544852115,revenue,nan
+USA,maximum_extension,1978,R06,0.14961658366270392,revenue,nan
+USA,maximum_extension,1978,R07,0.10436861913659651,revenue,nan
+USA,maximum_extension,1978,R08,0.012355994575590466,revenue,nan
+USA,maximum_extension,1978,R09,-0.00469416960242261,revenue,nan
+USA,maximum_extension,1978,R10,0.020125496078551464,revenue,nan
+USA,maximum_extension,1978,GF01,-0.041462029072576734,expenditure,nan
+USA,maximum_extension,1978,GF02,0.238163942715134,expenditure,nan
+USA,maximum_extension,1978,GF03,0.025422092384921706,expenditure,nan
+USA,maximum_extension,1978,GF04,-0.1577214669824932,expenditure,nan
+USA,maximum_extension,1978,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1978,GF06,-0.02148238155914835,expenditure,nan
+USA,maximum_extension,1978,GF07,0.002238270869246717,expenditure,nan
+USA,maximum_extension,1978,GF08,-0.0002058305308206762,expenditure,nan
+USA,maximum_extension,1978,GF09,0.28178767140822764,expenditure,nan
+USA,maximum_extension,1978,GF10,0.4840151312361235,expenditure,nan
+USA,maximum_extension,1978,NLB_CHANGE_SUM,0.8464221531360129,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1978,ANCHOR_B9_DELTA,-1.4954192164573499e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1979,R01,0.0,revenue,nan
+USA,maximum_extension,1979,R02,-0.4124123516719064,revenue,nan
+USA,maximum_extension,1979,R03,0.4838052587738048,revenue,nan
+USA,maximum_extension,1979,R04,-0.2570255974659274,revenue,nan
+USA,maximum_extension,1979,R05,-0.029809660112968973,revenue,nan
+USA,maximum_extension,1979,R06,0.23068400976335654,revenue,nan
+USA,maximum_extension,1979,R07,0.15816255094571186,revenue,nan
+USA,maximum_extension,1979,R08,0.08657062439550808,revenue,nan
+USA,maximum_extension,1979,R09,0.06272064474773555,revenue,nan
+USA,maximum_extension,1979,R10,0.006747887203273481,revenue,nan
+USA,maximum_extension,1979,GF01,-0.053792406013782046,expenditure,nan
+USA,maximum_extension,1979,GF02,0.01922219824129906,expenditure,nan
+USA,maximum_extension,1979,GF03,0.011199918823724848,expenditure,nan
+USA,maximum_extension,1979,GF04,0.12039096123237017,expenditure,nan
+USA,maximum_extension,1979,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1979,GF06,-0.01258203125530273,expenditure,nan
+USA,maximum_extension,1979,GF07,-0.04101402991958589,expenditure,nan
+USA,maximum_extension,1979,GF08,0.009739084022316246,expenditure,nan
+USA,maximum_extension,1979,GF09,0.09711552955621108,expenditure,nan
+USA,maximum_extension,1979,GF10,0.021913239590766465,expenditure,nan
+USA,maximum_extension,1979,NLB_CHANGE_SUM,0.5016358308566047,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1979,ANCHOR_B9_DELTA,2.585562850265788e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1980,R01,0.0,revenue,nan
+USA,maximum_extension,1980,R02,0.15624910569809886,revenue,nan
+USA,maximum_extension,1980,R03,0.2603659292973168,revenue,nan
+USA,maximum_extension,1980,R04,-0.43846199048389184,revenue,nan
+USA,maximum_extension,1980,R05,0.019132305967444526,revenue,nan
+USA,maximum_extension,1980,R06,0.0025673633058553857,revenue,nan
+USA,maximum_extension,1980,R07,0.1641952448000389,revenue,nan
+USA,maximum_extension,1980,R08,0.12051676476894195,revenue,nan
+USA,maximum_extension,1980,R09,0.09977771548396533,revenue,nan
+USA,maximum_extension,1980,R10,0.024110461723023374,revenue,nan
+USA,maximum_extension,1980,GF01,-0.3525911856051417,expenditure,nan
+USA,maximum_extension,1980,GF02,-0.32479286042032884,expenditure,nan
+USA,maximum_extension,1980,GF03,-0.030455189664141923,expenditure,nan
+USA,maximum_extension,1980,GF04,-0.12003617044040946,expenditure,nan
+USA,maximum_extension,1980,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1980,GF06,-0.0514151195913342,expenditure,nan
+USA,maximum_extension,1980,GF07,-0.25828083669409074,expenditure,nan
+USA,maximum_extension,1980,GF08,-0.0006161486297179362,expenditure,nan
+USA,maximum_extension,1980,GF09,-0.027431619574989907,expenditure,nan
+USA,maximum_extension,1980,GF10,-0.6698388709465666,expenditure,nan
+USA,maximum_extension,1980,NLB_CHANGE_SUM,-1.427005101005928,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1980,ANCHOR_B9_DELTA,4.7242897038834997e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1981,R01,0.0,revenue,nan
+USA,maximum_extension,1981,R02,0.336560537205563,revenue,nan
+USA,maximum_extension,1981,R03,0.30236751190811234,revenue,nan
+USA,maximum_extension,1981,R04,-0.46475426921249624,revenue,nan
+USA,maximum_extension,1981,R05,-0.029783779253935664,revenue,nan
+USA,maximum_extension,1981,R06,0.28688048732351396,revenue,nan
+USA,maximum_extension,1981,R07,0.13816124751236408,revenue,nan
+USA,maximum_extension,1981,R08,0.0539611975307914,revenue,nan
+USA,maximum_extension,1981,R09,0.0005105234304747519,revenue,nan
+USA,maximum_extension,1981,R10,0.0033350294178197994,revenue,nan
+USA,maximum_extension,1981,GF01,-0.2304664853082894,expenditure,nan
+USA,maximum_extension,1981,GF02,-0.2514011951145409,expenditure,nan
+USA,maximum_extension,1981,GF03,-0.0011915245391734205,expenditure,nan
+USA,maximum_extension,1981,GF04,0.14782142856303512,expenditure,nan
+USA,maximum_extension,1981,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1981,GF06,0.02620487242847346,expenditure,nan
+USA,maximum_extension,1981,GF07,-0.10632274279156612,expenditure,nan
+USA,maximum_extension,1981,GF08,0.010869088965558557,expenditure,nan
+USA,maximum_extension,1981,GF09,0.18146402594030608,expenditure,nan
+USA,maximum_extension,1981,GF10,0.0285586680486144,expenditure,nan
+USA,maximum_extension,1981,NLB_CHANGE_SUM,0.43277462205462525,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1981,ANCHOR_B9_DELTA,-4.707666425851631e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1982,R01,0.0,revenue,nan
+USA,maximum_extension,1982,R02,-0.1423188900254127,revenue,nan
+USA,maximum_extension,1982,R03,-0.18726970871868615,revenue,nan
+USA,maximum_extension,1982,R04,-0.661074887896565,revenue,nan
+USA,maximum_extension,1982,R05,0.021450322858398724,revenue,nan
+USA,maximum_extension,1982,R06,0.14422321058096543,revenue,nan
+USA,maximum_extension,1982,R07,0.18734127685720633,revenue,nan
+USA,maximum_extension,1982,R08,0.032648241323924354,revenue,nan
+USA,maximum_extension,1982,R09,0.20418832990876032,revenue,nan
+USA,maximum_extension,1982,R10,0.054087798957634964,revenue,nan
+USA,maximum_extension,1982,GF01,-0.6296294254602306,expenditure,nan
+USA,maximum_extension,1982,GF02,-0.5969971033130697,expenditure,nan
+USA,maximum_extension,1982,GF03,-0.09350004704448603,expenditure,nan
+USA,maximum_extension,1982,GF04,-0.012857311409692623,expenditure,nan
+USA,maximum_extension,1982,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1982,GF06,-0.02186874697784674,expenditure,nan
+USA,maximum_extension,1982,GF07,-0.2806858815674773,expenditure,nan
+USA,maximum_extension,1982,GF08,-0.0018280450413645042,expenditure,nan
+USA,maximum_extension,1982,GF09,-0.11322819870429532,expenditure,nan
+USA,maximum_extension,1982,GF10,-0.4999490495644132,expenditure,nan
+USA,maximum_extension,1982,NLB_CHANGE_SUM,-2.5972681152366492,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1982,ANCHOR_B9_DELTA,-1.2049302879901802e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1983,R01,0.0,revenue,nan
+USA,maximum_extension,1983,R02,0.03947209404813745,revenue,nan
+USA,maximum_extension,1983,R03,-0.9044060797108205,revenue,nan
+USA,maximum_extension,1983,R04,0.302150032916379,revenue,nan
+USA,maximum_extension,1983,R05,-0.07595271532687764,revenue,nan
+USA,maximum_extension,1983,R06,-0.03065390737627821,revenue,nan
+USA,maximum_extension,1983,R07,0.03820928843302346,revenue,nan
+USA,maximum_extension,1983,R08,-0.08214688798271448,revenue,nan
+USA,maximum_extension,1983,R09,0.03425341888408512,revenue,nan
+USA,maximum_extension,1983,R10,0.022127265430866173,revenue,nan
+USA,maximum_extension,1983,GF01,-0.09751342375472344,expenditure,nan
+USA,maximum_extension,1983,GF02,-0.11559816892102656,expenditure,nan
+USA,maximum_extension,1983,GF03,-0.008288400727847998,expenditure,nan
+USA,maximum_extension,1983,GF04,-0.06588100642336142,expenditure,nan
+USA,maximum_extension,1983,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1983,GF06,0.02915457324221063,expenditure,nan
+USA,maximum_extension,1983,GF07,-0.08692073812911413,expenditure,nan
+USA,maximum_extension,1983,GF08,0.008572377151442982,expenditure,nan
+USA,maximum_extension,1983,GF09,0.10528333977552345,expenditure,nan
+USA,maximum_extension,1983,GF10,0.15741753642861817,expenditure,nan
+USA,maximum_extension,1983,NLB_CHANGE_SUM,-0.7307214020424782,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1983,ANCHOR_B9_DELTA,1.7438210058173809e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1984,R01,0.0,revenue,nan
+USA,maximum_extension,1984,R02,-0.06802156576859175,revenue,nan
+USA,maximum_extension,1984,R03,-0.34814432215738156,revenue,nan
+USA,maximum_extension,1984,R04,0.19747449595277738,revenue,nan
+USA,maximum_extension,1984,R05,-0.024447175877624194,revenue,nan
+USA,maximum_extension,1984,R06,0.15765772398647349,revenue,nan
+USA,maximum_extension,1984,R07,0.036694333488148864,revenue,nan
+USA,maximum_extension,1984,R08,0.012585531847158268,revenue,nan
+USA,maximum_extension,1984,R09,-0.06554983513960035,revenue,nan
+USA,maximum_extension,1984,R10,0.019949108368036254,revenue,nan
+USA,maximum_extension,1984,GF01,-0.13243626887139287,expenditure,nan
+USA,maximum_extension,1984,GF02,0.10203315073336883,expenditure,nan
+USA,maximum_extension,1984,GF03,0.023059576143832222,expenditure,nan
+USA,maximum_extension,1984,GF04,0.2495158656900899,expenditure,nan
+USA,maximum_extension,1984,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1984,GF06,0.01701347803310868,expenditure,nan
+USA,maximum_extension,1984,GF07,0.07870241351187052,expenditure,nan
+USA,maximum_extension,1984,GF08,-0.006801778311168929,expenditure,nan
+USA,maximum_extension,1984,GF09,0.1266881777125542,expenditure,nan
+USA,maximum_extension,1984,GF10,0.7358841699227986,expenditure,nan
+USA,maximum_extension,1984,NLB_CHANGE_SUM,1.1118570792644575,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1984,ANCHOR_B9_DELTA,2.9912048984392925e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1985,R01,0.0,revenue,nan
+USA,maximum_extension,1985,R02,-0.07533002075274658,revenue,nan
+USA,maximum_extension,1985,R03,0.2806990344030147,revenue,nan
+USA,maximum_extension,1985,R04,-0.11725393041429333,revenue,nan
+USA,maximum_extension,1985,R05,-5.3138588317590274e-05,revenue,nan
+USA,maximum_extension,1985,R06,0.10767076997003633,revenue,nan
+USA,maximum_extension,1985,R07,0.1261403290804191,revenue,nan
+USA,maximum_extension,1985,R08,-0.0034624429860395135,revenue,nan
+USA,maximum_extension,1985,R09,0.07019325646606782,revenue,nan
+USA,maximum_extension,1985,R10,0.05157382064078196,revenue,nan
+USA,maximum_extension,1985,GF01,-0.28196001525945397,expenditure,nan
+USA,maximum_extension,1985,GF02,-0.1941894969258902,expenditure,nan
+USA,maximum_extension,1985,GF03,-0.04958803507289604,expenditure,nan
+USA,maximum_extension,1985,GF04,-0.12105172935506434,expenditure,nan
+USA,maximum_extension,1985,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1985,GF06,-0.008551379863200922,expenditure,nan
+USA,maximum_extension,1985,GF07,-0.0299339182601846,expenditure,nan
+USA,maximum_extension,1985,GF08,0.0030611153193369715,expenditure,nan
+USA,maximum_extension,1985,GF09,-0.06743760818821443,expenditure,nan
+USA,maximum_extension,1985,GF10,0.15363395582372458,expenditure,nan
+USA,maximum_extension,1985,NLB_CHANGE_SUM,-0.15583943396292005,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1985,ANCHOR_B9_DELTA,-5.868456217916762e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1986,R01,0.0,revenue,nan
+USA,maximum_extension,1986,R02,-0.040394615098349185,revenue,nan
+USA,maximum_extension,1986,R03,-0.07684599532340741,revenue,nan
+USA,maximum_extension,1986,R04,0.12230655406884339,revenue,nan
+USA,maximum_extension,1986,R05,0.012995144851650053,revenue,nan
+USA,maximum_extension,1986,R06,0.139976180439573,revenue,nan
+USA,maximum_extension,1986,R07,0.03168111675990529,revenue,nan
+USA,maximum_extension,1986,R08,-0.042576550119404005,revenue,nan
+USA,maximum_extension,1986,R09,0.0685795570476544,revenue,nan
+USA,maximum_extension,1986,R10,0.03306683187312819,revenue,nan
+USA,maximum_extension,1986,GF01,-0.024341142372337476,expenditure,nan
+USA,maximum_extension,1986,GF02,-0.07171521192001484,expenditure,nan
+USA,maximum_extension,1986,GF03,-0.050664762605332966,expenditure,nan
+USA,maximum_extension,1986,GF04,-0.08088793153994134,expenditure,nan
+USA,maximum_extension,1986,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1986,GF06,-0.0041144503004683815,expenditure,nan
+USA,maximum_extension,1986,GF07,-0.0919661683913317,expenditure,nan
+USA,maximum_extension,1986,GF08,-0.009985150188443741,expenditure,nan
+USA,maximum_extension,1986,GF09,-0.13173459387470707,expenditure,nan
+USA,maximum_extension,1986,GF10,0.02266695491180415,expenditure,nan
+USA,maximum_extension,1986,NLB_CHANGE_SUM,-0.19395423178117965,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1986,ANCHOR_B9_DELTA,3.372623690600651e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1987,R01,0.0,revenue,nan
+USA,maximum_extension,1987,R02,0.09706465171080564,revenue,nan
+USA,maximum_extension,1987,R03,0.5223573000777624,revenue,nan
+USA,maximum_extension,1987,R04,0.3157514007618992,revenue,nan
+USA,maximum_extension,1987,R05,0.005190687961040361,revenue,nan
+USA,maximum_extension,1987,R06,0.028854150471691042,revenue,nan
+USA,maximum_extension,1987,R07,-0.15357862589902121,revenue,nan
+USA,maximum_extension,1987,R08,-0.05792275755631595,revenue,nan
+USA,maximum_extension,1987,R09,0.03899821205611623,revenue,nan
+USA,maximum_extension,1987,R10,-0.004422373742455753,revenue,nan
+USA,maximum_extension,1987,GF01,0.19703763108599864,expenditure,nan
+USA,maximum_extension,1987,GF02,0.045902790017042505,expenditure,nan
+USA,maximum_extension,1987,GF03,-0.0378623718061185,expenditure,nan
+USA,maximum_extension,1987,GF04,-0.03246418168005305,expenditure,nan
+USA,maximum_extension,1987,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1987,GF06,-0.012133118018201657,expenditure,nan
+USA,maximum_extension,1987,GF07,-0.09044831719311058,expenditure,nan
+USA,maximum_extension,1987,GF08,-0.0017773735767665118,expenditure,nan
+USA,maximum_extension,1987,GF09,-0.05068423639415648,expenditure,nan
+USA,maximum_extension,1987,GF10,0.19796625441416554,expenditure,nan
+USA,maximum_extension,1987,NLB_CHANGE_SUM,1.007829722690322,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1987,ANCHOR_B9_DELTA,-3.6176722728598065e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1988,R01,0.0,revenue,nan
+USA,maximum_extension,1988,R02,-0.007055793605111049,revenue,nan
+USA,maximum_extension,1988,R03,-0.4188759699489425,revenue,nan
+USA,maximum_extension,1988,R04,0.035482689350673294,revenue,nan
+USA,maximum_extension,1988,R05,-0.005234011651428141,revenue,nan
+USA,maximum_extension,1988,R06,0.2487949129763578,revenue,nan
+USA,maximum_extension,1988,R07,-0.0055157715620896,revenue,nan
+USA,maximum_extension,1988,R08,-0.06827495208813865,revenue,nan
+USA,maximum_extension,1988,R09,0.04223183947161188,revenue,nan
+USA,maximum_extension,1988,R10,-0.0251485709405805,revenue,nan
+USA,maximum_extension,1988,GF01,0.16409764991206638,expenditure,nan
+USA,maximum_extension,1988,GF02,0.3869060861846678,expenditure,nan
+USA,maximum_extension,1988,GF03,-0.036930097490794206,expenditure,nan
+USA,maximum_extension,1988,GF04,0.2788287166285659,expenditure,nan
+USA,maximum_extension,1988,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1988,GF06,-0.007178158744641956,expenditure,nan
+USA,maximum_extension,1988,GF07,-0.01835803365104957,expenditure,nan
+USA,maximum_extension,1988,GF08,-0.0003483472792425741,expenditure,nan
+USA,maximum_extension,1988,GF09,-0.024241879045940745,expenditure,nan
+USA,maximum_extension,1988,GF10,0.11748936239337204,expenditure,nan
+USA,maximum_extension,1988,NLB_CHANGE_SUM,0.6566696709093555,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1988,ANCHOR_B9_DELTA,7.29786499009677e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1989,R01,0.0,revenue,nan
+USA,maximum_extension,1989,R02,-0.08100823182718431,revenue,nan
+USA,maximum_extension,1989,R03,0.40499835076729385,revenue,nan
+USA,maximum_extension,1989,R04,-0.16405748288971478,revenue,nan
+USA,maximum_extension,1989,R05,0.007917955624136587,revenue,nan
+USA,maximum_extension,1989,R06,-0.07650863656913365,revenue,nan
+USA,maximum_extension,1989,R07,-0.02850846120095417,revenue,nan
+USA,maximum_extension,1989,R08,0.03906259448912064,revenue,nan
+USA,maximum_extension,1989,R09,0.08013990559405312,revenue,nan
+USA,maximum_extension,1989,R10,0.04420090435878653,revenue,nan
+USA,maximum_extension,1989,GF01,-0.05079879953603511,expenditure,nan
+USA,maximum_extension,1989,GF02,0.35632805741866513,expenditure,nan
+USA,maximum_extension,1989,GF03,-0.06802387206256924,expenditure,nan
+USA,maximum_extension,1989,GF04,0.0559973719824261,expenditure,nan
+USA,maximum_extension,1989,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1989,GF06,-0.0027289602651830135,expenditure,nan
+USA,maximum_extension,1989,GF07,-0.1926229570464802,expenditure,nan
+USA,maximum_extension,1989,GF08,-0.00549162631191388,expenditure,nan
+USA,maximum_extension,1989,GF09,-0.12990583955825516,expenditure,nan
+USA,maximum_extension,1989,GF10,0.026413226636148868,expenditure,nan
+USA,maximum_extension,1989,NLB_CHANGE_SUM,0.2154034996032074,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1989,ANCHOR_B9_DELTA,2.341344244871646e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1990,R01,0.0,revenue,nan
+USA,maximum_extension,1990,R02,0.05682301473839413,revenue,nan
+USA,maximum_extension,1990,R03,-0.08692370169048197,revenue,nan
+USA,maximum_extension,1990,R04,-0.16162397398510503,revenue,nan
+USA,maximum_extension,1990,R05,0.04195387365264914,revenue,nan
+USA,maximum_extension,1990,R06,0.0517010260865855,revenue,nan
+USA,maximum_extension,1990,R07,-0.04423628788547181,revenue,nan
+USA,maximum_extension,1990,R08,0.015583711568422417,revenue,nan
+USA,maximum_extension,1990,R09,0.11589620273302903,revenue,nan
+USA,maximum_extension,1990,R10,0.03269278640248224,revenue,nan
+USA,maximum_extension,1990,GF01,-0.1811024004206671,expenditure,nan
+USA,maximum_extension,1990,GF02,0.12190129018964449,expenditure,nan
+USA,maximum_extension,1990,GF03,-0.08390494533159279,expenditure,nan
+USA,maximum_extension,1990,GF04,-0.10140448836304661,expenditure,nan
+USA,maximum_extension,1990,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1990,GF06,-0.027330838700760987,expenditure,nan
+USA,maximum_extension,1990,GF07,-0.29916930513374584,expenditure,nan
+USA,maximum_extension,1990,GF08,-0.01413509679164377,expenditure,nan
+USA,maximum_extension,1990,GF09,-0.15420465676986087,expenditure,nan
+USA,maximum_extension,1990,GF10,-0.22196457814644271,expenditure,nan
+USA,maximum_extension,1990,NLB_CHANGE_SUM,-0.9394483678476127,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1990,ANCHOR_B9_DELTA,-3.314011653987592e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1991,R01,0.0,revenue,nan
+USA,maximum_extension,1991,R02,0.29561891574263616,revenue,nan
+USA,maximum_extension,1991,R03,-0.4212449474555069,revenue,nan
+USA,maximum_extension,1991,R04,-0.1302935055356974,revenue,nan
+USA,maximum_extension,1991,R05,-0.007651088023565532,revenue,nan
+USA,maximum_extension,1991,R06,0.10852038539393982,revenue,nan
+USA,maximum_extension,1991,R07,-0.08163146421526005,revenue,nan
+USA,maximum_extension,1991,R08,-0.05052360116297259,revenue,nan
+USA,maximum_extension,1991,R09,0.19843051572671633,revenue,nan
+USA,maximum_extension,1991,R10,0.11903786893098538,revenue,nan
+USA,maximum_extension,1991,GF01,0.4172161619151113,expenditure,nan
+USA,maximum_extension,1991,GF02,0.08800789845858983,expenditure,nan
+USA,maximum_extension,1991,GF03,-0.0948249970998398,expenditure,nan
+USA,maximum_extension,1991,GF04,-0.04013148840854436,expenditure,nan
+USA,maximum_extension,1991,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1991,GF06,-0.028973204244649945,expenditure,nan
+USA,maximum_extension,1991,GF07,-0.5656660246703332,expenditure,nan
+USA,maximum_extension,1991,GF08,-0.007676213937398736,expenditure,nan
+USA,maximum_extension,1991,GF09,-0.19262062150651113,expenditure,nan
+USA,maximum_extension,1991,GF10,-0.4918083439767962,expenditure,nan
+USA,maximum_extension,1991,NLB_CHANGE_SUM,-0.886213754069097,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1991,ANCHOR_B9_DELTA,-1.7269722329960047e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1992,R01,0.0,revenue,nan
+USA,maximum_extension,1992,R02,-0.009192010017970709,revenue,nan
+USA,maximum_extension,1992,R03,-0.17469386930478586,revenue,nan
+USA,maximum_extension,1992,R04,0.10642914080408392,revenue,nan
+USA,maximum_extension,1992,R05,-0.002787511339768633,revenue,nan
+USA,maximum_extension,1992,R06,-0.008684557138224913,revenue,nan
+USA,maximum_extension,1992,R07,-0.20216536434526175,revenue,nan
+USA,maximum_extension,1992,R08,-0.08722023381120282,revenue,nan
+USA,maximum_extension,1992,R09,0.09715069831219558,revenue,nan
+USA,maximum_extension,1992,R10,0.04825581677045682,revenue,nan
+USA,maximum_extension,1992,GF01,-0.425352593331077,expenditure,nan
+USA,maximum_extension,1992,GF02,0.4170509761216974,expenditure,nan
+USA,maximum_extension,1992,GF03,-0.04187907786869054,expenditure,nan
+USA,maximum_extension,1992,GF04,-0.005211504453463828,expenditure,nan
+USA,maximum_extension,1992,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1992,GF06,-0.00792586297394442,expenditure,nan
+USA,maximum_extension,1992,GF07,-0.3782218419236365,expenditure,nan
+USA,maximum_extension,1992,GF08,0.005239756701910705,expenditure,nan
+USA,maximum_extension,1992,GF09,-0.020500670031679824,expenditure,nan
+USA,maximum_extension,1992,GF10,-0.3308285218786705,expenditure,nan
+USA,maximum_extension,1992,NLB_CHANGE_SUM,-1.020537229708033,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1992,ANCHOR_B9_DELTA,-1.0185296785980569e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1993,R01,0.0,revenue,nan
+USA,maximum_extension,1993,R02,-0.07763289209546664,revenue,nan
+USA,maximum_extension,1993,R03,0.072761021496702,revenue,nan
+USA,maximum_extension,1993,R04,0.2399708430114618,revenue,nan
+USA,maximum_extension,1993,R05,0.002353229464059376,revenue,nan
+USA,maximum_extension,1993,R06,-0.01680734342236201,revenue,nan
+USA,maximum_extension,1993,R07,-0.08749509755181431,revenue,nan
+USA,maximum_extension,1993,R08,-0.027812990361212892,revenue,nan
+USA,maximum_extension,1993,R09,0.12251441480232786,revenue,nan
+USA,maximum_extension,1993,R10,0.03046956670986643,revenue,nan
+USA,maximum_extension,1993,GF01,0.2901443112747107,expenditure,nan
+USA,maximum_extension,1993,GF02,0.4766475999918217,expenditure,nan
+USA,maximum_extension,1993,GF03,-0.044300763174013116,expenditure,nan
+USA,maximum_extension,1993,GF04,-0.029997349073095092,expenditure,nan
+USA,maximum_extension,1993,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1993,GF06,-0.009625391664167936,expenditure,nan
+USA,maximum_extension,1993,GF07,-0.23861128572878962,expenditure,nan
+USA,maximum_extension,1993,GF08,0.006082611954600931,expenditure,nan
+USA,maximum_extension,1993,GF09,0.021439892895338403,expenditure,nan
+USA,maximum_extension,1993,GF10,0.08745371585137801,expenditure,nan
+USA,maximum_extension,1993,NLB_CHANGE_SUM,0.8175540943813455,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1993,ANCHOR_B9_DELTA,9.067952899677323e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1994,R01,0.0,revenue,nan
+USA,maximum_extension,1994,R02,0.14649354574434864,revenue,nan
+USA,maximum_extension,1994,R03,0.05515950979732703,revenue,nan
+USA,maximum_extension,1994,R04,0.10289056587974577,revenue,nan
+USA,maximum_extension,1994,R05,0.020162488749248756,revenue,nan
+USA,maximum_extension,1994,R06,0.014298037723523005,revenue,nan
+USA,maximum_extension,1994,R07,-0.07288713783088155,revenue,nan
+USA,maximum_extension,1994,R08,0.03966465314084199,revenue,nan
+USA,maximum_extension,1994,R09,0.04549643832193473,revenue,nan
+USA,maximum_extension,1994,R10,0.016451575646798944,revenue,nan
+USA,maximum_extension,1994,GF01,0.25370264267111087,expenditure,nan
+USA,maximum_extension,1994,GF02,0.39650621629731125,expenditure,nan
+USA,maximum_extension,1994,GF03,-0.01767505290178953,expenditure,nan
+USA,maximum_extension,1994,GF04,0.10968612596250413,expenditure,nan
+USA,maximum_extension,1994,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1994,GF06,0.04080816157076405,expenditure,nan
+USA,maximum_extension,1994,GF07,-0.07425329825450772,expenditure,nan
+USA,maximum_extension,1994,GF08,0.0023638488102385637,expenditure,nan
+USA,maximum_extension,1994,GF09,0.04471256214947025,expenditure,nan
+USA,maximum_extension,1994,GF10,0.20805363040859587,expenditure,nan
+USA,maximum_extension,1994,NLB_CHANGE_SUM,1.331634513886585,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1994,ANCHOR_B9_DELTA,-8.147821071169403e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1995,R01,0.0,revenue,nan
+USA,maximum_extension,1995,R02,-0.17959587627400797,revenue,nan
+USA,maximum_extension,1995,R03,0.29540673579392246,revenue,nan
+USA,maximum_extension,1995,R04,0.1743921559821296,revenue,nan
+USA,maximum_extension,1995,R05,-0.01710445344778634,revenue,nan
+USA,maximum_extension,1995,R06,0.0017405980429430201,revenue,nan
+USA,maximum_extension,1995,R07,0.03237037598458996,revenue,nan
+USA,maximum_extension,1995,R08,0.014593377836283339,revenue,nan
+USA,maximum_extension,1995,R09,0.046754812073063895,revenue,nan
+USA,maximum_extension,1995,R10,-0.05411370599546313,revenue,nan
+USA,maximum_extension,1995,GF01,-0.1630305950233113,expenditure,nan
+USA,maximum_extension,1995,GF02,0.290686948063535,expenditure,nan
+USA,maximum_extension,1995,GF03,-0.03900853090445591,expenditure,nan
+USA,maximum_extension,1995,GF04,0.1953822942237303,expenditure,nan
+USA,maximum_extension,1995,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1995,GF06,-0.025751001244554185,expenditure,nan
+USA,maximum_extension,1995,GF07,-0.1596642429618378,expenditure,nan
+USA,maximum_extension,1995,GF08,-0.006255022517574933,expenditure,nan
+USA,maximum_extension,1995,GF09,-0.11786489703590336,expenditure,nan
+USA,maximum_extension,1995,GF10,0.06153744754316681,expenditure,nan
+USA,maximum_extension,1995,NLB_CHANGE_SUM,0.3504764201384695,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1995,ANCHOR_B9_DELTA,-5.508151262323402e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1996,R01,0.0,revenue,nan
+USA,maximum_extension,1996,R02,-0.10897211794445444,revenue,nan
+USA,maximum_extension,1996,R03,0.5969594294306448,revenue,nan
+USA,maximum_extension,1996,R04,0.06607016652432074,revenue,nan
+USA,maximum_extension,1996,R05,0.012153336669679018,revenue,nan
+USA,maximum_extension,1996,R06,-0.09926748425508475,revenue,nan
+USA,maximum_extension,1996,R07,0.010811852583608554,revenue,nan
+USA,maximum_extension,1996,R08,-0.04307639640399028,revenue,nan
+USA,maximum_extension,1996,R09,-0.036858915282698274,revenue,nan
+USA,maximum_extension,1996,R10,0.06057095219303256,revenue,nan
+USA,maximum_extension,1996,GF01,0.24872371449049802,expenditure,nan
+USA,maximum_extension,1996,GF02,0.17492963768985167,expenditure,nan
+USA,maximum_extension,1996,GF03,-0.01479583129291931,expenditure,nan
+USA,maximum_extension,1996,GF04,0.06002353081602657,expenditure,nan
+USA,maximum_extension,1996,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1996,GF06,0.0133375557716006,expenditure,nan
+USA,maximum_extension,1996,GF07,0.01128513754124344,expenditure,nan
+USA,maximum_extension,1996,GF08,-0.003429169762125036,expenditure,nan
+USA,maximum_extension,1996,GF09,0.03457764146744674,expenditure,nan
+USA,maximum_extension,1996,GF10,0.16040752233248967,expenditure,nan
+USA,maximum_extension,1996,NLB_CHANGE_SUM,1.1434505625691702,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1996,ANCHOR_B9_DELTA,-3.7758606286075747e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1997,R01,0.0,revenue,nan
+USA,maximum_extension,1997,R02,-0.06325550488402859,revenue,nan
+USA,maximum_extension,1997,R03,0.4907011635933031,revenue,nan
+USA,maximum_extension,1997,R04,0.0023305976009448115,revenue,nan
+USA,maximum_extension,1997,R05,0.0277744016818059,revenue,nan
+USA,maximum_extension,1997,R06,-0.028772103418042705,revenue,nan
+USA,maximum_extension,1997,R07,-0.03656596381811962,revenue,nan
+USA,maximum_extension,1997,R08,-0.006673465826341485,revenue,nan
+USA,maximum_extension,1997,R09,-0.09481361868430224,revenue,nan
+USA,maximum_extension,1997,R10,-0.020162196543992324,revenue,nan
+USA,maximum_extension,1997,GF01,0.3032556757029875,expenditure,nan
+USA,maximum_extension,1997,GF02,0.26565999306877097,expenditure,nan
+USA,maximum_extension,1997,GF03,0.003740335428158853,expenditure,nan
+USA,maximum_extension,1997,GF04,0.12458099068727232,expenditure,nan
+USA,maximum_extension,1997,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1997,GF06,0.049270333681250125,expenditure,nan
+USA,maximum_extension,1997,GF07,0.13823228233169893,expenditure,nan
+USA,maximum_extension,1997,GF08,-0.003810562263947912,expenditure,nan
+USA,maximum_extension,1997,GF09,0.015485633987896708,expenditure,nan
+USA,maximum_extension,1997,GF10,0.2586587634082746,expenditure,nan
+USA,maximum_extension,1997,NLB_CHANGE_SUM,1.4256367557335892,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1997,ANCHOR_B9_DELTA,4.6631409023056847e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1998,R01,0.0,revenue,nan
+USA,maximum_extension,1998,R02,-0.07440432098945876,revenue,nan
+USA,maximum_extension,1998,R03,0.5328315818358353,revenue,nan
+USA,maximum_extension,1998,R04,-0.1777941680063344,revenue,nan
+USA,maximum_extension,1998,R05,0.0417356958628665,revenue,nan
+USA,maximum_extension,1998,R06,0.04529509772742829,revenue,nan
+USA,maximum_extension,1998,R07,-0.06254047713108776,revenue,nan
+USA,maximum_extension,1998,R08,0.04164596359546341,revenue,nan
+USA,maximum_extension,1998,R09,-0.0590170011284509,revenue,nan
+USA,maximum_extension,1998,R10,0.02520498975727096,revenue,nan
+USA,maximum_extension,1998,GF01,0.35248498820290297,expenditure,nan
+USA,maximum_extension,1998,GF02,0.21084267301036477,expenditure,nan
+USA,maximum_extension,1998,GF03,-0.028147292184865433,expenditure,nan
+USA,maximum_extension,1998,GF04,-0.0139674860325803,expenditure,nan
+USA,maximum_extension,1998,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1998,GF06,0.047310391198715926,expenditure,nan
+USA,maximum_extension,1998,GF07,0.20315428595318943,expenditure,nan
+USA,maximum_extension,1998,GF08,0.00032832217784729487,expenditure,nan
+USA,maximum_extension,1998,GF09,-0.058121050953011816,expenditure,nan
+USA,maximum_extension,1998,GF10,0.1351271650693528,expenditure,nan
+USA,maximum_extension,1998,NLB_CHANGE_SUM,1.1619693579654484,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1998,ANCHOR_B9_DELTA,1.1150038424112552e-05,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,1999,R01,0.0,revenue,nan
+USA,maximum_extension,1999,R02,-0.06220329331590446,revenue,nan
+USA,maximum_extension,1999,R03,0.15803098885027317,revenue,nan
+USA,maximum_extension,1999,R04,-0.040324175014716176,revenue,nan
+USA,maximum_extension,1999,R05,0.033018236748273526,revenue,nan
+USA,maximum_extension,1999,R06,-0.026405654162132974,revenue,nan
+USA,maximum_extension,1999,R07,-0.033153371201931174,revenue,nan
+USA,maximum_extension,1999,R08,-0.034312770379029335,revenue,nan
+USA,maximum_extension,1999,R09,-0.06634173268945456,revenue,nan
+USA,maximum_extension,1999,R10,0.029690338678020275,revenue,nan
+USA,maximum_extension,1999,GF01,0.4547469620674399,expenditure,nan
+USA,maximum_extension,1999,GF02,0.02794817974005083,expenditure,nan
+USA,maximum_extension,1999,GF03,-0.037837842042633824,expenditure,nan
+USA,maximum_extension,1999,GF04,-0.22602415357181813,expenditure,nan
+USA,maximum_extension,1999,GF05,-0.0,expenditure,nan
+USA,maximum_extension,1999,GF06,0.027431201909096023,expenditure,nan
+USA,maximum_extension,1999,GF07,0.1170801078678313,expenditure,nan
+USA,maximum_extension,1999,GF08,0.002185689182997424,expenditure,nan
+USA,maximum_extension,1999,GF09,-0.05063911324538692,expenditure,nan
+USA,maximum_extension,1999,GF10,0.15616752342438034,expenditure,nan
+USA,maximum_extension,1999,NLB_CHANGE_SUM,0.42905712284535524,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,1999,ANCHOR_B9_DELTA,-0.0017740339766958435,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2000,R01,0.0,revenue,nan
+USA,maximum_extension,2000,R02,-0.08170145207685303,revenue,nan
+USA,maximum_extension,2000,R03,0.5339060706546563,revenue,nan
+USA,maximum_extension,2000,R04,-0.05280687523167328,revenue,nan
+USA,maximum_extension,2000,R05,-0.07055577423676196,revenue,nan
+USA,maximum_extension,2000,R06,0.0199828661389706,revenue,nan
+USA,maximum_extension,2000,R07,0.03258238653282702,revenue,nan
+USA,maximum_extension,2000,R08,0.0083733169682184,revenue,nan
+USA,maximum_extension,2000,R09,0.03210018904292733,revenue,nan
+USA,maximum_extension,2000,R10,0.04477136230506065,revenue,nan
+USA,maximum_extension,2000,GF01,0.2925992836209763,expenditure,nan
+USA,maximum_extension,2000,GF02,0.09665677605303138,expenditure,nan
+USA,maximum_extension,2000,GF03,-0.022140852418962853,expenditure,nan
+USA,maximum_extension,2000,GF04,-0.03590670474988844,expenditure,nan
+USA,maximum_extension,2000,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2000,GF06,0.047297532358604816,expenditure,nan
+USA,maximum_extension,2000,GF07,-0.004440003327062236,expenditure,nan
+USA,maximum_extension,2000,GF08,-0.010919285668336892,expenditure,nan
+USA,maximum_extension,2000,GF09,-0.08587529123897791,expenditure,nan
+USA,maximum_extension,2000,GF10,0.07385639481049533,expenditure,nan
+USA,maximum_extension,2000,NLB_CHANGE_SUM,0.8177799395372514,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2000,ANCHOR_B9_DELTA,-0.0004554749456727736,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2001,R01,0.0,revenue,nan
+USA,maximum_extension,2001,R02,-0.03537067126339888,revenue,nan
+USA,maximum_extension,2001,R03,-0.34757729865746295,revenue,nan
+USA,maximum_extension,2001,R04,-0.6614911706701414,revenue,nan
+USA,maximum_extension,2001,R05,-0.015971009720175487,revenue,nan
+USA,maximum_extension,2001,R06,0.04399496455666091,revenue,nan
+USA,maximum_extension,2001,R07,-0.08602138157216885,revenue,nan
+USA,maximum_extension,2001,R08,0.027024393193800712,revenue,nan
+USA,maximum_extension,2001,R09,0.16354920491314234,revenue,nan
+USA,maximum_extension,2001,R10,0.04592255547248552,revenue,nan
+USA,maximum_extension,2001,GF01,0.13122848014169644,expenditure,nan
+USA,maximum_extension,2001,GF02,-0.12791998054300613,expenditure,nan
+USA,maximum_extension,2001,GF03,-0.08840880829401494,expenditure,nan
+USA,maximum_extension,2001,GF04,-0.18563160787314834,expenditure,nan
+USA,maximum_extension,2001,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2001,GF06,-0.018293702236684382,expenditure,nan
+USA,maximum_extension,2001,GF07,-0.539381301188998,expenditure,nan
+USA,maximum_extension,2001,GF08,-0.015234521267665961,expenditure,nan
+USA,maximum_extension,2001,GF09,-0.25745732254107284,expenditure,nan
+USA,maximum_extension,2001,GF10,-0.21182394571255814,expenditure,nan
+USA,maximum_extension,2001,NLB_CHANGE_SUM,-2.1788631232627105,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2001,ANCHOR_B9_DELTA,-0.003442466396806676,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2002,R01,0.0,revenue,nan
+USA,maximum_extension,2002,R02,0.07746179150920768,revenue,nan
+USA,maximum_extension,2002,R03,-2.085068917831917,revenue,nan
+USA,maximum_extension,2002,R04,-0.16294998425334886,revenue,nan
+USA,maximum_extension,2002,R05,-0.01134619274826814,revenue,nan
+USA,maximum_extension,2002,R06,-0.053805366656690945,revenue,nan
+USA,maximum_extension,2002,R07,-0.14466759750145514,revenue,nan
+USA,maximum_extension,2002,R08,-0.05202040323849799,revenue,nan
+USA,maximum_extension,2002,R09,0.098502041378868,revenue,nan
+USA,maximum_extension,2002,R10,0.005112127872391667,revenue,nan
+USA,maximum_extension,2002,GF01,0.12551066396263438,expenditure,nan
+USA,maximum_extension,2002,GF02,-0.33117059279357197,expenditure,nan
+USA,maximum_extension,2002,GF03,-0.0560750849996728,expenditure,nan
+USA,maximum_extension,2002,GF04,0.02317580492199184,expenditure,nan
+USA,maximum_extension,2002,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2002,GF06,-0.04241069908194686,expenditure,nan
+USA,maximum_extension,2002,GF07,-0.3696843643400366,expenditure,nan
+USA,maximum_extension,2002,GF08,-0.009078861022637904,expenditure,nan
+USA,maximum_extension,2002,GF09,-0.061030107754818375,expenditure,nan
+USA,maximum_extension,2002,GF10,-0.40516270715448277,expenditure,nan
+USA,maximum_extension,2002,NLB_CHANGE_SUM,-3.4547084497322516,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2002,ANCHOR_B9_DELTA,-0.0004234041234640884,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2002,WEO_GGXCNL_DELTA,-3.2770176595630542,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2003,R01,0.0,revenue,nan
+USA,maximum_extension,2003,R02,0.07780363333366735,revenue,nan
+USA,maximum_extension,2003,R03,-0.8658818205852916,revenue,nan
+USA,maximum_extension,2003,R04,0.39759492589433854,revenue,nan
+USA,maximum_extension,2003,R05,-0.047733330209907054,revenue,nan
+USA,maximum_extension,2003,R06,-0.07406070162964129,revenue,nan
+USA,maximum_extension,2003,R07,-0.10463405983796893,revenue,nan
+USA,maximum_extension,2003,R08,-0.02175229068317056,revenue,nan
+USA,maximum_extension,2003,R09,0.031176651620851148,revenue,nan
+USA,maximum_extension,2003,R10,0.012322759054051065,revenue,nan
+USA,maximum_extension,2003,GF01,0.007939235709854275,expenditure,nan
+USA,maximum_extension,2003,GF02,-0.36818111812792764,expenditure,nan
+USA,maximum_extension,2003,GF03,0.03980230872056914,expenditure,nan
+USA,maximum_extension,2003,GF04,-0.035820620225292255,expenditure,nan
+USA,maximum_extension,2003,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2003,GF06,-0.014227635244486343,expenditure,nan
+USA,maximum_extension,2003,GF07,-0.19288796298718158,expenditure,nan
+USA,maximum_extension,2003,GF08,0.014073534072900091,expenditure,nan
+USA,maximum_extension,2003,GF09,0.03134344297760355,expenditure,nan
+USA,maximum_extension,2003,GF10,-0.01334109398491018,expenditure,nan
+USA,maximum_extension,2003,NLB_CHANGE_SUM,-1.126464142131942,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2003,ANCHOR_B9_DELTA,0.01582420827343456,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2003,WEO_GGXCNL_DELTA,-0.9493394651220094,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2004,R01,0.0,revenue,nan
+USA,maximum_extension,2004,R02,0.07355351033145746,revenue,nan
+USA,maximum_extension,2004,R03,-0.17937957537925847,revenue,nan
+USA,maximum_extension,2004,R04,0.37189224894782874,revenue,nan
+USA,maximum_extension,2004,R05,0.04609996528129653,revenue,nan
+USA,maximum_extension,2004,R06,-0.012953789786279701,revenue,nan
+USA,maximum_extension,2004,R07,-0.026341988212342637,revenue,nan
+USA,maximum_extension,2004,R08,-0.028274663868418884,revenue,nan
+USA,maximum_extension,2004,R09,-0.030037218862605936,revenue,nan
+USA,maximum_extension,2004,R10,0.024498646200537058,revenue,nan
+USA,maximum_extension,2004,GF01,0.20924289161626322,expenditure,nan
+USA,maximum_extension,2004,GF02,-0.11811794719431487,expenditure,nan
+USA,maximum_extension,2004,GF03,0.021904455046256252,expenditure,nan
+USA,maximum_extension,2004,GF04,0.12801529779636125,expenditure,nan
+USA,maximum_extension,2004,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2004,GF06,-0.034674790256359125,expenditure,nan
+USA,maximum_extension,2004,GF07,-0.12192718623997012,expenditure,nan
+USA,maximum_extension,2004,GF08,0.00959410124736033,expenditure,nan
+USA,maximum_extension,2004,GF09,0.07485449973607256,expenditure,nan
+USA,maximum_extension,2004,GF10,0.22921889028328507,expenditure,nan
+USA,maximum_extension,2004,NLB_CHANGE_SUM,0.6371673466871688,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2004,ANCHOR_B9_DELTA,-0.0003790231477576178,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2004,WEO_GGXCNL_DELTA,0.5268494561445736,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2005,R01,0.0,revenue,nan
+USA,maximum_extension,2005,R02,0.12218751352460616,revenue,nan
+USA,maximum_extension,2005,R03,0.7198227992146742,revenue,nan
+USA,maximum_extension,2005,R04,0.6293648900634851,revenue,nan
+USA,maximum_extension,2005,R05,-0.013342572198509362,revenue,nan
+USA,maximum_extension,2005,R06,-0.08980416836805588,revenue,nan
+USA,maximum_extension,2005,R07,0.04050690789208656,revenue,nan
+USA,maximum_extension,2005,R08,0.027100810942100706,revenue,nan
+USA,maximum_extension,2005,R09,-0.02665761929190741,revenue,nan
+USA,maximum_extension,2005,R10,-0.0010776551597351663,revenue,nan
+USA,maximum_extension,2005,GF01,-0.089213340163289,expenditure,nan
+USA,maximum_extension,2005,GF02,-0.022222367705188734,expenditure,nan
+USA,maximum_extension,2005,GF03,0.032087313553319854,expenditure,nan
+USA,maximum_extension,2005,GF04,-0.046191611831263024,expenditure,nan
+USA,maximum_extension,2005,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2005,GF06,-0.1545566047754008,expenditure,nan
+USA,maximum_extension,2005,GF07,0.024262059304291927,expenditure,nan
+USA,maximum_extension,2005,GF08,0.0009737846674782481,expenditure,nan
+USA,maximum_extension,2005,GF09,0.08276820097474977,expenditure,nan
+USA,maximum_extension,2005,GF10,0.08674622559073225,expenditure,nan
+USA,maximum_extension,2005,NLB_CHANGE_SUM,1.322754566234175,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2005,ANCHOR_B9_DELTA,-0.0016685169192405258,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2005,WEO_GGXCNL_DELTA,1.1687500877491086,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2006,R01,0.0,revenue,nan
+USA,maximum_extension,2006,R02,-0.010953228163697315,revenue,nan
+USA,maximum_extension,2006,R03,0.5389479249537463,revenue,nan
+USA,maximum_extension,2006,R04,0.24816167722897242,revenue,nan
+USA,maximum_extension,2006,R05,-0.041946416834333713,revenue,nan
+USA,maximum_extension,2006,R06,-0.02284382371520316,revenue,nan
+USA,maximum_extension,2006,R07,0.099402979264794,revenue,nan
+USA,maximum_extension,2006,R08,0.04663641912877056,revenue,nan
+USA,maximum_extension,2006,R09,-0.008665123485517012,revenue,nan
+USA,maximum_extension,2006,R10,-0.016950736736529894,revenue,nan
+USA,maximum_extension,2006,GF01,-0.06611163844108675,expenditure,nan
+USA,maximum_extension,2006,GF02,0.027699136923536177,expenditure,nan
+USA,maximum_extension,2006,GF03,-0.003079977001267317,expenditure,nan
+USA,maximum_extension,2006,GF04,0.19897955564259703,expenditure,nan
+USA,maximum_extension,2006,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2006,GF06,0.21024161196184837,expenditure,nan
+USA,maximum_extension,2006,GF07,-0.16398072885156906,expenditure,nan
+USA,maximum_extension,2006,GF08,-0.0006278684332515754,expenditure,nan
+USA,maximum_extension,2006,GF09,0.006948013633927691,expenditure,nan
+USA,maximum_extension,2006,GF10,0.07400997351053318,expenditure,nan
+USA,maximum_extension,2006,NLB_CHANGE_SUM,1.1158677505862702,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2006,ANCHOR_B9_DELTA,-0.0012815919970097234,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2006,WEO_GGXCNL_DELTA,1.0389434854989135,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2007,R01,0.0,revenue,nan
+USA,maximum_extension,2007,R02,-0.05349582614287973,revenue,nan
+USA,maximum_extension,2007,R03,0.4922861390483632,revenue,nan
+USA,maximum_extension,2007,R04,-0.39868148648197144,revenue,nan
+USA,maximum_extension,2007,R05,-0.03648157416360435,revenue,nan
+USA,maximum_extension,2007,R06,-0.03599010553025639,revenue,nan
+USA,maximum_extension,2007,R07,0.057044757791804325,revenue,nan
+USA,maximum_extension,2007,R08,0.040122275664417756,revenue,nan
+USA,maximum_extension,2007,R09,-0.017469657170550434,revenue,nan
+USA,maximum_extension,2007,R10,0.007873000208605783,revenue,nan
+USA,maximum_extension,2007,GF01,-0.11894658004282799,expenditure,nan
+USA,maximum_extension,2007,GF02,-0.03890496821473896,expenditure,nan
+USA,maximum_extension,2007,GF03,-0.04569287829259,expenditure,nan
+USA,maximum_extension,2007,GF04,-0.11687188758231978,expenditure,nan
+USA,maximum_extension,2007,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2007,GF06,-0.040024516874178316,expenditure,nan
+USA,maximum_extension,2007,GF07,-0.25874422853509466,expenditure,nan
+USA,maximum_extension,2007,GF08,-0.008008628005393365,expenditure,nan
+USA,maximum_extension,2007,GF09,-0.07929105752225718,expenditure,nan
+USA,maximum_extension,2007,GF10,0.00485532710978176,expenditure,nan
+USA,maximum_extension,2007,NLB_CHANGE_SUM,-0.6464218947356898,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2007,ANCHOR_B9_DELTA,-0.0008564806436902606,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2007,WEO_GGXCNL_DELTA,-0.8769541356026453,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2008,R01,0.0,revenue,nan
+USA,maximum_extension,2008,R02,-0.0559696868679363,revenue,nan
+USA,maximum_extension,2008,R03,-0.0789354777765941,revenue,nan
+USA,maximum_extension,2008,R04,-0.9639234655292462,revenue,nan
+USA,maximum_extension,2008,R05,-0.0147345821579391,revenue,nan
+USA,maximum_extension,2008,R06,0.04961464827088202,revenue,nan
+USA,maximum_extension,2008,R07,-0.1132513776518517,revenue,nan
+USA,maximum_extension,2008,R08,-0.0044223026559118105,revenue,nan
+USA,maximum_extension,2008,R09,0.067581320491783,revenue,nan
+USA,maximum_extension,2008,R10,0.05961205312161946,revenue,nan
+USA,maximum_extension,2008,GF01,0.07359070399336129,expenditure,nan
+USA,maximum_extension,2008,GF02,-0.3505588029438747,expenditure,nan
+USA,maximum_extension,2008,GF03,-0.09877548249770593,expenditure,nan
+USA,maximum_extension,2008,GF04,-0.3890505292703156,expenditure,nan
+USA,maximum_extension,2008,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2008,GF06,-0.04543380384000985,expenditure,nan
+USA,maximum_extension,2008,GF07,-0.29467713192666417,expenditure,nan
+USA,maximum_extension,2008,GF08,-0.008783386158748912,expenditure,nan
+USA,maximum_extension,2008,GF09,-0.19275280267311012,expenditure,nan
+USA,maximum_extension,2008,GF10,-1.0009482318592418,expenditure,nan
+USA,maximum_extension,2008,NLB_CHANGE_SUM,-3.361818337931504,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2008,ANCHOR_B9_DELTA,-0.00331591762986827,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2008,WEO_GGXCNL_DELTA,-3.6994715558135964,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2009,R01,0.0,revenue,nan
+USA,maximum_extension,2009,R02,-0.015081609712724875,revenue,nan
+USA,maximum_extension,2009,R03,-2.2779694725553523,revenue,nan
+USA,maximum_extension,2009,R04,-0.3489174777720918,revenue,nan
+USA,maximum_extension,2009,R05,-0.025363991473949285,revenue,nan
+USA,maximum_extension,2009,R06,-0.029938303582455195,revenue,nan
+USA,maximum_extension,2009,R07,-0.07519927648606019,revenue,nan
+USA,maximum_extension,2009,R08,0.18565937777829197,revenue,nan
+USA,maximum_extension,2009,R09,0.21905529373627275,revenue,nan
+USA,maximum_extension,2009,R10,0.12948053164604928,revenue,nan
+USA,maximum_extension,2009,GF01,-0.40361129368459636,expenditure,nan
+USA,maximum_extension,2009,GF02,-0.30942114872424403,expenditure,nan
+USA,maximum_extension,2009,GF03,-0.08836166576081696,expenditure,nan
+USA,maximum_extension,2009,GF04,-0.13034591968786868,expenditure,nan
+USA,maximum_extension,2009,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2009,GF06,-0.62001532028035,expenditure,nan
+USA,maximum_extension,2009,GF07,-0.720584450435148,expenditure,nan
+USA,maximum_extension,2009,GF08,-0.007230838681193761,expenditure,nan
+USA,maximum_extension,2009,GF09,-0.3026099943176583,expenditure,nan
+USA,maximum_extension,2009,GF10,-0.9320354278505527,expenditure,nan
+USA,maximum_extension,2009,NLB_CHANGE_SUM,-5.752490987844448,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2009,ANCHOR_B9_DELTA,-0.0038273163693096635,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2009,WEO_GGXCNL_DELTA,-6.564345434125432,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2010,R01,0.0,revenue,nan
+USA,maximum_extension,2010,R02,-0.028133145908676438,revenue,nan
+USA,maximum_extension,2010,R03,0.2664062462191072,revenue,nan
+USA,maximum_extension,2010,R04,0.40017838121785676,revenue,nan
+USA,maximum_extension,2010,R05,-0.041197252957084686,revenue,nan
+USA,maximum_extension,2010,R06,-0.12479286644426352,revenue,nan
+USA,maximum_extension,2010,R07,-0.0446229317813982,revenue,nan
+USA,maximum_extension,2010,R08,0.18632342011218944,revenue,nan
+USA,maximum_extension,2010,R09,-0.02504966651943885,revenue,nan
+USA,maximum_extension,2010,R10,-0.05699220751646493,revenue,nan
+USA,maximum_extension,2010,GF01,0.025165918583502922,expenditure,nan
+USA,maximum_extension,2010,GF02,-0.05834794867292589,expenditure,nan
+USA,maximum_extension,2010,GF03,0.05531914439742408,expenditure,nan
+USA,maximum_extension,2010,GF04,0.21738450328120731,expenditure,nan
+USA,maximum_extension,2010,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2010,GF06,0.3283117058519554,expenditure,nan
+USA,maximum_extension,2010,GF07,-0.11303300457464055,expenditure,nan
+USA,maximum_extension,2010,GF08,0.01621795313251624,expenditure,nan
+USA,maximum_extension,2010,GF09,0.04413526223359804,expenditure,nan
+USA,maximum_extension,2010,GF10,-0.34083294589440094,expenditure,nan
+USA,maximum_extension,2010,NLB_CHANGE_SUM,0.7064405647600632,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2010,ANCHOR_B9_DELTA,0.010459067511204068,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2010,WEO_GGXCNL_DELTA,2.1842985033186824,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2011,R01,0.0,revenue,nan
+USA,maximum_extension,2011,R02,0.011178352781213152,revenue,nan
+USA,maximum_extension,2011,R03,1.1021420021725195,revenue,nan
+USA,maximum_extension,2011,R04,-0.018328589055270975,revenue,nan
+USA,maximum_extension,2011,R05,-0.03946912314432092,revenue,nan
+USA,maximum_extension,2011,R06,-0.6653464505202822,revenue,nan
+USA,maximum_extension,2011,R07,-0.058740157142336394,revenue,nan
+USA,maximum_extension,2011,R08,-0.021651649838590453,revenue,nan
+USA,maximum_extension,2011,R09,0.009429860949264346,revenue,nan
+USA,maximum_extension,2011,R10,-0.01617854328558512,revenue,nan
+USA,maximum_extension,2011,GF01,-0.04281253154681669,expenditure,nan
+USA,maximum_extension,2011,GF02,0.15567012780543857,expenditure,nan
+USA,maximum_extension,2011,GF03,0.07726712258848759,expenditure,nan
+USA,maximum_extension,2011,GF04,0.17636017169858978,expenditure,nan
+USA,maximum_extension,2011,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2011,GF06,0.1173236584014645,expenditure,nan
+USA,maximum_extension,2011,GF07,0.029115389802930602,expenditure,nan
+USA,maximum_extension,2011,GF08,0.021634523488783072,expenditure,nan
+USA,maximum_extension,2011,GF09,0.19687480229048926,expenditure,nan
+USA,maximum_extension,2011,GF10,0.3877428385546569,expenditure,nan
+USA,maximum_extension,2011,NLB_CHANGE_SUM,1.4222118060006343,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2011,ANCHOR_B9_DELTA,-0.0006913363603358036,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2011,WEO_GGXCNL_DELTA,1.2770214688098636,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2012,R01,0.0,revenue,nan
+USA,maximum_extension,2012,R02,-0.08550555480780764,revenue,nan
+USA,maximum_extension,2012,R03,-0.0254701737721727,revenue,nan
+USA,maximum_extension,2012,R04,0.25597519664934054,revenue,nan
+USA,maximum_extension,2012,R05,0.023987385498849215,revenue,nan
+USA,maximum_extension,2012,R06,-0.02786658800832814,revenue,nan
+USA,maximum_extension,2012,R07,-0.068713456820393,revenue,nan
+USA,maximum_extension,2012,R08,0.07098241195999068,revenue,nan
+USA,maximum_extension,2012,R09,-0.09668696468868379,revenue,nan
+USA,maximum_extension,2012,R10,-0.08570671395721971,revenue,nan
+USA,maximum_extension,2012,GF01,0.17972146211463827,expenditure,nan
+USA,maximum_extension,2012,GF02,0.3235444964874885,expenditure,nan
+USA,maximum_extension,2012,GF03,0.09450738190190967,expenditure,nan
+USA,maximum_extension,2012,GF04,0.1683870813733418,expenditure,nan
+USA,maximum_extension,2012,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2012,GF06,0.16704911461836439,expenditure,nan
+USA,maximum_extension,2012,GF07,0.1560809266322724,expenditure,nan
+USA,maximum_extension,2012,GF08,0.01775696914613715,expenditure,nan
+USA,maximum_extension,2012,GF09,0.24380199978908806,expenditure,nan
+USA,maximum_extension,2012,GF10,0.4584827905664085,expenditure,nan
+USA,maximum_extension,2012,NLB_CHANGE_SUM,1.7703277646832243,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2012,ANCHOR_B9_DELTA,-0.001964378566093661,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2012,WEO_GGXCNL_DELTA,1.6017353318481296,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2013,R01,0.0,revenue,nan
+USA,maximum_extension,2013,R02,0.03496705894087543,revenue,nan
+USA,maximum_extension,2013,R03,0.6582398733841782,revenue,nan
+USA,maximum_extension,2013,R04,0.08401199592751943,revenue,nan
+USA,maximum_extension,2013,R05,0.03367146568001643,revenue,nan
+USA,maximum_extension,2013,R06,0.6957739202734556,revenue,nan
+USA,maximum_extension,2013,R07,-0.004413506683177432,revenue,nan
+USA,maximum_extension,2013,R08,0.5661968079233975,revenue,nan
+USA,maximum_extension,2013,R09,-0.02397686650448816,revenue,nan
+USA,maximum_extension,2013,R10,0.04982061911853412,revenue,nan
+USA,maximum_extension,2013,GF01,0.3331166708842377,expenditure,nan
+USA,maximum_extension,2013,GF02,0.4543733295098343,expenditure,nan
+USA,maximum_extension,2013,GF03,0.05051738548359809,expenditure,nan
+USA,maximum_extension,2013,GF04,0.11417784162006187,expenditure,nan
+USA,maximum_extension,2013,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2013,GF06,0.13091361935742668,expenditure,nan
+USA,maximum_extension,2013,GF07,0.04002482817064695,expenditure,nan
+USA,maximum_extension,2013,GF08,0.007177282767698674,expenditure,nan
+USA,maximum_extension,2013,GF09,0.042332999679897676,expenditure,nan
+USA,maximum_extension,2013,GF10,0.1230288015131531,expenditure,nan
+USA,maximum_extension,2013,NLB_CHANGE_SUM,3.389954127046866,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2013,ANCHOR_B9_DELTA,-0.006210337898090668,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2013,WEO_GGXCNL_DELTA,3.5530570930803265,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2014,R01,0.0,revenue,nan
+USA,maximum_extension,2014,R02,0.004468741731240844,revenue,nan
+USA,maximum_extension,2014,R03,0.21380462420546587,revenue,nan
+USA,maximum_extension,2014,R04,0.16318311234877897,revenue,nan
+USA,maximum_extension,2014,R05,-0.021716521521875996,revenue,nan
+USA,maximum_extension,2014,R06,0.008807656203600744,revenue,nan
+USA,maximum_extension,2014,R07,0.0011205158862519736,revenue,nan
+USA,maximum_extension,2014,R08,-0.46650636667992534,revenue,nan
+USA,maximum_extension,2014,R09,-0.018490846792563326,revenue,nan
+USA,maximum_extension,2014,R10,0.14217124360609862,revenue,nan
+USA,maximum_extension,2014,GF01,0.1428099155734039,expenditure,nan
+USA,maximum_extension,2014,GF02,0.27260959733115403,expenditure,nan
+USA,maximum_extension,2014,GF03,0.020410673144350897,expenditure,nan
+USA,maximum_extension,2014,GF04,0.09765820200508674,expenditure,nan
+USA,maximum_extension,2014,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2014,GF06,0.01861786320515599,expenditure,nan
+USA,maximum_extension,2014,GF07,-0.2665659067530496,expenditure,nan
+USA,maximum_extension,2014,GF08,0.0016666676818899787,expenditure,nan
+USA,maximum_extension,2014,GF09,0.11172738073356378,expenditure,nan
+USA,maximum_extension,2014,GF10,0.2261357388394475,expenditure,nan
+USA,maximum_extension,2014,NLB_CHANGE_SUM,0.6519122907480756,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2014,ANCHOR_B9_DELTA,-7.70614298861716e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2014,WEO_GGXCNL_DELTA,0.5347071350260955,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2015,R01,0.0,revenue,nan
+USA,maximum_extension,2015,R02,-0.06854593338455478,revenue,nan
+USA,maximum_extension,2015,R03,0.4727815802549398,revenue,nan
+USA,maximum_extension,2015,R04,-0.14373762401151402,revenue,nan
+USA,maximum_extension,2015,R05,0.004771007239084664,revenue,nan
+USA,maximum_extension,2015,R06,0.032850434381721805,revenue,nan
+USA,maximum_extension,2015,R07,0.0033189508615239643,revenue,nan
+USA,maximum_extension,2015,R08,-0.12025805529794678,revenue,nan
+USA,maximum_extension,2015,R09,0.012921581691322653,revenue,nan
+USA,maximum_extension,2015,R10,-0.01849588985026948,revenue,nan
+USA,maximum_extension,2015,GF01,0.2003440592984948,expenditure,nan
+USA,maximum_extension,2015,GF02,0.19428725056866922,expenditure,nan
+USA,maximum_extension,2015,GF03,0.00992709959223223,expenditure,nan
+USA,maximum_extension,2015,GF04,0.15236447111722853,expenditure,nan
+USA,maximum_extension,2015,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2015,GF06,0.017087594001762713,expenditure,nan
+USA,maximum_extension,2015,GF07,-0.2568532280337446,expenditure,nan
+USA,maximum_extension,2015,GF08,-0.0022961955984461893,expenditure,nan
+USA,maximum_extension,2015,GF09,0.04548342749821771,expenditure,nan
+USA,maximum_extension,2015,GF10,0.03468252175932579,expenditure,nan
+USA,maximum_extension,2015,NLB_CHANGE_SUM,0.570633052088048,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2015,ANCHOR_B9_DELTA,3.8011056766595885e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2015,WEO_GGXCNL_DELTA,0.4964942449875373,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2016,R01,0.0,revenue,nan
+USA,maximum_extension,2016,R02,0.0009570148757964692,revenue,nan
+USA,maximum_extension,2016,R03,-0.18680863471747938,revenue,nan
+USA,maximum_extension,2016,R04,-0.1639932629735323,revenue,nan
+USA,maximum_extension,2016,R05,-0.004404726441921067,revenue,nan
+USA,maximum_extension,2016,R06,0.0033347676506534363,revenue,nan
+USA,maximum_extension,2016,R07,0.009497288362852411,revenue,nan
+USA,maximum_extension,2016,R08,-0.13958721077938002,revenue,nan
+USA,maximum_extension,2016,R09,0.047572498930867346,revenue,nan
+USA,maximum_extension,2016,R10,-0.07339057580634747,revenue,nan
+USA,maximum_extension,2016,GF01,-0.0893220125258852,expenditure,nan
+USA,maximum_extension,2016,GF02,0.08809346424653725,expenditure,nan
+USA,maximum_extension,2016,GF03,0.0014906486190690432,expenditure,nan
+USA,maximum_extension,2016,GF04,-0.1292047050771794,expenditure,nan
+USA,maximum_extension,2016,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2016,GF06,-0.0047247631331952256,expenditure,nan
+USA,maximum_extension,2016,GF07,-0.18036812571058658,expenditure,nan
+USA,maximum_extension,2016,GF08,-0.009574419966056286,expenditure,nan
+USA,maximum_extension,2016,GF09,-0.013680860524782623,expenditure,nan
+USA,maximum_extension,2016,GF10,0.05615983657280138,expenditure,nan
+USA,maximum_extension,2016,NLB_CHANGE_SUM,-0.7879537783977684,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2016,ANCHOR_B9_DELTA,4.756874792954946e-07,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2016,WEO_GGXCNL_DELTA,-0.8268537692557205,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2017,R01,0.0,revenue,nan
+USA,maximum_extension,2017,R02,-0.006871697313282077,revenue,nan
+USA,maximum_extension,2017,R03,0.03245679047232941,revenue,nan
+USA,maximum_extension,2017,R04,-0.48916917199348064,revenue,nan
+USA,maximum_extension,2017,R05,1.1963490773665018,revenue,nan
+USA,maximum_extension,2017,R06,0.03250917354210292,revenue,nan
+USA,maximum_extension,2017,R07,-0.0025451141163481197,revenue,nan
+USA,maximum_extension,2017,R08,-0.034146807839477517,revenue,nan
+USA,maximum_extension,2017,R09,-0.02371808443002582,revenue,nan
+USA,maximum_extension,2017,R10,-0.029566315375065787,revenue,nan
+USA,maximum_extension,2017,GF01,0.035289663610160726,expenditure,nan
+USA,maximum_extension,2017,GF02,0.04177343967985553,expenditure,nan
+USA,maximum_extension,2017,GF03,0.03311144686634279,expenditure,nan
+USA,maximum_extension,2017,GF04,-0.00265080635988707,expenditure,nan
+USA,maximum_extension,2017,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2017,GF06,-0.04392035415290239,expenditure,nan
+USA,maximum_extension,2017,GF07,0.02458679458769153,expenditure,nan
+USA,maximum_extension,2017,GF08,0.004000066811219935,expenditure,nan
+USA,maximum_extension,2017,GF09,0.0765686882497417,expenditure,nan
+USA,maximum_extension,2017,GF10,0.11821181645926826,expenditure,nan
+USA,maximum_extension,2017,NLB_CHANGE_SUM,0.9622686060647451,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2017,ANCHOR_B9_DELTA,1.5301995290317727e-05,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2017,WEO_GGXCNL_DELTA,-0.4378288160620851,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2018,R01,0.0,revenue,nan
+USA,maximum_extension,2018,R02,0.09917466082211279,revenue,nan
+USA,maximum_extension,2018,R03,-0.4107084252974971,revenue,nan
+USA,maximum_extension,2018,R04,-0.07193658142512094,revenue,nan
+USA,maximum_extension,2018,R05,-1.1947471993840069,revenue,nan
+USA,maximum_extension,2018,R06,-0.03179823178759422,revenue,nan
+USA,maximum_extension,2018,R07,0.023427876359165007,revenue,nan
+USA,maximum_extension,2018,R08,-0.13889659267444604,revenue,nan
+USA,maximum_extension,2018,R09,-0.02462949855053312,revenue,nan
+USA,maximum_extension,2018,R10,0.018199371140657263,revenue,nan
+USA,maximum_extension,2018,GF01,-0.09929436464348809,expenditure,nan
+USA,maximum_extension,2018,GF02,-0.05644756667621681,expenditure,nan
+USA,maximum_extension,2018,GF03,-0.00940090123775425,expenditure,nan
+USA,maximum_extension,2018,GF04,-0.021075009168335795,expenditure,nan
+USA,maximum_extension,2018,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2018,GF06,0.057031390784654905,expenditure,nan
+USA,maximum_extension,2018,GF07,-0.010044862929327325,expenditure,nan
+USA,maximum_extension,2018,GF08,-9.694852326357258e-05,expenditure,nan
+USA,maximum_extension,2018,GF09,0.08452437662558182,expenditure,nan
+USA,maximum_extension,2018,GF10,0.10000307212382903,expenditure,nan
+USA,maximum_extension,2018,NLB_CHANGE_SUM,-1.6867154344415833,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2018,ANCHOR_B9_DELTA,-1.0450749008406035e-05,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2018,WEO_GGXCNL_DELTA,-0.5406729630685232,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2019,R01,0.0,revenue,nan
+USA,maximum_extension,2019,R02,0.06601173611741201,revenue,nan
+USA,maximum_extension,2019,R03,0.16840586408267688,revenue,nan
+USA,maximum_extension,2019,R04,-0.06302593441789034,revenue,nan
+USA,maximum_extension,2019,R05,-0.04038462538606333,revenue,nan
+USA,maximum_extension,2019,R06,0.021605673131989966,revenue,nan
+USA,maximum_extension,2019,R07,0.007819785319519885,revenue,nan
+USA,maximum_extension,2019,R08,-0.08617509458842863,revenue,nan
+USA,maximum_extension,2019,R09,-0.05149384273314336,revenue,nan
+USA,maximum_extension,2019,R10,-0.08285782501232675,revenue,nan
+USA,maximum_extension,2019,GF01,-0.10690147307860776,expenditure,nan
+USA,maximum_extension,2019,GF02,-0.1135113051385514,expenditure,nan
+USA,maximum_extension,2019,GF03,-0.012988293197765607,expenditure,nan
+USA,maximum_extension,2019,GF04,-0.014595019043369545,expenditure,nan
+USA,maximum_extension,2019,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2019,GF06,0.00904558796492724,expenditure,nan
+USA,maximum_extension,2019,GF07,-0.23206535131106432,expenditure,nan
+USA,maximum_extension,2019,GF08,-0.003701189036495146,expenditure,nan
+USA,maximum_extension,2019,GF09,0.04836702332296147,expenditure,nan
+USA,maximum_extension,2019,GF10,-0.09057565067493029,expenditure,nan
+USA,maximum_extension,2019,NLB_CHANGE_SUM,-0.577019933679149,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2019,ANCHOR_B9_DELTA,-4.753077930907956e-06,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2019,WEO_GGXCNL_DELTA,-0.47053036638487133,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2020,R01,0.0,revenue,nan
+USA,maximum_extension,2020,R02,-0.002993963061312388,revenue,nan
+USA,maximum_extension,2020,R03,0.3088843119419038,revenue,nan
+USA,maximum_extension,2020,R04,0.07790761788927653,revenue,nan
+USA,maximum_extension,2020,R05,0.027039496159622384,revenue,nan
+USA,maximum_extension,2020,R06,0.16684012326964454,revenue,nan
+USA,maximum_extension,2020,R07,-0.04919486390966444,revenue,nan
+USA,maximum_extension,2020,R08,0.09359670895934995,revenue,nan
+USA,maximum_extension,2020,R09,0.11625866400631416,revenue,nan
+USA,maximum_extension,2020,R10,-0.017489444440671985,revenue,nan
+USA,maximum_extension,2020,GF01,0.09315397567343023,expenditure,nan
+USA,maximum_extension,2020,GF02,-0.17391555237762854,expenditure,nan
+USA,maximum_extension,2020,GF03,-0.06595471228875716,expenditure,nan
+USA,maximum_extension,2020,GF04,-3.1696635211459183,expenditure,nan
+USA,maximum_extension,2020,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2020,GF06,-0.02414634499442953,expenditure,nan
+USA,maximum_extension,2020,GF07,-1.0964857325858195,expenditure,nan
+USA,maximum_extension,2020,GF08,0.0055483806845287465,expenditure,nan
+USA,maximum_extension,2020,GF09,-0.17218440626040193,expenditure,nan
+USA,maximum_extension,2020,GF10,-4.410443043524161,expenditure,nan
+USA,maximum_extension,2020,NLB_CHANGE_SUM,-8.293242306004695,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2020,ANCHOR_B9_DELTA,-8.817228902557872e-08,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2020,WEO_GGXCNL_DELTA,-8.321261309533964,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2021,R01,0.0,revenue,nan
+USA,maximum_extension,2021,R02,0.04866682207638334,revenue,nan
+USA,maximum_extension,2021,R03,0.8507446492523524,revenue,nan
+USA,maximum_extension,2021,R04,0.5230027334680267,revenue,nan
+USA,maximum_extension,2021,R05,0.03229451634075512,revenue,nan
+USA,maximum_extension,2021,R06,-0.20983837323975268,revenue,nan
+USA,maximum_extension,2021,R07,-0.08318374048609331,revenue,nan
+USA,maximum_extension,2021,R08,0.0711105441248183,revenue,nan
+USA,maximum_extension,2021,R09,-0.09694648291920446,revenue,nan
+USA,maximum_extension,2021,R10,-0.02238662089487399,revenue,nan
+USA,maximum_extension,2021,GF01,0.24102517004672558,expenditure,nan
+USA,maximum_extension,2021,GF02,0.2711627968274837,expenditure,nan
+USA,maximum_extension,2021,GF03,0.14663189155348472,expenditure,nan
+USA,maximum_extension,2021,GF04,0.9254619649693929,expenditure,nan
+USA,maximum_extension,2021,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2021,GF06,-0.20856613851245503,expenditure,nan
+USA,maximum_extension,2021,GF07,0.2643729035623099,expenditure,nan
+USA,maximum_extension,2021,GF08,0.023422794045895468,expenditure,nan
+USA,maximum_extension,2021,GF09,0.23717225513452053,expenditure,nan
+USA,maximum_extension,2021,GF10,0.02132444100243769,expenditure,nan
+USA,maximum_extension,2021,NLB_CHANGE_SUM,3.035472126352207,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2021,ANCHOR_B9_DELTA,-8.893153324862624e-09,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2021,WEO_GGXCNL_DELTA,2.6659730647138336,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2022,R01,0.0,revenue,nan
+USA,maximum_extension,2022,R02,-0.1247308798594901,revenue,nan
+USA,maximum_extension,2022,R03,1.0984894143725956,revenue,nan
+USA,maximum_extension,2022,R04,0.33141957248377685,revenue,nan
+USA,maximum_extension,2022,R05,-0.011445910841621993,revenue,nan
+USA,maximum_extension,2022,R06,-0.031847662451049696,revenue,nan
+USA,maximum_extension,2022,R07,-0.010299801020953198,revenue,nan
+USA,maximum_extension,2022,R08,-0.1968807674345123,revenue,nan
+USA,maximum_extension,2022,R09,0.07020500838669855,revenue,nan
+USA,maximum_extension,2022,R10,0.19108573688911973,revenue,nan
+USA,maximum_extension,2022,GF01,-0.258642200965635,expenditure,nan
+USA,maximum_extension,2022,GF02,0.23693640857883475,expenditure,nan
+USA,maximum_extension,2022,GF03,0.07354006704862089,expenditure,nan
+USA,maximum_extension,2022,GF04,2.680445021350662,expenditure,nan
+USA,maximum_extension,2022,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2022,GF06,0.21179492729015234,expenditure,nan
+USA,maximum_extension,2022,GF07,0.2011809272047499,expenditure,nan
+USA,maximum_extension,2022,GF08,-0.007010358670182359,expenditure,nan
+USA,maximum_extension,2022,GF09,0.12909554970341464,expenditure,nan
+USA,maximum_extension,2022,GF10,3.647402546365512,expenditure,nan
+USA,maximum_extension,2022,NLB_CHANGE_SUM,8.230737598430693,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2022,ANCHOR_B9_DELTA,3.767564038525961e-10,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2022,WEO_GGXCNL_DELTA,7.7389390827605276,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2023,R01,0.0,revenue,nan
+USA,maximum_extension,2023,R02,-0.34935309285695354,revenue,nan
+USA,maximum_extension,2023,R03,-2.246251784930009,revenue,nan
+USA,maximum_extension,2023,R04,-0.09995943690478612,revenue,nan
+USA,maximum_extension,2023,R05,-0.009525753019058161,revenue,nan
+USA,maximum_extension,2023,R06,-0.06717897211990231,revenue,nan
+USA,maximum_extension,2023,R07,0.05792708640989658,revenue,nan
+USA,maximum_extension,2023,R08,-0.24095272982827726,revenue,nan
+USA,maximum_extension,2023,R09,-0.24213967154670252,revenue,nan
+USA,maximum_extension,2023,R10,-0.2399577776461383,revenue,nan
+USA,maximum_extension,2023,GF01,-1.0831413127716258,expenditure,nan
+USA,maximum_extension,2023,GF02,-0.05671368838220045,expenditure,nan
+USA,maximum_extension,2023,GF03,0.03661650801732759,expenditure,nan
+USA,maximum_extension,2023,GF04,-0.3502720187112309,expenditure,nan
+USA,maximum_extension,2023,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2023,GF06,0.03313224961162195,expenditure,nan
+USA,maximum_extension,2023,GF07,0.09870687204066586,expenditure,nan
+USA,maximum_extension,2023,GF08,7.422837161662026e-05,expenditure,nan
+USA,maximum_extension,2023,GF09,0.09774876440057922,expenditure,nan
+USA,maximum_extension,2023,GF10,0.428045636238239,expenditure,nan
+USA,maximum_extension,2023,NLB_CHANGE_SUM,-4.233194893626938,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2023,ANCHOR_B9_DELTA,0.0007777607652013074,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2023,WEO_GGXCNL_DELTA,-4.165408722192428,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"
+USA,maximum_extension,2024,R01,0.0,revenue,nan
+USA,maximum_extension,2024,R02,-0.01978578289834748,revenue,nan
+USA,maximum_extension,2024,R03,0.00044083780792875116,revenue,nan
+USA,maximum_extension,2024,R04,0.1158286372635528,revenue,nan
+USA,maximum_extension,2024,R05,0.0022798040529562,revenue,nan
+USA,maximum_extension,2024,R06,0.08860813364934411,revenue,nan
+USA,maximum_extension,2024,R07,0.06941725948191468,revenue,nan
+USA,maximum_extension,2024,R08,-0.013377929252964644,revenue,nan
+USA,maximum_extension,2024,R09,-0.04807176469313196,revenue,nan
+USA,maximum_extension,2024,R10,0.07077604750511737,revenue,nan
+USA,maximum_extension,2024,GF01,-0.04601884198671968,expenditure,nan
+USA,maximum_extension,2024,GF02,-0.07761409511211938,expenditure,nan
+USA,maximum_extension,2024,GF03,0.004853413905062456,expenditure,nan
+USA,maximum_extension,2024,GF04,0.011601347840881765,expenditure,nan
+USA,maximum_extension,2024,GF05,-0.0,expenditure,nan
+USA,maximum_extension,2024,GF06,-0.06684325019431121,expenditure,nan
+USA,maximum_extension,2024,GF07,-0.23348374077528655,expenditure,nan
+USA,maximum_extension,2024,GF08,0.002126261391908633,expenditure,nan
+USA,maximum_extension,2024,GF09,-0.028253812362228486,expenditure,nan
+USA,maximum_extension,2024,GF10,0.07710072724355366,expenditure,nan
+USA,maximum_extension,2024,NLB_CHANGE_SUM,-0.09041674713288897,total,Δ((ΣR-ΣE)/GDP); V26: equals the line sum exactly
+USA,maximum_extension,2024,ANCHOR_B9_DELTA,0.0035761833896002793,memo,"anchor Δ(B9/GDP) minus the sum-based change; rounding/vintage wedge, never allocated (D16)"
+USA,maximum_extension,2024,WEO_GGXCNL_DELTA,0.028699971527952617,memo,"WEO 2026-04 Δ(GGXCNL/NGDP), comparison column per §8.3"

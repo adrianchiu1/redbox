@@ -122,3 +122,44 @@ DEU,ESA_REV,R07,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_machine_read
 DEU,ESA_REV,R08,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 DEU,ESA_REV,R09,1995,2025,2026.0,2027,2027,1,AB,EC_AMECO,grow_with_proxy,source horizon: EC_AMECO ends 2027 (V10)
 DEU,ESA_REV,R10,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
+USA,COFOG,GF01,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF01_7,1970,2024,,2024,2024,0,B,OECD_T11,,no rows built
+USA,COFOG,GF01_X,1970,2024,,2024,2024,0,B,OECD_T11,,no rows built
+USA,COFOG,GF02,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF03,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF04,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF04_5,1970,2024,,2024,2024,0,B,BEA_NIPA,,no rows built
+USA,COFOG,GF04_X,1970,2024,,2024,2024,0,B,OECD_T11,,no rows built
+USA,COFOG,GF05,1970,2024,,2024,2024,0,A,OECD_T11,,[structural_zero] structural zero (D20): BEA has no environmental-protection function; components in 04 and 06
+USA,COFOG,GF06,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF07,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF08,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF09,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF10,1970,2024,,2024,2024,0,A,OECD_T11,,no rows built
+USA,COFOG,GF10_2,1970,2024,,2024,2024,0,B,BEA_NIPA,,no rows built
+USA,COFOG,GF10_5,1970,2024,,2024,2024,0,B,BEA_NIPA,,no rows built
+USA,COFOG,GF10_X,1970,2024,,2024,2024,0,B,OECD_T11,,no rows built
+USA,ESA_EXP,E01,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_EXP,E02,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_EXP,E03,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_EXP,E04,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,[structural_zero] structural zero (D20): Medicare and Medicaid are D.62 in the SNA presentation; D.632 = 0
+USA,ESA_EXP,E05,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_EXP,E06,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_EXP,E07,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_EXP,E08,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_EXP,E09,1970,2024,,2024,2024,0,A,OECD_T12_EXP,,no rows built
+USA,ESA_REV,R01,1970,2024,,2024,2024,0,A,OECD_T12_REV,,[structural_zero] structural zero (D20): no value-added tax; D.211 = 0 in OECD T12
+USA,ESA_REV,R02,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R02_A,1970,2024,,2024,2024,0,A,OECD_T10,,no rows built
+USA,ESA_REV,R02_X,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R03,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R04,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R05,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R06,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R06_E,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R06_H,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R06_X,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R07,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R08,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R09,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built
+USA,ESA_REV,R10,1970,2024,,2024,2024,0,A,OECD_T12_REV,,no rows built

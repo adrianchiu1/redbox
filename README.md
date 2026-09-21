@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-20 07:27 UTC, run 20260920T072538Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-09-21 08:44 UTC, run 20260921T084313Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA) and Germany (DEU): consolidated general-government **expenditure by COFOG function** (17 lines per country: ten Level I functions plus the Level II splits for interest (GF01_7), old-age pensions (GF10_2), unemployment (GF10_5) and transport (GF04_5) with their remainders), **expenditure by ESA economic type** (9 lines per country: compensation, intermediate consumption, social benefits in cash, social transfers in kind, interest, subsidies, other current, capital formation, capital transfers), **revenue by ESA type** (15 lines per country: ten ESA types plus the excise-duty split of R02 and the employers'/households' split of social contributions, with remainders), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 123 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -63,29 +63,29 @@ Stages 0–6 complete, all hard gates passed (§12): harvest and source verifica
 
 | file | rows | description |
 |---|---|---|
-| `data/canonical/expenditure_long_strict.csv` | 1975 | COFOG tree, §5 long format (17 lines + TE per country) |
+| `data/canonical/expenditure_long_strict.csv` | 2965 | COFOG tree, §5 long format (17 lines + TE per country) |
 | `data/canonical/expenditure_long_strict.parquet` | — | COFOG tree, §5 long format (17 lines + TE per country) |
-| `data/canonical/expenditure_long_maximum_extension.csv` | 2095 | COFOG tree, §5 long format (17 lines + TE per country) |
+| `data/canonical/expenditure_long_maximum_extension.csv` | 3085 | COFOG tree, §5 long format (17 lines + TE per country) |
 | `data/canonical/expenditure_long_maximum_extension.parquet` | — | COFOG tree, §5 long format (17 lines + TE per country) |
-| `data/canonical/revenue_long_strict.csv` | 1855 | ESA revenue tree, §5 long format (15 lines + TR per country) |
+| `data/canonical/revenue_long_strict.csv` | 2735 | ESA revenue tree, §5 long format (15 lines + TR per country) |
 | `data/canonical/revenue_long_strict.parquet` | — | ESA revenue tree, §5 long format (15 lines + TR per country) |
-| `data/canonical/revenue_long_maximum_extension.csv` | 2161 | ESA revenue tree, §5 long format (15 lines + TR per country) |
+| `data/canonical/revenue_long_maximum_extension.csv` | 3041 | ESA revenue tree, §5 long format (15 lines + TR per country) |
 | `data/canonical/revenue_long_maximum_extension.parquet` | — | ESA revenue tree, §5 long format (15 lines + TR per country) |
-| `data/canonical/balance_ledger.csv` | 196 | TR, TE, NLB, NI, PB per (country, year, variant), §4.3 |
+| `data/canonical/balance_ledger.csv` | 306 | TR, TE, NLB, NI, PB per (country, year, variant), §4.3 |
 | `data/canonical/balance_ledger.parquet` | — | TR, TE, NLB, NI, PB per (country, year, variant), §4.3 |
-| `data/canonical/weo_base_bridge.csv` | 286 | §8.2 base-year level bridge per (country, WEO vintage) |
-| `data/canonical/deficit_dynamics.csv` | 4002 | §8.3 history decomposition (drivers of Δ(NLB/GDP)) |
+| `data/canonical/weo_base_bridge.csv` | 358 | §8.2 base-year level bridge per (country, WEO vintage) |
+| `data/canonical/deficit_dynamics.csv` | 6424 | §8.3 history decomposition (drivers of Δ(NLB/GDP)) |
 | `data/canonical/weo_explanation.csv` | 1993 | §8.3 forecast decomposition with residuals + denominator effect |
 | `data/canonical/weo_residual_history.csv` | 364 | §8.5 residual time series across WEO vintages |
 | `data/canonical/net_interest_check.csv` | 112 | §8.4 net-interest cross-check per (country, vintage, horizon) |
-| `data/canonical/coverage_matrix.csv` | 123 | §11.6(9): span, grades, sources, why each of the 123 series ends |
-| `data/canonical/crosswalks.csv` | 69 | §11.5 crosswalks concatenated (one row per mapping, keyed by file) |
-| `data/canonical/exceptions.csv` | 2307 | §10 validation findings (all rows, all severities) |
+| `data/canonical/coverage_matrix.csv` | 164 | §11.6(9): span, grades, sources, why each of the 123 series ends |
+| `data/canonical/crosswalks.csv` | 93 | §11.5 crosswalks concatenated (one row per mapping, keyed by file) |
+| `data/canonical/exceptions.csv` | 2862 | §10 validation findings (all rows, all severities) |
 | `data/canonical/stitch_boundaries.csv` | 69 | §7.4 backward-stitch boundary records incl. non-applications |
 | `data/canonical/forecast_boundaries.csv` | 74 | §7.4 forward boundary records incl. withheld joins (V16) |
-| `data/canonical/forecast_declarations.csv` | 88 | D7/Gate 3: why each line carries no strict forecast |
+| `data/canonical/forecast_declarations.csv` | 91 | D7/Gate 3: why each line carries no strict forecast |
 | `data/canonical/fy_cy_bridge.csv` | 0 |  |
-| `reports/source_register.csv` | 63 | §6.4 register generated from config/sources.yaml |
+| `reports/source_register.csv` | 79 | §6.4 register generated from config/sources.yaml |
 | `reports/validation_report.html` | — | §10 suite rendered (summary, per-check outcomes, WARN tiers) |
 | `reports/reconciliation_report.html` | — | §10/Gate 5 contribution charts + explained shares |
 | `reports/vintage_diff.md` | — | §11.7 live-metadata diff against the register |
@@ -97,18 +97,19 @@ The same numbers as above, rendered flat by `ggfiscal flatten` — no value is r
 
 | file | rows | contents |
 |---|---|---|
-| `deliverables/expenditure_cofog.csv` | 4070 | COFOG expenditure: 14 lines + TE per country, both variants, one row per country-variant-line-year |
-| `deliverables/expenditure_esa.csv` | 2458 | expenditure by ESA economic type: 9 lines + TE_ESA per country, both variants, same shape — a second cut of total expenditure, never to be added to the COFOG lines |
-| `deliverables/revenue_esa.csv` | 4016 | ESA revenue: 10 lines + TR per country, both variants, same shape |
-| `deliverables/balance_ledger.csv` | 196 | TR, TE, NLB, NI, PB per country-year in levels and % of GDP |
-| `deliverables/weo_levels_bridge.csv` | 398 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
-| `deliverables/weo_reconciliation.csv` | 5995 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
-| `deliverables/series_catalogue.csv` | 132 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
-| `deliverables/data_dictionary.csv` | 616 | every column of every file above, described |
+| `deliverables/expenditure_cofog.csv` | 6050 | COFOG expenditure: 14 lines + TE per country, both variants, one row per country-variant-line-year |
+| `deliverables/expenditure_esa.csv` | 3558 | expenditure by ESA economic type: 9 lines + TE_ESA per country, both variants, same shape — a second cut of total expenditure, never to be added to the COFOG lines |
+| `deliverables/revenue_esa.csv` | 5776 | ESA revenue: 10 lines + TR per country, both variants, same shape |
+| `deliverables/balance_ledger.csv` | 306 | TR, TE, NLB, NI, PB per country-year in levels and % of GDP |
+| `deliverables/weo_levels_bridge.csv` | 470 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
+| `deliverables/weo_reconciliation.csv` | 8417 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
+| `deliverables/series_catalogue.csv` | 176 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
+| `deliverables/data_dictionary.csv` | 667 | every column of every file above, described |
 | `deliverables/fy_cy_bridge.csv` | 0 | the FY/CY bridge on total expenditure for every fiscal-year-labelled tree (D19): TE on both bases, the gap, its timing component and the residual — header only while every tree is calendar-year |
 | `deliverables/strict_GBR.csv` | 66 | United Kingdom, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_FRA.csv` | 106 | France, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/strict_DEU.csv` | 80 | Germany, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
+| `deliverables/strict_USA.csv` | 55 | United States, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `deliverables/debt_reference_series.csv` | 137169 | guide to the bundle |
 | `deliverables/debt_official_totals.csv` | 732 | guide to the bundle |
 | `deliverables/debt_class_aggregates.csv` | 5045 | guide to the bundle |
@@ -134,6 +135,7 @@ Years with a published residual per step (interest A/B/C, financing A/B/C) and t
 | GBR | 2009–2024 | 1987–2025 | 1987–2025 | 1997–2025 | 1998–2025 | 1990–2025 | 1975–2026 |
 | FRA | — | 2000–2025 | 1995–2025 | — | 2000–2025 | 1995–2025 | 2000–2025 |
 | DEU | 1996–2025 | 1996–2025 | 1995–2025 | 2009–2025 | 1996–2025 | 1995–2025 | 1995–2025 |
+| USA | — | — | — | — | — | — | — |
 
 Per-security register (stage D2–D4) per country:
 
@@ -142,8 +144,9 @@ Per-security register (stage D2–D4) per country:
 | GBR | 1,747 | bill 1406, fixed_bullet 283, inflation_linked 56, floating 2 | 1981–2025 (4,404 rows) | 8,173 (1981–2027) | UK_DMO_BILLS, UK_DMO_GILTS |
 | FRA | 1,603 | bill 1402, fixed_bullet 166, inflation_linked 35 | 1999–2025 (2,069 rows) | 7,903 (1999–2026) | FRA_AFT_ADJUDICATIONS, FRA_AFT_ENCOURS |
 | DEU | 1,654 | other 859, fixed_bullet 400, bill 384, inflation_linked 9, floating 2 | 1995–2025 (5,256 rows) | 6,163 (1996–2026) | DEU_FINANZAGENTUR |
+| USA | — | — | — | — | aggregate layer only (OQ-8) |
 
-## Coverage (123 line series)
+## Coverage (164 line series)
 
 Spans per line and variant, from `coverage_matrix.csv` (which adds stitch counts, principal sources, residual methods and the recorded reason each series ends). A *final strict* / *final maximum* year no later than the final actual means the series ends at its last actual — a D7 declaration or a blocked/withheld source, with the reason recorded per line in `forecast_declarations.csv`.
 
@@ -285,9 +288,55 @@ Spans per line and variant, from `coverage_matrix.csv` (which adds stitch counts
 | R09 | 1995 | 2025 | 2027 | 2027 | AB |
 | R10 | 1995 | 2025 | 2025 | 2025 | A |
 
+### USA
+
+| line | first year | final actual | final strict | final maximum | grades |
+|---|---|---|---|---|---|
+| GF01 | 1970 | 2024 | 2024 | 2024 | A |
+| GF01_7 | 1970 | 2024 | 2024 | 2024 | B |
+| GF01_X | 1970 | 2024 | 2024 | 2024 | B |
+| GF02 | 1970 | 2024 | 2024 | 2024 | A |
+| GF03 | 1970 | 2024 | 2024 | 2024 | A |
+| GF04 | 1970 | 2024 | 2024 | 2024 | A |
+| GF04_5 | 1970 | 2024 | 2024 | 2024 | B |
+| GF04_X | 1970 | 2024 | 2024 | 2024 | B |
+| GF05 | 1970 | 2024 | 2024 | 2024 | A |
+| GF06 | 1970 | 2024 | 2024 | 2024 | A |
+| GF07 | 1970 | 2024 | 2024 | 2024 | A |
+| GF08 | 1970 | 2024 | 2024 | 2024 | A |
+| GF09 | 1970 | 2024 | 2024 | 2024 | A |
+| GF10 | 1970 | 2024 | 2024 | 2024 | A |
+| GF10_2 | 1970 | 2024 | 2024 | 2024 | B |
+| GF10_5 | 1970 | 2024 | 2024 | 2024 | B |
+| GF10_X | 1970 | 2024 | 2024 | 2024 | B |
+| E01 | 1970 | 2024 | 2024 | 2024 | A |
+| E02 | 1970 | 2024 | 2024 | 2024 | A |
+| E03 | 1970 | 2024 | 2024 | 2024 | A |
+| E04 | 1970 | 2024 | 2024 | 2024 | A |
+| E05 | 1970 | 2024 | 2024 | 2024 | A |
+| E06 | 1970 | 2024 | 2024 | 2024 | A |
+| E07 | 1970 | 2024 | 2024 | 2024 | A |
+| E08 | 1970 | 2024 | 2024 | 2024 | A |
+| E09 | 1970 | 2024 | 2024 | 2024 | A |
+| R01 | 1970 | 2024 | 2024 | 2024 | A |
+| R02 | 1970 | 2024 | 2024 | 2024 | A |
+| R02_A | 1970 | 2024 | 2024 | 2024 | A |
+| R02_X | 1970 | 2024 | 2024 | 2024 | A |
+| R03 | 1970 | 2024 | 2024 | 2024 | A |
+| R04 | 1970 | 2024 | 2024 | 2024 | A |
+| R05 | 1970 | 2024 | 2024 | 2024 | A |
+| R06 | 1970 | 2024 | 2024 | 2024 | A |
+| R06_E | 1970 | 2024 | 2024 | 2024 | A |
+| R06_H | 1970 | 2024 | 2024 | 2024 | A |
+| R06_X | 1970 | 2024 | 2024 | 2024 | A |
+| R07 | 1970 | 2024 | 2024 | 2024 | A |
+| R08 | 1970 | 2024 | 2024 | 2024 | A |
+| R09 | 1970 | 2024 | 2024 | 2024 | A |
+| R10 | 1970 | 2024 | 2024 | 2024 | A |
+
 ## Validation
 
-Last `ggfiscal validate`: **ERROR=0, WARN=2218, OK=89, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison (V1, D-S13-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
+Last `ggfiscal validate`: **ERROR=0, WARN=2761, OK=101, SKIP=0** (all 28 §10 checks run; ERROR blocks the gate, WARN does not). The WARN tiers are intended visibility: documented concept wedges (V1/V21/V25), the withheld DSM interest join flagged for the committee (V16 → OQ-7), blocked register URLs (V18 → OQ-6), stitch diagnostics at measured grades (V5), the GFSM-vs-ESA wedges on the economic lines' IMF comparison (V1, D-S13-003), and unsynced raw bytes of earlier sessions (S0_SNAPSHOTS, D-S0-004). Details: `reports/validation_report.html`.
 
 ## WEO reconciliation headline
 
@@ -298,6 +347,7 @@ How much of the WEO balance change (latest vintage 2026-04) the covered official
 | GBR | 0.00 … 0.67 | 0.00 … 0.76 |
 | FRA | -0.05 … 1.13 | -2.70 … 0.11 |
 | DEU | -0.20 … 0.17 | 0.38 … 0.56 |
+| USA | — | — |
 
 Residuals are reported, never allocated or forced (D13, D16, §8.6): the GBR share runs on the hand-retrieved OBR EFO March 2026 composites through 2030 (D-S7-003; ~0 beyond the OBR horizon), and the projected French consolidation sits entirely in the residuals — the covered French forecasts move the other way. Charts and tables: `reports/reconciliation_report.html`.
 
