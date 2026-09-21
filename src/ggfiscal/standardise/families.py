@@ -372,7 +372,8 @@ class OecdSnaFamily(_Base):
     for the USA: `level2` returns None and the D26 BEA proxy path (config
     `level2_source`, `standardise.readers_bea`) serves the four Level II
     lines; GF01_7 takes the D10 fallback from D.41 payable, which for the
-    USA is the D26 proxy by construction (T11 D4 × GF01 = T12 D41 exactly).
+    USA is the D26 proxy by construction (T11 D4 × GF01 = T12 D41 to table
+    rounding, USD 3 mn at most).
     Every reader is UNIT_MULT-scaled to LCU millions (readers_oecd)."""
 
     name = "oecd_sna"

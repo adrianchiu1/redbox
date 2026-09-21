@@ -287,6 +287,23 @@ def level2_splits(classification: str | None = None) -> list[dict]:
     return out
 
 
+def stage_reached(iso3: str) -> int:
+    """The kickoff build stage the country has passed (REPLICATION_KICKOFF.md
+    §12: 0 harvest, 1 canonical history, 2 backward extension, 3 strict
+    forecasts, 4 maximum-extension forecasts, 5 reconciliation, 6
+    packaging), `stage_reached` in countries.yaml. The build runs a
+    country's backward legs from stage 2 and its forecast legs from stage 3;
+    the stage-gate tests assert each stage's behaviour for the countries at
+    that stage. Missing means the parent build (stage 6). Stage U0,
+    D-S16-008."""
+    return int(country(iso3).get("stage_reached", 6))
+
+
+def countries_at_stage(stage: int) -> tuple[str, ...]:
+    """The configured countries whose build has reached `stage`."""
+    return tuple(iso3 for iso3 in countries() if stage_reached(iso3) >= stage)
+
+
 def level2_source(iso3: str) -> str | None:
     """D26: the register id of the secondary national table that serves a
     country's COFOG Level II lines where its anchor family publishes no

@@ -92,7 +92,11 @@ expenditure_esa:   # classification = ESA_EXP (D-S13-003): TE by ESA 2010 econom
         eurostat_main: {plus: [D29PAY, D5PAY, D4PAY, D7PAY, D8], minus: [D41PAY]},
         ons_t2: {plus: [[D29, payable], [D5, payable], [D4N, payable], [D7, payable]]},
         oecd_t12: {plus: [D29, D5, D4, D7, D8], minus: [D41]},
-        ameco: UUOG}
+        ameco: UUOG,
+        # USA 1991: D.7 payable = -25,625 USD mn in the anchor (allied Gulf War
+        # contributions netted against current transfers in the SNA presentation)
+        # — a published anchor fact, admitted by V4 (D-S16-009); positive everywhere else
+        may_be_negative: true}
   E08: {level: "1", esa: P.5 + NP,
         label: Gross capital formation and net acquisition of non-produced assets,
         eurostat_main: {plus: [P5, NP]}, ons_t2: {plus: [[P5, ""], [NP, ""]]}, oecd_t12: {plus: [P5, NP]},

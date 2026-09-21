@@ -148,8 +148,9 @@ def check_s0_bridge() -> list[Finding]:
             out.append(Finding("S0_BRIDGE", "ERROR", f"{iso3}/{latest}",
                                "no base-year row in the §8.2 bridge (Gate 0)"))
     if not out:
+        n = len(config.COUNTRIES)
         out.append(Finding("S0_BRIDGE", "OK", "-",
-                           f"§8.2 bridge computed for all 3 countries on WEO {latest}"))
+                           f"§8.2 bridge computed for all {n} countries on WEO {latest}"))
     return out
 
 

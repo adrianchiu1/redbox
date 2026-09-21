@@ -45,33 +45,17 @@ D41_FALLBACK_NOTE = {"ons": "D10 fallback concept: GG D.41 payable, accrued",
                      "oecd_sna": "D10 fallback concept: GG D.41 payable (OECD Table 12); "
                                  "= the D26 interest proxy by construction"}
 
-# D26 (U0): the secondary national table that serves a country's COFOG Level
-# II lines where the anchor family publishes none — `level2_source` in
-# countries.yaml -> (register source_id, reader over the line's lines.yaml
-# cell key). Config-driven: a country names its source here, no site names
-# a country.
-LEVEL2_PROXY_READERS: dict[str, tuple[str, str]] = {
-    "BEA_NIPA_T316": ("BEA_NIPA", "bea_nipa"),
-}
-
-
 def _level2_proxy_candidates(iso3: str, l2: str, meta: dict) -> list[tuple[str, pd.Series, str]]:
     """The D26 Level II proxy candidate of one COFOG Level II line for a
     country whose config names a `level2_source` (USA: NIPA Table 3.16
-    sub-functions via readers_bea); empty for the other countries."""
-    src = config.level2_source(iso3)
-    if not src:
-        return []
-    if src not in LEVEL2_PROXY_READERS:
-        raise LookupError(f"{iso3}: level2_source {src!r} has no reader in "
-                          f"coverage.LEVEL2_PROXY_READERS ({', '.join(LEVEL2_PROXY_READERS)})")
-    source_id, cell_key = LEVEL2_PROXY_READERS[src]
-    spec = meta.get(cell_key)
-    if not spec:
-        return []
-    from ggfiscal.standardise import readers_bea
+    sub-functions via standardise.proxies / readers_bea); empty for the
+    other countries. Config-driven: no site names a country."""
+    from ggfiscal.standardise.proxies import level2_proxy
 
-    series, note = readers_bea.level2_proxy(l2, spec)
+    proxy = level2_proxy(iso3, l2, meta)
+    if proxy is None:
+        return []
+    series, source_id, note = proxy
     return [(source_id, series, f"Level II proxy candidate (D26, level2_proxy_actual B): {note}")]
 
 
