@@ -33,6 +33,7 @@ V_SUITE_STAGE = {
     "V16": 3, "V17": 4, "V18": 3, "V19": 1, "V20": 1, "V21": 1, "V22": 1,
     "V23": 1, "V24": 5, "V25": 2, "V26": 1, "V27": 5, "V28": 5,
     "V41": 1, "V42": 1,   # R0 (REPLICATION_KICKOFF.md §10): structural zeros (D20), FY trees (D19)
+    "V44": 1,             # U1 (REPLICATION_KICKOFF.md §10): D26 COFOG Level II proxies
 }
 
 
@@ -168,9 +169,10 @@ def run_all() -> list[Finding]:
     from ggfiscal.validate.stage4 import IMPLEMENTED as S4
     from ggfiscal.validate.stage5 import IMPLEMENTED as S5
     from ggfiscal.validate.r0 import IMPLEMENTED as R0
+    from ggfiscal.validate.u1 import IMPLEMENTED as U1
     # later stages override where they extend a check (S3: V6/V13 both
     # directions; S5: V26 history + forecast additivity)
-    IMPLEMENTED = {**S1, **S2, **S3, **S4, **S5, **R0}
+    IMPLEMENTED = {**S1, **S2, **S3, **S4, **S5, **R0, **U1}
     for vid, first_stage in sorted(V_SUITE_STAGE.items(), key=lambda kv: int(kv[0][1:])):
         if stage < first_stage:
             findings.append(Finding(vid, "SKIP", "-",

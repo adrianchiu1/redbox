@@ -173,8 +173,10 @@ def _validation_section(root: Path) -> list[str]:
     with open(exc, encoding="utf-8", newline="") as f:
         counts = Counter(r["severity"] for r in csv.DictReader(f))
     line = ", ".join(f"{k}={counts.get(k, 0)}" for k in ("ERROR", "WARN", "OK", "SKIP"))
+    from ggfiscal.validate.runner import V_SUITE_STAGE
+    n_checks = len(V_SUITE_STAGE)   # V1-V28 plus the registered replication additions
     return [
-        f"Last `ggfiscal validate`: **{line}** (all 28 §10 checks run; ERROR "
+        f"Last `ggfiscal validate`: **{line}** (all {n_checks} §10 checks run; ERROR "
         "blocks the gate, WARN does not). The WARN tiers are intended "
         "visibility: documented concept wedges (V1/V21/V25), the withheld "
         "DSM interest join flagged for the committee (V16 → OQ-7), blocked "

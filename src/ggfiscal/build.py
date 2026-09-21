@@ -41,7 +41,7 @@ from ggfiscal import config
 from ggfiscal.model import COLUMNS, SCHEMA
 from ggfiscal.standardise import readers as R
 from ggfiscal.standardise.proxies import CONCEPT_FLAG as PROXY_CONCEPT_FLAG
-from ggfiscal.standardise.proxies import level2_proxy
+from ggfiscal.standardise.proxies import level2_crosswalk_stamp, level2_proxy
 
 
 def _release(source_id: str) -> tuple[str, str]:
@@ -203,8 +203,12 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                     if proxy is not None:
                         p_series, src_line, concept_txt = proxy
                         series = p_series[p_series.index.isin(parent_series.index)].copy()
+                        # the §11.5 crosswalk that documents the mapping
+                        # travels with the row (D-S17-005): BEA_NIPA_to_COFOG:1.0
+                        xwalk = level2_crosswalk_stamp(iso3)
                         per_year = {int(y): {"observation_type": "level2_proxy_actual",
-                                             "quality_grade": "B", "notes": concept_txt}
+                                             "quality_grade": "B", "notes": concept_txt,
+                                             "crosswalk_version": xwalk}
                                     for y in series.index}
                         fallback_years.update({y: {"quality_grade": "B",
                                                    "remainder_note": f"{parent} minus a D26 proxy year"}
@@ -397,7 +401,10 @@ def build(run_id: str | None = None) -> dict[str, Path]:
                         "residual_method": None, "interpolation_method": None,
                         "period_conversion_method": None,
                         "coverage_share": None, "coverage_share_year": None,
-                        "quality_grade": grade, "crosswalk_version": None,
+                        "quality_grade": grade,
+                        # None on an anchor cell; `<stem>:<version>` where the
+                        # row came through a §11.5 crosswalk (D-S17-005)
+                        "crosswalk_version": override.get("crosswalk_version"),
                         "source_id": meta["source_id"],
                         "source_release_date": release, "source_vintage": vintage,
                         "source_status": "current", "scenario_label": None,

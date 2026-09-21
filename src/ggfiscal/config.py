@@ -312,6 +312,28 @@ def level2_source(iso3: str) -> str | None:
     return country(iso3).get("level2_source") or None
 
 
+@functools.lru_cache(maxsize=None)
+def crosswalk_version(stem: str) -> str:
+    """The §11.5 `crosswalk_version` of `crosswalks/<stem>.csv`. One version
+    per file (COFOG_KICKOFF.md §11.5: "version bump -> rebuild"), so a file
+    carrying several versions, or none, is a config error raised here rather
+    than stamped onto a row. Stage U1 (D-S17-005): a row built through a
+    documented mapping carries `<stem>:<version>` in its `crosswalk_version`
+    column, which is what points the reader from the value to its evidence."""
+    import csv as _csv
+
+    path = repo_root() / "crosswalks" / f"{stem}.csv"
+    if not path.exists():
+        raise FileNotFoundError(f"crosswalk {stem!r} has no file at {path}")
+    with open(path, encoding="utf-8") as f:
+        versions = {(r.get("crosswalk_version") or "").strip() for r in _csv.DictReader(f)}
+    versions.discard("")
+    if len(versions) != 1:
+        raise ValueError(f"crosswalk {stem!r} carries {len(versions)} crosswalk_version "
+                         f"value(s) ({sorted(versions)}); §11.5 expects exactly one")
+    return versions.pop()
+
+
 def line_universe() -> list[tuple[str, str, str]]:
     """The (iso3, classification, line_code) series of §1 (D-S13-001): per
     country, the COFOG lines (Level I, the Level II splits and their
