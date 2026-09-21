@@ -391,7 +391,24 @@ tests pass without snapshots. The debt layer was not rebuilt in R0 (its
 next session runs `ggfiscal debt fetch` before `pytest` to see the full
 suite green, or records the same skip. Not a blocker for U0.
 
-## OQ-15 — US COFOG 04.5 (transport) proxy: NIPA publishes gross investment by function at Level I only (NEW, informational; from D26 / D-S16-005, Stage U0)
+## OQ-15 — US COFOG 04.5 (transport) proxy: NIPA publishes gross investment by function at Level I only — **RESOLVED 2026-09-21 (default taken, D-S17-002)**
+
+Taken on its stated default at Stage U1: the `GF04_5` proxy **stays the NIPA
+Table 3.16 current-expenditure cell** (`T31600:14`), `level2_proxy_actual`,
+grade B, concept_flag `level2_bea_function`, with the concept note recorded
+on every row and in `crosswalks/BEA_NIPA_to_COFOG.csv`. No gross-investment
+part is constructed: no cell for it exists in the flat files and building one
+from the Level I Economic-affairs investment line would be a construction
+(D13 prohibits it). The under-coverage is therefore documented, not closed —
+the measured share of the parent is 0.2685 (2024), 0.2418 (2000), 0.2556
+(1990), and V44 polices the row typing. The alternative (hunt for a
+gross-investment-by-subfunction table in the NIPA underlying detail, which
+was 403 on 2026-09-20) is not pursued; if the underlying-detail file ever
+becomes reachable it is a U2 harvest question, not a U1 blocker.
+
+Original item (kept for the record):
+
+### OQ-15 (original) — US COFOG 04.5 (transport) proxy: NIPA publishes gross investment by function at Level I only (raised 2026-09-21, informational; from D26 / D-S16-005, Stage U0)
 Raised 2026-09-21 (session 14, Stage U0). D26 defines the USA `GF04_5` proxy
 as "transportation (current plus gross investment)". NIPA Table 3.16 carries
 transportation as a current-expenditure sub-function (line 14 of the
@@ -409,7 +426,25 @@ a gross-investment-by-subfunction table in the NIPA underlying detail (the
 underlying-detail flat file was 403 on 2026-09-20, scoping §3.1). Not a
 blocker for Gate U0 (coverage holds).
 
-## OQ-16 — The WEO perimeter rule for the USA does not hold as a stable gap: V24 WARN on every vintage (NEW, informational; from kickoff §8.2, D-S16-011)
+## OQ-16 — The WEO perimeter rule for the USA does not hold as a stable gap: V24 WARN on every vintage — **RESOLVED 2026-09-21 (default taken, D-S17-003)**
+
+Taken on its stated default at Stage U1: **the stability rule stays and its
+V24 WARN stays for the USA.** `weo_perimeter_gap_expected` remains `true`
+and `perimeter_sigma_pct_te` remains 0.5 for every country — the tolerance
+is not widened to the measured 1.51, and no third classification rule is
+introduced. Nothing is absorbed: the year-by-year gap rows stay in
+`data/canonical/weo_base_bridge.csv` with 12 of 24 overlap years classified
+`unexplained`, and the WARN is the intended visibility of a real
+GFSM-vs-SNA basis difference (D13, D16). Revisited at **Stage U5**, where
+§8.2–§8.5 run for both variants on every vintage and the IMF's documented
+per-year adjustments can be tested as a third rule against the measured
+series; until then the WARN is a standing, expected finding on the USA and
+`tools/byte_identity.py --check-now-scoped V24` names it on the gate command
+line.
+
+Original item (kept for the record):
+
+### OQ-16 (original) — The WEO perimeter rule for the USA does not hold as a stable gap: V24 WARN on every vintage (raised 2026-09-21, informational; from kickoff §8.2, D-S16-011)
 Raised 2026-09-21 (session 14, Stage U0). Kickoff §8.2 applies the GBR
 stability rule to the USA (`weo_perimeter_gap_expected: true`). Measured on
 the latest vintage (2026-04, base year 2024, 24 overlap years 2001–2024): the

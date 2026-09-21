@@ -252,15 +252,15 @@ so that the three existing families are untouched.
 |---|---|---|---|
 | R01 | T12 D211 | **structural zero** | consumption tax incl. the local share |
 | R02 | T12 D2 − D211 | general sales taxes (D.214) live here | |
-| R02_A | T10 D214A (+ D2122C where present) | federal and state excises | |
-| R03 | T10 D51A | personal current taxes; cash/withholding basis | T10/T12 carry no payer split: CY D5 × FY payer share from `ESRI_SNA_S6_2` (items 1111/1112), `derived_actual`, grade B |
-| R04 | T10 D51B | corporate incl. rest-of-world (38.9 bn 2024) | as R03 (1112 share) |
+| R02_A | T10 D214A (as measured, D-S16-005) | federal and state excises; Table 10 publishes no D2122C cell for the USA, so D214A alone is the cell and import duties (D2121 = D212) stay in R02_X | |
+| R03 | T10 D51M, including holding gains (as measured, D-S16-005) | personal current taxes; cash/withholding basis. The ESA_REV concept is D51A_C1 (holding gains in), which D51M carries and D51A does not: D51M + D51O = D51 exactly, whereas D51A + D51B leaves the holding-gains taxes unallocated | T10/T12 carry no payer split: CY D5 × FY payer share from `ESRI_SNA_S6_2` (items 1111/1112), `derived_actual`, grade B |
+| R04 | T10 D51O, including holding gains (as measured, D-S16-005) | corporate incl. rest-of-world (38.9 bn 2024); the D51B_C2 concept, as R03 | as R03 (1112 share) |
 | R05 | T12 D5 − R03 − R04 + D59 + D91 | | |
 | R06 | T12 D61 | = NIPA contributions for government social insurance exactly | |
 | R06_E, R06_H | T12 D611, D613 | | |
 | R07 | T12 D41 (resources) | | FISIM-adjusted (D21) |
 | R08 | T12 D4 − D41 | Federal Reserve remittances (D.42) swing it; negative 2023–24 allowed | |
-| R09 | T12 P1M + P1O + P131 | the sales grossing (§3) | |
+| R09 | T12 P1O (as measured, D-S16-005) | the sales grossing (§3). P1O *is* the sales aggregate P.11 + P.12 + P.131 (= P1M + P131 exactly); summing the three codes would double count, and OTR closes on P1O alone | |
 | R10 | residual | enterprise surplus (negative) | |
 | TR | T12 OTR | | |
 
@@ -728,7 +728,7 @@ Entries the existing register already carries (`OECD_T11`, `OECD_RS`,
 | source_id | Institution | Object | Years | Basis | Role | Grade | Status |
 |---|---|---|---|---|---|---|---|
 | OECD_T12_EXP / _REV / _BAL | OECD (BEA) | `DF_TABLE12_{EXP,REV,BAL}` A.USA.S13 | 1970–2024 | CY | anchor | A | confirmed_live |
-| OECD_T10 | OECD (BEA) | `DF_TABLE10` taxes/contributions detail (D51A/B, D214A, D611/D613, D59, D91) | 1970–2024 | CY | anchor cells | A | confirmed_live |
+| OECD_T10 | OECD (BEA) | `DF_TABLE10` taxes/contributions detail (D51M/D51O incl. holding gains, D214A; no D2122C cell) (as measured, D-S16-005) | 1970–2024 | CY | anchor cells | A | confirmed_live |
 | OECD_T1 | OECD | GDP B1GQ (flow id to resolve in U0) | | CY | denominator | A | to_verify |
 | BEA_NIPA | BEA | `NipaDataA.txt`, `NipaDataQ.txt`, `SeriesRegister.txt`; Tables 3.1/3.2/3.3 (1929–2025), 3.16/3.17/3.15.5 (1959–2024), 3.18B (FY1952–2024) | 1929–2025 | CY (3.18B FY) | secondary, Level II (D26), backward | A/B | confirmed_live |
 | FRB_Z1 | Federal Reserve/BEA | Z.1 CSV bundle: S1311 IMA, F.106, L.210 | 1945–2025 | CY | debt step B | A | confirmed_live |

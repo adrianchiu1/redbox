@@ -2751,3 +2751,69 @@ untouched; no notebook touched; the debt engine untouched.
 (OQ-13; register `blocked`, V18 WARN); the NIPA transportation
 gross-investment cell (OQ-15); the WEO perimeter rule for the USA (OQ-16).
 None of them is a Gate U0 criterion.
+
+## D-S17-001 — Stage U1 spec erratum: `REPLICATION_KICKOFF.md` §4.3 and §13.1 amended to the cells actually adopted (spec-first, COFOG_KICKOFF.md §16; serves kickoff §4.3, §13.1, D18, D26)
+
+**Context.** The kickoff was written before the OECD tables were read. Stage
+U0 measured every cell on USA 1970–2024 and adopted four cells that differ
+from the document (D-S16-005). COFOG_KICKOFF §16 is spec-first and
+append-only: the code follows the spec, so where the measurement wins, the
+spec is amended and the amendment is a decision — not a silent divergence.
+
+**Decision.** Four rows of the kickoff are amended in place, each carrying
+the pointer `(as measured, D-S16-005)` so the reader can find the evidence.
+Nothing else in the kickoff is rewritten.
+
+| Where | Was | Now | Why (measured, D-S16-005) |
+|---|---|---|---|
+| §4.3 R02_A | `T10 D214A (+ D2122C where present)` | `T10 D214A` | Table 10 publishes no `D2122C` cell for the USA. Import duties are `D2121 = D212` (USD 83,587 mn in 2024) and stay in `R02_X`. The "where present" was written for Germany's energy tax on imported fuels (D-S13-005); it is simply absent here. |
+| §4.3 R03 | `T10 D51A` | `T10 D51M`, incl. holding gains | The ESA_REV concept is `D51A_C1` (holding gains in) — what `gov_10a_taxag D51A_C1` (FRA/DEU) and ONS `D51M` (GBR) carry. `D51M + D51O = D51` exactly in every year (max \|diff\| 0.01 mn); `D51A + D51B` would leave `D51C1 + D51C2` (USD 502,624 mn in 2024) unallocated in `R05`. |
+| §4.3 R04 | `T10 D51B` | `T10 D51O`, incl. holding gains | The `D51B_C2` concept, the R03 argument on the corporate side. 2024 = USD 663,685 mn (D51B 584,611 + D51C2 79,074). |
+| §4.3 R09 | `T12 P1M + P1O + P131` | `T12 P1O` | `P1O` **is** the sales aggregate P.11 + P.12 + P.131 (the CL_TRANSACTION label); `P1M` and `P131` are its memo components and `P1O = P1M + P131` exactly (max \|diff\| 0.001 mn). Summing the three codes double counts. OTR = D2 + D5 + D61 + D4 + D7 + D9 + D39 + **P1O** closes to USD 0.002 mn in every year; with the kickoff's sum it does not close at all. |
+| §13.1 `OECD_T10` | object `(D51A/B, D214A, D611/D613, D59, D91)` | `(D51M/D51O incl. holding gains, D214A; no D2122C cell)` | The same two corrections, plus the measured fact that Table 10 is **not** the source of `D611`/`D613`/`D59`/`D91`: `R06`/`R06_E`/`R06_H` take Table 12 (T10 `D61` differs by up to USD 724 mn) and `R05` takes Table 12 `D5` and `D91` so the `R01..R10 = OTR` identity closes (D-S16-005). Table 10 supplies the two income-tax cells and the excise cell, nothing else. |
+
+**Scope.** Documentation only: every one of these cells is already what
+`config/lines.yaml`, `standardise/families.py` and the two U0 crosswalks
+implement and what the canonical layer carries. No value moves; the erratum
+makes the spec agree with the built package instead of the reverse.
+
+## D-S17-002 — OQ-15 taken on its default: the USA `GF04_5` proxy stays the NIPA current-expenditure cell; no capital part is constructed (serves kickoff D26, D13; OPEN_QUESTIONS.md OQ-15)
+
+**Decision.** `GF04_5` = NIPA Table 3.16 line 14 (`T31600:14`, G16018
+Transportation), current expenditures only, `level2_proxy_actual`, grade B,
+`concept_flag = level2_bea_function`, the concept note on every row and in
+`crosswalks/BEA_NIPA_to_COFOG.csv`. D26's "current plus gross investment" is
+**not** constructible cell-for-cell: Table 3.17 publishes gross investment by
+function for the nine Level I functions only (lines 105–133) and capital
+transfers by function at 134–145; no transportation gross-investment cell
+exists in the flat files (highways and transit investment sit inside
+Economic affairs gross investment, line 109).
+
+**Why the default and not a construction.** Splitting the Level I investment
+line onto 04.5 by any share would be a constructed value, which D13 forbids;
+the alternative in OQ-15 (the NIPA underlying-detail flat file) returned 403
+on 2026-09-20 and is not in the D8 store. So the under-coverage is
+documented rather than closed: measured share of the parent 0.2685 (2024),
+0.2418 (2000), 0.2556 (1990), and the note travels with the row. If the
+underlying detail ever becomes reachable it is a U2 harvest question.
+OQ-15 is marked resolved.
+
+## D-S17-003 — OQ-16 taken on its default: the §8.2 stability rule and its V24 WARN stay for the USA; nothing absorbed; revisited at U5 (serves kickoff §8.2, V24 amended; OPEN_QUESTIONS.md OQ-16)
+
+**Decision.** `weo_perimeter_gap_expected: true` stays for the USA and
+`tolerances.perimeter_sigma_pct_te` stays 0.5 for every country. The
+tolerance is **not** widened to the measured 1.51, and no third
+classification rule is introduced at U1. The V24 WARN on every WEO vintage
+is the intended visibility of a real GFSM-vs-SNA basis difference, not a
+defect to silence (D13, D16): the WEO's US series start in 2001, carry the
+IMF's documented per-year adjustments (the 2017 repatriation tax among
+them), and the NLB gap ratio averages −2.34 % of TE with sigma 1.51, so 12
+of 24 overlap years classify `unexplained`.
+
+**Nothing absorbed.** The year-by-year rows stay in
+`data/canonical/weo_base_bridge.csv`; no line value is adjusted to close the
+gap. **Revisited at Stage U5**, where §8.2–§8.5 run for both variants on
+every vintage and the IMF's documented adjustments can be tested as a third
+rule against the measured series. Until then the WARN is a standing,
+expected USA finding and `tools/byte_identity.py --check-now-scoped V24`
+names it on the gate command line. OQ-16 is marked resolved.
