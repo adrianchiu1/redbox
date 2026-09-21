@@ -2727,10 +2727,12 @@ after any rebuild; never hand-edit the report.
   overlap diagnostics; 13 OK), V24 3 (one per vintage), plus V18 2 (the
   blocked registers). OK rose by 12: the USA-scoped V5 OK rows (13) less
   the unscoped V24 OK row.
-- `python3 -m pytest -q`: 285 passed in the baseline; after U0 **297
-  passed** (the 285 plus the 12 new `tests/stage_0/test_u0_usa.py` tests),
-  80 skipped, and the same 54 `tests/debt/` failures/errors for absent
-  debt snapshots (OQ-14; the debt engine untouched). Pre-U0 tests changed
+- `python3 -m pytest -q`: 285 passed in the baseline; after U0 **299
+  passed, 80 skipped, 33 failed, 21 errors** — the 285 plus the 12 new
+  `tests/stage_0/test_u0_usa.py` tests plus the two USA cases of the
+  parametrised per-country strict-file tests, and the identical set of 54
+  `tests/debt/` failures/errors for absent debt snapshots (OQ-14; the
+  debt engine untouched). Pre-U0 tests changed
   to the U0 state: the three-country literals now derive from
   `config.COUNTRIES` / `config.countries_at_stage(n)` (D-S16-008), the
   notebook-tooling test seeds a synthetic JPN, `test_gate1`'s pension-share
@@ -2738,7 +2740,7 @@ after any rebuild; never hand-edit the report.
   the OECD balancing item's USD 0.001 mn rounding, `test_gate6`'s anchor
   types include `structural_zero`, and the two debt tests that iterated the
   fiscal country list iterate `config/debt.yaml` (the USA joins with UD0).
-  A final full run is recorded in HANDOFF.md.
+  Final full run 2026-09-21 after the last chain: as stated above.
 
 **Rules held.** No `elif iso3 ==` anywhere (a test greps the package for a
 USA literal); every USA routing decision is config or `OecdSnaFamily`;

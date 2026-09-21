@@ -62,7 +62,7 @@ commit per step on this branch.
 | `reports/source_verification_USA.md` | written (generated) |
 | GBR/FRA/DEU byte-identical (run_id excepted) | **holds** on every canonical CSV and deliverable restricted to their rows; `exceptions.csv` differs only by the two V18 WARN rows of the blocked registers and the V24 OK row that the USA's scoped WARNs replace, both named on the gate command line |
 | `ggfiscal validate` | ERROR=0, WARN=2761, OK=101 (baseline OK=89 WARN=2298; the added WARNs are USA-scoped V1/V25 concept wedges, V24 and V5 diagnostics, and V18 for the two blocked hosts) |
-| `python3 -m pytest -q` | see D-S16-012 for the final count: the parent tests pass (the three-country literals now derive from config or `countries_at_stage`), plus the 12 new `tests/stage_0/test_u0_usa.py` tests; the same 54 `tests/debt/` tests fail for absent debt snapshots (OQ-14) |
+| `python3 -m pytest -q` | 299 passed, 80 skipped, 33 failed, 21 errors — the baseline's 285 plus the 12 new `tests/stage_0/test_u0_usa.py` tests and the two USA cases of the parametrised strict-file tests (the three-country literals now derive from config or `countries_at_stage`); the identical 54 `tests/debt/` failures/errors for absent debt snapshots (OQ-14) |
 
 ## Current stage
 
