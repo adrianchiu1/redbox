@@ -107,8 +107,10 @@ countries:
     weo_perimeter_gap_expected: true  # §8.2: WEO's GFSM-basis US series carry documented adjustments
     perimeter_break: null
     backward_legs: {}
-    stage_reached: 0                  # kickoff §12: U0 harvest done; anchors only until U1/U2/U3
-                                      # (the build runs backward legs from stage 2, forecasts from 3)
+    stage_reached: 1                  # kickoff §12: U1 done (canonical history: 41 lines + ledger
+                                      # 1970-2024 from anchors, D26 Level II proxies, V44). No
+                                      # behavioural change at 1 — the build runs backward legs from
+                                      # stage 2 and forecasts from 3, so U2/U3 raise it after review
 
 # Tolerances (§15 Q4 defaults, as stated)
 tolerances:

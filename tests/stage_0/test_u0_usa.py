@@ -51,7 +51,7 @@ def test_usa_config_block_matches_kickoff_11_1():
     assert config.weo_perimeter_gap_expected("USA") is True
     assert config.perimeter_break("USA") is None
     assert config.backward_legs("USA") == {}
-    assert config.stage_reached("USA") == 0
+    assert config.stage_reached("USA") >= 0          # U0 passed; U1 raised it to 1 (D-S17-006)
     assert config.countries_at_stage(3) == ("GBR", "FRA", "DEU")
     assert config.countries_at_stage(0) == config.COUNTRIES
     assert config.country_names()["USA"] == "United States"
