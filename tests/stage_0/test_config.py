@@ -3,14 +3,15 @@
 from ggfiscal import config
 
 
-def test_line_universe_is_123():
+def test_line_universe_is_41_per_country():
     """§1 fixed 66 (12 COFOG + 10 ESA_REV per country); D-S13-001 adds the
     nine-line ESA_EXP tree and the GF10_2 pension split; D-S13-005 adds
     GF10_5, GF04_5, R02_A and R06_E/R06_H with their remainders: 41 per
-    country, 123 in all, enumerated from config rather than hard-coded."""
+    country (123 for the three parent countries, 164 with the USA of Stage
+    U0), enumerated from config rather than hard-coded."""
     universe = config.line_universe()
-    assert len(universe) == 123 == config.universe_size()
-    assert len(set(universe)) == 123
+    assert len(universe) == 41 * len(config.COUNTRIES) == config.universe_size()
+    assert len(set(universe)) == len(universe)
     for iso3 in config.COUNTRIES:
         mine = [u for u in universe if u[0] == iso3]
         assert len(mine) == 41

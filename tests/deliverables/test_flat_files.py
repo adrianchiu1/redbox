@@ -141,9 +141,10 @@ def test_catalogue_covers_every_published_series_and_agrees_on_spans():
                       read("revenue_esa.csv")])
     published = set(map(tuple, tree[["iso3", "line_code"]].drop_duplicates().values))
     assert set(map(tuple, cat[["iso3", "line_code"]].values)) == published
-    # the 123 line series (D-S13-001/005) are all there, on top of the nine totals
+    # the 41 line series per country (D-S13-001/005) are all there, on top of
+    # the three totals per country (123 + 9 for the parent three; 164 + 12 with the USA)
     assert {(iso3, line) for iso3, _, line in config.line_universe()} <= published
-    assert len(cat) == config.universe_size() + 9 == 132
+    assert len(cat) == config.universe_size() + 3 * len(config.COUNTRIES)
     assert set(cat.classification) == {"COFOG", "ESA_EXP", "ESA_REV"}
 
     for row in cat.itertuples():
@@ -162,7 +163,7 @@ def test_catalogue_spans_agree_with_the_coverage_matrix():
     66 line series — one of them drifting would be a rendering bug."""
     cat = read("series_catalogue.csv").set_index(["iso3", "line_code"])
     cov = canonical("coverage_matrix.csv").set_index(["iso3", "line_code"])
-    assert len(cov) == 123
+    assert len(cov) == 41 * len(config.COUNTRIES)
     cat = cat.reindex(cov.index)
     assert cat.line_label.notna().all()             # every line is catalogued
     for cov_col, cat_col in (("first_historical_year", "first_year"),
@@ -216,8 +217,11 @@ def test_ledger_identities_hold_in_the_flat_file():
     assert len(complete) > 0
     assert (complete.nlb_lcu_mn + complete.ni_lcu_mn
             - complete.pb_lcu_mn).abs().max() == pytest.approx(0, abs=1e-6)
+    # ONS / Eurostat close exactly; the OECD Table 12 balancing item (USA) is
+    # published rounded to USD 0.001 mn beside OTR and OTE, so a USD 1,000
+    # difference is the anchor's own rounding (V23 tolerance is 0.1% of TE)
     assert (led.nlb_lcu_mn - led.b9_anchor_lcu_mn).abs().max() == pytest.approx(
-        0, abs=1e-6)
+        0, abs=2e-3)
     pct = 100.0 * led.nlb_lcu_mn / led.gdp_lcu_mn
     assert (pct - led.nlb_pct_gdp).abs().max() == pytest.approx(0, abs=1e-9)
     assert set(led.basis) == {"actual"}     # outturn years only, by design
@@ -277,7 +281,7 @@ def test_maximum_extension_contains_strict_and_agrees_where_both_exist():
 
 # --------------------------------------------------- per-country strict files
 
-@pytest.mark.parametrize("iso3", ["GBR", "FRA", "DEU"])
+@pytest.mark.parametrize("iso3", list(config.COUNTRIES))
 def test_country_file_is_strict_only_and_carries_every_series(iso3):
     """One file per country, strict variant only. Every strict value lands in
     it unchanged, and — the point of the file — no maximum_extension value
@@ -313,14 +317,15 @@ def test_country_file_is_strict_only_and_carries_every_series(iso3):
     only_max = maximum.merge(strict[["line_code", "year"]],
                              on=["line_code", "year"], how="left",
                              indicator=True).query("_merge == 'left_only'")
-    assert len(only_max) > 0, "no maximum-only legs to exclude — check fixture"
+    if config.stage_reached(iso3) >= 4:     # a country at U0-U3 has no maximum-only legs yet
+        assert len(only_max) > 0, "no maximum-only legs to exclude — check fixture"
     for row in only_max.itertuples():
         if row.year in wide.index:
             assert pd.isna(wide.at[row.year, column[row.line_code]]), (
                 iso3, row.line_code, row.year, "maximum_extension leaked")
 
 
-@pytest.mark.parametrize("iso3", ["GBR", "FRA", "DEU"])
+@pytest.mark.parametrize("iso3", list(config.COUNTRIES))
 def test_country_file_ledger_columns_match_the_ledger(iso3):
     """The ledger's TR/TE are the balance anchor's own totals, so they are
     prefixed rather than merged into the trees' TE/TR columns."""
@@ -375,6 +380,8 @@ def test_statistical_forecasts_cover_exactly_the_series_that_need_them():
     fc = read("statistical_forecasts.csv")
     tree = pd.concat([read("expenditure_cofog.csv"), read("expenditure_esa.csv"),
                       read("revenue_esa.csv")])
+    # the benchmark chain is U6 packaging: the packaged countries only (D-S16-008)
+    tree = tree[tree.iso3.isin(config.countries_at_stage(6))]
     strict = tree.query("variant == 'strict'")
     granular = strict[~strict.line_code.isin(["TE", "TE_ESA", "TR"])]
     ends = granular.groupby(["iso3", "line_code"]).year.max()
@@ -799,7 +806,7 @@ def test_benchmark_vs_weo_quotes_the_weo_unchanged_and_reproduces():
 
 FORECAST_NOTEBOOKS = tuple(
     f"forecasts_{iso3}_{tree}.ipynb"
-    for iso3 in ("GBR", "FRA", "DEU")
+    for iso3 in config.countries_at_stage(6)      # books are U6 packaging (none for the USA yet)
     for tree in ("expenditure", "esa", "revenue"))
 # chartbook_esa.ipynb and chartbook_revenue.ipynb are the companions for the
 # ESA_EXP and ESA_REV trees (D-S13-004/006): the main chartbook keeps the
@@ -888,6 +895,7 @@ def test_chartbook_charts_every_published_series():
     _, code, source, markdown = _notebook("chartbook.ipynb")
     books = {name: _notebook(name) for name in set(CHARTBOOKS.values())}
     cat = read("series_catalogue.csv")
+    cat = cat[cat.iso3.isin(config.countries_at_stage(6))]   # charts are U6 packaging
 
     # whole-cell matches: `chart("DEU", "TR")` is a substring of the ledger
     # cell `ledger_chart("DEU", "TR")`
@@ -908,7 +916,7 @@ def test_chartbook_charts_every_published_series():
     for topic in ("R02_A", "R06_E", "R06_H", "never forecast", "TR"):
         assert topic in books["chartbook_revenue.ipynb"][3], topic
     cat = cat[cat.classification == "COFOG"]
-    for iso3 in ("GBR", "FRA", "DEU"):
+    for iso3 in config.countries_at_stage(6):   # notebooks exist for the packaged countries only
         for q in ("TR", "TE", "NLB", "NI", "PB"):
             assert f'ledger_chart("{iso3}", "{q}")' in source
         for q in ("revenue", "expenditure", "nlb"):
@@ -999,7 +1007,7 @@ def test_chartbook_panels_quote_one_forecast_per_category():
     combination = read("statistical_forecasts.csv").query(
         "method == 'combination'")
 
-    for iso3 in ("GBR", "FRA", "DEU"):
+    for iso3 in config.countries_at_stage(6):   # notebooks exist for the packaged countries only
         for what in PANELS["chartbook.ipynb"]:
             assert f'panel("{iso3}", "{what}")' in source, (iso3, what)
         assert f'changes("{iso3}")' in source, iso3
@@ -1072,6 +1080,7 @@ def test_chartbook_levels_charts_carry_the_benchmark_where_nothing_is_published(
 
     cat = read("series_catalogue.csv")
     cat = cat[cat.classification.map(CHARTBOOKS) == book]
+    cat = cat[cat.iso3.isin(config.countries_at_stage(6))]   # charts are U6 packaging
     cat = cat.set_index(["iso3", "line_code"])
     levels = read("forecast_levels.csv").query("method == 'combination'")
     have = set(map(tuple, levels[["iso3", "line_code"]].drop_duplicates().values))
@@ -1197,6 +1206,7 @@ def test_chartbook_says_why_each_series_without_a_projection_has_none(book):
     _, code, source, markdown = _notebook(book)
     cat = read("series_catalogue.csv")
     cat = cat[cat.classification.map(CHARTBOOKS) == book]
+    cat = cat[cat.iso3.isin(config.countries_at_stage(6))]   # charts are U6 packaging
     cat = cat.set_index(["iso3", "line_code"])
 
     checked = 0

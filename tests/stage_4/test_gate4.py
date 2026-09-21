@@ -37,7 +37,7 @@ def test_gate4_variants_distinguishable_row_by_row():
     extra = km - ks
     # the Stage 4 additions are present in maximum only
     extra_lines = {(i, l) for i, c, l, y in extra}
-    for iso3 in config.COUNTRIES:
+    for iso3 in config.countries_at_stage(4):   # the USA is anchors-only until U4 (D-S16-008)
         assert (iso3, "GF01") in extra_lines
         assert (iso3, "GF10") in extra_lines
     assert ("FRA", "R05") in extra_lines
@@ -58,7 +58,7 @@ def test_gate4_no_leakage_into_strict():
 
 def test_gf01_via_gf01_7_growth_with_residual_method():
     m = _rows("maximum_extension")
-    for iso3 in config.COUNTRIES:
+    for iso3 in config.countries_at_stage(4):
         gf01 = m[(m.iso3 == iso3) & (m.line_code == "GF01")
                  & m.growth_source_id.notna() & (m.year > m.anchor_year)]
         gf017 = m[(m.iso3 == iso3) & (m.line_code == "GF01_7")
@@ -82,7 +82,7 @@ def test_gf01_via_gf01_7_growth_with_residual_method():
 
 def test_gf10_proxy_and_d12_chain():
     m = _rows("maximum_extension")
-    for iso3 in config.COUNTRIES:
+    for iso3 in config.countries_at_stage(4):
         g = m[(m.iso3 == iso3) & (m.line_code == "GF10")
               & m.growth_source_id.notna() & (m.year > m.anchor_year)]
         ameco = g[g.growth_source_id == "EC_AMECO"]
@@ -109,7 +109,7 @@ def test_proxies_carry_d2_and_78_requirements():
 
 
 def test_coverage_matrix_complete(matrix):
-    assert len(matrix) == 123 == config.universe_size()
+    assert len(matrix) == 41 * len(config.COUNTRIES) == config.universe_size()
     assert matrix.reason_series_ends.astype(str).str.len().ge(10).all()
     assert matrix.first_historical_year.notna().all()
     assert matrix.final_actual_year.notna().all()
@@ -119,7 +119,10 @@ def test_coverage_matrix_complete(matrix):
     assert matrix.grades.astype(str).str.len().ge(1).all()
     assert matrix.principal_sources.astype(str).str.len().ge(1).all()
     # the Stage 4 proxies show up with their spans and residual methods
-    gf01 = matrix[matrix.line_code == "GF01"]
+    # (for the countries whose build has reached Stage 4; D-S16-008)
+    staged = matrix.iso3.isin(config.countries_at_stage(4))
+    gf01 = matrix[(matrix.line_code == "GF01") & staged]
+    assert len(gf01) == 3
     assert (gf01.final_maximum_year == 2027).all()
     assert (gf01.residual_method == "grow_with_proxy").all()
     gf10 = matrix[matrix.line_code == "GF10"].set_index("iso3")
@@ -129,7 +132,8 @@ def test_coverage_matrix_complete(matrix):
     # remainders are never forecast: final maximum = final actual
     for code in ("GF01_X", "GF04_X", "GF10_X", "R02_X", "R06_X"):
         gx = matrix[matrix.line_code == code]
-        assert len(gx) == 3 and (gx.final_maximum_year == gx.final_actual_year).all(), code
+        assert len(gx) == len(config.COUNTRIES) \
+            and (gx.final_maximum_year == gx.final_actual_year).all(), code
     # D-S13-005: the UK pension line reaches back to 1979 in maximum only
     g102 = matrix[matrix.line_code == "GF10_2"].set_index("iso3")
     assert g102.loc["GBR", "first_historical_year"] == 1979
@@ -144,7 +148,7 @@ def test_coverage_matrix_complete(matrix):
     assert g102.loc["DEU", "final_strict_year"] == 2070
     assert g102.loc["GBR", "final_strict_year"] == g102.loc["GBR", "final_actual_year"]
     # the ESA_EXP social-benefits line is a direct AMECO forecast (D-S13-003)
-    e03 = matrix[(matrix.classification == "ESA_EXP") & (matrix.line_code == "E03")]
+    e03 = matrix[(matrix.classification == "ESA_EXP") & (matrix.line_code == "E03") & staged]
     assert len(e03) == 3 and (e03.final_strict_year == 2027).all()
 
 

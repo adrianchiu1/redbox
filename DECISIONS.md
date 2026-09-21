@@ -2443,3 +2443,309 @@ everything this container can run and is stated, not claimed, for
 
 **No country added, no source registered, no data pulled beyond the
 parent harvest, no notebook output touched.**
+
+## D-S16-001 — Stage U0 opened: the United States is configured (kickoff §11.1 verbatim), the country list is four, and a dry `config.family("USA")` raised `FamilyNotConfigured` until the family landed (serves REPLICATION_KICKOFF.md §11.1, §12 Stage U0; session 14, 2026-09-21)
+
+**Context.** HANDOFF.md (session 13) and kickoff §12 Stage U0: verify and
+harvest the United States on the generalised package of R0. Baseline in
+this container before any change: `pip install -e ".[dev,forecast,notebook]"`,
+`ggfiscal fetch --all` (80 pulls, 0 failures — the D8 snapshots were absent),
+the chain, `pytest`. The rebuilt canonical layer and bundle were identical
+to the committed ones except `run_id` and the container-dependent
+`S0_SNAPSHOTS` WARN rows (`exceptions.csv`: 2387 rows vs 2307 committed —
+80 more "snapshot file missing locally", the pulls recorded in the previous
+container); `ggfiscal validate` OK=89 WARN=2298 ERROR=0 (HANDOFF expected
+WARN≈2218: the difference is those 80 rows); `python3 -m pytest -q` 285
+passed, 80 skipped, 33 failed, 21 errors — every failure in `tests/debt/`
+(OQ-14, absent debt snapshots). Baseline copies of `data/canonical/`,
+`deliverables/`, `data/standard/` and the v0 reports were taken to
+`/tmp/gg_baseline` before any edit.
+
+**Decision.** `config/countries.yaml` gains the `USA` block of kickoff
+§11.1 — `currency: USD`, `anchor_family: oecd_sna`, the five anchors,
+`gdp_source: OECD_T1`, `secondary_national: BEA_NIPA`, `interest_anchor:
+d41`, `level2_source: BEA_NIPA_T316` (D26), `lines_absent` R01/E04/GF05
+with their reasons (D20), every tree CY, `fy_to_cy_weights: [0.75, 0.25]`,
+`envelope_forecast: [EC_AMECO, OECD_EO]`, `weo_perimeter_gap_expected:
+true`, `perimeter_break: null`, `backward_legs: {}` — plus `name`,
+`prose_name`, `aliases` and `stage_reached: 0` (D-S16-008). Two accessors:
+`config.level2_source(iso3)` and (D-S16-008) `config.stage_reached` /
+`countries_at_stage`; `config.level2_splits` carries the new cell keys
+(`oecd_t11`, `oecd_t12`, `oecd_t10`, `bea_nipa`) in its per-line meta.
+`config.COUNTRIES` is `("GBR", "FRA", "DEU", "USA")`; before step 3
+`config.family("USA")` raised `FamilyNotConfigured("USA: anchor family
+'oecd_sna' is not implemented …")` (checked; no fall-through).
+
+## D-S16-002 — `readers_oecd.py`: the OECD SNA tables on the `_oecd_frame` pattern, UNIT_MULT-scaled to LCU millions; the Table 1 GDP flow resolved live (serves kickoff D18, §11.2, §11.3)
+
+**Decision.** `standardise/readers_oecd.py` reads `OECD_T12_{EXP,REV,BAL}`
+(`oecd_t12(iso3, item, flow)`, TRANSACTION × XDC), `OECD_T10`
+(`oecd_t10`), the Table 11 transactions by function (`oecd_t11_item`, for
+the D4 × GF01 cross-check; OTE per function stays `readers.oecd_t11_cofog`),
+`OECD_T1` (`oecd_t1_gdp`: B1GQ, XDC, PRICE_BASE V) and `OECD_EO`
+(`oecd_eo`: XDC measures scaled, PT_B1GQ ratios as published). All reuse
+`readers._oecd_frame` / `_to_millions` unchanged; the readers of the three
+existing families are untouched.
+
+**Resolved live 2026-09-21.** The OECD.SDD.NAD catalog carries no plain
+"DF_TABLE1" GDP flow: `DSD_NAMAIN10@DF_TABLE1_EXPENDITURE,2.0` (12-dim
+key `A.{iso3}...B1GQ.......`) serves B1GQ in national currency at current
+prices, UNIT_MULT 6, USA 1970–2025 (2024 = USD 29,298,013 mn, equal to the
+EO GDP series). The EO flow `DSD_EO@DF_EO,1.5` (key `{iso3}.<M1>+….A`)
+serves the fifteen USA measures 1960–2027 in units (UNIT_MULT 0). Table 12
+for the USA: EXP 27 transactions, REV 26, BAL 8, all 1970–2024, UNIT_MULT
+6; Table 10 43 transactions; Table 11 nine functions (no GF05 rows) plus
+`_T`, eighteen transactions incl. D4 by function. The codelist labels used
+in the crosswalks (P1O = "Market output, output for own final use and
+payments for other non-market output"; D51M/D51O "including holding
+gains"; D6M; D9N; P5L) come from `CL_TRANSACTION` of DSD_NASEC10 1.1.
+
+## D-S16-003 — `readers_bea.py`: the NIPA flat files, register-driven, a secondary reader and not a family (serves kickoff D18 secondary, D26, §7.16, §11.3)
+
+`SeriesRegister.txt` (15,619 (series, table:line) cells) and `NipaDataA.txt`
+(annual, 1929–2025, USD millions for the "Current Dollars, Level" series —
+A001RC 1929 = 105,322) are snapshotted with `NipaDataQ.txt`; a cell is
+addressed as (table id, line number): `nipa_series("T31600", 5)`. The reader
+serves the D26 Level II proxies (`level2_proxy(line_code, spec)` over the
+lines.yaml `bea_nipa` cells) and, later, the §7.16 legs; it is never an
+anchor (Table 3.16 "current expenditures" is CFC-in, investment-out — §14).
+The BEA API needs a key and is not used.
+
+## D-S16-004 — Endpoints and register: per-country pulls enumerate the register's `countries`; every §13.1 USA entry registered with its verification status; the blocked hosts recorded (serves kickoff §11.2, §13.1, D24)
+
+**Decision.** `ingest/endpoints.py`: the `ISO3 = ("GBR", "FRA", "DEU")`
+literal is gone — `registered_countries(source_id)` reads
+`config/sources.yaml countries` (restricted to `config.COUNTRIES`), so
+adding the USA to `IMF_WEO`, `IMF_GFS`, `OECD_RS`, `OECD_T11` and
+`EC_AMECO` is a register change (19 more Stage 0 pulls: 15 WEO, 2 GFS, RS,
+T11). `all_u0_pulls()` adds the §11.2 endpoints, again keyed by the
+register: OECD T12 EXP/REV/BAL, T10, T1, EO (USA), the three BEA flat
+files, the Fed Z.1 zip, the six OMB Historical Tables workbooks
+(`hist01z1, hist01z3, hist03z1, hist03z2, hist14z1, hist15z1` of the FY2027
+Budget, resolved from the historical-tables page; `BROWSER_HEADERS`), the
+CBO mirror's `baselines.csv` / `actuals.csv`, the CMS 2026 expanded tables
+zip — 19 pulls; `fetch_all` runs them after the Stage 0 and Stage 3 pulls
+(118 in all). `fiscaldata_url()` keeps the literal `page[size]` brackets
+(nothing pulled in U0; UD0). BEA `.txt` files snapshot with a `txt`
+extension. **Harvest 2026-09-21: 118 pulls, 0 failures.** `www.cbo.gov`
+and `www.ssa.gov` re-tested with browser headers: HTTP 403 (DataDome,
+Akamai) — `CBO_SITE` and `SSA_TRUSTEES` are registered `status: blocked`
+with the D-S7-001 hand-retrieval route named (`ggfiscal ingest-file`),
+which V18 reports as WARN (intended visibility, as for obr.uk).
+
+`config/sources.yaml`: OECD_T12_EXP/REV/BAL, OECD_T10, OECD_T1 (was
+"to_verify", now confirmed_live with the resolved flow), BEA_NIPA, FRB_Z1,
+OECD_EO (EO 119), OECD_EO_LTB (memorandum, not pulled — Q-K1), CBO_BASELINE,
+CBO_SITE (blocked), OMB_BUDGET, CMS_TRUSTEES, SSA_TRUSTEES (blocked),
+CENSUS_GOVFIN (not used, D), BLS_CPI (debt reference, UD0). `period_basis:
+FY` on CBO_BASELINE, CBO_SITE and OMB_BUDGET (federal October–September),
+CY otherwise. `reports/source_register.csv` now publishes the R0
+`period_basis` column (HANDOFF session 13 asked for it at the next
+regeneration).
+
+## D-S16-005 — The SNA-to-ESA cell mapping of the USA revenue and economic trees (the judgement item), recorded per cell in `crosswalks/OECD_T12_to_ESA_EXP.csv` and `crosswalks/OECD_T12_T10_to_ESA_REV.csv` (serves kickoff §4.2, §4.3, §11.4; scoping §6 C1)
+
+**Decision.** `config/lines.yaml` gains `oecd_t11` (COFOG codes, identical
+to the ESA ones), `oecd_t12` (Table 12 items per line, expenditure flow for
+ESA_EXP, revenue flow for ESA_REV) and `oecd_t10` (tax detail) cells, and
+`bea_nipa` cells on the four Level II lines. Every choice was measured on
+USA 1970–2024 before it was written:
+
+- **ESA_EXP** = the same items as gov_10a_main (D1, P2, D62, D632, D41,
+  D3, D29 + D5 + D4 − D41 + D7 + D8, P5 + NP, D9, OTE): E01..E09 = OTE to
+  USD 0.002 mn in every year. D29, D5, D8, D39, D92, D4N and P5M are
+  identically zero for the USA (so E07 = D7; P5 = P51G).
+- **R09 = P1O**, not "P1M + P1O + P131": OTR closes only with P1O (OTR = D2 +
+  D5 + D61 + D4 + D7 + D9 + D39 + P1O to 0.002 mn), and P1O = P1M + P131
+  exactly — the codelist label says P1O IS the sales aggregate P.11 + P.12
+  + P.131; P1M and P131 are its memo components. Kickoff §4.3's "P1M + P1O
+  + P131" would double count.
+- **R03 = T10 D51M, R04 = T10 D51O** (including holding gains), not the
+  kickoff's D51A / D51B (excluding them): the ESA_REV concept is D51A_C1 /
+  D51B_C2, which include holding gains (what gov_10a_taxag and ONS D51M/D51O
+  carry); D51M + D51O = D51 exactly in every year, whereas D51A + D51B would
+  leave the holding-gains taxes (USD 502,624 mn in 2024) unallocated, in R05.
+- **R05 = T12 D5 − R03 − R04 + T12 D91** (the existing families' formula;
+  D.59 inside D.5). D5 and D91 from Table 12 so the identity closes; the
+  Table 10 vs Table 12 D5 drift (up to USD 5.8 bn in some years, 1.3 mn in
+  2024) lands in R05 as the Eurostat taxag/main drift does (D-S1-002).
+- **R06, R06_E, R06_H = T12 D61, D611, D613** (D611 + D613 + D612_D614 =
+  D61; Table 10's D61 differs by up to 0.7 bn); **R02_A = T10 D214A** (no
+  D2122C cell for the USA; import duties D2121 stay in R02_X); **R07 = T12
+  D41 (REV)**; **R08 = D4 − D41 = D4N**; **R10 = D39 + D7 + D9 − D91**
+  (residual; the enterprise surplus of kickoff §4.3 is B2N, a balancing
+  item outside OTR — measured and not found in the revenue flow); **R01 =
+  D211 = 0** (structural zero); **TR = OTR**.
+- **COFOG** = Table 11 OTE per function, total `_T` (differs from OTE by
+  −665 to +1,335 mn across the years — two tables of the same institution;
+  the ledger takes OTE); GF05 has no rows and the nine published functions
+  sum to `_T`, so it is zero by additivity (D20).
+- **Interest**: T11 D4 × GF01 = T12 D41 to table rounding (≤ USD 3 mn), so
+  GF01_7 = D.41 by construction (D26; the D10 fallback builds it,
+  `level2_proxy_actual` B). OECD EO GGINTP (1,397,625) and NIPA interest
+  payments (1,397,636) are the NIPA/IMA concept incl. imputed pension
+  interest: +0.94% on T12 D41 in 2024, 1.00–1.03 over 1970–2024 — the
+  wedge kickoff §4.2 asks to note.
+- **GF04_5 = NIPA T3.16 line 14 (transportation, current expenditures)**:
+  Table 3.17 publishes gross investment by function at Level I only, so
+  D26's "current plus gross investment" is not constructible cell-for-cell
+  — OQ-15. GF10_2 = line 38 (retirement, OASI incl. survivors), GF10_5 =
+  line 40 (unemployment).
+
+## D-S16-006 — `OecdSnaFamily` registered as `FAMILIES["oecd_sna"]`; per-flow source ids on the family base (serves kickoff §11.3, D18, D27)
+
+`standardise/families.py`: `OecdSnaFamily` implements the protocol
+(`cofog`, `cofog_total`, `main` — flow by direction —, `tax`, `d41_payable`,
+`gdp`, `totals`, `level2` → None) and the site methods (`d41_receivable`,
+`revenue_lines`, `revenue_total`, `revenue_coverage`, `revenue_level2`,
+`esa_exp_parts`, `recon_revenue`, `bridge_aggregates` — GF01_7 = D.41)
+from the lines.yaml cells. Because the OECD publishes the main aggregates
+as three flows, `_Base` gains `esa_exp_source` / `revenue_source` /
+`balance_source` properties defaulting to `main_source`; the build stamps
+each tree's rows and the ledger with its flow (OECD_T12_EXP / _REV / _BAL)
+and the coverage matrix labels the ESA_EXP anchor by it — nothing changes
+for ONS and Eurostat (identity holds). `coverage._cofog_sources` no longer
+lists OECD_T11 as a *secondary* candidate for a family whose anchor IS
+Table 11 (a family-attribute check, not a country literal).
+
+## D-S16-007 — D26 in the build: the USA Level II lines are `level2_proxy_actual` (B) from the NIPA cells over the parent's anchor years; `standardise/proxies.py` is the config-keyed registry (serves kickoff D26, §9, §11.3; anticipates U1's "Level II proxies")
+
+**Why in U0.** The build runs for every configured country; with the
+family's `level2()` returning None the four USA Level II lines and their
+remainders would have no rows, and the full-universe gate tests
+(`test_coverage_matrix_complete`, the flat-file completeness tests) would
+fail for the USA. Rather than weaken those tests, the D26 proxy path is
+built: `standardise/proxies.py` maps `countries.yaml level2_source`
+(`BEA_NIPA_T316`) to (register source_id `BEA_NIPA`, cell key `bea_nipa`,
+`readers_bea.level2_proxy`); `build.anchor_series` asks the family for its
+Level II cell and, where None and the country names a source, takes the
+proxy restricted to the parent's anchor years (1970–2024; the 1959–1969
+NIPA years are U2 legs), typed `level2_proxy_actual`, grade B, concept
+flag `level2_bea_function` (kickoff §5), the cell-by-cell concept note; the
+remainder rows carry B and "parent minus a D26 proxy year". The interest
+line keeps the D10 fallback (D.41). `coverage.line_sources` adds the same
+proxy as a candidate (`BEA_NIPA`) and the remainder's coverage takes the
+first measurable candidate of each Level II line, so `GF01_X`, `GF04_X`
+and `GF10_X` are covered for the USA. Measured shares of the parent
+(2024): GF01_7 0.696, GF10_2 0.581, GF10_5 0.016, GF04_5 0.269. V44 (U1)
+will police the rows; V19 holds exactly now.
+
+## D-S16-008 — Per-country stage gating: `stage_reached` in countries.yaml; the build runs backward legs from stage 2 and forecast legs from stage 3, the forecast-side reconciliation runs for stage-3 countries, and the stage-gate tests iterate the countries at their stage (serves kickoff §12 "one stage per session", U2/U3 scope)
+
+**Context.** The generic AMECO and OECD RS blocks of `forward.py` /
+`backward.py` (which the U0 remit says not to touch) apply to every
+country, so the first U0 chain produced unreviewed USA strict forecasts
+and RS legs; and the Stage 3–6 gate tests (`declarations cover every
+line`, `all three countries stitch 2025`, residual history per country,
+notebooks per country) cannot hold for a country whose U2–U6 have not run.
+
+**Decision.** `stage_reached` (0–6, the kickoff §12 stages; missing = 6,
+the parent build) is a per-country config value: GBR/FRA/DEU 6 (implicit),
+USA 0. `build.build` runs `extensions_for` from stage 2 and
+`declarations_for` / `forecasts_for` from stage 3 (the structural-zero
+declarations always); `reconcile/explanation.compute` decomposes the
+forecast side for `countries_at_stage(3)` (the §8.2 bridge and the §8.3
+history decomposition run for every country); the stage-3/4/5/6 tests
+iterate `config.countries_at_stage(n)` where they assert that stage's
+behaviour (declarations, AMECO stitches, GF01/GF10 proxies, residual
+history, notebooks, maximum-only legs), and the per-country strict-file
+tests cover all four. The USA canonical layer at U0 is therefore anchors
+only: 44 lines × 1970–2024 (2,420 strict rows: anchor_actual A,
+derived_actual A/B, level2_proxy_actual B, structural_zero A), the ledger
+1970–2024 with NI complete. Nothing changes for the three (their legs run
+as before; identity holds). Raising the USA to stage 2/3 is the U2/U3
+config change that switches its legs on — after their review.
+
+## D-S16-009 — V4 reads `may_be_negative` from lines.yaml; USA E07 is negative in 1991 in the anchor (serves parent §10 V4, D13)
+
+The first U0 chain's only ERROR: `USA/E07/1991 negative value −25,625` —
+Table 12 D.7 payable is −25,625 USD mn in 1991 (the allied Gulf War
+contributions netted against current transfers in the SNA presentation),
+a published anchor fact (D13: never altered). V4's admitted-negative set
+was a literal `{R08, R10, R06_X}`; it now derives from `may_be_negative` in
+lines.yaml (the same three plus, since U0, E07 with the reason in the
+comment). GBR/FRA/DEU E07 are positive in every year, so the three
+countries' findings are unchanged.
+
+## D-S16-010 — `tools/byte_identity.py --countries`: the gate restricted to the existing countries' rows, with every allowed exception named on the command line (serves kickoff §12 "no number moves for GBR/FRA/DEU")
+
+`--countries GBR,FRA,DEU` filters every CSV with an `iso3` column on both
+sides, drops the other country's scoped rows from `exceptions.csv` and
+compares its unscoped OK rows on (check_id, severity) — their messages
+carry country counts —, drops `--new-crosswalk` rows from `crosswalks.csv`,
+admits a non-empty per-country `--new-file strict_USA.csv`, and normalises
+row counts and the excluded country's lines in the READMEs. Two further
+explicit allowances: `--new-scope register/CBO_SITE --new-scope
+register/SSA_TRUSTEES` (the V18 WARN rows of the blocked hosts, never at
+ERROR) and `--check-now-scoped V24` (the unscoped V24 OK row of the
+baseline is replaced by the USA's scoped V24 WARN rows; the three
+countries' V24 findings are unchanged = none). The gate reports OK for
+GBR/FRA/DEU on the U0 chain (D-S16-012).
+
+## D-S16-011 — `reports/source_verification_USA.md` is generated by `tools/source_verification_usa.py` from the snapshots and the canonical layer (serves kickoff §12 Stage U0 "measure and record", Gate U0)
+
+The report carries the harvest record, first/last year per (line, source)
+for all 41 USA lines (80 (line, source) rows from `ggfiscal coverage`),
+the anchor identities, the three structural zeros, the D26 proxy shares,
+the §3 wedges against NIPA — sales grossing 2024: OTE − NIPA total
+expenditures 1,168,098 and OTR − NIPA total receipts 1,179,025 (P1O
+1,134,952); B9 − NIPA net lending 10,926 (kickoff §3 expected NLB
+unaffected: a small vintage/consolidation wedge, recorded); enterprise
+investment 63,582 (NIPA gross government investment − OECD P5) —, the §8.2
+bridge on every vintage with the perimeter rule (latest 2026-04: base 2024,
+24 overlap years from 2001, mean NLB gap −2.34% of TE, sigma 1.51 → 12
+unexplained, V24 WARN; OQ-16) and the reconciliation sources measured for
+U2/U5 (IMF GFS COFOG 1972–2024 with GF0170_T 1980–89 only; OECD RS from
+1965; AMECO USA E-lines reproducing T12 growth exactly except E09; OECD EO
+1960–2027 with SSPG = D62, SSRG = D61, TIND = D2 exactly). Re-run the tool
+after any rebuild; never hand-edit the report.
+
+## D-S16-012 — Gate U0 record: what was measured, what is byte-identical, and the exceptions (serves kickoff §12 Gate U0)
+
+**Gate criteria.**
+- All 41 USA lines have programmatic coverage from ≥ 1 source or a
+  `lines_absent` entry: `ggfiscal coverage` 164/164 lines (USA: 80 (line,
+  source) rows — OECD_T11 12, OECD_T12_EXP 9, OECD_T12_REV 11, OECD_T10 5,
+  BEA_NIPA 4, EC_AMECO 9, OECD_RS 9, IMF_GFS 18, structural_zero 3);
+  `S0_COVERAGE` OK. **Holds.**
+- The §8.2 bridge has a USA base-year row on the latest WEO vintage:
+  2026-04 base 2024 (also 2025-10 and 2025-04), 24 overlap years from 2001;
+  `S0_BRIDGE` OK. **Holds** (V24 WARN on the perimeter sigma — OQ-16).
+- `reports/source_verification_USA.md` written (generated, D-S16-011).
+- GBR/FRA/DEU byte-identical, run_id excepted: `tools/byte_identity.py
+  /tmp/gg_baseline --countries GBR,FRA,DEU --new-file strict_USA.csv
+  --new-crosswalk OECD_T12_to_ESA_EXP --new-crosswalk
+  OECD_T12_T10_to_ESA_REV --new-scope register/CBO_SITE --new-scope
+  register/SSA_TRUSTEES --check-now-scoped V24` → OK: every canonical CSV
+  and deliverable equal on the three countries' rows; `exceptions.csv`
+  differs only by the two named V18 WARN rows and the V24 OK row the USA's
+  scoped WARNs replace; the READMEs only by row counts and the USA lines.
+  **Holds.**
+- `ggfiscal validate`: **ERROR=0**, WARN=2761, OK=101 (baseline OK=89
+  WARN=2298 ERROR=0). The 463 added WARNs are USA-scoped: V1 258 (IMF GFS
+  wedges per line-year), V25 196 (OECD RS wedges), V5 4 (extension-source
+  overlap diagnostics; 13 OK), V24 3 (one per vintage), plus V18 2 (the
+  blocked registers). OK rose by 12: the USA-scoped V5 OK rows (13) less
+  the unscoped V24 OK row.
+- `python3 -m pytest -q`: 285 passed in the baseline; after U0 **297
+  passed** (the 285 plus the 12 new `tests/stage_0/test_u0_usa.py` tests),
+  80 skipped, and the same 54 `tests/debt/` failures/errors for absent
+  debt snapshots (OQ-14; the debt engine untouched). Pre-U0 tests changed
+  to the U0 state: the three-country literals now derive from
+  `config.COUNTRIES` / `config.countries_at_stage(n)` (D-S16-008), the
+  notebook-tooling test seeds a synthetic JPN, `test_gate1`'s pension-share
+  floor is 0.3 for a D26-proxy country, the flat-file ledger identity admits
+  the OECD balancing item's USD 0.001 mn rounding, `test_gate6`'s anchor
+  types include `structural_zero`, and the two debt tests that iterated the
+  fiscal country list iterate `config/debt.yaml` (the USA joins with UD0).
+  A final full run is recorded in HANDOFF.md.
+
+**Rules held.** No `elif iso3 ==` anywhere (a test greps the package for a
+USA literal); every USA routing decision is config or `OecdSnaFamily`;
+the readers of GBR/FRA/DEU untouched; `forward.py` and `backward.py`
+untouched; no notebook touched; the debt engine untouched.
+
+**Blocked, written up, not weakened.** `www.cbo.gov` and `www.ssa.gov`
+(OQ-13; register `blocked`, V18 WARN); the NIPA transportation
+gross-investment cell (OQ-15); the WEO perimeter rule for the USA (OQ-16).
+None of them is a Gate U0 criterion.

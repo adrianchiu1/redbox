@@ -29,12 +29,28 @@ def _load_tool(name: str, monkeypatch):
     return mod
 
 
-def _with_usa(monkeypatch):
-    base = config.countries()
-    usa = {**base["DEU"], "name": "United States", "currency": "USD",
-           "prose_name": "the United States", "aliases": ["United States", "US"],
+def _with_books():
+    """The countries whose notebooks exist (the three parent countries; the
+    USA of Stage U0 has no books until U6 — kickoff §12)."""
+    return {k: v for k, v in config.countries().items()
+            if (NB / f"forecasts_{k}_expenditure.ipynb").exists()}
+
+
+def _three(monkeypatch):
+    base = _with_books()
+    monkeypatch.setattr(config, "countries", lambda: base)
+
+
+def _with_jpn(monkeypatch):
+    """A fourth country on a copy of the three-country config (the R0 test
+    premise: a country with no books and no catalogue rows yet). R0 used a
+    synthetic USA; since U0 the real USA has catalogue rows, so the synthetic
+    country is JPN — seeded from Germany's books, as R0 designed it."""
+    base = _with_books()
+    jpn = {**base["DEU"], "name": "Japan", "currency": "JPY",
+           "prose_name": "Japan", "aliases": ["Japan", "JP"],
            "anchor_family": "oecd_sna", "perimeter_break": None, "backward_legs": {}}
-    monkeypatch.setattr(config, "countries", lambda: {**base, "USA": usa})
+    monkeypatch.setattr(config, "countries", lambda: {**base, "JPN": jpn})
 
 
 def _sources(nb):
@@ -43,7 +59,6 @@ def _sources(nb):
 
 @pytest.mark.skipif(not (NB / "chartbook.ipynb").exists(), reason="notebooks absent")
 def test_chart_site_reads_countries_from_config(monkeypatch):
-    _with_usa(monkeypatch)
     site = _load_tool("build_chartsite", monkeypatch)
     assert site.COUNTRY == config.country_names()
     assert site.COUNTRY["USA"] == "United States"
@@ -54,6 +69,7 @@ def test_chart_site_reads_countries_from_config(monkeypatch):
 
 @pytest.mark.skipif(not (NB / "chartbook.ipynb").exists(), reason="notebooks absent")
 def test_notebook_tool_is_idempotent_on_the_committed_books(monkeypatch, tmp_path):
+    _three(monkeypatch)
     tool = _load_tool("update_notebooks_s11", monkeypatch)
     assert tool.COUNTRIES == config.COUNTRIES and tool.NAME == config.country_names()
     for name in ("chartbook.ipynb", *(f"forecasts_{c}_{t}.ipynb" for c in config.COUNTRIES
@@ -70,9 +86,9 @@ def test_notebook_tool_is_idempotent_on_the_committed_books(monkeypatch, tmp_pat
 
 @pytest.mark.skipif(not (NB / "chartbook.ipynb").exists(), reason="notebooks absent")
 def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
-    _with_usa(monkeypatch)
+    _with_jpn(monkeypatch)
     tool = _load_tool("update_notebooks_s11", monkeypatch)
-    assert tool.COUNTRIES[-1] == "USA" and tool.SECTION["USA"] == 4
+    assert tool.COUNTRIES[-1] == "JPN" and tool.SECTION["JPN"] == 4
     for name in ("chartbook.ipynb", *(f"forecasts_{c}_{t}.ipynb" for c in config.COUNTRIES[:3]
                                        for t in ("expenditure", "revenue"))):
         shutil.copy(NB / name, tmp_path / name)
@@ -82,52 +98,52 @@ def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
     srcs = _sources(cb)
     stripped = [s.strip() for s in srcs]
     # the country section, copied from Germany's and retargeted
-    assert "---\n\n# 4. United States (USA)" in stripped
-    i_us = stripped.index("---\n\n# 4. United States (USA)")
+    assert "---\n\n# 4. Japan (JPN)" in stripped
+    i_us = stripped.index("---\n\n# 4. Japan (JPN)")
     i_de = stripped.index("---\n\n# 3. Germany (DEU)")
     assert i_us > i_de
-    for call in ('panel("USA", "expenditure")', 'panel("USA", "revenue")',
-                 *(f'chart("USA", "{line}")' for line in config.granular_lines("COFOG")),
-                 'chart("USA", "TE")', 'ledger_chart("USA", "PB")',
-                 'weo_chart("USA", "revenue")', 'weo_chart("USA", "nlb")'):
+    for call in ('panel("JPN", "expenditure")', 'panel("JPN", "revenue")',
+                 *(f'chart("JPN", "{line}")' for line in config.granular_lines("COFOG")),
+                 'chart("JPN", "TE")', 'ledger_chart("JPN", "PB")',
+                 'weo_chart("JPN", "revenue")', 'weo_chart("JPN", "nlb")'):
         assert call in stripped, call
-    assert stripped.index('chart("USA", "GF01")') > i_us
+    assert stripped.index('chart("JPN", "GF01")') > i_us
     assert any(s.startswith("## 4.2 Expenditure") for s in stripped)
     assert any(s.startswith("## 4.4 Balance ledger") for s in stripped)
     # the later sections are renumbered; the WEO sub-section follows Germany's
     assert "---\n\n# 5. Reconciliation to the IMF WEO" in " ".join(stripped)
-    assert any(s.startswith("## 5.4 United States") for s in stripped)
+    assert any(s.startswith("## 5.4 Japan") for s in stripped)
     assert any(s.startswith("## 5.3 Germany") for s in stripped)
-    assert stripped.index('weo_chart("USA", "nlb")') > stripped.index('weo_chart("DEU", "nlb")')
+    assert stripped.index('weo_chart("JPN", "nlb")') > stripped.index('weo_chart("DEU", "nlb")')
     # the existing countries' cells are untouched: drop the inserted block
     # and the inserted WEO sub-section, ignore section numbers, and the
     # remainder is the committed book cell for cell
     import re
 
     end_us = next(k for k in range(i_us + 1, len(stripped)) if stripped[k].startswith("---\n\n# "))
-    i_weo = stripped.index('weo_chart("USA", "revenue")') - 1
+    i_weo = stripped.index('weo_chart("JPN", "revenue")') - 1
     rest = stripped[:i_us] + stripped[end_us:i_weo] + stripped[i_weo + 4:]
     committed = [s.strip() for s in _sources(json.loads((NB / "chartbook.ipynb").read_text()))]
     unnumber = lambda s: re.sub(r"^(---\n\n# |## )\d+(\.\d+)?", r"\1N", s)
     assert [unnumber(s) for s in rest] == [unnumber(s) for s in committed]
     # no output survives the copy
-    assert all(not c.get("outputs") for c in cb["cells"] if '"USA"' in "".join(c["source"]))
+    assert all(not c.get("outputs") for c in cb["cells"] if '"JPN"' in "".join(c["source"]))
 
     # the forecast books: preamble and setup from Germany's, one section per line
-    book = tool.forecast_book("USA", "expenditure")
+    book = tool.forecast_book("JPN", "expenditure")
     srcs = _sources(book)
-    assert srcs[0].startswith("# United States — COFOG expenditure")
+    assert srcs[0].startswith("# Japan — COFOG expenditure")
     assert "from pathlib import Path" in srcs[1]
     for line in config.granular_lines("COFOG"):
-        assert f'levels("USA", "{line}")' in [s.strip() for s in srcs]
-        assert f'share("USA", "{line}")' in [s.strip() for s in srcs]
+        assert f'levels("JPN", "{line}")' in [s.strip() for s in srcs]
+        assert f'share("JPN", "{line}")' in [s.strip() for s in srcs]
     assert not any(s.strip().startswith("fan(") for s in srcs)   # no benchmark yet
     assert '"DEU"' not in "".join(srcs)
-    tool.save("forecasts_USA_expenditure.ipynb", book)
-    rev = tool.forecast_book("USA", "revenue")
-    assert 'levels("USA", "R01")' in [s.strip() for s in _sources(rev)]
-    esa = tool.forecast_esa("USA")
-    assert _sources(esa)[0].startswith("# United States — expenditure by ESA economic type")
-    assert 'levels("USA", "E01")' in [s.strip() for s in _sources(esa)]
+    tool.save("forecasts_JPN_expenditure.ipynb", book)
+    rev = tool.forecast_book("JPN", "revenue")
+    assert 'levels("JPN", "R01")' in [s.strip() for s in _sources(rev)]
+    esa = tool.forecast_esa("JPN")
+    assert _sources(esa)[0].startswith("# Japan — expenditure by ESA economic type")
+    assert 'levels("JPN", "E01")' in [s.strip() for s in _sources(esa)]
     # the committed notebooks are untouched
-    assert not (NB / "forecasts_USA_expenditure.ipynb").exists()
+    assert not (NB / "forecasts_JPN_expenditure.ipynb").exists()

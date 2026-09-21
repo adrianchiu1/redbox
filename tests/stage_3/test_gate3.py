@@ -141,7 +141,9 @@ def test_newer_actuals_are_not_forecast_rows():
     df = _rows("strict")
     st = df[(df.year == 2025) & (df.growth_source_id == "EC_AMECO")
             & (df.line_code == "GF01_7")]
-    assert len(st) == 3  # all three countries stitch 2025
+    # every country whose build has reached Stage 3 stitches 2025 (the USA
+    # is anchors-only until U3: config stage_reached, D-S16-008)
+    assert len(st) == len(config.countries_at_stage(3)) == 3
     assert not st.is_forecast.any()
     assert set(st.observation_type) == {"stitched_actual"}
 
@@ -151,7 +153,7 @@ def test_declarations_cover_every_line_without_a_forecast(declarations):
     have_fc = set(zip(fc.iso3, fc.line_code))
     declared = set(zip(declarations.iso3, declarations.line_code))
     all_lines = set()
-    for iso3 in config.COUNTRIES:
+    for iso3 in config.countries_at_stage(3):
         for code in [f"GF{n:02d}" for n in range(1, 11)] + ["GF01_7", "GF01_X", "TE"]:
             all_lines.add((iso3, code))
         for code in [f"R{n:02d}" for n in range(1, 11)] + ["TR"]:
@@ -164,7 +166,7 @@ def test_declarations_cover_every_line_without_a_forecast(declarations):
 
 def test_d7_lines_declared_with_notes(declarations):
     d7 = declarations[declarations.status == "no_official_forecast"]
-    for iso3 in config.COUNTRIES:
+    for iso3 in config.countries_at_stage(3):
         lines = set(d7[d7.iso3 == iso3].line_code)
         # sources.yaml no_forecast_lines plus GF01 (§7.9) and GF01_X (D10)
         assert {"GF03", "GF04", "GF05", "GF06", "GF08",
