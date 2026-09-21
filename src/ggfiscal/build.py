@@ -103,7 +103,8 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     fam = config.family(iso3)
     cof = lambda c: fam.cofog(iso3, c)  # noqa: E731
     exp_src = fam.expenditure_source
-    rev_src = fam.main_source
+    rev_src = fam.revenue_source      # the flow the revenue rows come from (= main_source
+    #                                   for ONS/Eurostat; OECD_T12_REV for the OECD family)
     rev = fam.revenue_lines(iso3)
     tr = fam.revenue_total(iso3)
     te_cofog = fam.cofog_total(iso3)
@@ -120,7 +121,7 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     # DEU), ONS ESA Table 2 payable rows (GBR). Sums are derived_actual;
     # the identity E01..E09 = TE_ESA is exact by construction (V2).
     esa_meta = L["expenditure_esa"]
-    esa_src = fam.main_source
+    esa_src = fam.esa_exp_source
     for code, meta in esa_meta.items():
         plus, minus = fam.esa_exp_parts(iso3, meta)
         series = plus[0]
@@ -178,7 +179,13 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                 src_line = src_id
                 concept_txt = structural_zero_note(absent[(cls, l2)])
             elif cls == "COFOG":
-                series = cof(meta["eurostat_cofog"])
+                # the family's own Level II cell; None where the family
+                # publishes no Level II table (kickoff §11.3: the D26 proxy
+                # path, which is U1 work — nothing is built here, so the
+                # remainder stays empty and the D10 fallback below still
+                # serves the interest line)
+                l2_cell = fam.level2(iso3, l2)
+                series = l2_cell if l2_cell is not None else pd.Series(dtype=float)
                 cofog_code = meta["eurostat_cofog"]
                 concept_txt = (f"COFOG {cofog_code[2:4]}.{int(cofog_code[4:6])} from the "
                                "anchor's Level II table")
@@ -284,7 +291,7 @@ def fy_cy_bridge_rows(iso3: str, series_map: dict, run_id: str) -> list[dict]:
         te_fy = series_map[(cls, total)]["series"]
         fy_src = series_map[(cls, total)]["source_id"]
         te_cy = fam.totals(iso3)["TE"]
-        cy_src = fam.main_source
+        cy_src = fam.esa_exp_source
         release, vintage = _release(fy_src)
         for year in sorted(int(y) for y in te_fy.index):
             cy_v = float(te_cy[year]) if year in te_cy.index else None
@@ -562,7 +569,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         fam = config.family(iso3)
         totals_b = fam.totals(iso3)
         btr, bte, b9 = totals_b["TR"], totals_b["TE"], totals_b["B9"]
-        bal_src = fam.main_source
+        bal_src = fam.balance_source
         gf017 = series_map[("COFOG", "GF01_7")]["series"]
         r07 = series_map[("ESA_REV", "R07")]["series"]
         for year in sorted(set(btr.index) & set(bte.index)):

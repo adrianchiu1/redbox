@@ -15,74 +15,109 @@
 # the backward leg (D-S13-005).
 
 expenditure:   # classification = COFOG (§4.1)
-  GF01:   {level: "1", label: General public services, eurostat_cofog: GF01}
+  # Anchor cells per family: `eurostat_cofog` (gov_10a_exp cofog99 codes; the
+  # ONS Table 11 rows carry the same GFxx / GFxxyy codes) and, since Stage U0
+  # (REPLICATION_KICKOFF.md §4.1, §11.4; D-S16-005), `oecd_t11` — the OECD
+  # Table 11 EXPENDITURE code (identical COFOG codes; OTE per function). A
+  # country whose OECD Table 11 publishes no Level II (USA) declares
+  # `level2_source: BEA_NIPA_T316` in countries.yaml and takes the D26 proxy
+  # from the `bea_nipa` cells below: NIPA Table 3.16 (government current
+  # expenditures by function, total-government block) line numbers of the
+  # BEA series register, summed where several are named.
+  GF01:   {level: "1", label: General public services, eurostat_cofog: GF01, oecd_t11: GF01}
   GF01_7: {level: "2", label: Public debt transactions (interest), eurostat_cofog: GF0107,
-           gfs_indicator: GF0170_T, parent: GF01,
-           fallback: d41_payable, grade_on_fallback: B}   # D10
+           oecd_t11: GF0107, gfs_indicator: GF0170_T, parent: GF01,
+           fallback: d41_payable, grade_on_fallback: B,   # D10
+           bea_nipa: {table: T31600, lines: [5],
+                      note: "interest payments, total government = GG D.41 by construction (D26); NIPA/IMA concept incl. imputed pension interest vs the OECD T12 D41 (wedge measured in U0)"}}
   GF01_X: {level: derived, label: General public services excluding interest,
            derived: GF01 - GF01_7, parent: GF01, minus: [GF01_7], never_forecast: true}  # D10
-  GF02:   {level: "1", label: Defence, eurostat_cofog: GF02}
-  GF03:   {level: "1", label: Public order and safety, eurostat_cofog: GF03}
-  GF04:   {level: "1", label: Economic affairs, eurostat_cofog: GF04}
-  GF04_5: {level: "2", label: Transport, eurostat_cofog: GF0405, parent: GF04}   # D-S13-005: COFOG 04.5 (no GFS group series)
+  GF02:   {level: "1", label: Defence, eurostat_cofog: GF02, oecd_t11: GF02}
+  GF03:   {level: "1", label: Public order and safety, eurostat_cofog: GF03, oecd_t11: GF03}
+  GF04:   {level: "1", label: Economic affairs, eurostat_cofog: GF04, oecd_t11: GF04}
+  GF04_5: {level: "2", label: Transport, eurostat_cofog: GF0405, oecd_t11: GF0405, parent: GF04,   # D-S13-005: COFOG 04.5 (no GFS group series)
+           bea_nipa: {table: T31600, lines: [14],
+                      note: "transportation, current expenditures (D26); Table 3.17 publishes gross investment by function at Level I only, so the capital part of 04.5 is not separable cell-for-cell (D-S16-005)"}}
   GF04_X: {level: derived, label: Economic affairs excluding transport,
            derived: GF04 - GF04_5, parent: GF04, minus: [GF04_5], never_forecast: true}
-  GF05:   {level: "1", label: Environmental protection, eurostat_cofog: GF05}
-  GF06:   {level: "1", label: Housing and community amenities, eurostat_cofog: GF06}
-  GF07:   {level: "1", label: Health, eurostat_cofog: GF07}
-  GF08:   {level: "1", label: Recreation culture and religion, eurostat_cofog: GF08}
-  GF09:   {level: "1", label: Education, eurostat_cofog: GF09}
-  GF10:   {level: "1", label: Social protection, eurostat_cofog: GF10}
-  GF10_2: {level: "2", label: Old age (pensions), eurostat_cofog: GF1002,
-           gfs_indicator: GF1020_T, parent: GF10}   # D-S13-002: COFOG 10.2
-  GF10_5: {level: "2", label: Unemployment, eurostat_cofog: GF1005,
-           gfs_indicator: GF1050_T, parent: GF10}   # D-S13-005: COFOG 10.5
+  GF05:   {level: "1", label: Environmental protection, eurostat_cofog: GF05, oecd_t11: GF05}
+  GF06:   {level: "1", label: Housing and community amenities, eurostat_cofog: GF06, oecd_t11: GF06}
+  GF07:   {level: "1", label: Health, eurostat_cofog: GF07, oecd_t11: GF07}
+  GF08:   {level: "1", label: Recreation culture and religion, eurostat_cofog: GF08, oecd_t11: GF08}
+  GF09:   {level: "1", label: Education, eurostat_cofog: GF09, oecd_t11: GF09}
+  GF10:   {level: "1", label: Social protection, eurostat_cofog: GF10, oecd_t11: GF10}
+  GF10_2: {level: "2", label: Old age (pensions), eurostat_cofog: GF1002, oecd_t11: GF1002,
+           gfs_indicator: GF1020_T, parent: GF10,   # D-S13-002: COFOG 10.2
+           bea_nipa: {table: T31600, lines: [38],
+                      note: "retirement (OASI incl. survivors' benefits, i.e. wider than 10.2 by 10.3's survivors; D26)"}}
+  GF10_5: {level: "2", label: Unemployment, eurostat_cofog: GF1005, oecd_t11: GF1005,
+           gfs_indicator: GF1050_T, parent: GF10,   # D-S13-005: COFOG 10.5
+           bea_nipa: {table: T31600, lines: [40],
+                      note: "unemployment (benefits plus administration; D26)"}}
   GF10_X: {level: derived, label: Social protection excluding old age and unemployment,
            derived: GF10 - GF10_2 - GF10_5, parent: GF10, minus: [GF10_2, GF10_5], never_forecast: true}
-  TE:     {level: total, label: Total expenditure, eurostat_na_item: TE}
+  TE:     {level: total, label: Total expenditure, eurostat_na_item: TE, oecd_t11: _T}
 
 expenditure_esa:   # classification = ESA_EXP (D-S13-003): TE by ESA 2010 economic type
   # Anchor cells: Eurostat gov_10a_main payable items (FRA, DEU); ONS ESA
   # Table 2 payable rows (GBR). `plus`/`minus` lists are summed at build;
   # a single-code line is an anchor_actual, a sum is a derived_actual.
   # Identity (V2): E01 + ... + E09 = TE_ESA exactly, every anchor year.
+  # `oecd_t12` (Stage U0, kickoff §4.2; D-S16-005): the OECD Table 12
+  # expenditure-flow TRANSACTION codes (DF_TABLE12_EXP, S13, payable) of the
+  # `oecd_sna` family — the SNA 2008 items under their ESA-equivalent codes.
+  # Measured on USA 1970-2024: E01..E09 = OTE to USD 0.002 mn in every year;
+  # D29, D5, D8, D39, D92 and D4N (= D4 - D41) are identically zero for the
+  # USA, so E07 = D7 and E08 = P5 + NP with P5 = P51G (P5M = 0).
   E01: {level: "1", esa: D.1, label: Compensation of employees,
-        eurostat_main: {plus: [D1PAY]}, ons_t2: {plus: [[D1, payable]]},
+        eurostat_main: {plus: [D1PAY]}, ons_t2: {plus: [[D1, payable]]}, oecd_t12: {plus: [D1]},
         ameco: UWCG, gfs_soo: G21_T}
   E02: {level: "1", esa: P.2, label: Intermediate consumption,
-        eurostat_main: {plus: [P2]}, ons_t2: {plus: [[P2, ""]]},
+        eurostat_main: {plus: [P2]}, ons_t2: {plus: [[P2, ""]]}, oecd_t12: {plus: [P2]},
         ameco: UCTGI, gfs_soo: G22_T}
   E03: {level: "1", esa: D.62, label: Social benefits other than social transfers in kind,
-        eurostat_main: {plus: [D62PAY]}, ons_t2: {plus: [[D62, payable]]},
+        eurostat_main: {plus: [D62PAY]}, ons_t2: {plus: [[D62, payable]]}, oecd_t12: {plus: [D62]},
         ameco: UYTGH}
   E04: {level: "1", esa: D.632, label: Social transfers in kind (purchased market production),
-        eurostat_main: {plus: [D632PAY]}, ons_t2: {plus: [[D632, payable]]},
+        eurostat_main: {plus: [D632PAY]}, ons_t2: {plus: [[D632, payable]]}, oecd_t12: {plus: [D632]},
         ameco: UYTGM}
   E05: {level: "1", esa: D.41 (uses), label: Interest payable,
-        eurostat_main: {plus: [D41PAY]}, ons_t2: {plus: [[D41, payable]]},
+        eurostat_main: {plus: [D41PAY]}, ons_t2: {plus: [[D41, payable]]}, oecd_t12: {plus: [D41]},
         ameco: UYIG, gfs_soo: G24_T, concept_flags: [d41_gross_accrued]}   # mirrors GF01_7 / R07 (D10)
   E06: {level: "1", esa: D.3, label: Subsidies,
-        eurostat_main: {plus: [D3PAY]}, ons_t2: {plus: [[D3P, payable]]},
+        eurostat_main: {plus: [D3PAY]}, ons_t2: {plus: [[D3P, payable]]}, oecd_t12: {plus: [D3]},
         ameco: UYVG, gfs_soo: G25_T}
   E07: {level: "1", esa: D.29 + D.5 + (D.4 - D.41) + D.7 + D.8,
         label: Other current expenditure,
         eurostat_main: {plus: [D29PAY, D5PAY, D4PAY, D7PAY, D8], minus: [D41PAY]},
         ons_t2: {plus: [[D29, payable], [D5, payable], [D4N, payable], [D7, payable]]},
+        oecd_t12: {plus: [D29, D5, D4, D7, D8], minus: [D41]},
         ameco: UUOG}
   E08: {level: "1", esa: P.5 + NP,
         label: Gross capital formation and net acquisition of non-produced assets,
-        eurostat_main: {plus: [P5, NP]}, ons_t2: {plus: [[P5, ""], [NP, ""]]},
+        eurostat_main: {plus: [P5, NP]}, ons_t2: {plus: [[P5, ""], [NP, ""]]}, oecd_t12: {plus: [P5, NP]},
         ameco: UIGG0, ameco_partial: true}   # UIGG0 is P.51G only — proxy (§7.8)
   E09: {level: "1", esa: D.9, label: Capital transfers payable,
-        eurostat_main: {plus: [D9PAY]}, ons_t2: {plus: [[D9, payable]]},
+        eurostat_main: {plus: [D9PAY]}, ons_t2: {plus: [[D9, payable]]}, oecd_t12: {plus: [D9]},
         ameco: UKOG, ameco_partial: true}    # UKTGT (D.9 exactly) has no forecast years; UKOG = D.9 + NP proxy
   TE_ESA: {level: total, esa: total, label: Total expenditure (ESA main aggregates),
-           eurostat_main: {plus: [TE]}, ons_t2: {plus: [[OTE, ""]]}, ameco: UUTG}
+           eurostat_main: {plus: [TE]}, ons_t2: {plus: [[OTE, ""]]}, oecd_t12: {plus: [OTE]}, ameco: UUTG}
 
 revenue:       # classification = ESA_REV (§4.2)
-  R01: {esa: D.211, label: Value added tax, eurostat: {dataset: gov_10a_taxag, code: D211}}
+  # `oecd_t12` / `oecd_t10` (Stage U0, kickoff §4.3; D-S16-005): the OECD
+  # Table 12 revenue-flow (DF_TABLE12_REV, receivable) and Table 10 (tax
+  # detail) TRANSACTION codes of the `oecd_sna` family. Measured on USA
+  # 1970-2024: OTR = D2 + D5 + D61 + D4 + D7 + D9 + D39 + P1O to USD 0.002 mn
+  # (P1O = "market output, output for own final use and payments for other
+  # non-market output" = P1M + P131 exactly, the ESA sales aggregate P.11 +
+  # P.12 + P.131); T10 D51M + D51O = D51 and D51 + D59 = D5 exactly (the
+  # "including holding gains" pair, the concept of D51A_C1 / D51B_C2 and of
+  # ONS D51M / D51O — chosen over T10 D51A / D51B, which exclude the
+  # holding-gains taxes D51C1 / D51C2); T12 D611 + D613 + D612_D614 = D61.
+  R01: {esa: D.211, label: Value added tax, eurostat: {dataset: gov_10a_taxag, code: D211},
+        oecd_t12: {code: D211}}   # USA: structural zero (D20; countries.yaml lines_absent)
   R02: {esa: D.2 - D.211, label: Other taxes on production and imports,
-        derived_from: {minuend: D2, subtrahend: D211}}
+        derived_from: {minuend: D2, subtrahend: D211}, oecd_t12: {minuend: D2, subtrahend: D211}}
   R02_A: {level: "2", esa: D.214A + D.2122C, label: Excise duties, parent: R02,   # D-S13-005
           # excise duties on domestic products (D.214A) plus excise duties levied on
           # imports (D.2122C): Germany books its energy tax on imported fuels under
@@ -90,36 +125,40 @@ revenue:       # classification = ESA_REV (§4.2)
           # and the national forecasts measure against; zero (GBR) or tiny (FRA) elsewhere
           eurostat: {dataset: gov_10a_taxag, codes: [D214A, D2122C]},
           ons: {table: ntl, codes: [D214A, D2122C]},
+          oecd_t10: {codes: [D214A]},   # USA: no D2122C cell in T10 (import duties are D2121)
           oecd_rs: [T_5121]}
   R02_X: {level: derived, label: Other taxes on production and imports excluding excise duties,
           derived: R02 - R02_A, parent: R02, minus: [R02_A], never_forecast: true}
   R03: {esa: D.51 households, label: Taxes on household income,
-        eurostat: {dataset: gov_10a_taxag, code: D51A_C1},
+        eurostat: {dataset: gov_10a_taxag, code: D51A_C1}, oecd_t10: {code: D51M},
         concept_flags: [tax_credits_net]}   # D17 watch
   R04: {esa: D.51 corporations, label: Taxes on corporate income,
-        eurostat: {dataset: gov_10a_taxag, code: D51B_C2}}
+        eurostat: {dataset: gov_10a_taxag, code: D51B_C2}, oecd_t10: {code: D51O}}
   R05: {esa: D.51 other + D.59 + D.91, label: Other current taxes and capital taxes,
         derived_from: {residual_of: D5, plus: [D59, D91]}}
   R06: {esa: D.61, label: Net social contributions,
-        eurostat: {dataset: gov_10a_main, code: D61}}   # §15 Q13 revisited by D-S13-005: split below
+        eurostat: {dataset: gov_10a_main, code: D61}, oecd_t12: {code: D61}}   # §15 Q13 revisited by D-S13-005: split below
   R06_E: {level: "2", esa: D.611, label: Employers' actual social contributions, parent: R06,
           eurostat: {dataset: gov_10a_main, codes: [D611REC]}, ons: {table: t2, codes: [D611], direction: receivable},
+          oecd_t12: {codes: [D611]},
           oecd_rs: [T_2200]}
   R06_H: {level: "2", esa: D.613, label: Households' actual social contributions, parent: R06,
           eurostat: {dataset: gov_10a_main, codes: [D613REC]}, ons: {table: t2, codes: [D613], direction: receivable},
+          oecd_t12: {codes: [D613]},
           oecd_rs: [T_2100, T_2300]}   # employees (2100) plus self-/non-employed (2300) = D.613
   R06_X: {level: derived, label: Imputed and supplementary social contributions (D.612 + D.614 - D.61SC),
           derived: R06 - R06_E - R06_H, parent: R06, minus: [R06_E, R06_H], never_forecast: true,
           may_be_negative: true}
   R07: {esa: D.41 resources, label: Interest receivable,
-        eurostat: {dataset: gov_10a_main, code: D41, direction: resources}}  # D10
+        eurostat: {dataset: gov_10a_main, code: D41, direction: resources}, oecd_t12: {code: D41}}  # D10
   R08: {esa: D.4 - D.41, label: Other property income,
-        derived_from: {minuend: D4, subtrahend: D41}, may_be_negative: true}
+        derived_from: {minuend: D4, subtrahend: D41}, oecd_t12: {minuend: D4, subtrahend: D41}, may_be_negative: true}
   R09: {esa: P.11 + P.12 + P.131, label: Sales of goods and services,
-        eurostat: {dataset: gov_10a_main, code: P11_P12_P131}}
+        eurostat: {dataset: gov_10a_main, code: P11_P12_P131}, oecd_t12: {code: P1O}}
   R10: {esa: D.39 + D.7 + D.92 + D.99, label: Other current and capital transfers receivable,
-        derived_from: {residual: true}, may_be_negative: true}
-  TR:  {level: total, esa: total, label: Total revenue, eurostat: {dataset: gov_10a_main, code: TR}}
+        derived_from: {residual: true}, oecd_t12: {plus: [D39, D7, D9], minus: [D91]}, may_be_negative: true}
+  TR:  {level: total, esa: total, label: Total revenue, eurostat: {dataset: gov_10a_main, code: TR},
+        oecd_t12: {code: OTR}}
 
 balance:       # classification = BALANCE (§4.3) — derived, never stitched
   TR:  {derived: sum of revenue lines / anchor TR}
