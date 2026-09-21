@@ -8,6 +8,7 @@ from pathlib import Path
 from ggfiscal import config
 
 COLUMNS = ["source_id", "institution", "object", "countries", "trees", "role",
+           "period_basis",   # R0 register key (D-S15-004), published since U0
            "url", "verification_status", "verification_checked",
            "last_update_observed", "latest_vintage", "concept_note", "notes"]
 
@@ -28,6 +29,7 @@ def build(path: Path | None = None) -> Path:
                 "countries": ";".join(src.get("countries", [])),
                 "trees": ";".join(src.get("trees", []) or [str(x) for x in src.get("lines", [])]),
                 "role": src.get("role", ""),
+                "period_basis": src.get("period_basis", "CY"),
                 "url": api.get("base") or api.get("landing") or src.get("landing", ""),
                 "verification_status": ver.get("status", ""),
                 "verification_checked": ver.get("checked", ""),

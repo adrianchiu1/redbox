@@ -195,7 +195,7 @@ sources:
     institution: IMF
     object: GFS COFOG and main aggregates (reconciliation only, D1)
     trees: [expenditure, revenue]
-    countries: [GBR, FRA, DEU]
+    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0 (kickoff §13; GFS_COFOG 1972-2024, GFS_SOO 1972-2025)
     role: reconciliation
     api:
       kind: sdmx
@@ -210,9 +210,9 @@ sources:
 
   OECD_T11:
     institution: OECD
-    object: Table 11 — annual government expenditure by function, COFOG (secondary)
+    object: Table 11 — annual government expenditure by function, COFOG (secondary for GBR/FRA/DEU; the COFOG ANCHOR of the oecd_sna family, D18 — USA 1970-2024, Level I only, no GF05 rows)
     trees: [expenditure]
-    countries: [GBR, FRA, DEU]
+    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0 (D-S16-004)
     role: secondary
     api:
       kind: sdmx
@@ -226,7 +226,7 @@ sources:
     institution: OECD
     object: Revenue Statistics, 1965– (backward extension R01–R06 via crosswalk, D15)
     trees: [revenue]
-    countries: [GBR, FRA, DEU]
+    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0 (1965-2024 S13 XDC)
     role: backward_extension
     api:
       kind: sdmx
@@ -241,7 +241,7 @@ sources:
     institution: IMF
     object: "WEO: GGR, GGX, GGXCNL, GGXONLB, NGDP (LCU); vintages actually exposed (Q11)"
     trees: [reconciliation]
-    countries: [GBR, FRA, DEU]
+    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0: fiscal series 2001-2031, NGDP 1980-2031; GFSM basis with documented adjustments (§8.2 perimeter rule)
     role: reconciliation_only          # §8 only; never an envelope or extension source (D4, D13)
     api:
       kind: sdmx
@@ -273,7 +273,7 @@ sources:
     institution: European Commission (DG ECFIN)
     object: "AMECO: TR, TE, B9, interest, D2, D5, D61 and sub-items, nominal GDP; 2-year forecast"
     trees: [envelope, revenue, expenditure]
-    countries: [GBR, FRA, DEU]
+    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0: chapters 6/16/18 carry USA on ESA names (values = OECD T12, scoping §3.2)
     role: envelope
     api:
       kind: bulk_zip
@@ -286,6 +286,285 @@ sources:
       checked: 2026-08-31
       last_update_observed: "2026-06-03"   # Spring 2026 Economic Forecast vintage
       note: live pull pending (OQ-1)
+
+  # ---------- United States (REPLICATION_KICKOFF.md §13.1; Stage U0, verified live
+  # ---------- 2026-09-21, D-S16-004). period_basis: FY on the federal October–
+  # ---------- September sources (CBO, OMB), CY otherwise. ----------
+
+  OECD_T12_EXP:
+    institution: OECD (BEA)
+    object: "Table 12 — annual government non-financial accounts, expenditure flow (DF_TABLE12_EXP): D1, P2, D62, D632, D41, D4, D3, D29, D5, D7, D8, D9, P5, P51G, NP, OTE; S13, XDC, UNIT_MULT 6"
+    trees: [expenditure_esa, balance]
+    countries: [USA]
+    role: anchor
+    period_basis: CY
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      dataflow: OECD.SDD.NAD,DSD_NASEC10@DF_TABLE12_EXP,1.1
+      note: 13-dim DSD_NASEC10, key A.{iso3}.S13.......... (one pull per country)
+    landing: https://data-explorer.oecd.org/?fs[0]=Topic%2C1%7CEconomy%23ECO%23%7CNational%20accounts%23ECO_NAC%23&pg=0&snb=54
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      last_observation: 2024
+      note: "USA 1970-2024 every item; E01..E09 = OTE to USD 0.002 mn in every year; D29, D5, D8, D39, D92, D4N, P5M identically zero; D632 identically zero (D20 E04)"
+
+  OECD_T12_REV:
+    institution: OECD (BEA)
+    object: "Table 12 — annual government non-financial accounts, revenue flow (DF_TABLE12_REV): D2, D21, D211, D29, D5, D61, D611, D613, D612_D614, D4, D41, D4N, D7, D9, D91, D39, P1O (= P1M + P131), OTR; S13, XDC"
+    trees: [revenue, balance]
+    countries: [USA]
+    role: anchor
+    period_basis: CY
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      dataflow: OECD.SDD.NAD,DSD_NASEC10@DF_TABLE12_REV,1.1
+      note: key A.{iso3}.S13..........
+    landing: https://data-explorer.oecd.org/?fs[0]=Topic%2C1%7CEconomy%23ECO%23%7CNational%20accounts%23ECO_NAC%23&pg=0&snb=54
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      last_observation: 2024
+      note: "USA 1970-2024; OTR = D2 + D5 + D61 + D4 + D7 + D9 + D39 + P1O to USD 0.002 mn; D211 identically zero (D20 R01); D611 + D613 + D612_D614 = D61"
+
+  OECD_T12_BAL:
+    institution: OECD (BEA)
+    object: "Table 12 — annual government non-financial accounts, balancing items (DF_TABLE12_BAL): B9 net lending, B8G/B8N saving, B2N operating surplus, B1G/B1N value added, B5N, B6N; S13, XDC"
+    trees: [balance]
+    countries: [USA]
+    role: anchor
+    period_basis: CY
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      dataflow: OECD.SDD.NAD,DSD_NASEC10@DF_TABLE12_BAL,1.1
+      note: key A.{iso3}.S13..........
+    landing: https://data-explorer.oecd.org/?fs[0]=Topic%2C1%7CEconomy%23ECO%23%7CNational%20accounts%23ECO_NAC%23&pg=0&snb=54
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      last_observation: 2024
+      note: "USA 1970-2024; B9 = OTR - OTE to USD 0.001 mn (V23 exact within source)"
+
+  OECD_T10:
+    institution: OECD (BEA)
+    object: "Table 10 — annual government taxes and social contributions receipts (DF_TABLE10): D51M/D51O (incl. holding gains), D51A/D51B/D51C1/D51C2, D214A, D2121, D29 splits, D59, D91, D611/D613/D612; S13, XDC"
+    trees: [revenue]
+    countries: [USA]
+    role: anchor_detail
+    period_basis: CY
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      dataflow: OECD.SDD.NAD,DSD_NASEC10@DF_TABLE10,1.1
+      note: key A.{iso3}.S13..........
+    landing: https://data-explorer.oecd.org/?fs[0]=Topic%2C1%7CEconomy%23ECO%23%7CNational%20accounts%23ECO_NAC%23&pg=0&snb=54
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      last_observation: 2024
+      note: "USA 1970-2024; D51M + D51O = D51 and D51 + D59 = D5 exactly; T10 D5 differs from T12 D5 by up to USD 5.8 bn in some years (transmission drift, lands in R05); T10 D61 differs from T12 D61 by up to 0.7 bn (R06 and its split take T12)"
+
+  OECD_T1:
+    institution: OECD
+    object: "Table 1 — annual GDP and components, expenditure approach (DF_TABLE1_EXPENDITURE): B1GQ, current prices (V), national currency (XDC), UNIT_MULT 6 — the D18 denominator, same vintage as the government tables"
+    trees: [denominator]
+    countries: [USA]
+    role: gdp
+    period_basis: CY
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      dataflow: OECD.SDD.NAD,DSD_NAMAIN10@DF_TABLE1_EXPENDITURE,2.0
+      note: "flow id resolved live 2026-09-21 from the OECD.SDD.NAD catalog (the §13 seed said 'to resolve in U0'): 12-dim DSD_NAMAIN10, key A.{iso3}...B1GQ.......; the reader keeps XDC / current prices"
+    landing: https://data-explorer.oecd.org/?fs[0]=Topic%2C1%7CEconomy%23ECO%23%7CNational%20accounts%23ECO_NAC%23&pg=0&snb=54
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      last_observation: 2025
+      note: "USA B1GQ 1970-2025; 2024 = USD 29,298,013 mn, equal to the OECD EO GDP series"
+
+  BEA_NIPA:
+    institution: BEA
+    object: "NIPA flat files: NipaDataA.txt (annual, 1929-), NipaDataQ.txt (quarterly), SeriesRegister.txt (series code -> table:line cells); Tables 3.1/3.2/3.3 (1929-2025), 3.16/3.17 by function (1959-2024), 3.18B (FY)"
+    trees: [expenditure, expenditure_esa, revenue]
+    countries: [USA]
+    role: secondary
+    period_basis: CY
+    concept_note: NIPA presentation — sales netted against consumption (TR/TE below the OECD grossed totals by ≈ USD 1.1 trn, §3); Table 3.16 is current expenditures (CFC in, investment out; never mixed with the ESA total without Table 3.17, §14); Level II proxies per D26 (level2_proxy_actual, B); 1929-1969 backward legs per §7.16; the only source with 2025
+    api:
+      kind: txt_flat_files
+      base: https://apps.bea.gov/national/Release/TXT
+      files: [NipaDataA.txt, NipaDataQ.txt, SeriesRegister.txt]
+      note: the BEA API needs a registered key and is not used (§14)
+    landing: https://apps.bea.gov/iTable/?reqid=19&step=2&isuri=1&categories=survey
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      last_update_observed: "2026-08-26"     # Last-Modified of the flat files
+      note: "register-driven lookup (readers_bea): T31600 lines 5 (interest payments), 14 (transportation), 38 (retirement), 40 (unemployment), total-government block; T31700 carries gross investment by function at Level I only"
+
+  FRB_Z1:
+    institution: Federal Reserve / BEA
+    object: "Z.1 Financial Accounts CSV bundle: S.1311 federal integrated macroeconomic accounts, F.106 / L.210 Treasury securities by holder"
+    trees: [debt]
+    countries: [USA]
+    role: debt_secondary
+    period_basis: CY
+    api:
+      kind: zip_download
+      landing: https://www.federalreserve.gov/releases/z1/
+      file: https://www.federalreserve.gov/releases/z1/current/z1_csv_files.zip
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      note: "8.3 MB zip snapshotted in U0 for the debt extension's step B (UD1); not read by the fiscal package"
+
+  OECD_EO:
+    institution: OECD
+    object: "Economic Outlook (DSD_EO@DF_EO,1.5): USA general-government measures YPGT, YPG, GGINTP, GGINTR, TYH, TYB, TIND, SSRG, SSPG, IGAA, TKPG, CGAA, NLGQ, GGFLQ, GDP — XDC in units (UNIT_MULT 0), ratios in PT_B1GQ"
+    trees: [envelope, expenditure_esa, revenue]
+    countries: [USA]
+    role: envelope
+    period_basis: CY
+    horizon_year: 2027
+    last_actual_year: 2025
+    concept_note: "SNA-like GG lines; EO totals differ from T12 OTR/OTE by concept (YPGT 2024 = 11.62 trn vs OTE 11.59 trn); GGINTP is the NIPA/IMA interest concept incl. imputed pension interest (1,397.6 bn 2024 vs T12 D41 1,384.6 bn); SSPG = D62 and SSRG = D61 and TIND = D2 exactly"
+    api:
+      kind: sdmx
+      base: https://sdmx.oecd.org/public/rest
+      dataflow: OECD.ECO.MAD,DSD_EO@DF_EO,1.5
+      note: key {iso3}.<M1>+<M2>+….A
+    landing: https://www.oecd.org/en/data/datasets/oecd-economic-outlook-statistics-and-projections.html
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      latest_vintage: "2026-06"          # EO 119 (June 2026)
+      note: "USA 1960-2027 on every measure; forecast rank 1/2 source for U3 (no reader for the envelope role yet — AMECO is the primary envelope, OECD_EO the second entry of envelope_forecast)"
+
+  OECD_EO_LTB:
+    institution: OECD
+    object: "Economic Outlook long-term baseline scenarios (balance, debt, interest rates to 2100, % GDP)"
+    countries: [USA]
+    role: memorandum
+    period_basis: CY
+    concept_note: memorandum only (§15 Q-K1 default); never a line source (D13)
+    api: {kind: sdmx, base: https://sdmx.oecd.org/public/rest, dataflow: OECD.ECO.MAD,DSD_EO_LTB@DF_EO_LTB}
+    landing: https://www.oecd.org/en/data/datasets/oecd-economic-outlook-statistics-and-projections.html
+    verification:
+      status: confirmed_live
+      checked: 2026-09-20
+      note: "registered per kickoff §13.1; not pulled in U0 (memorandum role, Q-K1)"
+
+  CBO_BASELINE:
+    institution: CBO (via its GitHub mirror US-CBO/eval-projections)
+    object: "baselines.csv — every CBO baseline projection since 1982 (outlays by category: Social Security, Medicare, Medicaid, other mandatory, discretionary, net interest; revenues by source); actuals.csv"
+    countries: [USA]
+    lines: [GF07, GF10_2, GF10, GF01_7, R03, R04, R06, envelope]
+    role: forecast_proxy
+    period_basis: FY                    # federal fiscal year, October–September (0.75/0.25 per §7.10)
+    horizon_year: 2036
+    concept_note: federal only, unified-budget cash basis, current law; sub-perimeter proxy per D22 — maximum_extension only, grade C (B where coverage_share >= 0.90 measured on the anchor); CBO preferred over OMB where both cover a line (§14)
+    api:
+      kind: csv_download
+      base: https://raw.githubusercontent.com/US-CBO/eval-projections/main/input_data/
+      files: [baselines.csv, actuals.csv]
+    landing: https://github.com/US-CBO/eval-projections
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      note: "raw.githubusercontent.com open (1.5 MB + 39 KB); www.cbo.gov itself is DataDome-blocked (CBO_SITE, D24)"
+
+  CBO_SITE:
+    institution: CBO
+    object: "cbo.gov: 10-year budget projection workbooks (outlays by function), NIPA-basis federal tables, 30-year Long-Term Budget Outlook"
+    countries: [USA]
+    lines: [GF07, GF10_2, R06, long_legs]
+    role: forecast_proxy
+    period_basis: FY
+    concept_note: the trigger for revisiting the US GF10_2, GF07 and R06 long legs (OQ-13)
+    landing: https://www.cbo.gov/data/budget-economic-data
+    verification:
+      status: blocked
+      checked: 2026-09-21
+      note: "www.cbo.gov returns 403 (DataDome challenge) to every client here, re-tested 2026-09-21 (D24); unblock = the D-S7-001 hand-retrieval route (committee downloads the workbooks in a browser, `ggfiscal ingest-file`), as for obr.uk"
+
+  OMB_BUDGET:
+    institution: OMB
+    object: "FY2027 Budget Historical Tables (xlsx): 1.1 receipts/outlays, 1.3 constant dollars and % GDP, 3.1 outlays by superfunction/function, 3.2 by function and subfunction incl. 901 gross interest, 14.1 total government receipts/expenditures by level (NIPA basis), 15.1 total government receipts/outlays % GDP"
+    countries: [USA]
+    lines: [GF01_7, GF02, GF07, GF10, envelope]
+    role: forecast_proxy
+    period_basis: FY                    # federal fiscal year, October–September
+    horizon_year: 2031
+    concept_note: federal, budget basis, administration policy scenario (scenario_label; CBO preferred where both cover a line, §14); subfunction 901 = federal gross interest; sub-perimeter proxy per D22, maximum only, grade C
+    api:
+      kind: xlsx_download
+      base: https://www.whitehouse.gov/wp-content/uploads/2026/04/
+      files: [hist01z1_fy2027.xlsx, hist01z3_fy2027.xlsx, hist03z1_fy2027.xlsx, hist03z2_fy2027.xlsx, hist14z1_fy2027.xlsx, hist15z1_fy2027.xlsx]
+      note: browser-like headers required (whitehouse.gov serves a challenge page to bare clients); file names resolved from the historical-tables page 2026-09-21
+    landing: https://www.whitehouse.gov/omb/information-resources/budget/historical-tables/
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      latest_vintage: "2026-04"
+      note: "six workbooks snapshotted with BROWSER_HEADERS; the Public Budget Database is not pulled in U0"
+
+  CMS_TRUSTEES:
+    institution: CMS Office of the Actuary
+    object: "2026 Medicare Trustees Report expanded supplementary tables (CSV zip): HI / SMI operations by calendar year, 75-year projections as % of GDP"
+    countries: [USA]
+    lines: [GF07, R06]
+    role: forecast_proxy
+    period_basis: CY
+    horizon_year: 2034
+    concept_note: trust-fund perimeter — the Medicare component of COFOG GF07 (HI + SMI benefits) and the HI payroll-tax component of R06; grade B where the measured share >= 0.90 else C (D22; strict only if the composite closes)
+    api:
+      kind: zip_download
+      landing: https://www.cms.gov/data-research/statistics-trends-and-reports/trustees-report-trust-funds
+      file: https://www.cms.gov/files/zip/2026-expanded-supplementary-tables-figures.zip
+    verification:
+      status: confirmed_live
+      checked: 2026-09-21
+      latest_vintage: "2026"
+      note: "687 KB zip snapshotted in U0; readers arrive with U4"
+
+  SSA_TRUSTEES:
+    institution: SSA Office of the Chief Actuary
+    object: "OASDI Trustees Report single-year tables (OASI benefits -> GF10_2 component; payroll tax -> R06 component) to 2100"
+    countries: [USA]
+    lines: [GF10_2, R06]
+    role: forecast_proxy
+    period_basis: CY
+    landing: https://www.ssa.gov/oact/TR/2026/
+    verification:
+      status: blocked
+      checked: 2026-09-21
+      note: "www.ssa.gov returns 403 (Akamai) on every path, re-tested 2026-09-21 (D24, OQ-13); unblock = the D-S7-001 hand-retrieval route (`ggfiscal ingest-file`)"
+
+  CENSUS_GOVFIN:
+    institution: US Census Bureau
+    object: "Annual Survey of State and Local Government Finances (1992- online)"
+    countries: [USA]
+    lines: []
+    role: not_used
+    period_basis: CY                    # state fiscal years vary and are already converted by BEA (§14)
+    concept_note: state and local cash finances, grade D — not used (kickoff §13.1)
+    landing: https://www.census.gov/programs-surveys/gov-finances.html
+    verification: {status: confirmed_live, checked: 2026-09-20, note: "registered per kickoff §13.1; not pulled (grade D, not used)"}
+
+  BLS_CPI:
+    institution: BLS
+    object: "CPI-U NSA, all items (CUUR0000SA0), monthly from 1913 — TIPS index-ratio recomputation before May 2008 (debt extension DD9)"
+    countries: [USA]
+    lines: [debt_reference]
+    role: debt_reference
+    period_basis: CY
+    api: {kind: json_api, base: https://api.bls.gov/publicAPI/v2/timeseries/data/, series: CUUR0000SA0}
+    landing: https://www.bls.gov/cpi/
+    verification: {status: confirmed_live, checked: 2026-09-20, note: "registered per kickoff §13.1; pulled by the debt extension (UD0), not in U0"}
 
   # ---------- Forecast (Stage 3+; registered now, verified before use) ----------
 
