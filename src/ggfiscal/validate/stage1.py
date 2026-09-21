@@ -16,7 +16,18 @@ from ggfiscal.build import load_ledger, load_trees
 from ggfiscal.validate.runner import Finding
 
 VARIANTS = ("strict", "maximum_extension")
-NEGATIVE_OK = {"R08", "R10", "R06_X"}  # lines; ledger NLB/NI/PB handled separately
+
+
+def _negative_ok() -> set[str]:
+    """Lines the anchors legitimately publish negative (`may_be_negative`
+    in lines.yaml: R08, R10, R06_X; E07 since U0 for the USA's 1991 D.7
+    payable); ledger NLB/NI/PB are handled separately. Read from config
+    rather than a literal set (Stage U0, D-S16-009)."""
+    return {code for cls in config.TREES
+            for code, meta in config.tree_lines(cls).items() if meta.get("may_be_negative")}
+
+
+NEGATIVE_OK = _negative_ok()
 REV_LINES = [f"R{n:02d}" for n in range(1, 11)]
 EXP_LINES = [f"GF{n:02d}" for n in range(1, 11)]
 EXP_ESA_LINES = [f"E{n:02d}" for n in range(1, 10)]   # ESA_EXP (D-S13-003)
@@ -119,8 +130,9 @@ def check_v3() -> list[Finding]:
 
 def check_v4() -> list[Finding]:
     out = []
+    negative_ok = _negative_ok()
     for variant, df in _tables().items():
-        bad = df[(df.value_lcu_mn < 0) & ~df.line_code.isin(NEGATIVE_OK)]
+        bad = df[(df.value_lcu_mn < 0) & ~df.line_code.isin(negative_ok)]
         for _, r in bad.iterrows():
             out.append(Finding("V4", "ERROR",
                                f"{r.iso3}/{r.line_code}/{r.year}/{variant}",

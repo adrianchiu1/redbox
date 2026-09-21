@@ -27,7 +27,7 @@ def write(path: Path | None = None, variant: str = "strict") -> Path:
     led = led[led.series_variant == variant]
 
     n_rows = len(LINE_ORDER) + 1  # + ledger row
-    fig = make_subplots(rows=n_rows, cols=3,
+    fig = make_subplots(rows=n_rows, cols=len(config.COUNTRIES),   # one column per configured country (U0)
                         column_titles=list(config.COUNTRIES),
                         row_titles=LINE_ORDER + ["NLB"],
                         shared_xaxes=False, vertical_spacing=0.004)

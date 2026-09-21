@@ -13,7 +13,10 @@ from ggfiscal.debt import aggregates, chains, countries as DC, intermediates, re
 
 def test_every_country_is_declared_with_its_engine_modules():
     cfg = DC.configured()
-    assert set(cfg) == set(config.COUNTRIES)
+    # the debt extension declares its own countries in config/debt.yaml: the
+    # three parent countries; the USA (fiscal Stage U0) joins with UD0
+    assert set(cfg) <= set(config.COUNTRIES)
+    assert set(cfg) == {"GBR", "FRA", "DEU"}
     assert list(cfg) == ["DEU", "GBR", "FRA"]        # the engines' historical concatenation order
     for iso3, c in cfg.items():
         for role in ("register", "aggregates", "official_totals"):

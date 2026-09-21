@@ -71,11 +71,15 @@ def test_esa_exp_identity_and_every_level2_split_hold_in_every_anchor_year():
                 assert (total - full[sp["parent"]]).abs().max() < 1e-6 * full[sp["parent"]].abs().max()
                 for c in sp["level2s"]:
                     assert (full[c] <= full[sp["parent"]]).all(), (iso3, c)
-            # old age is the largest single COFOG group everywhere
+            # old age is the largest single COFOG group everywhere: above 0.4
+            # of GF10 on the anchors' own Level II tables; the USA's D26 proxy
+            # (OASI retirement, Table 3.16) measures 0.36-0.58 — the 2020-21
+            # pandemic transfers swell GF10 — so the floor is 0.3 there
             g = trees["COFOG"]
             g = g[(g.iso3 == iso3) & (g.anchor_year == g.year)].pivot_table(
                 index="year", columns="line_code", values="value_lcu_mn").dropna(subset=["GF10", "GF10_2"])
-            assert (g.GF10_2 / g.GF10 > 0.4).all(), (iso3, variant)
+            floor = 0.3 if config.level2_source(iso3) else 0.4
+            assert (g.GF10_2 / g.GF10 > floor).all(), (iso3, variant)
 
 
 def test_history_only_all_grade_a_or_b_no_forecasts():
@@ -92,8 +96,17 @@ def test_history_only_all_grade_a_or_b_no_forecasts():
         # and their GF01_X); every other B row is a Stage 2 backward stitch
         anchor_era = df[df.anchor_year == df.year]
         b_anchor = anchor_era[anchor_era.quality_grade == "B"]
-        assert set(b_anchor.iso3) <= {"DEU"}
-        assert set(b_anchor.line_code) <= {"GF01_7", "GF01_X"}
+        # ... and, since U0, the D26 Level II proxy years of a country whose
+        # config names a `level2_source` (USA: every Level II line and its
+        # remainder, level2_proxy_actual / derived_actual at B)
+        for iso3 in set(b_anchor.iso3):
+            lines = set(b_anchor[b_anchor.iso3 == iso3].line_code)
+            if config.level2_source(iso3):
+                l2 = {c for sp in config.level2_splits("COFOG") for c in sp["level2s"]}
+                rem = {sp["remainder"] for sp in config.level2_splits("COFOG")}
+                assert lines <= l2 | rem, (iso3, lines)
+            else:
+                assert iso3 == "DEU" and lines <= {"GF01_7", "GF01_X"}, (iso3, lines)
 
 
 def test_v_suite_green_at_stage_1():

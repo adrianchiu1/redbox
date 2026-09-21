@@ -38,16 +38,33 @@ def _intersect(*series: pd.Series) -> pd.Series:
 
 
 # The anchor family's own description of its cells in the coverage matrix
-COFOG_ANCHOR_NOTE = {"ons": "anchor; OTE per function", "eurostat": "anchor; na_item TE"}
+COFOG_ANCHOR_NOTE = {"ons": "anchor; OTE per function", "eurostat": "anchor; na_item TE",
+                     "oecd_sna": "anchor; OECD Table 11 OTE per function (D18)"}
 D41_FALLBACK_NOTE = {"ons": "D10 fallback concept: GG D.41 payable, accrued",
-                     "eurostat": "D10 fallback concept: GG D.41 payable"}
+                     "eurostat": "D10 fallback concept: GG D.41 payable",
+                     "oecd_sna": "D10 fallback concept: GG D.41 payable (OECD Table 12); "
+                                 "= the D26 interest proxy by construction"}
+
+def _level2_proxy_candidates(iso3: str, l2: str, meta: dict) -> list[tuple[str, pd.Series, str]]:
+    """The D26 Level II proxy candidate of one COFOG Level II line for a
+    country whose config names a `level2_source` (USA: NIPA Table 3.16
+    sub-functions via standardise.proxies / readers_bea); empty for the
+    other countries. Config-driven: no site names a country."""
+    from ggfiscal.standardise.proxies import level2_proxy
+
+    proxy = level2_proxy(iso3, l2, meta)
+    if proxy is None:
+        return []
+    series, source_id, note = proxy
+    return [(source_id, series, f"Level II proxy candidate (D26, level2_proxy_actual B): {note}")]
 
 
 def _cofog_sources(iso3: str, gf: str, gfs_ind: str) -> list[tuple[str, pd.Series, str]]:
     """(source_id, series, note) candidates for one COFOG line."""
     fam = config.family(iso3)
     out = [(fam.expenditure_source, fam.cofog(iso3, gf), COFOG_ANCHOR_NOTE[fam.name])]
-    out.append(("OECD_T11", R.oecd_t11_cofog(iso3, gf), "secondary; S13 XDC OTE"))
+    if fam.expenditure_source != "OECD_T11":     # the OECD family's anchor IS Table 11
+        out.append(("OECD_T11", R.oecd_t11_cofog(iso3, gf), "secondary; S13 XDC OTE"))
     out.append(("IMF_GFS", R.gfs_series(iso3, "cofog", gfs_ind),
                 "reconciliation; GFSM XDC"))
     return out
@@ -69,7 +86,7 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
             continue
         plus, minus = fam.esa_exp_parts(iso3, meta)
         parts = plus + minus
-        anchor_id = fam.main_source
+        anchor_id = fam.esa_exp_source
         entries = [(anchor_id, _intersect(*parts) if len(parts) > 1 else parts[0],
                     f"anchor; {meta['esa']}")]
         if meta.get("ameco"):
@@ -124,6 +141,8 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
                 entries = _cofog_sources(iso3, meta["eurostat_cofog"], meta["gfs_indicator"])
                 if not meta["gfs_indicator"]:
                     entries = [e for e in entries if e[0] != "IMF_GFS"]
+                # D26: the secondary national proxy where the anchor publishes no Level II
+                entries += _level2_proxy_candidates(iso3, l2, meta)
                 if l2 == "GF01_7":
                     entries.append((fam.interest_history_source, fam.d41_payable(iso3),
                                     D41_FALLBACK_NOTE[fam.name]))
@@ -144,7 +163,11 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
                     entries.append(("OECD_RS", R.oecd_rs_heading(iso3, heading),
                                     f"backward extension; OECD heading {heading}"))
             out[(cls, l2)] = entries
-            components.append(entries[0][1])
+            # the remainder is buildable where the parent and every Level II
+            # line have a source: the anchor cell where the family publishes
+            # one (the first entry), otherwise the first measurable candidate
+            # (the D26 proxy / D10 fallback of a family without Level II)
+            components.append(next((s for _, s, _ in entries if not s.empty), entries[0][1]))
         if cls == "COFOG":
             parent_series = fam.cofog(iso3, parent)
             anchor = fam.expenditure_source

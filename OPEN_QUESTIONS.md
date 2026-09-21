@@ -390,3 +390,36 @@ tests pass without snapshots. The debt layer was not rebuilt in R0 (its
 `debt_*.csv` are the committed ones). **Ask:** none for the committee. The
 next session runs `ggfiscal debt fetch` before `pytest` to see the full
 suite green, or records the same skip. Not a blocker for U0.
+
+## OQ-15 — US COFOG 04.5 (transport) proxy: NIPA publishes gross investment by function at Level I only (NEW, informational; from D26 / D-S16-005, Stage U0)
+Raised 2026-09-21 (session 14, Stage U0). D26 defines the USA `GF04_5` proxy
+as "transportation (current plus gross investment)". NIPA Table 3.16 carries
+transportation as a current-expenditure sub-function (line 14 of the
+total-government block, 1959–2024; 0.27 of Table 11 GF04 in 2024). Table 3.17
+carries gross government investment by function for the nine Level I
+functions only (lines 105–133) and capital transfer payments by function
+(lines 134–145, incl. transportation at 137); no gross-investment cell for
+transportation exists in the flat files. The U0 proxy is therefore the
+current-expenditure cell alone (`bea_nipa: {table: T31600, lines: [14]}`),
+grade B, concept note recorded; the missing capital part is a known
+under-coverage of 04.5 (highways and transit investment sit inside Economic
+affairs gross investment, line 109). **Ask:** accept the current-expenditure
+proxy for 04.5 (default, no further construction — D13), or have U1 look for
+a gross-investment-by-subfunction table in the NIPA underlying detail (the
+underlying-detail flat file was 403 on 2026-09-20, scoping §3.1). Not a
+blocker for Gate U0 (coverage holds).
+
+## OQ-16 — The WEO perimeter rule for the USA does not hold as a stable gap: V24 WARN on every vintage (NEW, informational; from kickoff §8.2, D-S16-011)
+Raised 2026-09-21 (session 14, Stage U0). Kickoff §8.2 applies the GBR
+stability rule to the USA (`weo_perimeter_gap_expected: true`). Measured on
+the latest vintage (2026-04, base year 2024, 24 overlap years 2001–2024): the
+WEO's GGR sits ≈ 4.2% of TE below the OECD OTR and GGX ≈ 4–8.6% of TE below
+OTE; the NLB gap ratio averages −2.34% of TE with a sigma of 1.51 (tolerance
+`perimeter_sigma_pct_te` 0.5), so 12 of 24 years classify `unexplained`
+(2001–06, 2009, 2017 — the repatriation-tax year — and 2021–24). The WEO US
+series are GFSM-basis with documented adjustments, not a constant perimeter
+difference. The bridge is computed and reported (S0_BRIDGE OK); V24 WARNs are
+intended visibility. **Ask (U5):** keep the stability rule with the WARN, or
+widen `perimeter_sigma_pct_te` for the USA per the measured 1.5, or classify
+the WEO-vs-OECD gap by a third rule (the GFSM adjustments are documented per
+year by the IMF). Default: keep the rule and the WARN; nothing absorbed.

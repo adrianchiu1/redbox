@@ -82,7 +82,7 @@ def test_gate5_net_interest_check_present_everywhere(explanation, ni):
 def test_gate5_residual_history_populated(residuals):
     assert set(residuals.weo_vintage) == set(weo_vintages())
     for vintage in weo_vintages():
-        for iso3 in config.COUNTRIES:
+        for iso3 in config.countries_at_stage(5):   # the USA has no forecast side until U5 (D-S16-008)
             for variant in VARIANTS:
                 sub = residuals[(residuals.weo_vintage == vintage)
                                 & (residuals.iso3 == iso3)

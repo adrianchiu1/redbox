@@ -7,7 +7,7 @@ GBR,COFOG,GF01_7,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 GBR,COFOG,GF01_7,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
 GBR,COFOG,GF01_7,ONS_PSF_INTEREST,1990,2025,36,measured,"D10 fallback concept: GG D.41 payable, accrued"
 GBR,COFOG,GF01_7,EC_AMECO,1987,2027,41,measured,envelope forecast source; ESA gross GG interest (D.41 pay)
-GBR,COFOG,GF01_X,ONS_ESA_T11,1995,2024,30,measured,derived GF01 - GF01_7; years where both exist | D7: no identified forecast source
+GBR,COFOG,GF01_X,ONS_ESA_T11,1995,2024,30,measured,derived GF01 - GF01_7; years where all exist | D7: no identified forecast source
 GBR,COFOG,GF02,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
 GBR,COFOG,GF02,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 GBR,COFOG,GF02,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
@@ -17,6 +17,9 @@ GBR,COFOG,GF03,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no i
 GBR,COFOG,GF04,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
 GBR,COFOG,GF04,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
 GBR,COFOG,GF04,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+GBR,COFOG,GF04_5,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
+GBR,COFOG,GF04_5,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+GBR,COFOG,GF04_X,ONS_ESA_T11,1995,2024,30,measured,derived GF04 - GF04_5; years where all exist | D7: no identified forecast source
 GBR,COFOG,GF05,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
 GBR,COFOG,GF05,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
 GBR,COFOG,GF05,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
@@ -35,12 +38,45 @@ GBR,COFOG,GF09,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
 GBR,COFOG,GF10,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
 GBR,COFOG,GF10,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 GBR,COFOG,GF10,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,COFOG,GF10_2,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function
+GBR,COFOG,GF10_2,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+GBR,COFOG,GF10_2,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC
+GBR,COFOG,GF10_2,OBR_HIST_PF,1979,2022,44,measured,"backward extension candidate; public-sector pensioner spending, FY converted (D-S13-005)"
+GBR,COFOG,GF10_5,ONS_ESA_T11,1995,2024,30,measured,anchor; OTE per function | D7: no identified forecast source
+GBR,COFOG,GF10_5,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+GBR,COFOG,GF10_5,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+GBR,COFOG,GF10_X,ONS_ESA_T11,1995,2024,30,measured,derived GF10 - GF10_2 - GF10_5; years where all exist | D7: no identified forecast source
+GBR,ESA_EXP,E01,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.1
+GBR,ESA_EXP,E01,EC_AMECO,2026,2027,2,measured,AMECO UWCG; backward extension and forecast
+GBR,ESA_EXP,E01,IMF_GFS,1973,2024,52,measured,reconciliation; GFSM G21_T
+GBR,ESA_EXP,E02,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; P.2
+GBR,ESA_EXP,E02,EC_AMECO,2026,2027,2,measured,AMECO UCTGI; backward extension and forecast
+GBR,ESA_EXP,E02,IMF_GFS,1973,2024,52,measured,reconciliation; GFSM G22_T
+GBR,ESA_EXP,E03,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.62
+GBR,ESA_EXP,E03,EC_AMECO,1987,2027,41,measured,AMECO UYTGH; backward extension and forecast
+GBR,ESA_EXP,E04,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.632
+GBR,ESA_EXP,E04,EC_AMECO,1987,2027,41,measured,AMECO UYTGM; backward extension and forecast
+GBR,ESA_EXP,E05,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.41 (uses)
+GBR,ESA_EXP,E05,EC_AMECO,1987,2027,41,measured,AMECO UYIG; backward extension and forecast
+GBR,ESA_EXP,E05,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM G24_T
+GBR,ESA_EXP,E06,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.3
+GBR,ESA_EXP,E06,EC_AMECO,1987,2027,41,measured,AMECO UYVG; backward extension and forecast
+GBR,ESA_EXP,E06,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM G25_T
+GBR,ESA_EXP,E07,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.29 + D.5 + (D.4 - D.41) + D.7 + D.8
+GBR,ESA_EXP,E07,EC_AMECO,2026,2027,2,measured,AMECO UUOG; backward extension and forecast
+GBR,ESA_EXP,E08,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; P.5 + NP
+GBR,ESA_EXP,E08,EC_AMECO,1987,2027,41,measured,"AMECO UIGG0; backward extension and forecast (partial component, §7.8 proxy)"
+GBR,ESA_EXP,E09,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.9
+GBR,ESA_EXP,E09,EC_AMECO,1987,2027,41,measured,"AMECO UKOG; backward extension and forecast (partial component, §7.8 proxy)"
 GBR,ESA_REV,R01,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.211 receivable
 GBR,ESA_REV,R01,ONS_TAX_DETAIL,1995,2025,31,measured,NTL detail
 GBR,ESA_REV,R01,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5111 VAT
 GBR,ESA_REV,R01,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 11411 VAT
 GBR,ESA_REV,R02,ONS_GG_RECEIPTS,1990,2025,36,measured,derived D.2 - D.211
 GBR,ESA_REV,R02,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5000 taxes on goods and services (minus VAT in crosswalk)
+GBR,ESA_REV,R02_A,ONS_TAX_DETAIL,1995,2025,31,measured,"anchor; NTL table 9 D214A + D2122C (per-tax detail table; the parent comes from ESA Table 2, so any drift lands in the remainder)"
+GBR,ESA_REV,R02_A,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_5121
+GBR,ESA_REV,R02_X,ONS_GG_RECEIPTS,1995,2025,31,measured,derived R02 - R02_A; years where all exist | D7: no identified forecast source
 GBR,ESA_REV,R03,ONS_GG_RECEIPTS,1990,2025,36,measured,D51M = household income taxes incl. holding gains
 GBR,ESA_REV,R03,ONS_TAX_DETAIL,1995,2025,31,measured,NTL detail
 GBR,ESA_REV,R03,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1100 taxes on income of individuals
@@ -54,6 +90,12 @@ GBR,ESA_REV,R05,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 4
 GBR,ESA_REV,R06,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; D.61 receivable | D7 partial: imputed component
 GBR,ESA_REV,R06,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 2000 social security contributions | D7 partial: imputed component
 GBR,ESA_REV,R06,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM 12 social contributions | D7 partial: imputed component
+GBR,ESA_REV,R06_E,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; ESA Table 2 D611 receivable
+GBR,ESA_REV,R06_E,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2200
+GBR,ESA_REV,R06_H,ONS_GG_RECEIPTS,1990,2025,36,measured,anchor; ESA Table 2 D613 receivable
+GBR,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2100
+GBR,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2300
+GBR,ESA_REV,R06_X,ONS_GG_RECEIPTS,1990,2025,36,measured,derived R06 - R06_E - R06_H; years where all exist | D7: no identified forecast source
 GBR,ESA_REV,R07,ONS_GG_RECEIPTS,1990,2025,36,measured,"anchor; D.41 receivable, accrued"
 GBR,ESA_REV,R07,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 1411 interest revenue
 GBR,ESA_REV,R08,ONS_GG_RECEIPTS,1990,2025,36,measured,derived D.4 - D.41 receivable | D7: no identified forecast source
@@ -67,7 +109,7 @@ FRA,COFOG,GF01_7,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 FRA,COFOG,GF01_7,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
 FRA,COFOG,GF01_7,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,D10 fallback concept: GG D.41 payable
 FRA,COFOG,GF01_7,EC_AMECO,1978,2027,50,measured,envelope forecast source; ESA gross GG interest (D.41 pay)
-FRA,COFOG,GF01_X,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,derived GF01 - GF01_7; years where both exist | D7: no identified forecast source
+FRA,COFOG,GF01_X,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,derived GF01 - GF01_7; years where all exist | D7: no identified forecast source
 FRA,COFOG,GF02,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
 FRA,COFOG,GF02,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 FRA,COFOG,GF02,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
@@ -77,6 +119,9 @@ FRA,COFOG,GF03,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no i
 FRA,COFOG,GF04,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
 FRA,COFOG,GF04,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
 FRA,COFOG,GF04,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+FRA,COFOG,GF04_5,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+FRA,COFOG,GF04_5,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+FRA,COFOG,GF04_X,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,derived GF04 - GF04_5; years where all exist | D7: no identified forecast source
 FRA,COFOG,GF05,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
 FRA,COFOG,GF05,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
 FRA,COFOG,GF05,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
@@ -95,12 +140,45 @@ FRA,COFOG,GF09,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
 FRA,COFOG,GF10,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
 FRA,COFOG,GF10,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 FRA,COFOG,GF10,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,COFOG,GF10_2,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
+FRA,COFOG,GF10_2,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
+FRA,COFOG,GF10_2,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC
+FRA,COFOG,GF10_2,EC_AGEING_2024,2022,2070,49,measured,"forecast source; AWG gross public pensions, % GDP"
+FRA,COFOG,GF10_5,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
+FRA,COFOG,GF10_5,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+FRA,COFOG,GF10_5,IMF_GFS,1995,2023,29,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+FRA,COFOG,GF10_X,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,derived GF10 - GF10_2 - GF10_5; years where all exist | D7: no identified forecast source
+FRA,ESA_EXP,E01,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.1
+FRA,ESA_EXP,E01,EC_AMECO,1978,2027,50,measured,AMECO UWCG; backward extension and forecast
+FRA,ESA_EXP,E01,IMF_GFS,1978,2024,47,measured,reconciliation; GFSM G21_T
+FRA,ESA_EXP,E02,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; P.2
+FRA,ESA_EXP,E02,EC_AMECO,1978,2027,50,measured,AMECO UCTGI; backward extension and forecast
+FRA,ESA_EXP,E02,IMF_GFS,1978,2024,47,measured,reconciliation; GFSM G22_T
+FRA,ESA_EXP,E03,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.62
+FRA,ESA_EXP,E03,EC_AMECO,1978,2027,50,measured,AMECO UYTGH; backward extension and forecast
+FRA,ESA_EXP,E04,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.632
+FRA,ESA_EXP,E04,EC_AMECO,1978,2027,50,measured,AMECO UYTGM; backward extension and forecast
+FRA,ESA_EXP,E05,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.41 (uses)
+FRA,ESA_EXP,E05,EC_AMECO,1978,2027,50,measured,AMECO UYIG; backward extension and forecast
+FRA,ESA_EXP,E05,IMF_GFS,1978,2024,47,measured,reconciliation; GFSM G24_T
+FRA,ESA_EXP,E06,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.3
+FRA,ESA_EXP,E06,EC_AMECO,1978,2027,50,measured,AMECO UYVG; backward extension and forecast
+FRA,ESA_EXP,E06,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM G25_T
+FRA,ESA_EXP,E07,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.29 + D.5 + (D.4 - D.41) + D.7 + D.8
+FRA,ESA_EXP,E07,EC_AMECO,1978,2027,50,measured,AMECO UUOG; backward extension and forecast
+FRA,ESA_EXP,E08,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; P.5 + NP
+FRA,ESA_EXP,E08,EC_AMECO,1978,2027,50,measured,"AMECO UIGG0; backward extension and forecast (partial component, §7.8 proxy)"
+FRA,ESA_EXP,E09,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.9
+FRA,ESA_EXP,E09,EC_AMECO,1978,2027,50,measured,"AMECO UKOG; backward extension and forecast (partial component, §7.8 proxy)"
 FRA,ESA_REV,R01,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.211 (D-S1-002)
 FRA,ESA_REV,R01,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
 FRA,ESA_REV,R01,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5111 VAT
 FRA,ESA_REV,R01,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 11411 VAT
 FRA,ESA_REV,R02,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.2 - D.211
 FRA,ESA_REV,R02,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5000 taxes on goods and services (minus VAT in crosswalk)
+FRA,ESA_REV,R02_A,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,"anchor; gov_10a_taxag D214A + D2122C (detail table; the parent comes from gov_10a_main, so any drift lands in the remainder, D-S1-002)"
+FRA,ESA_REV,R02_A,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_5121
+FRA,ESA_REV,R02_X,EUROSTAT_GOV10A_MAIN,1995,2024,30,measured,derived R02 - R02_A; years where all exist | D7: no identified forecast source
 FRA,ESA_REV,R03,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; household income taxes incl. holding gains
 FRA,ESA_REV,R03,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
 FRA,ESA_REV,R03,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1100 taxes on income of individuals
@@ -114,6 +192,12 @@ FRA,ESA_REV,R05,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 4
 FRA,ESA_REV,R06,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.61 resources | D7 partial: imputed component
 FRA,ESA_REV,R06,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 2000 social security contributions | D7 partial: imputed component
 FRA,ESA_REV,R06,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM 12 social contributions | D7 partial: imputed component
+FRA,ESA_REV,R06_E,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; gov_10a_main D611REC
+FRA,ESA_REV,R06_E,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2200
+FRA,ESA_REV,R06_H,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; gov_10a_main D613REC
+FRA,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2100
+FRA,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2300
+FRA,ESA_REV,R06_X,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived R06 - R06_E - R06_H; years where all exist | D7: no identified forecast source
 FRA,ESA_REV,R07,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.41 resources
 FRA,ESA_REV,R07,IMF_GFS,1995,2024,30,measured,reconciliation; GFSM 1411 interest revenue
 FRA,ESA_REV,R08,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.4 - D.41 resources | D7: no identified forecast source
@@ -127,7 +211,7 @@ DEU,COFOG,GF01_7,OECD_T11,2000,2024,25,measured,secondary; S13 XDC OTE
 DEU,COFOG,GF01_7,IMF_GFS,2000,2024,25,measured,reconciliation; GFSM XDC
 DEU,COFOG,GF01_7,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,D10 fallback concept: GG D.41 payable
 DEU,COFOG,GF01_7,EC_AMECO,1991,2027,37,measured,envelope forecast source; ESA gross GG interest (D.41 pay)
-DEU,COFOG,GF01_X,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,derived GF01 - GF01_7; years where both exist | D7: no identified forecast source
+DEU,COFOG,GF01_X,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,derived GF01 - GF01_7; years where all exist | D7: no identified forecast source
 DEU,COFOG,GF02,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
 DEU,COFOG,GF02,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 DEU,COFOG,GF02,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
@@ -137,6 +221,9 @@ DEU,COFOG,GF03,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no i
 DEU,COFOG,GF04,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
 DEU,COFOG,GF04,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
 DEU,COFOG,GF04,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+DEU,COFOG,GF04_5,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,anchor; na_item TE | D7: no identified forecast source
+DEU,COFOG,GF04_5,OECD_T11,2000,2024,25,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+DEU,COFOG,GF04_X,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,derived GF04 - GF04_5; years where all exist | D7: no identified forecast source
 DEU,COFOG,GF05,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE | D7: no identified forecast source
 DEU,COFOG,GF05,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE | D7: no identified forecast source
 DEU,COFOG,GF05,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC | D7: no identified forecast source
@@ -155,12 +242,45 @@ DEU,COFOG,GF09,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
 DEU,COFOG,GF10,EUROSTAT_GOV10A_EXP,1995,2024,30,measured,anchor; na_item TE
 DEU,COFOG,GF10,OECD_T11,1995,2024,30,measured,secondary; S13 XDC OTE
 DEU,COFOG,GF10,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM XDC
+DEU,COFOG,GF10_2,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,anchor; na_item TE
+DEU,COFOG,GF10_2,OECD_T11,2000,2024,25,measured,secondary; S13 XDC OTE
+DEU,COFOG,GF10_2,IMF_GFS,2000,2024,25,measured,reconciliation; GFSM XDC
+DEU,COFOG,GF10_2,EC_AGEING_2024,2022,2070,49,measured,"forecast source; AWG gross public pensions, % GDP"
+DEU,COFOG,GF10_5,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,anchor; na_item TE | D7: no identified forecast source
+DEU,COFOG,GF10_5,OECD_T11,2000,2024,25,measured,secondary; S13 XDC OTE | D7: no identified forecast source
+DEU,COFOG,GF10_5,IMF_GFS,2000,2024,25,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+DEU,COFOG,GF10_X,EUROSTAT_GOV10A_EXP,2000,2024,25,measured,derived GF10 - GF10_2 - GF10_5; years where all exist | D7: no identified forecast source
+DEU,ESA_EXP,E01,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.1
+DEU,ESA_EXP,E01,EC_AMECO,1991,2027,37,measured,AMECO UWCG; backward extension and forecast
+DEU,ESA_EXP,E01,IMF_GFS,1974,2024,51,measured,reconciliation; GFSM G21_T
+DEU,ESA_EXP,E02,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; P.2
+DEU,ESA_EXP,E02,EC_AMECO,1991,2027,37,measured,AMECO UCTGI; backward extension and forecast
+DEU,ESA_EXP,E02,IMF_GFS,1974,2024,50,measured,reconciliation; GFSM G22_T
+DEU,ESA_EXP,E03,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.62
+DEU,ESA_EXP,E03,EC_AMECO,1991,2027,37,measured,AMECO UYTGH; backward extension and forecast
+DEU,ESA_EXP,E04,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.632
+DEU,ESA_EXP,E04,EC_AMECO,1991,2027,37,measured,AMECO UYTGM; backward extension and forecast
+DEU,ESA_EXP,E05,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.41 (uses)
+DEU,ESA_EXP,E05,EC_AMECO,1991,2027,37,measured,AMECO UYIG; backward extension and forecast
+DEU,ESA_EXP,E05,IMF_GFS,1974,2024,51,measured,reconciliation; GFSM G24_T
+DEU,ESA_EXP,E06,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.3
+DEU,ESA_EXP,E06,EC_AMECO,1991,2027,37,measured,AMECO UYVG; backward extension and forecast
+DEU,ESA_EXP,E06,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM G25_T
+DEU,ESA_EXP,E07,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.29 + D.5 + (D.4 - D.41) + D.7 + D.8
+DEU,ESA_EXP,E07,EC_AMECO,1991,2027,37,measured,AMECO UUOG; backward extension and forecast
+DEU,ESA_EXP,E08,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; P.5 + NP
+DEU,ESA_EXP,E08,EC_AMECO,1991,2027,37,measured,"AMECO UIGG0; backward extension and forecast (partial component, §7.8 proxy)"
+DEU,ESA_EXP,E09,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.9
+DEU,ESA_EXP,E09,EC_AMECO,1991,2027,37,measured,"AMECO UKOG; backward extension and forecast (partial component, §7.8 proxy)"
 DEU,ESA_REV,R01,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.211 (D-S1-002)
 DEU,ESA_REV,R01,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
 DEU,ESA_REV,R01,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5111 VAT
 DEU,ESA_REV,R01,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM 11411 VAT
 DEU,ESA_REV,R02,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.2 - D.211
 DEU,ESA_REV,R02,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5000 taxes on goods and services (minus VAT in crosswalk)
+DEU,ESA_REV,R02_A,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,"anchor; gov_10a_taxag D214A + D2122C (detail table; the parent comes from gov_10a_main, so any drift lands in the remainder, D-S1-002)"
+DEU,ESA_REV,R02_A,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_5121
+DEU,ESA_REV,R02_X,EUROSTAT_GOV10A_MAIN,1995,2024,30,measured,derived R02 - R02_A; years where all exist | D7: no identified forecast source
 DEU,ESA_REV,R03,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; household income taxes incl. holding gains
 DEU,ESA_REV,R03,EUROSTAT_GOV10A_TAXAG,1995,2024,30,measured,detail/verification
 DEU,ESA_REV,R03,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1100 taxes on income of individuals
@@ -174,8 +294,94 @@ DEU,ESA_REV,R05,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 4
 DEU,ESA_REV,R06,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.61 resources | D7 partial: imputed component
 DEU,ESA_REV,R06,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 2000 social security contributions | D7 partial: imputed component
 DEU,ESA_REV,R06,IMF_GFS,1972,2024,52,measured,reconciliation; GFSM 12 social contributions | D7 partial: imputed component
+DEU,ESA_REV,R06_E,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; gov_10a_main D611REC
+DEU,ESA_REV,R06_E,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2200
+DEU,ESA_REV,R06_H,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; gov_10a_main D613REC
+DEU,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2100
+DEU,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2300
+DEU,ESA_REV,R06_X,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived R06 - R06_E - R06_H; years where all exist | D7: no identified forecast source
 DEU,ESA_REV,R07,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor; D.41 resources
 DEU,ESA_REV,R07,IMF_GFS,1991,2024,34,measured,reconciliation; GFSM 1411 interest revenue
 DEU,ESA_REV,R08,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.4 - D.41 resources | D7: no identified forecast source
 DEU,ESA_REV,R09,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,anchor
 DEU,ESA_REV,R10,EUROSTAT_GOV10A_MAIN,1995,2025,31,measured,derived D.39 + D.7 + D.92 + D.99 resources | D7: no identified forecast source
+USA,COFOG,GF01,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18)
+USA,COFOG,GF01,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC
+USA,COFOG,GF01_7,IMF_GFS,1980,1989,10,measured,reconciliation; GFSM XDC
+USA,COFOG,GF01_7,BEA_NIPA,1959,2024,66,measured,"Level II proxy candidate (D26, level2_proxy_actual B): D26 Level II proxy for GF01_7: NIPA T31600:5 (G16005 Interest payments); interest payments, total government = GG D.41 by construction (D26); NIPA/IMA concept incl. imputed pension interest vs the OECD T12 D41 (wedge measured in U0)"
+USA,COFOG,GF01_7,OECD_T12_EXP,1970,2024,55,measured,D10 fallback concept: GG D.41 payable (OECD Table 12); = the D26 interest proxy by construction
+USA,COFOG,GF01_7,EC_AMECO,1960,2027,68,measured,envelope forecast source; ESA gross GG interest (D.41 pay)
+USA,COFOG,GF01_X,OECD_T11,1980,1989,10,measured,derived GF01 - GF01_7; years where all exist | D7: no identified forecast source
+USA,COFOG,GF02,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18)
+USA,COFOG,GF02,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC
+USA,COFOG,GF03,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18) | D7: no identified forecast source
+USA,COFOG,GF03,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+USA,COFOG,GF04,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18) | D7: no identified forecast source
+USA,COFOG,GF04,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+USA,COFOG,GF04_5,BEA_NIPA,1959,2024,66,measured,"Level II proxy candidate (D26, level2_proxy_actual B): D26 Level II proxy for GF04_5: NIPA T31600:14 (G16018 Transportation); transportation, current expenditures (D26); Table 3.17 publishes gross investment by function at Level I only, so the capital part of 04.5 is not separable cell-for-cell (D-S16-005) | D7: no identified forecast source"
+USA,COFOG,GF04_X,OECD_T11,1970,2024,55,measured,derived GF04 - GF04_5; years where all exist | D7: no identified forecast source
+USA,COFOG,GF05,structural_zero,1970,2024,55,measured,structural zero (D20): BEA has no environmental-protection function; components in 04 and 06 | D7: no identified forecast source
+USA,COFOG,GF06,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18) | D7: no identified forecast source
+USA,COFOG,GF06,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+USA,COFOG,GF07,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18)
+USA,COFOG,GF07,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC
+USA,COFOG,GF08,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18) | D7: no identified forecast source
+USA,COFOG,GF08,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC | D7: no identified forecast source
+USA,COFOG,GF09,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18)
+USA,COFOG,GF09,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC
+USA,COFOG,GF10,OECD_T11,1970,2024,55,measured,anchor; OECD Table 11 OTE per function (D18)
+USA,COFOG,GF10,IMF_GFS,1972,2024,53,measured,reconciliation; GFSM XDC
+USA,COFOG,GF10_2,BEA_NIPA,1959,2024,66,measured,"Level II proxy candidate (D26, level2_proxy_actual B): D26 Level II proxy for GF10_2: NIPA T31600:38 (G16036 Retirement); retirement (OASI incl. survivors' benefits, i.e. wider than 10.2 by 10.3's survivors; D26)"
+USA,COFOG,GF10_5,BEA_NIPA,1959,2024,66,measured,"Level II proxy candidate (D26, level2_proxy_actual B): D26 Level II proxy for GF10_5: NIPA T31600:40 (G16038 Unemployment); unemployment (benefits plus administration; D26) | D7: no identified forecast source"
+USA,COFOG,GF10_X,OECD_T11,1970,2024,55,measured,derived GF10 - GF10_2 - GF10_5; years where all exist | D7: no identified forecast source
+USA,ESA_EXP,E01,OECD_T12_EXP,1970,2024,55,measured,anchor; D.1
+USA,ESA_EXP,E01,EC_AMECO,1960,2027,68,measured,AMECO UWCG; backward extension and forecast
+USA,ESA_EXP,E01,IMF_GFS,1980,2025,46,measured,reconciliation; GFSM G21_T
+USA,ESA_EXP,E02,OECD_T12_EXP,1970,2024,55,measured,anchor; P.2
+USA,ESA_EXP,E02,EC_AMECO,1970,2027,58,measured,AMECO UCTGI; backward extension and forecast
+USA,ESA_EXP,E02,IMF_GFS,1980,2025,46,measured,reconciliation; GFSM G22_T
+USA,ESA_EXP,E03,OECD_T12_EXP,1970,2024,55,measured,anchor; D.62
+USA,ESA_EXP,E03,EC_AMECO,1960,2027,68,measured,AMECO UYTGH; backward extension and forecast
+USA,ESA_EXP,E04,structural_zero,1970,2024,55,measured,structural zero (D20): Medicare and Medicaid are D.62 in the SNA presentation; D.632 = 0
+USA,ESA_EXP,E05,OECD_T12_EXP,1970,2024,55,measured,anchor; D.41 (uses)
+USA,ESA_EXP,E05,EC_AMECO,1960,2027,68,measured,AMECO UYIG; backward extension and forecast
+USA,ESA_EXP,E05,IMF_GFS,1980,2025,46,measured,reconciliation; GFSM G24_T
+USA,ESA_EXP,E06,OECD_T12_EXP,1970,2024,55,measured,anchor; D.3
+USA,ESA_EXP,E06,EC_AMECO,1960,2027,68,measured,AMECO UYVG; backward extension and forecast
+USA,ESA_EXP,E06,IMF_GFS,2001,2025,25,measured,reconciliation; GFSM G25_T
+USA,ESA_EXP,E07,OECD_T12_EXP,1970,2024,55,measured,anchor; D.29 + D.5 + (D.4 - D.41) + D.7 + D.8
+USA,ESA_EXP,E07,EC_AMECO,1970,2027,58,measured,AMECO UUOG; backward extension and forecast
+USA,ESA_EXP,E08,OECD_T12_EXP,1970,2024,55,measured,anchor; P.5 + NP
+USA,ESA_EXP,E08,EC_AMECO,1960,2027,68,measured,"AMECO UIGG0; backward extension and forecast (partial component, §7.8 proxy)"
+USA,ESA_EXP,E09,OECD_T12_EXP,1970,2024,55,measured,anchor; D.9
+USA,ESA_EXP,E09,EC_AMECO,1960,2027,68,measured,"AMECO UKOG; backward extension and forecast (partial component, §7.8 proxy)"
+USA,ESA_REV,R01,structural_zero,1970,2024,55,measured,structural zero (D20): no value-added tax; D.211 = 0 in OECD T12
+USA,ESA_REV,R02,OECD_T12_REV,1970,2024,55,measured,derived D.2 - D.211
+USA,ESA_REV,R02,OECD_T10,1970,2024,55,measured,detail/verification
+USA,ESA_REV,R02,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 5000 taxes on goods and services (minus VAT in crosswalk)
+USA,ESA_REV,R02_A,OECD_T10,1970,2024,55,measured,"anchor; OECD Table 10 D214A (detail table; the parent comes from Table 12, so any drift lands in the remainder)"
+USA,ESA_REV,R02_A,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_5121
+USA,ESA_REV,R02_X,OECD_T12_REV,1970,2024,55,measured,derived R02 - R02_A; years where all exist | D7: no identified forecast source
+USA,ESA_REV,R03,OECD_T10,1970,2024,55,measured,anchor; household income taxes incl. holding gains
+USA,ESA_REV,R03,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1100 taxes on income of individuals
+USA,ESA_REV,R03,IMF_GFS,1980,2025,46,measured,"reconciliation; GFSM 1111 income taxes, individuals"
+USA,ESA_REV,R04,OECD_T10,1970,2024,55,measured,anchor; corporate income taxes incl. holding gains
+USA,ESA_REV,R04,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 1200 corporate taxes on income
+USA,ESA_REV,R04,IMF_GFS,1990,2025,36,measured,"reconciliation; GFSM 1112 income taxes, corporations"
+USA,ESA_REV,R05,OECD_T12_REV,1970,2024,55,measured,derived D.5 - R03 - R04 + D.91 (D.59 inside D.5) | D7 partial: other-taxes component partial
+USA,ESA_REV,R05,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 4000 property taxes (partial concept) | D7 partial: other-taxes component partial
+USA,ESA_REV,R06,OECD_T12_REV,1970,2024,55,measured,anchor; D.61 resources | D7 partial: imputed component
+USA,ESA_REV,R06,OECD_T10,1970,2024,55,measured,detail/verification | D7 partial: imputed component
+USA,ESA_REV,R06,OECD_RS,1965,2024,60,measured,backward extension; OECD heading 2000 social security contributions | D7 partial: imputed component
+USA,ESA_REV,R06,IMF_GFS,1972,2025,54,measured,reconciliation; GFSM 12 social contributions | D7 partial: imputed component
+USA,ESA_REV,R06_E,OECD_T12_REV,1970,2024,55,measured,anchor; OECD Table 12 (revenue) D611
+USA,ESA_REV,R06_E,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2200
+USA,ESA_REV,R06_H,OECD_T12_REV,1970,2024,55,measured,anchor; OECD Table 12 (revenue) D613
+USA,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2100
+USA,ESA_REV,R06_H,OECD_RS,1965,2024,60,measured,backward extension; OECD heading T_2300
+USA,ESA_REV,R06_X,OECD_T12_REV,1970,2024,55,measured,derived R06 - R06_E - R06_H; years where all exist | D7: no identified forecast source
+USA,ESA_REV,R07,OECD_T12_REV,1970,2024,55,measured,anchor; D.41 resources
+USA,ESA_REV,R07,IMF_GFS,2001,2025,25,measured,reconciliation; GFSM 1411 interest revenue
+USA,ESA_REV,R08,OECD_T12_REV,1970,2024,55,measured,derived D.4 - D.41 resources | D7: no identified forecast source
+USA,ESA_REV,R09,OECD_T12_REV,1970,2024,55,measured,anchor; P1O = P.11 + P.12 + P.131
+USA,ESA_REV,R10,OECD_T12_REV,1970,2024,55,measured,derived D.39 + D.7 + (D.9 - D.91) resources | D7: no identified forecast source

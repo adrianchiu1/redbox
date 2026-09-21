@@ -91,8 +91,9 @@ def test_gbr_step_a_is_fy_converted_and_close_to_step_b(totals):
 
 
 def test_step_c_matches_the_package(totals):
+    from ggfiscal.debt import countries as DC
     from ggfiscal.debt.intermediates import package_gf01_7, package_nlb
-    for iso3 in config.COUNTRIES:
+    for iso3 in DC.configured():      # the debt extension's own countries (config/debt.yaml; USA joins with UD0)
         c = totals[(totals["iso3"] == iso3) & (totals["step"] == "C_s13_gf01_7")].set_index("year")["value_lcu_mn"]
         g = package_gf01_7(iso3)
         assert (c.reindex(g.index).round(6) == g.round(6)).all()

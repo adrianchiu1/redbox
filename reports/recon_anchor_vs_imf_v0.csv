@@ -32,3 +32,12 @@ DEU,GF08,IMF_GFS,EUROSTAT_GOV10A_EXP,GF08_T,1995,2024,30,0.0,0.0,same national d
 DEU,GF09,IMF_GFS,EUROSTAT_GOV10A_EXP,GF09_T,1995,2024,30,0.0,0.0,same national data redistributed; expect near-zero
 DEU,GF10,IMF_GFS,EUROSTAT_GOV10A_EXP,GF10_T,1995,2024,30,0.0,0.0,same national data redistributed; expect near-zero
 DEU,GF01_7,IMF_GFS,EUROSTAT_GOV10A_EXP,GF0170_T,2000,2024,25,3.459,6.674,same national data redistributed; expect near-zero
+USA,GF01,IMF_GFS,OECD_T11,GF01_T,1972,2024,53,4.088,8.406,same national data redistributed; expect near-zero
+USA,GF02,IMF_GFS,OECD_T11,GF02_T,1972,2024,53,0.017,0.199,same national data redistributed; expect near-zero
+USA,GF03,IMF_GFS,OECD_T11,GF03_T,1972,2024,53,0.534,2.379,same national data redistributed; expect near-zero
+USA,GF04,IMF_GFS,OECD_T11,GF04_T,1972,2024,53,0.515,1.498,same national data redistributed; expect near-zero
+USA,GF06,IMF_GFS,OECD_T11,GF06_T,1972,2024,53,0.058,0.373,same national data redistributed; expect near-zero
+USA,GF07,IMF_GFS,OECD_T11,GF07_T,1972,2024,53,0.057,0.216,same national data redistributed; expect near-zero
+USA,GF08,IMF_GFS,OECD_T11,GF08_T,1972,2024,53,0.535,1.692,same national data redistributed; expect near-zero
+USA,GF09,IMF_GFS,OECD_T11,GF09_T,1972,2024,53,0.418,1.573,same national data redistributed; expect near-zero
+USA,GF10,IMF_GFS,OECD_T11,GF10_T,1972,2024,53,0.037,0.438,same national data redistributed; expect near-zero

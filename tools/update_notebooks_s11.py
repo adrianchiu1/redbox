@@ -45,6 +45,10 @@ COUNTRIES = tuple(config.COUNTRIES)
 SECTION = {iso3: i + 1 for i, iso3 in enumerate(COUNTRIES)}
 NAME = config.country_names()
 CAT = pd.read_csv(ROOT / "deliverables" / "series_catalogue.csv")
+# the books describe the countries this tool handles: a country in the
+# catalogue whose books are not yet seeded (the USA at U0-U5) stays out of
+# the counts and prose until its U6 pass (D-S16-008)
+CAT = CAT[CAT.iso3.isin(COUNTRIES)].reset_index(drop=True)
 FC = pd.read_csv(ROOT / "deliverables" / "statistical_forecasts.csv")
 LABEL = dict(zip(CAT.line_code, CAT.line_label))
 if not LABEL:   # a bundle without a catalogue row yet: the config labels

@@ -127,7 +127,11 @@ def compute(vintages: list[str] | None = None
     hashes = {v: source_vintage_set_hash(v) for v in VARIANTS}
     frames = {v: _line_frames(v) for v in VARIANTS}
     for vintage in (vintages or list(weo_vintages())):
-        for iso3 in config.COUNTRIES:
+        # the forecast-side decomposition needs forecast rows: countries
+        # whose build has reached the strict-forecast stage (config
+        # stage_reached >= 3); a country at U0-U2 has the §8.2 bridge and
+        # the §8.3 history decomposition only (D-S16-008)
+        for iso3 in config.countries_at_stage(3):
             anchor = bridge.anchor_aggregates(iso3)
             weo = bridge.weo_aggregates(vintage, iso3)
             b = bridge.base_year(vintage, iso3, anchor)

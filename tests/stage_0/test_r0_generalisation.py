@@ -13,9 +13,13 @@ from ggfiscal.standardise import readers as R
 
 # ---------------------------------------------------------------- config keys
 
+PARENT = ("GBR", "FRA", "DEU")   # the three countries R0 generalised without changing a number
+
+
 def test_country_list_is_read_from_countries_yaml_in_file_order():
     assert config.COUNTRIES == tuple(config.countries())
-    assert config.COUNTRIES == ("GBR", "FRA", "DEU")
+    assert config.COUNTRIES[:3] == PARENT
+    assert config.COUNTRIES == ("GBR", "FRA", "DEU", "USA")   # Stage U0 added the USA
 
 
 def test_every_country_carries_the_r0_keys():
@@ -31,29 +35,31 @@ def test_r0_values_for_the_three_countries_change_no_behaviour():
     assert config.country("GBR")["anchor_family"] == "ons"
     assert config.country("FRA")["anchor_family"] == "eurostat"
     assert config.country("DEU")["anchor_family"] == "eurostat"
-    for iso3 in config.COUNTRIES:
+    for iso3 in PARENT:
         assert config.lines_absent(iso3) == {}
         assert config.fy_to_cy_weights(iso3) == (0.25, 0.75)
         for cls in config.TREES:
             assert config.tree_period_basis(iso3, cls) == "CY"
         assert config.period_basis(iso3)["anchor"] == "CY"
+        assert config.stage_reached(iso3) == 6          # the parent build is complete
     assert config.perimeter_break("DEU") == 1991
     assert config.perimeter_break("GBR") is None and config.perimeter_break("FRA") is None
     assert config.weo_perimeter_gap_expected("GBR") is True
     assert not config.weo_perimeter_gap_expected("FRA")
     assert not config.weo_perimeter_gap_expected("DEU")
-    assert config.currencies() == ["GBP", "EUR"]
-    assert config.country_names() == {"GBR": "United Kingdom", "FRA": "France",
-                                      "DEU": "Germany"}
+    assert config.currencies()[:2] == ["GBP", "EUR"]
+    names = config.country_names()
+    assert {k: names[k] for k in PARENT} == {"GBR": "United Kingdom", "FRA": "France",
+                                             "DEU": "Germany"}
 
 
 def test_unconfigured_country_raises_a_clear_error_everywhere():
     with pytest.raises(KeyError, match="not configured in config/countries.yaml"):
-        config.country("USA")
+        config.country("JPN")
     with pytest.raises(KeyError):
-        config.lines_absent("USA")
+        config.lines_absent("JPN")
     with pytest.raises(KeyError):
-        config.fy_to_cy_weights("JPN")
+        config.fy_to_cy_weights("XXX")
 
 
 def test_the_schema_admits_exactly_the_configured_countries_and_currencies():
@@ -61,10 +67,10 @@ def test_the_schema_admits_exactly_the_configured_countries_and_currencies():
 
     from ggfiscal.model import _in_countries, _in_currencies
 
-    assert _in_countries(pd.Series(["GBR", "FRA", "DEU"])).all()
-    assert not _in_countries(pd.Series(["USA"])).any()
-    assert _in_currencies(pd.Series(["GBP", "EUR"])).all()
-    assert not _in_currencies(pd.Series(["USD"])).any()
+    assert _in_countries(pd.Series(list(config.COUNTRIES))).all()
+    assert not _in_countries(pd.Series(["JPN"])).any()
+    assert _in_currencies(pd.Series(config.currencies())).all()
+    assert not _in_currencies(pd.Series(["JPY"])).any()
 
 
 def test_country_name_copies_and_flat_files_come_from_config():
@@ -87,7 +93,7 @@ SITE_METHODS = ("d41_receivable", "revenue_lines", "revenue_total", "revenue_cov
 
 
 def test_family_registry_and_protocol():
-    assert set(F.FAMILIES) == {"ons", "eurostat"}
+    assert set(F.FAMILIES) == {"ons", "eurostat", "oecd_sna"}   # oecd_sna since U0
     for name, cls in F.FAMILIES.items():
         fam = cls()
         assert fam.name == name
@@ -111,22 +117,23 @@ def test_config_family_routes_each_country_to_its_configured_family():
 
 
 def test_unconfigured_family_raises_and_never_falls_through(monkeypatch):
-    """Gate R0: a dry config.family("USA") raises a clear "family not
-    configured" error — an unknown country, a country block without
-    `anchor_family`, and a family name with no implementation all raise;
-    none of them returns another country's family."""
+    """Gate R0: a dry config.family() of an unconfigured country raises a
+    clear "family not configured" error — an unknown country, a country
+    block without `anchor_family`, and a family name with no implementation
+    all raise; none of them returns another country's family. (R0 exercised
+    this on "USA"; since U0 the USA is configured, so JPN takes its place.)"""
     with pytest.raises(KeyError, match="not configured"):
-        config.family("USA")
+        config.family("JPN")
     base = config.countries()
     monkeypatch.setattr(config, "countries",
-                        lambda: {**base, "USA": {"currency": "USD", "name": "United States"}})
+                        lambda: {**base, "JPN": {"currency": "JPY", "name": "Japan"}})
     with pytest.raises(F.FamilyNotConfigured, match="no `anchor_family`"):
-        config.family("USA")
+        config.family("JPN")
     monkeypatch.setattr(config, "countries",
-                        lambda: {**base, "USA": {"currency": "USD", "name": "United States",
-                                                 "anchor_family": "oecd_sna"}})
+                        lambda: {**base, "JPN": {"currency": "JPY", "name": "Japan",
+                                                 "anchor_family": "esri_sna"}})
     with pytest.raises(F.FamilyNotConfigured, match="not implemented"):
-        config.family("USA")
+        config.family("JPN")
 
 
 def test_families_wrap_the_existing_readers_unchanged():
@@ -187,9 +194,10 @@ def test_envelope_source_is_config_not_a_country_literal():
 
     assert E.envelope_source("GBR") == "OBR_EFO_LATEST"
     assert E.envelope_source("FRA") == "EC_AMECO"
+    assert E.envelope_source("USA") == "EC_AMECO"          # U0: [EC_AMECO, OECD_EO]
     assert set(E.ENVELOPE_READERS) >= {"OBR_EFO_LATEST", "EC_AMECO"}
     with pytest.raises(KeyError):
-        E.envelope_source("USA")
+        E.envelope_source("JPN")
 
 
 # ---------------------------------------------------------- structural zeros
@@ -248,8 +256,10 @@ def test_structural_zero_plumbing_is_empty_for_the_three_countries():
     from ggfiscal.model import OBSERVATION_TYPES
 
     assert "structural_zero" in OBSERVATION_TYPES
-    for iso3 in config.COUNTRIES:
+    for iso3 in PARENT:
         assert config.absent_lines(iso3) == {}
+    # and non-empty for the USA since U0 (D20; tests/stage_0/test_u0_usa.py)
+    assert len(config.absent_lines("USA")) == 3
 
 
 # ------------------------------------------------------------- period basis

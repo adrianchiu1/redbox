@@ -66,6 +66,8 @@ def _ext_for(url: str, resp: requests.Response) -> str:
         return "pdf"
     if "text/html" in ctype:
         return "html"
+    if url.lower().split("?")[0].endswith(".txt") or "text/plain" in ctype:
+        return "txt"     # BEA NIPA flat files (U0)
     return "bin"
 
 
@@ -115,7 +117,8 @@ def fetch_all(store: SnapshotStore | None = None) -> tuple[list[dict], list[dict
     the reason so source_verification.md can name blocked hosts."""
     store = store or SnapshotStore()
     ok, failed = [], []
-    for pull in endpoints.all_stage0_pulls() + endpoints.all_stage3_pulls():
+    for pull in (endpoints.all_stage0_pulls() + endpoints.all_stage3_pulls()
+                 + endpoints.all_u0_pulls()):
         try:
             ok.append(fetch_pull(pull, store))
         except (FetchBlocked, FetchError) as e:

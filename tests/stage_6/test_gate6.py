@@ -26,7 +26,8 @@ pytestmark = pytest.mark.skipif(not latest_snapshots(),
 CANONICAL = config.repo_root() / "data" / "canonical"
 VARIANTS = ("strict", "maximum_extension")
 ANCHOR_TYPES = {"anchor_actual", "derived_actual", "level2_proxy_actual",
-                "imf_actual", "official_benchmark_interpolation"}
+                "imf_actual", "official_benchmark_interpolation",
+                "structural_zero"}   # D20 (U0): an anchor-era row type, never stitched
 RTOL = 1e-9
 
 

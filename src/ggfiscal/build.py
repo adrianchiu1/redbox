@@ -40,6 +40,8 @@ import pandas as pd
 from ggfiscal import config
 from ggfiscal.model import COLUMNS, SCHEMA
 from ggfiscal.standardise import readers as R
+from ggfiscal.standardise.proxies import CONCEPT_FLAG as PROXY_CONCEPT_FLAG
+from ggfiscal.standardise.proxies import level2_proxy
 
 
 def _release(source_id: str) -> tuple[str, str]:
@@ -103,7 +105,8 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     fam = config.family(iso3)
     cof = lambda c: fam.cofog(iso3, c)  # noqa: E731
     exp_src = fam.expenditure_source
-    rev_src = fam.main_source
+    rev_src = fam.revenue_source      # the flow the revenue rows come from (= main_source
+    #                                   for ONS/Eurostat; OECD_T12_REV for the OECD family)
     rev = fam.revenue_lines(iso3)
     tr = fam.revenue_total(iso3)
     te_cofog = fam.cofog_total(iso3)
@@ -120,7 +123,7 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
     # DEU), ONS ESA Table 2 payable rows (GBR). Sums are derived_actual;
     # the identity E01..E09 = TE_ESA is exact by construction (V2).
     esa_meta = L["expenditure_esa"]
-    esa_src = fam.main_source
+    esa_src = fam.esa_exp_source
     for code, meta in esa_meta.items():
         plus, minus = fam.esa_exp_parts(iso3, meta)
         series = plus[0]
@@ -178,11 +181,34 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                 src_line = src_id
                 concept_txt = structural_zero_note(absent[(cls, l2)])
             elif cls == "COFOG":
-                series = cof(meta["eurostat_cofog"])
+                # the family's own Level II cell; None where the family
+                # publishes no Level II table (kickoff §11.3), in which case
+                # the country's secondary national proxy serves the line
+                # (D26: NIPA Table 3.16 sub-functions for the USA,
+                # level2_proxy_actual, grade B, concept note; restricted to
+                # the parent's anchor years — earlier years are U2 legs) or,
+                # for the interest line, the D10 fallback below
+                l2_cell = fam.level2(iso3, l2)
                 cofog_code = meta["eurostat_cofog"]
-                concept_txt = (f"COFOG {cofog_code[2:4]}.{int(cofog_code[4:6])} from the "
-                               "anchor's Level II table")
                 src_line = src_id
+                if l2_cell is not None:
+                    series = l2_cell
+                    concept_txt = (f"COFOG {cofog_code[2:4]}.{int(cofog_code[4:6])} from the "
+                                   "anchor's Level II table")
+                else:
+                    series = pd.Series(dtype=float)
+                    concept_txt = (f"COFOG {cofog_code[2:4]}.{int(cofog_code[4:6])}: no Level II "
+                                   "cell in the anchor's table")
+                    proxy = level2_proxy(iso3, l2, meta) if not interest else None
+                    if proxy is not None:
+                        p_series, src_line, concept_txt = proxy
+                        series = p_series[p_series.index.isin(parent_series.index)].copy()
+                        per_year = {int(y): {"observation_type": "level2_proxy_actual",
+                                             "quality_grade": "B", "notes": concept_txt}
+                                    for y in series.index}
+                        fallback_years.update({y: {"quality_grade": "B",
+                                                   "remainder_note": f"{parent} minus a D26 proxy year"}
+                                               for y in per_year})
             else:
                 series, src_line, concept_txt = _revenue_level2(iso3, l2, meta)
             if meta["fallback"] == "d41_payable" and (cls, l2) not in absent:
@@ -198,10 +224,12 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
                 fallback_years.update(per_year)
             series = series.sort_index()
             l2_series_all[l2] = series
+            is_proxy = bool(per_year) and not interest
             out.update([m(cls, l2, series, src_line,
                           "structural_zero" if (cls, l2) in absent else "anchor_actual", "2",
                           tree_meta[l2]["label"],
-                          concept="d41_gross_accrued" if interest else "",
+                          concept=("d41_gross_accrued" if interest
+                                   else PROXY_CONCEPT_FLAG if is_proxy else ""),
                           notes=concept_txt + (" (D10)" if interest else ""),
                           per_year=per_year)])
         remainder = parent_series.copy()
@@ -210,7 +238,7 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
         remainder = remainder.dropna()
         x_per_year = {y: {"observation_type": "derived_actual",
                           "quality_grade": v["quality_grade"],
-                          "notes": f"{parent} minus a D10 proxy year"}
+                          "notes": v.get("remainder_note", f"{parent} minus a D10 proxy year")}
                       for y, v in fallback_years.items()}
         out.update([m(cls, rem, remainder, src_id, "derived_actual", "derived",
                       tree_meta[rem]["label"],
@@ -284,7 +312,7 @@ def fy_cy_bridge_rows(iso3: str, series_map: dict, run_id: str) -> list[dict]:
         te_fy = series_map[(cls, total)]["series"]
         fy_src = series_map[(cls, total)]["source_id"]
         te_cy = fam.totals(iso3)["TE"]
-        cy_src = fam.main_source
+        cy_src = fam.esa_exp_source
         release, vintage = _release(fy_src)
         for year in sorted(int(y) for y in te_fy.index):
             cy_v = float(te_cy[year]) if year in te_cy.index else None
@@ -388,7 +416,13 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         stitched_vals: dict[str, dict[tuple[str, str], dict[int, tuple[float, str]]]] = {
             "strict": {}, "maximum_extension": {}}
         absent = config.absent_lines(iso3)
-        for (classification, line_code), sources in extensions_for(iso3).items():
+        # a country's legs run from the kickoff stage that reviews them
+        # (config.stage_reached: backward legs from stage 2, forecast legs
+        # from stage 3); a country at an earlier stage publishes anchors only
+        # (USA at U0, D-S16-008)
+        stage = config.stage_reached(iso3)
+        for (classification, line_code), sources in (extensions_for(iso3).items()
+                                                     if stage >= 2 else []):
             meta = series_map.get((classification, line_code))
             if meta is None or (classification, line_code) in absent:
                 continue   # a structural zero is never extended (D20)
@@ -448,12 +482,14 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         # forecast_boundaries.csv without value rows (Stage 4 decides the Cs).
         from ggfiscal.forecast.forward import declarations_for, extend_forward, forecasts_for
 
-        declaration_rows.extend(dataclasses.asdict(dec) for dec in declarations_for(iso3))
+        if stage >= 3:
+            declaration_rows.extend(dataclasses.asdict(dec) for dec in declarations_for(iso3))
         declaration_rows.extend(
             {"iso3": iso3, "classification": cls, "line_code": code,
              "status": "structural_zero", "note": structural_zero_note(reason)}
             for (cls, code), reason in absent.items())
-        for (classification, line_code), sources in forecasts_for(iso3).items():
+        for (classification, line_code), sources in (forecasts_for(iso3).items()
+                                                     if stage >= 3 else []):
             meta = series_map.get((classification, line_code))
             if meta is None or (classification, line_code) in absent:
                 continue   # a structural zero is never forecast (D20)
@@ -562,7 +598,7 @@ def build(run_id: str | None = None) -> dict[str, Path]:
         fam = config.family(iso3)
         totals_b = fam.totals(iso3)
         btr, bte, b9 = totals_b["TR"], totals_b["TE"], totals_b["B9"]
-        bal_src = fam.main_source
+        bal_src = fam.balance_source
         gf017 = series_map[("COFOG", "GF01_7")]["series"]
         r07 = series_map[("ESA_REV", "R07")]["series"]
         for year in sorted(set(btr.index) & set(bte.index)):

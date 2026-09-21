@@ -87,3 +87,6 @@ GBR,ESA_REV,R08,no_official_forecast,"D7: no official forecast identified anywhe
 GBR,ESA_REV,R09,no_machine_readable_source,AMECO publishes no UK UTOG/UROG history (OQ-4 pattern) and the EFO receipts tables do not separate P.11+P.12+P.131 sales (GOS and 'other receipts' are different concepts) — no measurable composite
 GBR,ESA_REV,R10,no_official_forecast,"D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 GBR,ESA_REV,TR,not_extended,"totals are envelopes (§6.1, D4): used in V15 only"
+USA,COFOG,GF05,structural_zero,structural zero (D20): BEA has no environmental-protection function; components in 04 and 06
+USA,ESA_EXP,E04,structural_zero,structural zero (D20): Medicare and Medicaid are D.62 in the SNA presentation; D.632 = 0
+USA,ESA_REV,R01,structural_zero,structural zero (D20): no value-added tax; D.211 = 0 in OECD T12

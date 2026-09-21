@@ -1,6 +1,6 @@
 check_id,severity,scope,message
-S0_LINES,OK,-,123 line series enumerated (3 countries x 41)
-S0_REGISTER,OK,-,63 register entries structurally complete
+S0_LINES,OK,-,164 line series enumerated (4 countries x 41); 3 declared structural zero(s) (D20)
+S0_REGISTER,OK,-,79 register entries structurally complete
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124529Z_f88cbdb3b751.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124538Z_26601ec18b30.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_MAIN,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260831T124539Z_aa12ca719566.csv (raw store not synced)
@@ -1392,8 +1392,88 @@ S0_SNAPSHOTS,WARN,EC_AGEING_2024,snapshot file missing locally: data/raw/EC_AGEI
 S0_SNAPSHOTS,WARN,EC_DSM,snapshot file missing locally: data/raw/EC_DSM/20260919T073615Z_2b0486b13dd7.xlsx (raw store not synced)
 S0_SNAPSHOTS,WARN,DEU_STEUERSCHAETZUNG,snapshot file missing locally: data/raw/DEU_STEUERSCHAETZUNG/20260919T073615Z_7b6e755b7c42.xlsx (raw store not synced)
 S0_SNAPSHOTS,WARN,HMT_PESA,snapshot file missing locally: data/raw/HMT_PESA/20260919T073617Z_0e88d4904e74.xlsx (raw store not synced)
-S0_COVERAGE,OK,-,123/123 lines have measured coverage from >=1 source
-S0_BRIDGE,OK,-,§8.2 bridge computed for all 3 countries on WEO 2026-04
+S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260920T064626Z_f88cbdb3b751.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260920T064631Z_26601ec18b30.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_MAIN,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260920T064632Z_aa12ca719566.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_MAIN,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260920T064633Z_0c27a78923a2.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_TAXAG,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_TAXAG/20260920T064634Z_4c0b48b8e89b.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_TAXAG,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_TAXAG/20260920T064635Z_24e0a5bad65d.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EUROSTAT_NAMA10_GDP,snapshot file missing locally: data/raw/EUROSTAT_NAMA10_GDP/20260920T064636Z_1667cb515560.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EUROSTAT_NAMA10_GDP,snapshot file missing locally: data/raw/EUROSTAT_NAMA10_GDP/20260920T064637Z_aa6e31798251.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO,snapshot file missing locally: data/raw/IMF_WEO/20260920T064637Z_769b6afa67fa.json (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064638Z_a9b2436ea989.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064638Z_03431de9a257.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064639Z_46d61a514d60.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064640Z_f07a0f3d7c7f.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064640Z_3a666fc5dade.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064641Z_20da52dbd721.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064642Z_ffa1ba34e9b9.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064643Z_5c27675dfe59.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064643Z_9301c554a506.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064644Z_2191354b8419.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064645Z_8ecd30b14d37.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064645Z_34a375422469.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064646Z_d16557e02954.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064647Z_9a82409f67ce.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2026_04,snapshot file missing locally: data/raw/IMF_WEO_2026_04/20260920T064647Z_b688e42112b1.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064648Z_c3c5f1e9de7e.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064649Z_68e5d659e969.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064649Z_3e60f175f7b3.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064650Z_96b044360aae.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064651Z_293dae16af8c.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064651Z_d3b90598df10.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064652Z_504b4865629a.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064652Z_6e9f96c0b84b.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064653Z_5f426ec72809.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064654Z_eccf5db51700.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064654Z_2e26da3e3ae5.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064655Z_d276f6f0deb2.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064656Z_413ffd8bb5a8.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064656Z_5ef831a55247.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_10,snapshot file missing locally: data/raw/IMF_WEO_2025_10/20260920T064657Z_a8097f5135dd.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064658Z_7acb730388b4.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064659Z_51596f87000e.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064700Z_a68cfdc70e01.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064700Z_cd8e3c7adbe1.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064701Z_32ab85a50225.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064702Z_e7c076fd882d.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064702Z_9bbf940ceab1.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064703Z_c766996545a8.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064704Z_9cdcc595fb76.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064704Z_d9bf51bf9f23.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064705Z_662ab8653dec.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064706Z_714d8c4eb92b.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064707Z_6e59f32cdb25.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064708Z_1c212dbdbd98.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_WEO_2025_04,snapshot file missing locally: data/raw/IMF_WEO_2025_04/20260920T064708Z_d6bf967fa64b.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_GFS,snapshot file missing locally: data/raw/IMF_GFS/20260920T064716Z_9c16ff3b3d0b.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_GFS,snapshot file missing locally: data/raw/IMF_GFS/20260920T064720Z_405a588b4b4f.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,OECD_RS,snapshot file missing locally: data/raw/OECD_RS/20260920T064722Z_72267e22e46e.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,OECD_T11,snapshot file missing locally: data/raw/OECD_T11/20260920T064722Z_56954470fac5.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_GFS,snapshot file missing locally: data/raw/IMF_GFS/20260920T064727Z_e838ea8ab9f7.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_GFS,snapshot file missing locally: data/raw/IMF_GFS/20260920T064730Z_643be27710b5.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,OECD_RS,snapshot file missing locally: data/raw/OECD_RS/20260920T064731Z_2be29c18045a.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,OECD_T11,snapshot file missing locally: data/raw/OECD_T11/20260920T064732Z_06b3b219be84.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_GFS,snapshot file missing locally: data/raw/IMF_GFS/20260920T064737Z_19f9a8081a88.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,IMF_GFS,snapshot file missing locally: data/raw/IMF_GFS/20260920T064745Z_f1e31d1f1a6b.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,OECD_RS,snapshot file missing locally: data/raw/OECD_RS/20260920T064746Z_afad7bab132d.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,OECD_T11,snapshot file missing locally: data/raw/OECD_T11/20260920T064746Z_1698406e2269.csv (raw store not synced)
+S0_SNAPSHOTS,WARN,EC_AMECO,snapshot file missing locally: data/raw/EC_AMECO/20260920T064748Z_085e506f0a5a.zip (raw store not synced)
+S0_SNAPSHOTS,WARN,EC_AMECO,snapshot file missing locally: data/raw/EC_AMECO/20260920T064749Z_6c9aabbba4ab.zip (raw store not synced)
+S0_SNAPSHOTS,WARN,EC_AMECO,snapshot file missing locally: data/raw/EC_AMECO/20260920T064750Z_720c9189ca21.zip (raw store not synced)
+S0_SNAPSHOTS,WARN,EC_AMECO,snapshot file missing locally: data/raw/EC_AMECO/20260920T064751Z_68a759d5910c.zip (raw store not synced)
+S0_SNAPSHOTS,WARN,ONS_ESA_T11,snapshot file missing locally: data/raw/ONS_ESA_T11/20260920T064752Z_545236391260.xlsx (raw store not synced)
+S0_SNAPSHOTS,WARN,ONS_GG_RECEIPTS,snapshot file missing locally: data/raw/ONS_GG_RECEIPTS/20260920T064753Z_d5a92eb4bfbf.xls (raw store not synced)
+S0_SNAPSHOTS,WARN,ONS_TAX_DETAIL,snapshot file missing locally: data/raw/ONS_TAX_DETAIL/20260920T064753Z_53c756853425.xls (raw store not synced)
+S0_SNAPSHOTS,WARN,ONS_TAX_LIST,snapshot file missing locally: data/raw/ONS_TAX_LIST/20260920T064754Z_70b05f778aae.xls (raw store not synced)
+S0_SNAPSHOTS,WARN,ONS_GDP,snapshot file missing locally: data/raw/ONS_GDP/20260920T064755Z_adfb145c482b.json (raw store not synced)
+S0_SNAPSHOTS,WARN,EC_AGEING_2024,snapshot file missing locally: data/raw/EC_AGEING_2024/20260920T064758Z_8453dfda8db0.xlsx (raw store not synced)
+S0_SNAPSHOTS,WARN,EC_AGEING_2024,snapshot file missing locally: data/raw/EC_AGEING_2024/20260920T064800Z_3507c3759bdc.xlsx (raw store not synced)
+S0_SNAPSHOTS,WARN,EC_DSM,snapshot file missing locally: data/raw/EC_DSM/20260920T064802Z_2b0486b13dd7.xlsx (raw store not synced)
+S0_SNAPSHOTS,WARN,DEU_STEUERSCHAETZUNG,snapshot file missing locally: data/raw/DEU_STEUERSCHAETZUNG/20260920T064803Z_7b6e755b7c42.xlsx (raw store not synced)
+S0_SNAPSHOTS,WARN,HMT_PESA,snapshot file missing locally: data/raw/HMT_PESA/20260920T064804Z_0e88d4904e74.xlsx (raw store not synced)
+S0_COVERAGE,OK,-,164/164 lines have measured coverage from >=1 source
+S0_BRIDGE,OK,-,§8.2 bridge computed for all 4 countries on WEO 2026-04
 V1,WARN,FRA/GF01/2001,IMF GFS diff -1.0426% beyond 0.5%
 V1,WARN,FRA/GF01/2002,IMF GFS diff -0.6244% beyond 0.5%
 V1,WARN,FRA/GF01/2004,IMF GFS diff -0.6974% beyond 0.5%
@@ -1474,6 +1554,130 @@ V1,WARN,DEU/GF01_7/2021,IMF GFS diff -5.9409% beyond 0.5%
 V1,WARN,DEU/GF01_7/2022,IMF GFS diff -4.8903% beyond 0.5%
 V1,WARN,DEU/GF01_7/2023,IMF GFS diff -4.6981% beyond 0.5%
 V1,WARN,DEU/GF01_7/2024,IMF GFS diff -3.2244% beyond 0.5%
+V1,WARN,USA/GF01/1972,IMF GFS diff -6.1679% beyond 0.5%
+V1,WARN,USA/GF01/1973,IMF GFS diff -7.4568% beyond 0.5%
+V1,WARN,USA/GF01/1974,IMF GFS diff -7.4154% beyond 0.5%
+V1,WARN,USA/GF01/1975,IMF GFS diff -7.3263% beyond 0.5%
+V1,WARN,USA/GF01/1976,IMF GFS diff -8.2519% beyond 0.5%
+V1,WARN,USA/GF01/1977,IMF GFS diff -8.2607% beyond 0.5%
+V1,WARN,USA/GF01/1978,IMF GFS diff -7.9076% beyond 0.5%
+V1,WARN,USA/GF01/1979,IMF GFS diff -7.8174% beyond 0.5%
+V1,WARN,USA/GF01/1980,IMF GFS diff -7.8963% beyond 0.5%
+V1,WARN,USA/GF01/1981,IMF GFS diff -7.614% beyond 0.5%
+V1,WARN,USA/GF01/1982,IMF GFS diff -7.5289% beyond 0.5%
+V1,WARN,USA/GF01/1983,IMF GFS diff -7.5479% beyond 0.5%
+V1,WARN,USA/GF01/1984,IMF GFS diff -7.1405% beyond 0.5%
+V1,WARN,USA/GF01/1985,IMF GFS diff -6.8998% beyond 0.5%
+V1,WARN,USA/GF01/1986,IMF GFS diff -6.9949% beyond 0.5%
+V1,WARN,USA/GF01/1987,IMF GFS diff -7.3094% beyond 0.5%
+V1,WARN,USA/GF01/1988,IMF GFS diff -7.3574% beyond 0.5%
+V1,WARN,USA/GF01/1989,IMF GFS diff -6.6385% beyond 0.5%
+V1,WARN,USA/GF01/1990,IMF GFS diff -6.6396% beyond 0.5%
+V1,WARN,USA/GF01/1991,IMF GFS diff -7.6735% beyond 0.5%
+V1,WARN,USA/GF01/1992,IMF GFS diff -6.8491% beyond 0.5%
+V1,WARN,USA/GF01/1993,IMF GFS diff -7.193% beyond 0.5%
+V1,WARN,USA/GF01/1994,IMF GFS diff -7.4077% beyond 0.5%
+V1,WARN,USA/GF01/1995,IMF GFS diff -7.3735% beyond 0.5%
+V1,WARN,USA/GF01/1996,IMF GFS diff -7.6434% beyond 0.5%
+V1,WARN,USA/GF01/1997,IMF GFS diff -7.869% beyond 0.5%
+V1,WARN,USA/GF01/1998,IMF GFS diff -8.2795% beyond 0.5%
+V1,WARN,USA/GF01/1999,IMF GFS diff -7.7967% beyond 0.5%
+V1,WARN,USA/GF01/2000,IMF GFS diff -8.4062% beyond 0.5%
+V1,WARN,USA/GF03/1972,IMF GFS diff 2.3788% beyond 0.5%
+V1,WARN,USA/GF03/1973,IMF GFS diff 2.2133% beyond 0.5%
+V1,WARN,USA/GF03/1974,IMF GFS diff 2.2476% beyond 0.5%
+V1,WARN,USA/GF03/1975,IMF GFS diff 2.2056% beyond 0.5%
+V1,WARN,USA/GF03/1976,IMF GFS diff 1.8073% beyond 0.5%
+V1,WARN,USA/GF03/1977,IMF GFS diff 1.9859% beyond 0.5%
+V1,WARN,USA/GF03/1978,IMF GFS diff 1.8835% beyond 0.5%
+V1,WARN,USA/GF03/1979,IMF GFS diff 2.0825% beyond 0.5%
+V1,WARN,USA/GF03/1980,IMF GFS diff 1.9399% beyond 0.5%
+V1,WARN,USA/GF03/1981,IMF GFS diff 1.2573% beyond 0.5%
+V1,WARN,USA/GF03/1982,IMF GFS diff 0.6915% beyond 0.5%
+V1,WARN,USA/GF03/1983,IMF GFS diff 0.6412% beyond 0.5%
+V1,WARN,USA/GF03/1985,IMF GFS diff 0.513% beyond 0.5%
+V1,WARN,USA/GF03/1988,IMF GFS diff 0.5402% beyond 0.5%
+V1,WARN,USA/GF03/1989,IMF GFS diff 0.658% beyond 0.5%
+V1,WARN,USA/GF03/1995,IMF GFS diff 0.5833% beyond 0.5%
+V1,WARN,USA/GF03/1996,IMF GFS diff 0.6265% beyond 0.5%
+V1,WARN,USA/GF03/1997,IMF GFS diff 0.5992% beyond 0.5%
+V1,WARN,USA/GF04/1972,IMF GFS diff 1.0501% beyond 0.5%
+V1,WARN,USA/GF04/1973,IMF GFS diff 1.171% beyond 0.5%
+V1,WARN,USA/GF04/1974,IMF GFS diff 1.4336% beyond 0.5%
+V1,WARN,USA/GF04/1975,IMF GFS diff 1.4545% beyond 0.5%
+V1,WARN,USA/GF04/1976,IMF GFS diff 1.4074% beyond 0.5%
+V1,WARN,USA/GF04/1977,IMF GFS diff 1.3201% beyond 0.5%
+V1,WARN,USA/GF04/1978,IMF GFS diff 1.22% beyond 0.5%
+V1,WARN,USA/GF04/1979,IMF GFS diff 1.2568% beyond 0.5%
+V1,WARN,USA/GF04/1980,IMF GFS diff 1.3209% beyond 0.5%
+V1,WARN,USA/GF04/1981,IMF GFS diff 1.173% beyond 0.5%
+V1,WARN,USA/GF04/1982,IMF GFS diff 1.0508% beyond 0.5%
+V1,WARN,USA/GF04/1983,IMF GFS diff 0.9025% beyond 0.5%
+V1,WARN,USA/GF04/1984,IMF GFS diff 0.9236% beyond 0.5%
+V1,WARN,USA/GF04/1985,IMF GFS diff 0.7807% beyond 0.5%
+V1,WARN,USA/GF04/1986,IMF GFS diff 0.7691% beyond 0.5%
+V1,WARN,USA/GF04/1987,IMF GFS diff 0.7509% beyond 0.5%
+V1,WARN,USA/GF04/1988,IMF GFS diff 0.6015% beyond 0.5%
+V1,WARN,USA/GF04/1989,IMF GFS diff 0.6447% beyond 0.5%
+V1,WARN,USA/GF04/1990,IMF GFS diff 0.5595% beyond 0.5%
+V1,WARN,USA/GF04/1991,IMF GFS diff 0.5495% beyond 0.5%
+V1,WARN,USA/GF04/1992,IMF GFS diff 0.6825% beyond 0.5%
+V1,WARN,USA/GF04/1993,IMF GFS diff 0.7116% beyond 0.5%
+V1,WARN,USA/GF04/1994,IMF GFS diff 0.7123% beyond 0.5%
+V1,WARN,USA/GF04/1995,IMF GFS diff 0.7694% beyond 0.5%
+V1,WARN,USA/GF04/1996,IMF GFS diff 0.5777% beyond 0.5%
+V1,WARN,USA/GF04/1997,IMF GFS diff 1.1877% beyond 0.5%
+V1,WARN,USA/GF04/1998,IMF GFS diff 1.4983% beyond 0.5%
+V1,WARN,USA/GF08/1972,IMF GFS diff 1.6924% beyond 0.5%
+V1,WARN,USA/GF08/1973,IMF GFS diff 1.4974% beyond 0.5%
+V1,WARN,USA/GF08/1974,IMF GFS diff 1.4615% beyond 0.5%
+V1,WARN,USA/GF08/1975,IMF GFS diff 1.3519% beyond 0.5%
+V1,WARN,USA/GF08/1976,IMF GFS diff 1.022% beyond 0.5%
+V1,WARN,USA/GF08/1977,IMF GFS diff 1.2114% beyond 0.5%
+V1,WARN,USA/GF08/1978,IMF GFS diff 1.1225% beyond 0.5%
+V1,WARN,USA/GF08/1979,IMF GFS diff 1.5185% beyond 0.5%
+V1,WARN,USA/GF08/1980,IMF GFS diff 1.558% beyond 0.5%
+V1,WARN,USA/GF08/1981,IMF GFS diff 1.0541% beyond 0.5%
+V1,WARN,USA/GF08/1982,IMF GFS diff 0.8465% beyond 0.5%
+V1,WARN,USA/GF08/1983,IMF GFS diff 1.1607% beyond 0.5%
+V1,WARN,USA/GF08/1984,IMF GFS diff 1.0308% beyond 0.5%
+V1,WARN,USA/GF08/1985,IMF GFS diff 0.8936% beyond 0.5%
+V1,WARN,USA/GF08/1986,IMF GFS diff 0.8659% beyond 0.5%
+V1,WARN,USA/GF08/1987,IMF GFS diff 0.85% beyond 0.5%
+V1,WARN,USA/GF08/1988,IMF GFS diff 0.9233% beyond 0.5%
+V1,WARN,USA/GF08/1989,IMF GFS diff 1.0193% beyond 0.5%
+V1,WARN,USA/GF08/1990,IMF GFS diff 0.9022% beyond 0.5%
+V1,WARN,USA/GF08/1991,IMF GFS diff 0.6552% beyond 0.5%
+V1,WARN,USA/GF08/1992,IMF GFS diff 0.8177% beyond 0.5%
+V1,WARN,USA/GF08/1993,IMF GFS diff 0.7943% beyond 0.5%
+V1,WARN,USA/GF08/1994,IMF GFS diff 0.9885% beyond 0.5%
+V1,WARN,USA/GF08/1995,IMF GFS diff 0.9344% beyond 0.5%
+V1,WARN,USA/GF08/1996,IMF GFS diff 0.8704% beyond 0.5%
+V1,WARN,USA/GF08/1998,IMF GFS diff -0.5895% beyond 0.5%
+V1,WARN,USA/GF09/1972,IMF GFS diff 1.5728% beyond 0.5%
+V1,WARN,USA/GF09/1973,IMF GFS diff 1.4586% beyond 0.5%
+V1,WARN,USA/GF09/1974,IMF GFS diff 1.4605% beyond 0.5%
+V1,WARN,USA/GF09/1975,IMF GFS diff 1.4133% beyond 0.5%
+V1,WARN,USA/GF09/1976,IMF GFS diff 1.2987% beyond 0.5%
+V1,WARN,USA/GF09/1977,IMF GFS diff 1.3562% beyond 0.5%
+V1,WARN,USA/GF09/1978,IMF GFS diff 1.3654% beyond 0.5%
+V1,WARN,USA/GF09/1979,IMF GFS diff 1.3854% beyond 0.5%
+V1,WARN,USA/GF09/1980,IMF GFS diff 1.3061% beyond 0.5%
+V1,WARN,USA/GF09/1981,IMF GFS diff 0.8247% beyond 0.5%
+V1,WARN,USA/GF09/1996,IMF GFS diff 0.5409% beyond 0.5%
+V1,WARN,USA/GF09/1997,IMF GFS diff 0.8618% beyond 0.5%
+V1,WARN,USA/GF09/1999,IMF GFS diff 0.6966% beyond 0.5%
+V1,WARN,USA/GF09/2000,IMF GFS diff 0.7314% beyond 0.5%
+V1,WARN,USA/GF01_7/1980,IMF GFS diff -48.1805% beyond 0.5%
+V1,WARN,USA/GF01_7/1981,IMF GFS diff -45.8182% beyond 0.5%
+V1,WARN,USA/GF01_7/1982,IMF GFS diff -42.1023% beyond 0.5%
+V1,WARN,USA/GF01_7/1983,IMF GFS diff -41.2386% beyond 0.5%
+V1,WARN,USA/GF01_7/1984,IMF GFS diff -40.2226% beyond 0.5%
+V1,WARN,USA/GF01_7/1985,IMF GFS diff -34.0145% beyond 0.5%
+V1,WARN,USA/GF01_7/1986,IMF GFS diff -34.9262% beyond 0.5%
+V1,WARN,USA/GF01_7/1987,IMF GFS diff -35.0414% beyond 0.5%
+V1,WARN,USA/GF01_7/1988,IMF GFS diff -34.2916% beyond 0.5%
+V1,WARN,USA/GF01_7/1989,IMF GFS diff -35.3027% beyond 0.5%
 V1,WARN,GBR/E01/1990,IMF GFS diff -5.9194% beyond 0.5%
 V1,WARN,GBR/E01/1991,IMF GFS diff -9.2935% beyond 0.5%
 V1,WARN,GBR/E01/1992,IMF GFS diff -11.7857% beyond 0.5%
@@ -1752,6 +1956,140 @@ V1,WARN,DEU/E05/2021,IMF GFS diff 1.5628% beyond 0.5%
 V1,WARN,DEU/E05/2022,IMF GFS diff 1.6204% beyond 0.5%
 V1,WARN,DEU/E05/2023,IMF GFS diff 4.0301% beyond 0.5%
 V1,WARN,DEU/E05/2024,IMF GFS diff 3.6091% beyond 0.5%
+V1,WARN,USA/E01/1980,IMF GFS diff -23.8902% beyond 0.5%
+V1,WARN,USA/E01/1981,IMF GFS diff -23.148% beyond 0.5%
+V1,WARN,USA/E01/1982,IMF GFS diff -23.1546% beyond 0.5%
+V1,WARN,USA/E01/1983,IMF GFS diff -22.359% beyond 0.5%
+V1,WARN,USA/E01/1984,IMF GFS diff -22.5971% beyond 0.5%
+V1,WARN,USA/E01/1985,IMF GFS diff -23.1737% beyond 0.5%
+V1,WARN,USA/E01/1986,IMF GFS diff -22.6756% beyond 0.5%
+V1,WARN,USA/E01/1987,IMF GFS diff -22.0208% beyond 0.5%
+V1,WARN,USA/E01/1988,IMF GFS diff -22.2684% beyond 0.5%
+V1,WARN,USA/E01/1989,IMF GFS diff -22.9249% beyond 0.5%
+V1,WARN,USA/E01/1990,IMF GFS diff -22.2688% beyond 0.5%
+V1,WARN,USA/E01/1991,IMF GFS diff -21.3697% beyond 0.5%
+V1,WARN,USA/E01/1992,IMF GFS diff -23.2243% beyond 0.5%
+V1,WARN,USA/E01/1993,IMF GFS diff -22.2468% beyond 0.5%
+V1,WARN,USA/E01/1994,IMF GFS diff -22.4503% beyond 0.5%
+V1,WARN,USA/E01/1995,IMF GFS diff -22.2206% beyond 0.5%
+V1,WARN,USA/E01/1996,IMF GFS diff -21.7509% beyond 0.5%
+V1,WARN,USA/E01/1997,IMF GFS diff -21.596% beyond 0.5%
+V1,WARN,USA/E01/1998,IMF GFS diff -21.6327% beyond 0.5%
+V1,WARN,USA/E01/1999,IMF GFS diff -22.1692% beyond 0.5%
+V1,WARN,USA/E01/2000,IMF GFS diff -22.435% beyond 0.5%
+V1,WARN,USA/E01/2001,IMF GFS diff -6.3162% beyond 0.5%
+V1,WARN,USA/E01/2002,IMF GFS diff -6.2867% beyond 0.5%
+V1,WARN,USA/E01/2003,IMF GFS diff -6.184% beyond 0.5%
+V1,WARN,USA/E01/2004,IMF GFS diff -6.1215% beyond 0.5%
+V1,WARN,USA/E01/2005,IMF GFS diff -6.1026% beyond 0.5%
+V1,WARN,USA/E01/2006,IMF GFS diff -6.0339% beyond 0.5%
+V1,WARN,USA/E01/2007,IMF GFS diff -5.9837% beyond 0.5%
+V1,WARN,USA/E01/2008,IMF GFS diff -5.8976% beyond 0.5%
+V1,WARN,USA/E01/2009,IMF GFS diff -5.7746% beyond 0.5%
+V1,WARN,USA/E01/2010,IMF GFS diff -5.6974% beyond 0.5%
+V1,WARN,USA/E01/2011,IMF GFS diff -5.7465% beyond 0.5%
+V1,WARN,USA/E01/2012,IMF GFS diff -5.7403% beyond 0.5%
+V1,WARN,USA/E01/2013,IMF GFS diff -5.8058% beyond 0.5%
+V1,WARN,USA/E01/2014,IMF GFS diff -5.8284% beyond 0.5%
+V1,WARN,USA/E01/2015,IMF GFS diff -5.8769% beyond 0.5%
+V1,WARN,USA/E01/2016,IMF GFS diff -5.9222% beyond 0.5%
+V1,WARN,USA/E01/2017,IMF GFS diff -5.9741% beyond 0.5%
+V1,WARN,USA/E01/2018,IMF GFS diff -6.014% beyond 0.5%
+V1,WARN,USA/E01/2019,IMF GFS diff -6.0176% beyond 0.5%
+V1,WARN,USA/E01/2020,IMF GFS diff -5.7264% beyond 0.5%
+V1,WARN,USA/E01/2021,IMF GFS diff -5.6249% beyond 0.5%
+V1,WARN,USA/E01/2022,IMF GFS diff -5.7213% beyond 0.5%
+V1,WARN,USA/E01/2023,IMF GFS diff -5.7912% beyond 0.5%
+V1,WARN,USA/E01/2024,IMF GFS diff -5.8665% beyond 0.5%
+V1,WARN,USA/E02/1980,IMF GFS diff 25.134% beyond 0.5%
+V1,WARN,USA/E02/1981,IMF GFS diff 23.5818% beyond 0.5%
+V1,WARN,USA/E02/1982,IMF GFS diff 25.7863% beyond 0.5%
+V1,WARN,USA/E02/1983,IMF GFS diff 28.1091% beyond 0.5%
+V1,WARN,USA/E02/1984,IMF GFS diff 29.6112% beyond 0.5%
+V1,WARN,USA/E02/1985,IMF GFS diff 30.2955% beyond 0.5%
+V1,WARN,USA/E02/1986,IMF GFS diff 29.2461% beyond 0.5%
+V1,WARN,USA/E02/1987,IMF GFS diff 27.6535% beyond 0.5%
+V1,WARN,USA/E02/1988,IMF GFS diff 30.5243% beyond 0.5%
+V1,WARN,USA/E02/1989,IMF GFS diff 28.5261% beyond 0.5%
+V1,WARN,USA/E02/1990,IMF GFS diff 20.2081% beyond 0.5%
+V1,WARN,USA/E02/1991,IMF GFS diff 21.8302% beyond 0.5%
+V1,WARN,USA/E02/1992,IMF GFS diff 18.3218% beyond 0.5%
+V1,WARN,USA/E02/1993,IMF GFS diff 14.4523% beyond 0.5%
+V1,WARN,USA/E02/1994,IMF GFS diff 11.7926% beyond 0.5%
+V1,WARN,USA/E02/1995,IMF GFS diff 9.3277% beyond 0.5%
+V1,WARN,USA/E02/1996,IMF GFS diff 4.5098% beyond 0.5%
+V1,WARN,USA/E02/1997,IMF GFS diff 2.2169% beyond 0.5%
+V1,WARN,USA/E02/1998,IMF GFS diff 2.9095% beyond 0.5%
+V1,WARN,USA/E02/2000,IMF GFS diff 1.5945% beyond 0.5%
+V1,WARN,USA/E02/2001,IMF GFS diff -14.0079% beyond 0.5%
+V1,WARN,USA/E02/2002,IMF GFS diff -14.0452% beyond 0.5%
+V1,WARN,USA/E02/2003,IMF GFS diff -13.8292% beyond 0.5%
+V1,WARN,USA/E02/2004,IMF GFS diff -13.7417% beyond 0.5%
+V1,WARN,USA/E02/2005,IMF GFS diff -13.786% beyond 0.5%
+V1,WARN,USA/E02/2006,IMF GFS diff -14.2376% beyond 0.5%
+V1,WARN,USA/E02/2007,IMF GFS diff -14.8181% beyond 0.5%
+V1,WARN,USA/E02/2008,IMF GFS diff -14.5714% beyond 0.5%
+V1,WARN,USA/E02/2009,IMF GFS diff -14.7687% beyond 0.5%
+V1,WARN,USA/E02/2010,IMF GFS diff -14.6113% beyond 0.5%
+V1,WARN,USA/E02/2011,IMF GFS diff -14.7207% beyond 0.5%
+V1,WARN,USA/E02/2012,IMF GFS diff -15.1942% beyond 0.5%
+V1,WARN,USA/E02/2013,IMF GFS diff -15.6746% beyond 0.5%
+V1,WARN,USA/E02/2014,IMF GFS diff -15.8376% beyond 0.5%
+V1,WARN,USA/E02/2015,IMF GFS diff -16.1501% beyond 0.5%
+V1,WARN,USA/E02/2016,IMF GFS diff -16.4825% beyond 0.5%
+V1,WARN,USA/E02/2017,IMF GFS diff -16.5608% beyond 0.5%
+V1,WARN,USA/E02/2018,IMF GFS diff -16.377% beyond 0.5%
+V1,WARN,USA/E02/2019,IMF GFS diff -15.6812% beyond 0.5%
+V1,WARN,USA/E02/2020,IMF GFS diff -16.6846% beyond 0.5%
+V1,WARN,USA/E02/2021,IMF GFS diff -16.0767% beyond 0.5%
+V1,WARN,USA/E02/2022,IMF GFS diff -14.8132% beyond 0.5%
+V1,WARN,USA/E02/2023,IMF GFS diff -16.2407% beyond 0.5%
+V1,WARN,USA/E02/2024,IMF GFS diff -16.7015% beyond 0.5%
+V1,WARN,USA/E05/1980,IMF GFS diff -48.1805% beyond 0.5%
+V1,WARN,USA/E05/1981,IMF GFS diff -45.8182% beyond 0.5%
+V1,WARN,USA/E05/1982,IMF GFS diff -42.1023% beyond 0.5%
+V1,WARN,USA/E05/1983,IMF GFS diff -41.2386% beyond 0.5%
+V1,WARN,USA/E05/1984,IMF GFS diff -40.2226% beyond 0.5%
+V1,WARN,USA/E05/1985,IMF GFS diff -34.0145% beyond 0.5%
+V1,WARN,USA/E05/1986,IMF GFS diff -34.9262% beyond 0.5%
+V1,WARN,USA/E05/1987,IMF GFS diff -35.0414% beyond 0.5%
+V1,WARN,USA/E05/1988,IMF GFS diff -34.2916% beyond 0.5%
+V1,WARN,USA/E05/1989,IMF GFS diff -35.3027% beyond 0.5%
+V1,WARN,USA/E05/1990,IMF GFS diff -33.9561% beyond 0.5%
+V1,WARN,USA/E05/1991,IMF GFS diff -31.8426% beyond 0.5%
+V1,WARN,USA/E05/1992,IMF GFS diff -33.0367% beyond 0.5%
+V1,WARN,USA/E05/1993,IMF GFS diff -35.3978% beyond 0.5%
+V1,WARN,USA/E05/1994,IMF GFS diff -36.341% beyond 0.5%
+V1,WARN,USA/E05/1995,IMF GFS diff -36.9648% beyond 0.5%
+V1,WARN,USA/E05/1996,IMF GFS diff -33.574% beyond 0.5%
+V1,WARN,USA/E05/1997,IMF GFS diff -33.1954% beyond 0.5%
+V1,WARN,USA/E05/1998,IMF GFS diff -32.1367% beyond 0.5%
+V1,WARN,USA/E05/1999,IMF GFS diff -32.1177% beyond 0.5%
+V1,WARN,USA/E05/2000,IMF GFS diff -32.2841% beyond 0.5%
+V1,WARN,USA/E05/2001,IMF GFS diff -23.1133% beyond 0.5%
+V1,WARN,USA/E05/2002,IMF GFS diff -28.228% beyond 0.5%
+V1,WARN,USA/E05/2003,IMF GFS diff -34.3431% beyond 0.5%
+V1,WARN,USA/E05/2004,IMF GFS diff -33.3449% beyond 0.5%
+V1,WARN,USA/E05/2005,IMF GFS diff -30.9652% beyond 0.5%
+V1,WARN,USA/E05/2006,IMF GFS diff -30.2015% beyond 0.5%
+V1,WARN,USA/E05/2007,IMF GFS diff -27.8066% beyond 0.5%
+V1,WARN,USA/E05/2008,IMF GFS diff -29.4227% beyond 0.5%
+V1,WARN,USA/E05/2009,IMF GFS diff -38.8534% beyond 0.5%
+V1,WARN,USA/E05/2010,IMF GFS diff -36.5875% beyond 0.5%
+V1,WARN,USA/E05/2011,IMF GFS diff -33.6948% beyond 0.5%
+V1,WARN,USA/E05/2012,IMF GFS diff -35.7405% beyond 0.5%
+V1,WARN,USA/E05/2013,IMF GFS diff -37.6037% beyond 0.5%
+V1,WARN,USA/E05/2014,IMF GFS diff -36.6004% beyond 0.5%
+V1,WARN,USA/E05/2015,IMF GFS diff -37.3901% beyond 0.5%
+V1,WARN,USA/E05/2016,IMF GFS diff -35.2759% beyond 0.5%
+V1,WARN,USA/E05/2017,IMF GFS diff -34.4245% beyond 0.5%
+V1,WARN,USA/E05/2018,IMF GFS diff -29.672% beyond 0.5%
+V1,WARN,USA/E05/2019,IMF GFS diff -30.23% beyond 0.5%
+V1,WARN,USA/E05/2020,IMF GFS diff -32.299% beyond 0.5%
+V1,WARN,USA/E05/2021,IMF GFS diff -24.6753% beyond 0.5%
+V1,WARN,USA/E05/2022,IMF GFS diff -14.4841% beyond 0.5%
+V1,WARN,USA/E05/2023,IMF GFS diff -17.2306% beyond 0.5%
+V1,WARN,USA/E05/2024,IMF GFS diff -14.8453% beyond 0.5%
 V2,OK,-,GF01..GF10 = TE and E01..E09 = TE_ESA within tolerance in all complete years
 V3,OK,-,Level I shares sum to 100 within tolerance
 V4,OK,-,no negative values outside R08/R10 and ledger balances
@@ -1823,6 +2161,23 @@ V5,OK,DEU/E06/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 30 year-p
 V5,OK,DEU/E07/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 30 year-pairs"
 V5,OK,DEU/E08/EC_AMECO,"overlap growth: bias -0.0009, rmse 0.0177 over 30 year-pairs"
 V5,OK,DEU/E09/EC_AMECO,"overlap growth: bias +0.0049, rmse 0.0384 over 30 year-pairs"
+V5,OK,USA/R02/OECD_RS,"overlap growth: bias +0.0008, rmse 0.0196 over 54 year-pairs"
+V5,OK,USA/R03/OECD_RS,"overlap growth: bias -0.0002, rmse 0.0225 over 54 year-pairs"
+V5,WARN,USA/R04/OECD_RS,"overlap growth: bias -0.0031, rmse 0.1028 over 54 year-pairs"
+V5,WARN,USA/R05/OECD_RS,"overlap growth: bias -0.0454, rmse 0.4901 over 54 year-pairs"
+V5,OK,USA/R06/OECD_RS,"overlap growth: bias -0.0011, rmse 0.0252 over 54 year-pairs"
+V5,OK,USA/GF01_7/EC_AMECO,"overlap growth: bias +0.0000, rmse 0.0000 over 54 year-pairs"
+V5,WARN,USA/R02_A/OECD_RS,"overlap growth: bias -0.0121, rmse 0.0413 over 54 year-pairs"
+V5,OK,USA/R06_E/OECD_RS,"overlap growth: bias -0.0005, rmse 0.0270 over 54 year-pairs"
+V5,OK,USA/R06_H/OECD_RS,"overlap growth: bias -0.0015, rmse 0.0272 over 54 year-pairs"
+V5,OK,USA/E01/EC_AMECO,"overlap growth: bias +0.0000, rmse 0.0000 over 54 year-pairs"
+V5,OK,USA/E02/EC_AMECO,"overlap growth: bias +0.0000, rmse 0.0000 over 54 year-pairs"
+V5,OK,USA/E03/EC_AMECO,"overlap growth: bias +0.0000, rmse 0.0000 over 54 year-pairs"
+V5,OK,USA/E05/EC_AMECO,"overlap growth: bias +0.0000, rmse 0.0000 over 54 year-pairs"
+V5,OK,USA/E06/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 54 year-pairs"
+V5,OK,USA/E07/EC_AMECO,"overlap growth: bias -0.0000, rmse 0.0000 over 52 year-pairs"
+V5,OK,USA/E08/EC_AMECO,"overlap growth: bias -0.0007, rmse 0.0336 over 54 year-pairs"
+V5,WARN,USA/E09/EC_AMECO,"overlap growth: bias -1.2435, rmse 4.7967 over 34 year-pairs"
 V6,OK,-,"every stitched and forecast value reproduces from the recorded source growth, both directions"
 V7,OK,-,every forecast row carries source metadata (none yet at Stage 1)
 V8,OK,-,interpolated/converted rows labelled (none yet)
@@ -1849,6 +2204,8 @@ V16,WARN,DEU/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence
 V17,OK,-,"every proxy/composite row carries coverage share, year and residual_method; no proxy in strict"
 V18,WARN,register/INSEE_APU,no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)
 V18,WARN,register/DESTATIS_81000,no archived copy and unresolved URL (status: unverified; Stage 2 concern)
+V18,WARN,register/CBO_SITE,"no archived copy and unresolved URL (status: blocked; www.cbo.gov returns 403 (DataDome challenge) to every client here, re-tested 2026-09-21 (D24); unblock = the D-S7-001 hand-retrieval route (committee downloads the workbooks in a browser, `ggfiscal ingest-file`), as for obr.uk)"
+V18,WARN,register/SSA_TRUSTEES,"no archived copy and unresolved URL (status: blocked; www.ssa.gov returns 403 (Akamai) on every path, re-tested 2026-09-21 (D24, OQ-13); unblock = the D-S7-001 hand-retrieval route (`ggfiscal ingest-file`))"
 V18,WARN,register/FRA_LPFP_PSTAB,no URL recorded and no archived copy (status: not_machine_readable; PDF-only publication; §11.4 second keying unavailable to a single-agent session (OQ-5 precedent)
 V18,WARN,register/COR_2026,"no URL recorded and no archived copy (status: not_machine_readable; cor-retraites.fr reachable but the annual report is PDF-only (§11.4 blocked, OQ-5/OQ-6); 2023 reform vs AR2024 assumptions — expect V16 divergence (§14))"
 V18,WARN,register/FRA_LPM_2030,no URL recorded and no archived copy (status: not_machine_readable; law text with annual credits table)
@@ -1892,7 +2249,9 @@ V21,WARN,DEU/2023,Level II 01.7 vs D.41 payable diff 8.45% > 5.0%
 V21,WARN,DEU/2024,Level II 01.7 vs D.41 payable diff 7.00% > 5.0%
 V22,OK,-,R01+...+R10 = TR within tolerance in all complete years
 V23,OK,-,TR − TE equals anchor B.9 within tolerance
-V24,OK,-,FRA/DEU level gaps within 1.0% of TE in all overlap years; GBR NLB-gap sigma below 0.5%
+V24,WARN,USA/2025-04,NLB gap sigma 1.367% of TE exceeds 0.5% — perimeter component not stable
+V24,WARN,USA/2025-10,NLB gap sigma 1.521% of TE exceeds 0.5% — perimeter component not stable
+V24,WARN,USA/2026-04,NLB gap sigma 1.510% of TE exceeds 0.5% — perimeter component not stable
 V25,WARN,GBR/R03/1991,OECD RS diff -6.7448% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,GBR/R03/1992,OECD RS diff -7.6697% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,GBR/R03/1993,OECD RS diff -6.0359% beyond 3.0% (concept wedge carried by the crosswalk)
@@ -2301,8 +2660,204 @@ V25,WARN,DEU/R06_H/2021,OECD RS diff -31.8709% beyond 3.0% (concept wedge carrie
 V25,WARN,DEU/R06_H/2022,OECD RS diff -30.856% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R06_H/2023,OECD RS diff -30.9097% beyond 3.0% (concept wedge carried by the crosswalk)
 V25,WARN,DEU/R06_H/2024,OECD RS diff -31.0332% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1972,OECD RS diff -8.5737% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1973,OECD RS diff -5.8328% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1974,OECD RS diff -5.9215% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1976,OECD RS diff -7.2931% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1977,OECD RS diff -3.9535% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1978,OECD RS diff -4.8727% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1979,OECD RS diff -3.8166% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R03/1980,OECD RS diff -3.1542% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1970,OECD RS diff 18.4855% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1971,OECD RS diff -12.067% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1972,OECD RS diff -5.1517% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1973,OECD RS diff -7.3242% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1974,OECD RS diff -3.328% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1975,OECD RS diff 3.8859% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1976,OECD RS diff -16.4527% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1977,OECD RS diff -4.4109% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1978,OECD RS diff -7.4745% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1980,OECD RS diff 7.5877% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1981,OECD RS diff 13.196% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1982,OECD RS diff 34.2552% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1983,OECD RS diff -18.6012% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1984,OECD RS diff -5.4486% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1986,OECD RS diff -6.0384% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/1989,OECD RS diff 8.199% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R04/2022,OECD RS diff -3.7912% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1970,OECD RS diff -4.4556% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1971,OECD RS diff -8.0693% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1972,OECD RS diff -11.5177% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1973,OECD RS diff -16.6154% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1974,OECD RS diff -11.9813% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1975,OECD RS diff -5.404% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1976,OECD RS diff -10.3822% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1977,OECD RS diff -5.3736% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1978,OECD RS diff -7.0971% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1979,OECD RS diff -8.1443% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1980,OECD RS diff -4.4497% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1981,OECD RS diff -5.8394% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1983,OECD RS diff -6.9175% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1984,OECD RS diff -6.2792% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1985,OECD RS diff -4.8272% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1986,OECD RS diff -5.1989% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1987,OECD RS diff -4.452% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1988,OECD RS diff -5.499% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1989,OECD RS diff -4.2705% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1990,OECD RS diff -3.6651% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1991,OECD RS diff -3.9358% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1992,OECD RS diff -4.2305% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1993,OECD RS diff -4.4766% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1994,OECD RS diff -4.521% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1995,OECD RS diff -4.6735% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1996,OECD RS diff -4.338% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1997,OECD RS diff -4.1933% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1998,OECD RS diff -3.9567% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/1999,OECD RS diff -3.9213% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2000,OECD RS diff -3.7058% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2001,OECD RS diff -3.938% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2002,OECD RS diff -4.1803% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2003,OECD RS diff -4.4333% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2004,OECD RS diff -4.7497% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2005,OECD RS diff -5.3077% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2006,OECD RS diff -5.8219% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2007,OECD RS diff -6.083% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2008,OECD RS diff -6.347% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2009,OECD RS diff -6.8974% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2010,OECD RS diff -7.2078% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2011,OECD RS diff -8.0243% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2012,OECD RS diff -7.8373% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2013,OECD RS diff -7.1514% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2014,OECD RS diff -7.0724% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2015,OECD RS diff -6.9852% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2016,OECD RS diff -7.3342% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2017,OECD RS diff -7.5864% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2018,OECD RS diff -8.1231% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2019,OECD RS diff -8.2289% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2020,OECD RS diff -8.7109% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2021,OECD RS diff -8.4926% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2022,OECD RS diff -8.8134% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2023,OECD RS diff -7.5674% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06/2024,OECD RS diff -9.4576% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1970,OECD RS diff -13.5427% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1971,OECD RS diff -13.8973% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1972,OECD RS diff -16.2955% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1973,OECD RS diff -16.4273% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1974,OECD RS diff -14.6585% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1975,OECD RS diff -16.1494% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1976,OECD RS diff -16.0042% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1977,OECD RS diff -16.409% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1978,OECD RS diff -16.3057% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1979,OECD RS diff -14.481% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1980,OECD RS diff -18.4304% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1981,OECD RS diff -12.4511% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1982,OECD RS diff -6.5153% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1983,OECD RS diff -14.6885% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1984,OECD RS diff -12.6274% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1985,OECD RS diff -13.4978% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1986,OECD RS diff -15.1268% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1987,OECD RS diff -17.764% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1988,OECD RS diff -16.8411% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1989,OECD RS diff -18.4301% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1990,OECD RS diff -29.5275% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1991,OECD RS diff -29.0607% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1992,OECD RS diff -29.4492% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1993,OECD RS diff -30.5588% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1994,OECD RS diff -30.2293% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1995,OECD RS diff -30.1097% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1996,OECD RS diff -27.2598% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1997,OECD RS diff -30.3051% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1998,OECD RS diff -31.1281% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/1999,OECD RS diff -32.3881% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2000,OECD RS diff -32.3819% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2001,OECD RS diff -30.9516% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2002,OECD RS diff -31.7879% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2003,OECD RS diff -32.8023% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2004,OECD RS diff -33.8039% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2005,OECD RS diff -33.9712% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2006,OECD RS diff -33.9998% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2007,OECD RS diff -34.2752% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2008,OECD RS diff -35.7368% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2009,OECD RS diff -32.4895% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2010,OECD RS diff -33.9691% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2011,OECD RS diff -37.7165% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2012,OECD RS diff -36.9853% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2013,OECD RS diff -40.5028% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2014,OECD RS diff -42.6306% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2015,OECD RS diff -44.4105% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2016,OECD RS diff -44.0158% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2017,OECD RS diff -43.5572% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2018,OECD RS diff -47.4025% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2019,OECD RS diff -46.0942% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2020,OECD RS diff -45.5982% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2021,OECD RS diff -44.7055% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2022,OECD RS diff -49.3898% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2023,OECD RS diff -52.8749% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R02_A/2024,OECD RS diff -55.0482% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_E/1972,OECD RS diff -7.52% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_E/1973,OECD RS diff -12.7859% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_E/1974,OECD RS diff -7.6096% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_E/1976,OECD RS diff -7.3646% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_E/1978,OECD RS diff -3.7019% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_E/1979,OECD RS diff -4.4304% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_E/1983,OECD RS diff -3.1587% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1970,OECD RS diff -15.4682% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1971,OECD RS diff -18.3802% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1972,OECD RS diff -20.0241% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1973,OECD RS diff -25.4198% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1974,OECD RS diff -21.9453% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1975,OECD RS diff -15.1519% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1976,OECD RS diff -18.0306% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1977,OECD RS diff -14.8133% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1978,OECD RS diff -16.0397% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1979,OECD RS diff -17.5969% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1980,OECD RS diff -13.7681% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1981,OECD RS diff -14.334% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1982,OECD RS diff -12.168% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1983,OECD RS diff -15.6911% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1984,OECD RS diff -16.5307% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1985,OECD RS diff -16.5079% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1986,OECD RS diff -16.3281% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1987,OECD RS diff -16.9828% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1988,OECD RS diff -18.2719% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1989,OECD RS diff -17.7354% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1990,OECD RS diff -15.0199% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1991,OECD RS diff -15.9027% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1992,OECD RS diff -16.3217% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1993,OECD RS diff -16.9347% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1994,OECD RS diff -17.243% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1995,OECD RS diff -17.8832% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1996,OECD RS diff -17.2201% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1997,OECD RS diff -16.8629% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1998,OECD RS diff -16.347% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/1999,OECD RS diff -16.2367% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2000,OECD RS diff -15.7048% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2001,OECD RS diff -16.0999% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2002,OECD RS diff -16.6003% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2003,OECD RS diff -17.2008% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2004,OECD RS diff -17.8165% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2005,OECD RS diff -18.9875% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2006,OECD RS diff -19.8113% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2007,OECD RS diff -20.1933% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2008,OECD RS diff -20.3607% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2009,OECD RS diff -21.1938% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2010,OECD RS diff -21.4739% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2011,OECD RS diff -25.9249% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2012,OECD RS diff -25.4371% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2013,OECD RS diff -21.3725% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2014,OECD RS diff -21.5219% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2015,OECD RS diff -21.3551% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2016,OECD RS diff -21.8602% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2017,OECD RS diff -22.0626% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2018,OECD RS diff -22.8528% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2019,OECD RS diff -22.941% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2020,OECD RS diff -23.7176% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2021,OECD RS diff -22.9845% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2022,OECD RS diff -23.7934% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2023,OECD RS diff -22.1288% beyond 3.0% (concept wedge carried by the crosswalk)
+V25,WARN,USA/R06_H/2024,OECD RS diff -23.7793% beyond 3.0% (concept wedge carried by the crosswalk)
 V26,OK,-,history contributions sum to Δ(NLB/GDP) exactly; forecast components sum to the WEO change exactly
 V27,OK,-,"net-interest cross-check present for all 112 (country, variant, vintage, horizon) cells; non-computable cells carry their reason (R07 declared, OQ-6)"
 V28,OK,-,all reconciliation tables keyed by weo_vintage; forecast tables carry source_vintage_set_hash
-V41,OK,-,no lines_absent declared for any country; no structural_zero rows (D20)
+V41,OK,-,"3 declared structural zero(s): zero rows in every anchor year, nowhere else, reasons carried (D20)"
 V42,OK,-,no FY-labelled tree configured; every row CY-labelled; fy_cy_bridge.csv empty (D19)

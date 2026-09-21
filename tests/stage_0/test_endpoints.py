@@ -38,5 +38,9 @@ def test_probe_covers_all_stage0_machine_sources():
 
 
 def test_gfs_pulls_cover_cofog_and_main_aggregates_per_country():
+    # the per-country pulls enumerate the register's `countries` (U0,
+    # D-S16-004): the three parent countries plus the USA
+    countries = endpoints.registered_countries("IMF_GFS")
+    assert set(countries) >= {"GBR", "FRA", "DEU", "USA"}
     parts = {p.part for p in endpoints.all_stage0_pulls() if p.source_id == "IMF_GFS"}
-    assert parts == {f"{k}_{c}" for k in ("cofog", "soo") for c in ("GBR", "FRA", "DEU")}
+    assert parts == {f"{k}_{c}" for k in ("cofog", "soo") for c in countries}

@@ -11,3 +11,6 @@ DEU,R01,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_5111,1995,2024,30,0.216,0.986,"conc
 DEU,R03,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_1100,1995,2024,30,5.293,10.269,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
 DEU,R04,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_1200,1995,2024,30,29.515,62.004,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
 DEU,R06,OECD_RS,EUROSTAT_GOV10A_TAXAG/MAIN,T_2000,1995,2024,30,18.663,23.574,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+USA,R03,OECD_RS,OECD_T10/T12_REV,T_1100,1970,2024,55,1.1,8.574,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+USA,R04,OECD_RS,OECD_T10/T12_REV,T_1200,1970,2024,55,3.551,34.255,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
+USA,R06,OECD_RS,OECD_T10/T12_REV,T_2000,1970,2024,55,6.395,16.615,"concept wedge (cash timing, tax credits, own resources) to be carried by the Stage 2 crosswalk"
