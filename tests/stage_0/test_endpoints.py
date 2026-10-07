@@ -27,7 +27,7 @@ def test_eurostat_datasets_covered_per_country():
     pulls = endpoints.all_stage0_pulls()
     for ds in ("gov_10a_exp", "gov_10a_main", "gov_10a_taxag", "nama_10_gdp"):
         geos = {p.part for p in pulls if ds in p.url}
-        assert geos == {"FRA", "DEU"}, ds
+        assert geos == {"FRA", "DEU", "ITA", "ESP", "BEL"}, ds   # E0 (D-S17-001)
 
 
 def test_probe_covers_all_stage0_machine_sources():

@@ -18,6 +18,7 @@ from pathlib import Path
 import pandas as pd
 
 from ggfiscal import config
+from ggfiscal.ingest.endpoints import registered_countries
 from ggfiscal.standardise import readers as R
 
 V0_COLUMNS = [
@@ -148,7 +149,7 @@ def line_sources(iso3: str) -> dict[tuple[str, str], list[tuple[str, pd.Series, 
                                     D41_FALLBACK_NOTE[fam.name]))
                     entries.append(("EC_AMECO", R.ameco_series(iso3, "UYIG", 16),
                                     "envelope forecast source; ESA gross GG interest (D.41 pay)"))
-                if l2 == "GF10_2" and iso3 in ("FRA", "DEU"):
+                if l2 == "GF10_2" and iso3 in registered_countries("EC_AGEING_2024"):  # DE5
                     entries.append(("EC_AGEING_2024", R.ar_series(iso3, "pensions"),
                                     "forecast source; AWG gross public pensions, % GDP"))
                 if l2 == "GF10_2" and iso3 == "GBR":

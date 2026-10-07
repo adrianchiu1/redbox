@@ -88,8 +88,11 @@ def test_notebook_tool_is_idempotent_on_the_committed_books(monkeypatch, tmp_pat
 def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
     _with_jpn(monkeypatch)
     tool = _load_tool("update_notebooks_s11", monkeypatch)
-    assert tool.COUNTRIES[-1] == "JPN" and tool.SECTION["JPN"] == 4
-    for name in ("chartbook.ipynb", *(f"forecasts_{c}_{t}.ipynb" for c in config.COUNTRIES[:3]
+    booked = list(_with_books())          # GBR, FRA, DEU, ITA, ESP, BEL since Stage E6
+    n, last = len(booked) + 1, booked[-1]
+    last_name = config.country_names()[last]
+    assert tool.COUNTRIES[-1] == "JPN" and tool.SECTION["JPN"] == n
+    for name in ("chartbook.ipynb", *(f"forecasts_{c}_{t}.ipynb" for c in booked
                                        for t in ("expenditure", "revenue"))):
         shutil.copy(NB / name, tmp_path / name)
     monkeypatch.setattr(tool, "NB", tmp_path)
@@ -97,10 +100,10 @@ def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
     cb = tool.chartbook()
     srcs = _sources(cb)
     stripped = [s.strip() for s in srcs]
-    # the country section, copied from Germany's and retargeted
-    assert "---\n\n# 4. Japan (JPN)" in stripped
-    i_us = stripped.index("---\n\n# 4. Japan (JPN)")
-    i_de = stripped.index("---\n\n# 3. Germany (DEU)")
+    # the country section, copied from the last booked country's and retargeted
+    assert f"---\n\n# {n}. Japan (JPN)" in stripped
+    i_us = stripped.index(f"---\n\n# {n}. Japan (JPN)")
+    i_de = stripped.index(f"---\n\n# {n - 1}. {last_name} ({last})")
     assert i_us > i_de
     for call in ('panel("JPN", "expenditure")', 'panel("JPN", "revenue")',
                  *(f'chart("JPN", "{line}")' for line in config.granular_lines("COFOG")),
@@ -108,13 +111,13 @@ def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
                  'weo_chart("JPN", "revenue")', 'weo_chart("JPN", "nlb")'):
         assert call in stripped, call
     assert stripped.index('chart("JPN", "GF01")') > i_us
-    assert any(s.startswith("## 4.2 Expenditure") for s in stripped)
-    assert any(s.startswith("## 4.4 Balance ledger") for s in stripped)
-    # the later sections are renumbered; the WEO sub-section follows Germany's
-    assert "---\n\n# 5. Reconciliation to the IMF WEO" in " ".join(stripped)
-    assert any(s.startswith("## 5.4 Japan") for s in stripped)
-    assert any(s.startswith("## 5.3 Germany") for s in stripped)
-    assert stripped.index('weo_chart("JPN", "nlb")') > stripped.index('weo_chart("DEU", "nlb")')
+    assert any(s.startswith(f"## {n}.2 Expenditure") for s in stripped)
+    assert any(s.startswith(f"## {n}.4 Balance ledger") for s in stripped)
+    # the later sections are renumbered; the WEO sub-section follows the last one's
+    assert f"---\n\n# {n + 1}. Reconciliation to the IMF WEO" in " ".join(stripped)
+    assert any(s.startswith(f"## {n + 1}.{n} Japan") for s in stripped)
+    assert any(s.startswith(f"## {n + 1}.{n - 1} {last_name}") for s in stripped)
+    assert stripped.index('weo_chart("JPN", "nlb")') > stripped.index(f'weo_chart("{last}", "nlb")')
     # the existing countries' cells are untouched: drop the inserted block
     # and the inserted WEO sub-section, ignore section numbers, and the
     # remainder is the committed book cell for cell
@@ -129,7 +132,7 @@ def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
     # no output survives the copy
     assert all(not c.get("outputs") for c in cb["cells"] if '"JPN"' in "".join(c["source"]))
 
-    # the forecast books: preamble and setup from Germany's, one section per line
+    # the forecast books: preamble and setup from the last booked country's, one section per line
     book = tool.forecast_book("JPN", "expenditure")
     srcs = _sources(book)
     assert srcs[0].startswith("# Japan — COFOG expenditure")
@@ -138,7 +141,7 @@ def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
         assert f'levels("JPN", "{line}")' in [s.strip() for s in srcs]
         assert f'share("JPN", "{line}")' in [s.strip() for s in srcs]
     assert not any(s.strip().startswith("fan(") for s in srcs)   # no benchmark yet
-    assert '"DEU"' not in "".join(srcs)
+    assert f'"{last}"' not in "".join(srcs)
     tool.save("forecasts_JPN_expenditure.ipynb", book)
     rev = tool.forecast_book("JPN", "revenue")
     assert 'levels("JPN", "R01")' in [s.strip() for s in _sources(rev)]

@@ -13,7 +13,7 @@ sources:
     institution: Eurostat
     object: gov_10a_exp — GG expenditure by COFOG, Level I+II, S13
     trees: [expenditure]
-    countries: [FRA, DEU]
+    countries: [FRA, DEU, ITA, ESP, BEL]  # ITA/ESP/BEL: EU3_KICKOFF.md Stage E0 (D-S17-001)
     role: anchor
     api:
       kind: sdmx
@@ -33,7 +33,7 @@ sources:
     institution: Eurostat
     object: gov_10a_main — ESA main aggregates incl. TR, TE, B9, D41 both directions, D61, P11_P12_P131
     trees: [revenue, balance]
-    countries: [FRA, DEU]
+    countries: [FRA, DEU, ITA, ESP, BEL]  # ITA/ESP/BEL: EU3_KICKOFF.md Stage E0 (D-S17-001)
     role: anchor
     api:
       kind: sdmx
@@ -49,7 +49,7 @@ sources:
     institution: Eurostat
     object: gov_10a_taxag — D211, D51A_C1, D51B_C2, D59, D91 tax detail
     trees: [revenue]
-    countries: [FRA, DEU]
+    countries: [FRA, DEU, ITA, ESP, BEL]  # ITA/ESP/BEL: EU3_KICKOFF.md Stage E0 (D-S17-001)
     role: anchor_detail
     api:
       kind: sdmx
@@ -65,7 +65,7 @@ sources:
     institution: Eurostat
     object: nama_10_gdp — nominal GDP (B1GQ, current prices, MIO_NAC)
     trees: [denominator]
-    countries: [FRA, DEU]
+    countries: [FRA, DEU, ITA, ESP, BEL]  # ITA/ESP/BEL: EU3_KICKOFF.md Stage E0 (D-S17-001)
     role: gdp
     api:
       kind: sdmx
@@ -195,7 +195,7 @@ sources:
     institution: IMF
     object: GFS COFOG and main aggregates (reconciliation only, D1)
     trees: [expenditure, revenue]
-    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0 (kickoff §13; GFS_COFOG 1972-2024, GFS_SOO 1972-2025)
+    countries: [GBR, FRA, DEU, ITA, ESP, BEL, USA]   # USA added in Stage U0 (kickoff §13; GFS_COFOG 1972-2024, GFS_SOO 1972-2025); ITA/ESP/BEL added in Stage E0 (D-S17-001)
     role: reconciliation
     api:
       kind: sdmx
@@ -212,7 +212,7 @@ sources:
     institution: OECD
     object: Table 11 — annual government expenditure by function, COFOG (secondary for GBR/FRA/DEU; the COFOG ANCHOR of the oecd_sna family, D18 — USA 1970-2024, Level I only, no GF05 rows)
     trees: [expenditure]
-    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0 (D-S16-004)
+    countries: [GBR, FRA, DEU, ITA, ESP, BEL, USA]   # USA added in Stage U0 (D-S16-004); ITA/ESP/BEL added in Stage E0 (D-S17-001)
     role: secondary
     api:
       kind: sdmx
@@ -226,7 +226,7 @@ sources:
     institution: OECD
     object: Revenue Statistics, 1965– (backward extension R01–R06 via crosswalk, D15)
     trees: [revenue]
-    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0 (1965-2024 S13 XDC)
+    countries: [GBR, FRA, DEU, ITA, ESP, BEL, USA]   # USA added in Stage U0 (1965-2024 S13 XDC); ITA/ESP/BEL added in Stage E0 (D-S17-001)
     role: backward_extension
     api:
       kind: sdmx
@@ -241,7 +241,7 @@ sources:
     institution: IMF
     object: "WEO: GGR, GGX, GGXCNL, GGXONLB, NGDP (LCU); vintages actually exposed (Q11)"
     trees: [reconciliation]
-    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0: fiscal series 2001-2031, NGDP 1980-2031; GFSM basis with documented adjustments (§8.2 perimeter rule)
+    countries: [GBR, FRA, DEU, ITA, ESP, BEL, USA]   # USA added in Stage U0: fiscal series 2001-2031, NGDP 1980-2031; GFSM basis with documented adjustments (§8.2 perimeter rule); ITA/ESP/BEL added in Stage E0 (D-S17-001)
     role: reconciliation_only          # §8 only; never an envelope or extension source (D4, D13)
     api:
       kind: sdmx
@@ -273,7 +273,7 @@ sources:
     institution: European Commission (DG ECFIN)
     object: "AMECO: TR, TE, B9, interest, D2, D5, D61 and sub-items, nominal GDP; 2-year forecast"
     trees: [envelope, revenue, expenditure]
-    countries: [GBR, FRA, DEU, USA]   # USA added in Stage U0: chapters 6/16/18 carry USA on ESA names (values = OECD T12, scoping §3.2)
+    countries: [GBR, FRA, DEU, ITA, ESP, BEL, USA]   # USA added in Stage U0: chapters 6/16/18 carry USA on ESA names (values = OECD T12, scoping §3.2); ITA/ESP/BEL added in Stage E0 (D-S17-001)
     role: envelope
     api:
       kind: bulk_zip
@@ -652,7 +652,7 @@ sources:
   EC_AGEING_2024:
     institution: European Commission
     object: 2024 Ageing Report statistical annex (annual, % GDP, 2022-2070)
-    countries: [FRA, DEU]
+    countries: [FRA, DEU, ITA, ESP, BEL]  # ITA/ESP/BEL: EU3_KICKOFF.md Stage E0 (D-S17-001)
     lines: [GF07, GF09, GF10_components]
     horizon_year: 2070
     last_actual_year: 2022
@@ -674,7 +674,7 @@ sources:
   EC_DSM:
     institution: European Commission
     object: Debt Sustainability Monitor 2025, baseline country fiches (to 2036)
-    countries: [FRA, DEU]
+    countries: [FRA, DEU, ITA, ESP, BEL]  # ITA/ESP/BEL: EU3_KICKOFF.md Stage E0 (D-S17-001)
     lines: [GF01_7, envelope]
     horizon_year: 2036
     last_actual_year: 2024

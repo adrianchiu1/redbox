@@ -41,7 +41,10 @@ from ggfiscal import config  # noqa: E402
 # setup cells — then the ordinary per-line insertion runs. Later top-level
 # sections of the chartbook are renumbered; prose cross-references to
 # them (§4.x) are left for the author.
-COUNTRIES = tuple(config.COUNTRIES)
+# Only countries whose build has reached Stage 6 (packaging) get books:
+# the USA stays out until its U6 pass (D-S16-008); ITA/ESP/BEL are at 6
+# (EU3_KICKOFF.md Stage E6, D-S17-008).
+COUNTRIES = tuple(config.countries_at_stage(6))
 SECTION = {iso3: i + 1 for i, iso3 in enumerate(COUNTRIES)}
 NAME = config.country_names()
 CAT = pd.read_csv(ROOT / "deliverables" / "series_catalogue.csv")

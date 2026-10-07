@@ -143,7 +143,7 @@ def test_newer_actuals_are_not_forecast_rows():
             & (df.line_code == "GF01_7")]
     # every country whose build has reached Stage 3 stitches 2025 (the USA
     # is anchors-only until U3: config stage_reached, D-S16-008)
-    assert len(st) == len(config.countries_at_stage(3)) == 3
+    assert len(st) == len(config.countries_at_stage(3))
     assert not st.is_forecast.any()
     assert set(st.observation_type) == {"stitched_actual"}
 

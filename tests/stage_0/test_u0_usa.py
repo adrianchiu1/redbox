@@ -52,13 +52,13 @@ def test_usa_config_block_matches_kickoff_11_1():
     assert config.perimeter_break("USA") is None
     assert config.backward_legs("USA") == {}
     assert config.stage_reached("USA") == 0
-    assert config.countries_at_stage(3) == ("GBR", "FRA", "DEU")
+    assert config.countries_at_stage(3) == ("GBR", "FRA", "DEU", "ITA", "ESP", "BEL")   # E0 (D-S17-001)
     assert config.countries_at_stage(0) == config.COUNTRIES
     assert config.country_names()["USA"] == "United States"
     assert config.prose_names()["USA"] == "the United States"
     assert config.country_aliases()["USA"] == ("United States", "US", "USA")
     assert "USD" in config.currencies()
-    assert config.universe_size() == 164
+    assert config.universe_size() == 287   # 41 lines x 7 countries (E0)
 
 
 def test_usa_is_admitted_by_the_schema_and_the_flat_file_list():
@@ -143,9 +143,9 @@ def test_u0_endpoints_and_pulls():
     assert E.oecd_eo_data_url("USA").startswith(f"{E.OECD_BASE}/data/OECD.ECO.MAD,DSD_EO@DF_EO,1.5/USA.YPGT+")
     assert "page[size]=10000&page[number]=2" in E.fiscaldata_url("v1/accounting/od/auctions_query", 10000, 2)
     assert "%5B" not in E.fiscaldata_url("v1/accounting/od/auctions_query")
-    assert E.registered_countries("IMF_WEO") == ["GBR", "FRA", "DEU", "USA"]
+    assert E.registered_countries("IMF_WEO") == ["GBR", "FRA", "DEU", "ITA", "ESP", "BEL", "USA"]
     assert E.registered_countries("OECD_T12_EXP") == ["USA"]
-    assert E.registered_countries("EUROSTAT_GOV10A_EXP") == ["FRA", "DEU"]
+    assert E.registered_countries("EUROSTAT_GOV10A_EXP") == ["FRA", "DEU", "ITA", "ESP", "BEL"]
     pulls = E.all_u0_pulls()
     keys = {(p.source_id, p.part) for p in pulls}
     assert keys >= {("OECD_T12_EXP", "USA"), ("OECD_T12_REV", "USA"), ("OECD_T12_BAL", "USA"),
@@ -158,10 +158,10 @@ def test_u0_endpoints_and_pulls():
     assert all("raw.githubusercontent.com" in p.url for p in pulls if p.source_id == "CBO_BASELINE")
     assert not any("cbo.gov" in p.url or "ssa.gov" in p.url for p in pulls)   # blocked hosts, D24
     stage0 = E.all_stage0_pulls()
-    assert {p.part for p in stage0 if p.source_id == "OECD_T11"} == {"GBR", "FRA", "DEU", "USA"}
-    assert {p.part for p in stage0 if p.source_id == "OECD_RS"} == {"GBR", "FRA", "DEU", "USA"}
+    assert {p.part for p in stage0 if p.source_id == "OECD_T11"} == set(config.COUNTRIES)
+    assert {p.part for p in stage0 if p.source_id == "OECD_RS"} == set(config.COUNTRIES)
     assert ("IMF_WEO_2026_04", "USA_GGXCNL") in {(p.source_id, p.part) for p in stage0}
-    assert len(stage0) + len(E.all_stage3_pulls()) + len(pulls) == 118
+    assert len(stage0) + len(E.all_stage3_pulls()) + len(pulls) == 187   # 118 + 69 for ITA/ESP/BEL (E0)
 
 
 def test_u0_register_entries():
@@ -238,7 +238,7 @@ def test_bea_register_driven_lookup_and_the_d26_proxies():
                                ("GF10_5", "GF10", 0.005, 0.12), ("GF04_5", "GF04", 0.15, 0.4)):
         meta = config.tree_lines("COFOG")[l2]
         s, note = RB.level2_proxy(l2, meta["bea_nipa"])
-        assert s.index.min() == 1959 and s.index.max() == 2024
+        assert s.index.min() == 1959 and s.index.max() >= 2024   # BEA's 2026 vintage carries 2025
         assert "D26" in note and "T31600" in note
         share = s[2024] / fam.cofog("USA", parent)[2024]
         assert lo < share < hi, (l2, share)

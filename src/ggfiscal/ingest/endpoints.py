@@ -35,8 +35,6 @@ AMECO_DOC_BASE = "https://ec.europa.eu/economy_finance/db_indicators/ameco/docum
 ONS_BASE = "https://www.ons.gov.uk"
 ONS_DATASETS = "/economy/governmentpublicsectorandtaxes/publicspending/datasets"
 
-# Eurostat country codes for our ISO3s
-EUROSTAT_GEO = {"FRA": "FR", "DEU": "DE"}
 # WEO subject codes used by the reconciliation module (§6.3, §8.1)
 WEO_SUBJECTS = ("GGR", "GGX", "GGXCNL", "GGXONLB", "NGDP")
 
@@ -205,6 +203,8 @@ def all_stage3_pulls() -> list[Pull]:
 
 def all_stage0_pulls() -> list[Pull]:
     """Every Stage 0 pull: anchors, GDP, WEO vintages, GFS, OECD RS/T11, AMECO, ONS."""
+    from ggfiscal import config
+
     pulls: list[Pull] = []
     for dataset, sid, key_fmt in (
         ("gov_10a_exp", "EUROSTAT_GOV10A_EXP", "A.MIO_NAC.S13.*.*.{geo}"),
@@ -212,7 +212,8 @@ def all_stage0_pulls() -> list[Pull]:
         ("gov_10a_taxag", "EUROSTAT_GOV10A_TAXAG", "A.MIO_NAC.S13.*.{geo}"),
         ("nama_10_gdp", "EUROSTAT_NAMA10_GDP", "A.CP_MNAC.B1GQ.{geo}"),
     ):
-        for iso3, geo in EUROSTAT_GEO.items():
+        for iso3 in registered_countries(sid):     # DE6: geo code from countries.yaml
+            geo = config.eurostat_geo(iso3)
             pulls.append(Pull(sid, iso3, eurostat_data_url(dataset, key_fmt.format(geo=geo))))
 
     pulls.append(Pull("IMF_WEO", "catalog", imf_dataflow_catalog_url(),

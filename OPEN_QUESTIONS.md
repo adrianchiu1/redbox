@@ -423,3 +423,31 @@ intended visibility. **Ask (U5):** keep the stability rule with the WARN, or
 widen `perimeter_sigma_pct_te` for the USA per the measured 1.5, or classify
 the WEO-vs-OECD gap by a third rule (the GFSM adjustments are documented per
 year by the IMF). Default: keep the rule and the WARN; nothing absorbed.
+
+## OQ-17 — Approve the long-term joins for Italy, Spain and Belgium? (NEW, needs the committee; from D-S17-005, D12)
+Raised 2026-10-07 (session 17, Stage E). The DSM interest path (to 2036)
+and the Ageing Report GF10 composite (to 2070) are withheld for ITA, ESP
+and BEL by V16: the AMECO-vs-DSM growth divergence over the 2025–27
+overlap is −0.053 (ITA), +0.062 (ESP), +0.061 (BEL), and AMECO-vs-AR on
+GF10 +0.021, −0.021, +0.031 — all above 0.02. For FRA/DEU the committee
+approved the DSM joins (D-S8-001, D-S13-005) at −0.065 / +0.040; the AR
+GF10 joins were under the threshold. **Ask:** add
+`{iso3, line_code: GF01_7, incoming_source: EC_DSM}` and the E05 twin for
+the three countries to `tolerances.v16_approved_joins` (one config row each
++ rebuild; V16 keeps WARNing on the seam), and decide the GF10 AR join the
+same way. Default: withheld — GF01_7/E05/GF10 end at 2027 in maximum.
+
+## OQ-18 — Italy and Belgium have no COFOG Level II before 2001 anywhere reachable (NEW, informational; from DE3, D-S17-005)
+Raised 2026-10-07. DE3 asked for the IMF GFS leg as for Germany; it is
+enabled, and like Germany's it has nothing to apply: IMF GFS, OECD Table 11
+and Eurostat all start the four Level II groups in 2001 for ITA and BEL.
+GF01_7 has 1995–2000 from the D.41 fallback (grade B). **Ask:** accept the
+2001 start (default), or name a national source (ISTAT/ICN historical
+COFOG tables) for a later session to verify.
+
+## OQ-19 — Spain's WEO revenue and expenditure levels sit outside the 1%-of-TE revision band (NEW, informational; from V24)
+Raised 2026-10-07. On the 2026-04 vintage the WEO's GGR and GGX for Spain
+differ from the Eurostat anchor by 1.7% and 1.5% of TE (V24 WARN); the
+NLB gap is within the band (2024: ours −3.21% of GDP, WEO −3.22%). Spain
+is configured `weo_perimeter_gap_expected: false` like FRA/DEU. Default:
+keep the rule and the WARN.

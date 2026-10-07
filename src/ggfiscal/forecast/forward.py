@@ -208,6 +208,15 @@ STSCH_NOTE = ("Arbeitskreis Steuerschätzungen (170th, May 2026), cash "
               "resources are financing items outside the tax lines used")
 
 
+def _registered(iso3: str, source_id: str) -> bool:
+    """DE5 (EU3_KICKOFF.md): an EU-wide projection source (Ageing Report,
+    DSM) applies to a country when the register lists it in the source's
+    `countries` (config/sources.yaml) — never by an ISO3 literal."""
+    from ggfiscal.ingest.endpoints import registered_countries
+
+    return iso3 in registered_countries(source_id)
+
+
 def _dsm_interest(iso3: str) -> FcSource:
     return FcSource(
         source_id="EC_DSM", series=R.dsm_series(iso3, "(2.1) Interest expenditure"),
@@ -323,7 +332,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
     uyig = _ameco(iso3, "UYIG", AMECO_UYIG_NOTE, AMECO_INT_XWALK,
                   direct=False, flag="d41_gross_accrued")
     out[("COFOG", "GF01_7")] = [uyig] + (
-        [_dsm_interest(iso3)] if iso3 in ("FRA", "DEU") else [])
+        [_dsm_interest(iso3)] if _registered(iso3, "EC_DSM") else [])
     # §7.9 (Stage 4): GF01 via GF01_7 growth — mandated, maximum only, with
     # the explicit D2 residual assumption; measured coverage is D band
     # everywhere (interest is the minor share of GF01)
@@ -363,7 +372,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
     gf10.max_only = True
     gf10.residual_method = config.residual_method(iso3, "GF10")
     out[("COFOG", "GF10")] = [gf10]
-    if iso3 in ("FRA", "DEU"):
+    if _registered(iso3, "EC_AGEING_2024"):
         out[("COFOG", "GF07")] = [_ar(iso3, "GF07", ["health"])]
         out[("COFOG", "GF09")] = [_ar(iso3, "GF09", ["education"])]
         out[("COFOG", "GF10")] = [gf10, _ar(iso3, "GF10", ["pensions", "ltc"])]
@@ -391,7 +400,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
                 var=var, label=meta["label"], esa=meta["esa"]), AMECO_EXP_XWALK,
                 direct=True, flag="d41_gross_accrued" if code == "E05" else "")
         out[("ESA_EXP", code)] = [src]
-    if iso3 in ("FRA", "DEU"):
+    if _registered(iso3, "EC_DSM"):
         out[("ESA_EXP", "E05")].append(_dsm_interest(iso3))
     if iso3 == "DEU":
         out[("ESA_REV", "R01")] = [_stsch(
@@ -615,6 +624,8 @@ def declarations_for(iso3: str) -> list[Declaration]:
     """One note per line that carries no strict forecast after Stage 3 (plus
     the totals, which are never extended). Lines with applied forecasts get
     their row from the build itself."""
+    from ggfiscal import config
+
     def d(cls, line, status, note):
         return Declaration(iso3, cls, line, status, note)
 
@@ -744,6 +755,12 @@ def declarations_for(iso3: str) -> list[Declaration]:
               "as R06_E: no employer/household split in any reachable "
               "official forecast (D-S13-005)"),
         ]
+    # DE5 (EU3_KICKOFF.md): a country whose declarations are facts about its
+    # own national sources states them in countries.yaml
+    # `forecast_declarations` (line -> {classification, status, note}); the
+    # GBR/FRA/DEU notes predate the key and stay below verbatim
+    for line, spec in config.forecast_declarations(iso3).items():
+        out.append(d(spec["classification"], line, spec["status"], spec["note"]))
     if iso3 == "FRA":
         out += [
             d("ESA_REV", "R02_A", "source_blocked",

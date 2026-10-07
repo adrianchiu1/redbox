@@ -103,7 +103,10 @@ def _deliverables() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
                      ignore_index=True).query("variant == 'strict'")
     ledger = read("balance_ledger.csv").query("variant == 'strict'")
     forecasts = read("statistical_forecasts.csv").query("method == 'combination'")
-    return tree, ledger, forecasts
+    # packaging (Stage 6) only, as statistical._strict_tree (D-S17-008)
+    staged = list(config.countries_at_stage(6))
+    return (tree[tree.iso3.isin(staged)], ledger[ledger.iso3.isin(staged)],
+            forecasts[forecasts.iso3.isin(staged)])
 
 
 def _leg(tree: pd.DataFrame, forecasts: pd.DataFrame, iso3: str, line: str):

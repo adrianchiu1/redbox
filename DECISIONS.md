@@ -2751,3 +2751,136 @@ untouched; no notebook touched; the debt engine untouched.
 (OQ-13; register `blocked`, V18 WARN); the NIPA transportation
 gross-investment cell (OQ-15); the WEO perimeter rule for the USA (OQ-16).
 None of them is a Gate U0 criterion.
+
+---
+
+# Session 17 (2026-10-07) — Stage E: Italy, Spain and Belgium (`EU3_KICKOFF.md`)
+
+The committee asked for the France/Germany approach to be extended to
+Italy, Spain and Belgium, with the debt layer, before the USA's U1, built
+from `main`, with Level II before 2001 filled from IMF GFS as for Germany,
+and with Spain's debt from the Banco de España. `EU3_KICKOFF.md` records
+those answers as DE1–DE6.
+
+## D-S17-001 — ITA, ESP and BEL join `config/countries.yaml` on the Eurostat family; every EU-wide source registers them (serves EU3_KICKOFF.md §1, DE5, DE6)
+
+Three blocks after DEU, `anchor_family: eurostat`, the FRA/DEU anchors and
+GDP source, `envelope_forecast: [EC_AMECO, EC_DSM]`, CY throughout, no
+structural zeros, no perimeter break, `stage_reached: 6`. The country
+order is GBR, FRA, DEU, ITA, ESP, BEL, USA. `EUROSTAT_GOV10A_{EXP,MAIN,
+TAXAG}`, `EUROSTAT_NAMA10_GDP`, `IMF_GFS`, `IMF_WEO`, `OECD_RS`,
+`OECD_T11`, `EC_AMECO`, `EC_AGEING_2024` and `EC_DSM` list the three
+countries; the pulls follow the register (69 new pulls, all 200 on
+2026-10-07; `fetch --all` is 187 pulls). DE6: `eurostat_geo` per country
+replaces the three `{"FRA": "FR", "DEU": "DE"}` maps
+(`ingest/endpoints.py`, `standardise/readers.py` ×2) and the debt
+engine's two (`debt/families/eurostat_insee_oecd.py`,
+`debt/intermediates.py`); `config.eurostat_geo(s)`.
+
+## D-S17-002 — The Ageing Report and DSM legs apply by registration, not by ISO3 literal (serves DE5)
+
+`forward._registered(iso3, source_id)` reads the register's `countries`;
+the four `iso3 in ("FRA", "DEU")` gates of `forecasts_for` (DSM interest
+for GF01_7 and E05, the AR legs for GF07/GF09/GF10/GF10_2) and the one in
+`coverage.line_sources` (the GF10_2 AR candidate) use it. FRA/DEU outputs
+are byte-identical. The remaining FRA/DEU literals in `forward.py` are
+declarations about those countries' own national sources (D7 notes),
+which stay where they are.
+
+## D-S17-003 — R10 for a country without the D.92/D.99 split: D.39 + D.7 + (D.9 − D.91) (serves parent §4.3 R10)
+
+Spain publishes no `D92REC`/`D99REC` in `gov_10a_main` (the first E0 chain's
+only ERROR: `S0_COVERAGE ESP/ESA_REV/R10`). D.92 + D.99 = D.9 − D.91 is an
+identity (measured on FRA to 1e-12), so `EurostatFamily._r10_parts` uses
+it only where the split is missing, with the note saying so. FRA/DEU/ITA/
+BEL keep the published split and an unchanged series.
+
+## D-S17-004 — ESP's D.51 payer split from `gov_10a_taxag`; BEL's main aggregates do not close exactly (serves D-S1-002, parent §4.3 R03/R04)
+
+`gov_10a_main` carries no `D51A_C1REC`/`D51B_C2REC` for Spain; the
+tax-detail table does (1995–2024). D-S1-002 chose the main table because
+taxag drifts in the freshest years; for Spain taxag D.5 and D.2 equal the
+main table's in every common year (max |diff| 0.0%), and lack only the
+main table's 2025. `EurostatFamily._d51` falls back to taxag only where
+the main table publishes no split; the rows carry
+`source_id = EUROSTAT_GOV10A_TAXAG` (a revenue line may now name its own
+table as a 4th tuple element). R03/R04/R05 for ESP end in 2024; 2025
+waits for Eurostat's next taxag release.
+Belgium's `gov_10a_main` TR − TE differs from its own B.9 by up to
+EUR 0.8 mn (2024–25, provisional; 2.4e-6 of TE) — inside V23's 0.1%; the
+flat-file test now bounds the difference at 1e-5 of TE and keeps exact
+closure for every other country.
+
+## D-S17-005 — DE3 measured: no reachable source carries ITA/BEL COFOG Level II before 2001; measured grades and V16 outcomes (serves DE3, D12, §7.8, §9.2)
+
+The generic IMF GFS COFOG leg is enabled for ITA and BEL as for DEU. As for
+DEU (whose groups start in 2000), it applies nothing: IMF GFS `GF1020_T` /
+`GF1050_T` start in 2001 for both (the IMF redistributes the same national
+data), there is no GFS group for 04.5, and OECD Table 11's Level II rows
+also start in 2001. GF10_2, GF10_5 and GF04_5 (and their remainders)
+therefore start in 2001 for ITA and BEL; GF01_7 has 1995–2000 from the D10
+fallback (D.41 payable, B), as DEU's 1995–99. Spain's anchor publishes
+Level II from 1995.
+Measured on the forward side (2024 coverage at the boundary):
+AR health 87.9% of GF07 (ITA, C), 77.1% (BEL, C), 91.2% (ESP, B);
+AR education 92.8% (ITA, B), 98.4% (ESP, B), 87.4% (BEL, C);
+AR gross pensions 115.8% / 132.3% / 129.5% of COFOG 10.2 (ITA/ESP/BEL,
+grade D, not applied — the AWG perimeter includes disability and
+survivors' pensions COFOG books in 10.1/10.3);
+AMECO UTKG 20.2% of R05 (ITA, D), 51.4% (ESP, C), 52.3% (BEL, C);
+the §7.9 GF01-via-GF01_7 proxy measures C for ITA (interest is a larger
+share of GF01) and D elsewhere.
+V16 withholds every long-term join for the three countries: AMECO vs DSM
+interest growth diverges by −0.053 (ITA), +0.062 (ESP), +0.061 (BEL) and
+AMECO vs AR on GF10 by +0.021, −0.021, +0.031 — above 0.02, and the
+committee's `v16_approved_joins` list names FRA/DEU only. GF01_7/E05 end
+at 2027 and GF10 at 2027 in maximum for ITA/ESP/BEL until the committee
+rules (OQ-17). The declarations are config (`forecast_declarations` in
+countries.yaml), one per line without a strict forecast.
+
+## D-S17-006 — Debt sources for the three countries (serves EU3_KICKOFF.md ED0, DE1, DE4)
+
+New family `debt/families/eu3_offices.py` (registered in
+`debt/endpoints.FAMILIES`): MEF composition and maturity CSVs (one part per
+monthly edition, read from the listing page at pull time — 2026-01..08 on
+2026-10-07; older editions are PDF), BDA OLO lines (HTML), maturity
+schedule, indicators and implicit yield (xlsx; point-in-time only), the
+Banco de España Boletín zip. `ESP_TESORO` is registered `blocked` (TLS
+chain incomplete) and `ITA_MEF_FABBISOGNO` `not_machine_readable`; both
+add one V18 WARN. `EUROSTAT_GOV10A_MAIN_S1311` and `EUROSTAT_GOV10DD`
+list the three countries. 117 debt pulls of those three families, 0
+failures.
+
+## D-S17-007 — The debt layer of the three countries is the DD8 aggregate path; step A is unavailable and says why (serves ED1–ED2, DD8)
+
+`config/debt.yaml` `countries` gains ITA/ESP/BEL with
+`aggregates_eu3:{ita,esp,bel}_class_aggregates`,
+`intermediates:official_totals_{ita,esp,bel}`, the S1311 sub-sector chain
+items and V31 against Eurostat GD_F3 — the FRA pattern. No `register`
+(ED3). Aggregates: Eurostat `gov_10q_ggdebt` Q4 S1311 F31/F32/F4/F2 and
+the S13 securities cross-check for all three (ITA 2000–2025, ESP
+1995–2025, BEL 1995–2025); ESP adds the Banco de España Estado PDE total
+at December (1994–2025, `ESP_BDE_BE`); ITA adds the MEF December edition
+when one is in the store (none yet). Step A of both chains is a grade-D
+null row naming the missing source and the reason (MEF and BDA publish
+cash outturns in PDF only; the Tesoro is unreachable). Fixed in passing:
+`intermediates.official_totals` iterated every fiscal country, so `ggfiscal
+debt build` had raised for the USA since U0; it now iterates the
+debt-configured countries.
+
+## D-S17-008 — Packaging is gated by stage 6; the three countries are packaged (serves Stage E6, D-S16-008)
+
+`statistical-forecasts` and `benchmark-balance` read only the countries
+at `stage_reached` 6, and `tools/update_notebooks_s11.py` seeds books for
+those only — the USA (stage 0) had entered the downstream files the first
+time they ran after U0. The notebook tool seeded the ITA/ESP/BEL chartbook
+sections and forecast books by copy; every notebook executes error-free.
+Belgium's GDP agrees across sources in 2025, so its forecast-levels anchor
+is the last outturn (2025), not the year before; the tests now admit that
+and still require the fork for GBR/FRA/DEU.
+Pre-existing, not changed here: the Prophet and ETS interval widths (and
+the ensemble's) are simulation-based and unseeded, so `se`/intervals in
+`statistical_forecasts.csv`, `forecast_levels.csv` and the benchmarks move
+on every run (two runs of the unchanged code differ on the same 2,565
+rows; point forecasts identical). Those four files are compared on their
+point columns only (D-S17-010).

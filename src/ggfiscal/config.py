@@ -66,6 +66,32 @@ def currencies() -> list[str]:
     return list(dict.fromkeys(cfg["currency"] for cfg in countries().values()))
 
 
+def eurostat_geo(iso3: str) -> str | None:
+    """DE6 (EU3_KICKOFF.md): the country's Eurostat geo code (also the
+    Ageing Report / DSM sheet code), `eurostat_geo` in countries.yaml;
+    None for a country Eurostat does not publish."""
+    return country(iso3).get("eurostat_geo") or None
+
+
+def forecast_declarations(iso3: str) -> dict[str, dict]:
+    """DE5: line_code -> {classification, status, note} for the lines a
+    country declares unforecast because of its own national sources
+    (`forecast_declarations` in countries.yaml; empty unless declared)."""
+    out = dict(country(iso3).get("forecast_declarations") or {})
+    for line, spec in out.items():
+        missing = {"classification", "status", "note"} - set(spec or {})
+        if missing:
+            raise ValueError(f"{iso3}: forecast_declarations[{line!r}] lacks {sorted(missing)}")
+    return out
+
+
+def eurostat_geos() -> dict[str, str]:
+    """iso3 -> Eurostat geo code for every configured country that has one,
+    in countries.yaml order."""
+    return {iso3: cfg["eurostat_geo"] for iso3, cfg in countries().items()
+            if cfg.get("eurostat_geo")}
+
+
 def lines_absent(iso3: str) -> dict[str, str]:
     """D20: line_code -> reason for every line the anchor institution defines
     as identically zero for this country (published as structural_zero rows;

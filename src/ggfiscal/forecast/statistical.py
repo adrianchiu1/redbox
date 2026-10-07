@@ -177,6 +177,9 @@ def _strict_tree() -> pd.DataFrame:
                          float_precision="round_trip")
         frames.append(df.assign(classification=classification))
     tree = pd.concat(frames, ignore_index=True)
+    # packaging (Stage 6) only: a country whose build has not reached it (the
+    # USA before U6) gets no statistical forecasts (D-S16-008, D-S17-008)
+    tree = tree[tree.iso3.isin(config.countries_at_stage(6))]
     return tree[~tree.line_code.isin(TOTALS)]
 
 

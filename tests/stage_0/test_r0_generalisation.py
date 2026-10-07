@@ -19,7 +19,8 @@ PARENT = ("GBR", "FRA", "DEU")   # the three countries R0 generalised without ch
 def test_country_list_is_read_from_countries_yaml_in_file_order():
     assert config.COUNTRIES == tuple(config.countries())
     assert config.COUNTRIES[:3] == PARENT
-    assert config.COUNTRIES == ("GBR", "FRA", "DEU", "USA")   # Stage U0 added the USA
+    # Stage U0 added the USA; Stage E0 Italy, Spain and Belgium (D-S17-001)
+    assert config.COUNTRIES == ("GBR", "FRA", "DEU", "ITA", "ESP", "BEL", "USA")
 
 
 def test_every_country_carries_the_r0_keys():
@@ -181,10 +182,12 @@ def test_no_routing_site_decides_by_country_literal():
         src = inspect.getsource(getattr(mod, fn))
         assert "R.ons_" not in src and "R.eurostat_" not in src, (mod.__name__, fn)
         literals = src.count('iso3 == "GBR"') + src.count('iso3 in ("FRA", "DEU")')
-        allowed = 2 if (mod, fn) == (coverage, "line_sources") else 0
+        # one: the UK's OBR pension candidate (the FRA/DEU AR literal became
+        # source registration in Stage E0, D-S17-002)
+        allowed = 1 if (mod, fn) == (coverage, "line_sources") else 0
         assert literals == allowed, (mod.__name__, fn, literals)
     src = inspect.getsource(coverage.line_sources)
-    for lit in ('iso3 == "GBR"', 'iso3 in ("FRA", "DEU")'):
+    for lit in ('iso3 == "GBR"',):
         i = src.index(lit)
         assert 'l2 == "GF10_2"' in src[i - 40:i], "only the GF10_2 candidates may name a country"
 

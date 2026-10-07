@@ -220,8 +220,14 @@ def test_ledger_identities_hold_in_the_flat_file():
     # ONS / Eurostat close exactly; the OECD Table 12 balancing item (USA) is
     # published rounded to USD 0.001 mn beside OTR and OTE, so a USD 1,000
     # difference is the anchor's own rounding (V23 tolerance is 0.1% of TE)
-    assert (led.nlb_lcu_mn - led.b9_anchor_lcu_mn).abs().max() == pytest.approx(
-        0, abs=2e-3)
+    # Eurostat's BEL main aggregates do not close exactly: TR - TE differs
+    # from the published B.9 by up to EUR 0.8 mn (2024-25, provisional;
+    # 2.4e-6 of TE) — the anchor's own inconsistency, far inside V23's 0.1%
+    # of TE (D-S17-004). Every country: within 1e-5 of TE.
+    assert ((led.nlb_lcu_mn - led.b9_anchor_lcu_mn).abs()
+            <= (1e-5 * led.te_lcu_mn.abs()).clip(lower=2e-3)).all()
+    exact = led[led.iso3 != "BEL"]
+    assert (exact.nlb_lcu_mn - exact.b9_anchor_lcu_mn).abs().max() == pytest.approx(0, abs=2e-3)
     pct = 100.0 * led.nlb_lcu_mn / led.gdp_lcu_mn
     assert (pct - led.nlb_pct_gdp).abs().max() == pytest.approx(0, abs=1e-9)
     assert set(led.basis) == {"actual"}     # outturn years only, by design
@@ -490,23 +496,32 @@ def test_forecast_levels_anchors_on_our_own_gdp_and_grows_from_there():
     actual = tree.query("variant == 'strict' and basis == 'actual'").dropna(
         subset=["gdp_lcu_mn"])
 
+    forked: set[str] = set()
     for iso3, g in lv.groupby("iso3"):
         anchor_year = int(g.gdp_anchor_year.iloc[0])
         ours = actual.query("iso3 == @iso3").groupby("year").gdp_lcu_mn
         agreed = ours.nunique()
         assert anchor_year == int(agreed[agreed == 1].index.max()), iso3
-        # the last outturn really is ambiguous — that is why the anchor is
-        # a year earlier, and a test that never sees it would not notice
-        assert int(agreed.index.max()) > anchor_year, iso3
-        assert agreed.loc[int(agreed.index.max())] > 1, iso3
+        # where the last outturn is ambiguous the anchor is a year earlier
+        # (GBR/FRA/DEU/ITA/ESP); where every source agrees on it (BEL 2025)
+        # the anchor is the last outturn itself (D-S17-008)
+        if int(agreed.index.max()) > anchor_year:
+            assert agreed.loc[int(agreed.index.max())] > 1, iso3
+            forked.add(iso3)
 
         assert abs(float(g.gdp_anchor_lcu_mn.iloc[0])
                    - float(ours.first().loc[anchor_year])) < 1e-6, iso3
         path = g.drop_duplicates("year").set_index("year").gdp_lcu_mn.sort_index()
-        assert path.index.min() > anchor_year
+        # rows at or before the anchor carry the outturn itself
+        for year, value in path[path.index <= anchor_year].items():
+            assert abs(value - float(ours.first().loc[year])) < 1e-6, (iso3, year)
+        path = path[path.index > anchor_year]
+        assert len(path) and path.index.min() > anchor_year
         assert (path.diff().dropna() > 0).all(), iso3   # nominal, so rising
         assert g.gdp_growth_source.eq("IMF_WEO").all()
         assert g.gdp_growth_vintage.nunique() == 1
+    # a test that never saw the fork would not notice it
+    assert forked >= {"GBR", "FRA", "DEU"}, forked
 
 
 @needs_weo
@@ -522,6 +537,7 @@ def test_forecast_levels_chains_weo_growth_and_never_its_level():
         weo = weo_series(vintage, iso3, GROWTH_INDICATOR).dropna() / 1e6
         anchor_year = int(g.gdp_anchor_year.iloc[0])
         path = g.drop_duplicates("year").set_index("year").gdp_lcu_mn.sort_index()
+        path = path[path.index > anchor_year]     # outturn rows: previous test
         before = float(g.gdp_anchor_lcu_mn.iloc[0])
         for year, value in path.items():
             growth = float(weo[year]) / float(weo[year - 1])

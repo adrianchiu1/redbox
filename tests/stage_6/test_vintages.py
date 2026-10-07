@@ -93,7 +93,7 @@ def test_new_vintage_is_config_change_plus_rebuild_only(
 
     pulls = [p for p in all_stage0_pulls() if p.source_id == "IMF_WEO_2026_10"]
     from ggfiscal.ingest.endpoints import registered_countries
-    assert len(pulls) == 5 * len(registered_countries("IMF_WEO")) == 20   # 4 countries x 5 subjects (U0)
+    assert len(pulls) == 5 * len(registered_countries("IMF_WEO")) == 35   # 7 countries x 5 subjects (E0)
     assert all("WEO_2026_OCT_VINTAGE/1.0.0" in p.url for p in pulls)
 
     # §8.5: bridge/explanation enumerate vintages from the same config map,

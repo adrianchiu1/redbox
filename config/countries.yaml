@@ -43,6 +43,7 @@ countries:
     prose_name: France
     aliases: [France, FR]
     currency: EUR
+    eurostat_geo: FR                  # DE6: Eurostat / AR / DSM country code
     anchor_family: eurostat
     anchors:
       expenditure: EUROSTAT_GOV10A_EXP
@@ -63,6 +64,7 @@ countries:
     prose_name: Germany
     aliases: [Germany, DE]
     currency: EUR
+    eurostat_geo: DE
     anchor_family: eurostat
     anchors:
       expenditure: EUROSTAT_GOV10A_EXP
@@ -84,6 +86,155 @@ countries:
         level2_note: "IMF GFS COFOG group {indicator}: redistribution of the same Destatis ESA data (coverage measured at the boundary); XDC levels"
       gfs_soo: null                   # ESA_EXP lines via the lines.yaml gfs_soo codes: available, not enabled
                                       # (AMECO reaches the 1991 break; enabling it would add a leg after AMECO)
+  ITA:                                # EU3_KICKOFF.md (Stage E0, D-S17-001)
+    name: Italy
+    prose_name: Italy
+    aliases: [Italy, IT]
+    currency: EUR
+    eurostat_geo: IT
+    anchor_family: eurostat
+    anchors:
+      expenditure: EUROSTAT_GOV10A_EXP
+      revenue: EUROSTAT_GOV10A_MAIN
+      balance: EUROSTAT_GOV10A_MAIN
+    gdp_source: EUROSTAT_NAMA10_GDP
+    interest_anchor: level2
+    envelope_forecast: [EC_AMECO, EC_DSM]
+    period_basis_forecast: CY
+    period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}
+    fy_to_cy_weights: [0.25, 0.75]    # §7.10 default (no FY source in use)
+    lines_absent: {}
+    weo_perimeter_gap_expected: false
+    perimeter_break: null
+    backward_legs:                    # DE3: Level II 1995-2000 from IMF GFS, as DEU
+      gfs_cofog:
+        level1_note: "IMF GFS COFOG: redistribution of the same ISTAT ESA data; XDC levels"
+        level2_note: "IMF GFS COFOG group {indicator}: redistribution of the same ISTAT ESA data (coverage measured at the boundary); XDC levels"
+      gfs_soo: null
+    stage_reached: 6                  # EU3_KICKOFF.md: fiscal stages E0-E6 built in one pass (D-S17-008)
+    forecast_declarations:            # DE5: lines without a strict forecast because of the country's own sources
+      R01: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of VAT (D.211): the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
+      R02: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of taxes on production other than VAT: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO UTVG is total D.2 only"}
+      R02_A: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of excise duties (D.214A): the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied)"}
+      R03: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of household income taxes: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
+      R04: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of corporate income taxes: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO UTYG is total D.5 only"}
+      R06_E: {classification: ESA_REV, status: no_official_forecast,
+        note: "no official forecast of employers' contributions separately: AMECO carries actual contributions in total (UTAG) and imputed (UTIG) but no employer/household split; strict and maximum end at the last actual (the FRA/DEU finding, D-S13-005)"}
+      R06_H: {classification: ESA_REV, status: no_official_forecast,
+        note: "as R06_E: no employer/household split in any reachable official forecast (D-S13-005)"}
+      GF02: {classification: COFOG, status: no_machine_readable_source,
+        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
+      GF07: {classification: COFOG, status: grade_below_strict,
+        note: "AR 2024 health care baseline measures 87.9% of COFOG 07 at 2024 (grade C: the AWG health care perimeter vs the COFOG function) — no strict forecast; applied in maximum_extension to 2070 per §7.8"}
+      GF10: {classification: COFOG, status: grade_below_strict,
+        note: "maximum_extension carries the AMECO D.62 dominant-component proxy (to 2027; §7.8, maximum only); the AR 2024 pensions+LTC composite measures 83.1% of GF10 at 2024 (grade C) and its join is withheld by V16 (AMECO vs AR growth divergence +0.0213 > 0.02, D12) pending committee review — no strict forecast"}
+      R05: {classification: ESA_REV, status: grade_below_strict,
+        note: "AMECO UTKG (capital taxes, D.91) covers 20.2% of the line at 2025 (grade D): not applied in either variant; D7 lists R05 as partial"}
+      GF10_2: {classification: COFOG, status: grade_below_strict,
+        note: "AR 2024 gross public pensions measure 115.8% of COFOG 10.2 at 2024 (grade D: the AWG pension perimeter includes disability and survivors' pensions that COFOG books in 10.1 and 10.3) — not applied in either variant (the FRA/DEU join measured 1.07, B band; D-S13-002)"}
+  ESP:
+    name: Spain
+    prose_name: Spain
+    aliases: [Spain, ES]
+    currency: EUR
+    eurostat_geo: ES
+    anchor_family: eurostat
+    anchors:
+      expenditure: EUROSTAT_GOV10A_EXP
+      revenue: EUROSTAT_GOV10A_MAIN
+      balance: EUROSTAT_GOV10A_MAIN
+    gdp_source: EUROSTAT_NAMA10_GDP
+    interest_anchor: level2
+    envelope_forecast: [EC_AMECO, EC_DSM]
+    period_basis_forecast: CY
+    period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}
+    fy_to_cy_weights: [0.25, 0.75]
+    lines_absent: {}
+    weo_perimeter_gap_expected: false
+    perimeter_break: null
+    backward_legs: {}                 # Level II from 1995 in the anchor itself (DE3 not needed)
+    stage_reached: 6                  # EU3_KICKOFF.md: fiscal stages E0-E6 built in one pass (D-S17-008)
+    forecast_declarations:            # DE5: lines without a strict forecast because of the country's own sources
+      R01: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of VAT (D.211): the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
+      R02: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of taxes on production other than VAT: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO UTVG is total D.2 only"}
+      R02_A: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of excise duties (D.214A): the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied)"}
+      R03: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of household income taxes: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
+      R04: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of corporate income taxes: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO UTYG is total D.5 only"}
+      R06_E: {classification: ESA_REV, status: no_official_forecast,
+        note: "no official forecast of employers' contributions separately: AMECO carries actual contributions in total (UTAG) and imputed (UTIG) but no employer/household split; strict and maximum end at the last actual (the FRA/DEU finding, D-S13-005)"}
+      R06_H: {classification: ESA_REV, status: no_official_forecast,
+        note: "as R06_E: no employer/household split in any reachable official forecast (D-S13-005)"}
+      GF02: {classification: COFOG, status: no_machine_readable_source,
+        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
+      GF10: {classification: COFOG, status: grade_below_strict,
+        note: "maximum_extension carries the AMECO D.62 dominant-component proxy (to 2027; §7.8, maximum only); the AR 2024 pensions+LTC composite measures 77.7% of GF10 at 2024 (grade C) and its join is withheld by V16 (AMECO vs AR growth divergence -0.0214 > 0.02, D12) pending committee review — no strict forecast"}
+      R05: {classification: ESA_REV, status: grade_below_strict,
+        note: "AMECO UTKG (capital taxes, D.91) covers 51.4% of the line at 2024 (grade C): applied in maximum_extension only as a §7.8 single-component proxy; D7 lists R05 as partial"}
+      GF10_2: {classification: COFOG, status: grade_below_strict,
+        note: "AR 2024 gross public pensions measure 132.3% of COFOG 10.2 at 2024 (grade D: the AWG pension perimeter includes disability and survivors' pensions that COFOG books in 10.1 and 10.3) — not applied in either variant (the FRA/DEU join measured 1.07, B band; D-S13-002)"}
+  BEL:
+    name: Belgium
+    prose_name: Belgium
+    aliases: [Belgium, BE]
+    currency: EUR
+    eurostat_geo: BE
+    anchor_family: eurostat
+    anchors:
+      expenditure: EUROSTAT_GOV10A_EXP
+      revenue: EUROSTAT_GOV10A_MAIN
+      balance: EUROSTAT_GOV10A_MAIN
+    gdp_source: EUROSTAT_NAMA10_GDP
+    interest_anchor: level2
+    envelope_forecast: [EC_AMECO, EC_DSM]
+    period_basis_forecast: CY
+    period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}
+    fy_to_cy_weights: [0.25, 0.75]
+    lines_absent: {}
+    weo_perimeter_gap_expected: false
+    perimeter_break: null
+    backward_legs:                    # DE3: Level II 1995-2000 from IMF GFS, as DEU
+      gfs_cofog:
+        level1_note: "IMF GFS COFOG: redistribution of the same NBB/ICN ESA data; XDC levels"
+        level2_note: "IMF GFS COFOG group {indicator}: redistribution of the same NBB/ICN ESA data (coverage measured at the boundary); XDC levels"
+      gfs_soo: null
+    stage_reached: 6                  # EU3_KICKOFF.md: fiscal stages E0-E6 built in one pass (D-S17-008)
+    forecast_declarations:            # DE5: lines without a strict forecast because of the country's own sources
+      R01: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of VAT (D.211): the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
+      R02: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of taxes on production other than VAT: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO UTVG is total D.2 only"}
+      R02_A: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of excise duties (D.214A): the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied)"}
+      R03: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of household income taxes: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
+      R04: {classification: ESA_REV, status: no_machine_readable_source,
+        note: "no machine-readable official forecast of corporate income taxes: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO UTYG is total D.5 only"}
+      R06_E: {classification: ESA_REV, status: no_official_forecast,
+        note: "no official forecast of employers' contributions separately: AMECO carries actual contributions in total (UTAG) and imputed (UTIG) but no employer/household split; strict and maximum end at the last actual (the FRA/DEU finding, D-S13-005)"}
+      R06_H: {classification: ESA_REV, status: no_official_forecast,
+        note: "as R06_E: no employer/household split in any reachable official forecast (D-S13-005)"}
+      GF02: {classification: COFOG, status: no_machine_readable_source,
+        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
+      GF07: {classification: COFOG, status: grade_below_strict,
+        note: "AR 2024 health care baseline measures 77.1% of COFOG 07 at 2024 (grade C: the AWG health care perimeter vs the COFOG function) — no strict forecast; applied in maximum_extension to 2070 per §7.8"}
+      GF09: {classification: COFOG, status: grade_below_strict,
+        note: "AR 2024 education baseline measures 87.4% of COFOG 09 at 2024 (grade C: the AWG education perimeter vs the COFOG function) — no strict forecast; applied in maximum_extension to 2070 per §7.8"}
+      GF10: {classification: COFOG, status: grade_below_strict,
+        note: "maximum_extension carries the AMECO D.62 dominant-component proxy (to 2027; §7.8, maximum only); the AR 2024 pensions+LTC composite measures 75.8% of GF10 at 2024 (grade C) and its join is withheld by V16 (AMECO vs AR growth divergence +0.0309 > 0.02, D12) pending committee review — no strict forecast"}
+      R05: {classification: ESA_REV, status: grade_below_strict,
+        note: "AMECO UTKG (capital taxes, D.91) covers 52.3% of the line at 2025 (grade C): applied in maximum_extension only as a §7.8 single-component proxy; D7 lists R05 as partial"}
+      GF10_2: {classification: COFOG, status: grade_below_strict,
+        note: "AR 2024 gross public pensions measure 129.5% of COFOG 10.2 at 2024 (grade D: the AWG pension perimeter includes disability and survivors' pensions that COFOG books in 10.1 and 10.3) — not applied in either variant (the FRA/DEU join measured 1.07, B band; D-S13-002)"}
   USA:                                # REPLICATION_KICKOFF.md §11.1 (Stage U0, D-S16-001)
     name: United States
     prose_name: the United States

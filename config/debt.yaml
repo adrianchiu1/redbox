@@ -5,6 +5,10 @@ perimeter:                       # DD1 — what enters the register
   FRA: {issuer_sector: S1311, office: AFT, includes: [oat_all, btan, btf]}
   DEU: {issuer_sector: S1311, office: FINANZAGENTUR,
         includes: [bund, bobl, schatz, bubill, bund_ei, bobl_ei, green_twins, foreign_currency, special_funds_listed]}
+  # Stage ED (EU3_KICKOFF.md, D-S17-006)
+  ITA: {issuer_sector: S1311, office: MEF_TESORO, includes: [bot, btp, btp_green, btp_ei, btp_italia, btp_futura, btp_valore, cct_eu, foreign_currency]}
+  ESP: {issuer_sector: S1311, office: TESORO_PUBLICO, includes: [letras, bonos, obligaciones, bonos_ei, obligaciones_ei]}
+  BEL: {issuer_sector: S1311, office: BDA, includes: [olo, olo_green, treasury_certificates, ecp, emtn]}
 
 instrument_classes: [fixed_bullet, floating, inflation_linked, bill, other]   # DD2
 
@@ -35,6 +39,23 @@ countries:
     official_totals: "intermediates:official_totals_fra"
     subsector_source: EUROSTAT_GOV10A_MAIN_S1311
     v31_official: {kind: eurostat_gd_f3}
+  # Stage ED (EU3_KICKOFF.md, D-S17-007): the aggregate (DD8) path — no
+  # per-security register yet (ED3); Eurostat S1311 at step B as for FRA
+  ITA:
+    aggregates: "aggregates_eu3:ita_class_aggregates"
+    official_totals: "intermediates:official_totals_ita"
+    subsector_source: EUROSTAT_GOV10A_MAIN_S1311
+    v31_official: {kind: eurostat_gd_f3}
+  ESP:
+    aggregates: "aggregates_eu3:esp_class_aggregates"
+    official_totals: "intermediates:official_totals_esp"
+    subsector_source: EUROSTAT_GOV10A_MAIN_S1311
+    v31_official: {kind: eurostat_gd_f3}
+  BEL:
+    aggregates: "aggregates_eu3:bel_class_aggregates"
+    official_totals: "intermediates:official_totals_bel"
+    subsector_source: EUROSTAT_GOV10A_MAIN_S1311
+    v31_official: {kind: eurostat_gd_f3}
 
 # office sub-type -> class; extended as readers meet new labels
 sub_types:
@@ -61,13 +82,30 @@ sub_types:
   bund_green: fixed_bullet
   bund_frn: floating
   bund_usd: fixed_bullet
+  bot: bill                       # ITA (Stage ED)
+  btp: fixed_bullet
+  btp_green: fixed_bullet
+  btp_ei: inflation_linked
+  btp_italia: inflation_linked
+  btp_italia_si: inflation_linked
+  btp_futura: other               # step-up coupons + loyalty premium
+  btp_valore: other               # step-up coupons + loyalty premium
+  cct_eu: floating
+  letras: bill                    # ESP
+  bonos: fixed_bullet
+  obligaciones: fixed_bullet
+  bonos_ei: inflation_linked
+  obligaciones_ei: inflation_linked
+  olo: fixed_bullet               # BEL
+  olo_green: fixed_bullet
+  treasury_certificates: bill
 
 maturity_buckets:                # DD7, §4.4 — right-closed edges in years; last is open
   edges: [0, 1, 2, 3, 5, 7, 10, 15, 20, 30]
   labels: ["0-1", "1-2", "2-3", "3-5", "5-7", "7-10", "10-15", "15-20", "20-30", "30+"]
   undated_bucket: "30+"
   issuance_measure: residual_at_settlement     # not original maturity
-  year_end: {GBR: ["12-31", "03-31"], FRA: ["12-31"], DEU: ["12-31"]}   # DD6
+  year_end: {GBR: ["12-31", "03-31"], FRA: ["12-31"], DEU: ["12-31"], ITA: ["12-31"], ESP: ["12-31"], BEL: ["12-31"]}   # DD6
 
 reference_series:                # §4.2 — series_id -> where it comes from
   UK_RPI:        {contractual: UK_DMO_GILTS, statistical: ONS_RPI, splice: [CDKO, CHAW], base: "1987-01"}
@@ -95,23 +133,35 @@ reconciliation:                  # §8 — official intermediate per step (DD4, 
     GBR: {A_cg_cash: HMT_NLF, A_cg_accrued: ONS_PSF_TIMESERIES, B_s1311_d41: ONS_PSF_APPENDIX_A, C_s13: package_GF01_7}
     FRA: {A_cg_cash: FRA_PLF_P117, B_s1311_d41: EUROSTAT_GOV10A_MAIN_S1311, C_s13: package_GF01_7}
     DEU: {A_cg_cash: BMF_KREDITAUFNAHMEBERICHT, A_cg_monthly: BMF_DATENPORTAL, B_s1311_d41: EUROSTAT_GOV10A_MAIN_S1311, C_s13: package_GF01_7}
+    ITA: {A_cg_cash: ITA_MEF_FABBISOGNO, B_s1311_d41: EUROSTAT_GOV10A_MAIN_S1311, C_s13: package_GF01_7}
+    ESP: {A_cg_cash: ESP_TESORO, B_s1311_d41: EUROSTAT_GOV10A_MAIN_S1311, C_s13: package_GF01_7}
+    BEL: {A_cg_cash: BEL_BDA, B_s1311_d41: EUROSTAT_GOV10A_MAIN_S1311, C_s13: package_GF01_7}
   financing:
     GBR: {A_cg_ncr: ONS_PSF_APPENDIX_S, A_cross: HMT_DMR, B_s1311_b9: ONS_PSF_APPENDIX_A, C_s13: package_NLB}
     FRA: {A_cg_ncr: FRA_AFT_FINANCEMENT, B_s1311_b9: EUROSTAT_GOV10DD, C_s13: package_NLB}
     DEU: {A_cg_ncr: BMF_KREDITAUFNAHMEBERICHT, A_cg_monthly: BMF_DATENPORTAL, B_s1311_b9: EUROSTAT_GOV10DD, C_s13: package_NLB}
+    ITA: {A_cg_ncr: ITA_MEF_FABBISOGNO, B_s1311_b9: EUROSTAT_GOV10DD, C_s13: package_NLB}
+    ESP: {A_cg_ncr: ESP_TESORO, B_s1311_b9: EUROSTAT_GOV10DD, C_s13: package_NLB}
+    BEL: {A_cg_ncr: BEL_BDA, B_s1311_b9: EUROSTAT_GOV10DD, C_s13: package_NLB}
   stock_cross_check:
     GBR: ONS_PSF_APPENDIX_A        # PSA8A_1: BKPM gilts, BKPJ bills
     FRA: [EUROSTAT_GOV10DD, INSEE_AFT_AGG]
     DEU: [BMF_DATENPORTAL, EUROSTAT_GOV10DD]
+    ITA: [ITA_MEF_COMPOSIZIONE, EUROSTAT_GOV10DD]
+    ESP: [ESP_BDE_BE, EUROSTAT_GOV10DD]
+    BEL: [BEL_BDA, EUROSTAT_GOV10DD]
   maturity_cross_check:
     GBR: OECD_T7PSD
     FRA: EUROSTAT_GOV10DD          # gov_10dd_rmd from 2020
     DEU: EUROSTAT_GOV10DD          # gov_10dd_rmd from 1995
+    ITA: EUROSTAT_GOV10DD
+    ESP: EUROSTAT_GOV10DD
+    BEL: EUROSTAT_GOV10DD
 
 tolerances:
   v30_recurrence_abs_mn: 0.5
   v30_recurrence_pct: 0.01
-  v31_stock_vs_official_pct: {GBR: 1.0, FRA: 1.0, DEU: 1.0}
+  v31_stock_vs_official_pct: {GBR: 1.0, FRA: 1.0, DEU: 1.0, ITA: 1.0, ESP: 1.0, BEL: 1.0}
   v34_index_ratio_pct: 0.01
 
 # Register step of the chains while the per-security register is pending
@@ -129,6 +179,9 @@ register_chain_items:
   DEU: {interest_basis: cash, interest_bridge_A: [issue_premium_at_value_date, accrued_interest_received_at_issue], financing_bridge_A: []}
   GBR: {interest_basis: accrued, interest_bridge_A: [], financing_bridge_A: [issuance_cash_less_nominal]}
   FRA: {interest_basis: cash, interest_bridge_A: [], financing_bridge_A: []}
+  ITA: {interest_basis: cash, interest_bridge_A: [], financing_bridge_A: []}
+  ESP: {interest_basis: cash, interest_bridge_A: [], financing_bridge_A: []}
+  BEL: {interest_basis: cash, interest_bridge_A: [], financing_bridge_A: []}
 
 register_selection:
   DEU:
@@ -140,3 +193,12 @@ register_selection:
   FRA:
     interest: []                                  # no reachable class-level interest (OQ-8)
     net_issuance: [[btf, oat_btan_all], [f31_short_term_securities, f32_long_term_securities]]
+  ITA:                                            # Stage ED: Eurostat S1311 securities (F31 + F32)
+    interest: []
+    net_issuance: [[f31_short_term_securities, f32_long_term_securities]]
+  ESP:
+    interest: []
+    net_issuance: [[f31_short_term_securities, f32_long_term_securities]]
+  BEL:
+    interest: []
+    net_issuance: [[f31_short_term_securities, f32_long_term_securities]]

@@ -152,7 +152,7 @@ def _gbr_financing(years) -> list[dict]:
 def _eurostat_rows(iso3: str, years, chain: str, step: str, item: str) -> list[dict]:
     from ggfiscal.debt.readers import eurostat_insee_oecd as E
     s = E.d41pay(iso3, "S1311") if item == "D41PAY" else E.b9(iso3, "S1311")
-    geo = {"FRA": "FR", "DEU": "DE"}[iso3]
+    geo = config.eurostat_geo(iso3)
     sha = _sha("EUROSTAT_GOV10A_MAIN_S1311", f"gov_10a_main_{item}_{geo}")
     return [_row(iso3, y, chain, step, s.get(y), "EUROSTAT_GOV10A_MAIN_S1311", "accrued", sha=sha,
                  notes=f"gov_10a_main S1311 {item}") for y in years]
@@ -200,6 +200,49 @@ def official_totals_deu(years) -> list[dict]:
             + _eurostat_rows("DEU", years, "financing", "B_s1311_b9", "B9"))
 
 
+# ------------------------------------------- ITA / ESP / BEL (Stage ED1)
+
+_STEP_A_UNAVAILABLE = {
+    "ITA": ("ITA_MEF_FABBISOGNO",
+            "the MEF's state-sector cash requirement and interest outturn are "
+            "published in PDF reports only; no machine-readable step-A total"),
+    "ESP": ("ESP_TESORO",
+            "the Tesoro's cash outturn is on www.tesoro.es, which fails TLS "
+            "verification here (DE4); the Banco de España publishes no cash total"),
+    "BEL": ("BEL_BDA",
+            "the Debt Agency publishes interest charges and the financing "
+            "requirement in its annual report (PDF) only"),
+}
+
+
+def _unavailable_rows(iso3, chain, step, years) -> list[dict]:
+    source, why = _STEP_A_UNAVAILABLE[iso3]
+    return [_row(iso3, y, chain, step, None, source, "cash", grade="D",
+                 notes=f"no official step-A total: {why} (EU3_KICKOFF.md ED1)")
+            for y in years]
+
+
+def official_totals_eu3(iso3: str, years) -> list[dict]:
+    """ITA/ESP/BEL (D-S17-007): step A unavailable (named per country),
+    Eurostat S1311 D.41 payable and B.9 at step B — the FRA pattern."""
+    return (_unavailable_rows(iso3, "interest", "A_cg_cash", years)
+            + _eurostat_rows(iso3, years, "interest", "B_s1311_d41", "D41PAY")
+            + _unavailable_rows(iso3, "financing", "A_cg_cash_requirement", years)
+            + _eurostat_rows(iso3, years, "financing", "B_s1311_b9", "B9"))
+
+
+def official_totals_ita(years) -> list[dict]:
+    return official_totals_eu3("ITA", years)
+
+
+def official_totals_esp(years) -> list[dict]:
+    return official_totals_eu3("ESP", years)
+
+
+def official_totals_bel(years) -> list[dict]:
+    return official_totals_eu3("BEL", years)
+
+
 # ---------------------------------------------------------------- public
 
 def official_totals(run_id: str, first_year: int | None = None) -> pd.DataFrame:
@@ -209,10 +252,12 @@ def official_totals(run_id: str, first_year: int | None = None) -> pd.DataFrame:
     country's own builder named in config/debt.yaml `countries`
     (`official_totals`, R0 step 8) — a country without one raises, it never
     takes another country's sources."""
-    from ggfiscal.debt.countries import builder
+    from ggfiscal.debt.countries import builder, configured
 
     rows: list[dict] = []
-    for iso3 in config.COUNTRIES:
+    # the countries the debt engine builds (config/debt.yaml), in the fiscal
+    # order; a fiscal-only country (USA before UD0) has no debt rows
+    for iso3 in [c for c in config.COUNTRIES if c in configured()]:
         build_ab = builder(iso3, "official_totals", "official_totals")
         if build_ab is None:
             raise LookupError(f"{iso3}: config/debt.yaml countries.{iso3}.official_totals names no builder")
