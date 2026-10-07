@@ -424,7 +424,7 @@ widen `perimeter_sigma_pct_te` for the USA per the measured 1.5, or classify
 the WEO-vs-OECD gap by a third rule (the GFSM adjustments are documented per
 year by the IMF). Default: keep the rule and the WARN; nothing absorbed.
 
-## OQ-17 — Approve the long-term joins for Italy, Spain and Belgium? (NEW, needs the committee; from D-S17-005, D12)
+## OQ-17 — Approve the long-term joins for Italy, Spain and Belgium? — **interest joins APPROVED 2026-10-07 (D-S17-011); the AR GF10 join still open**
 Raised 2026-10-07 (session 17, Stage E). The DSM interest path (to 2036)
 and the Ageing Report GF10 composite (to 2070) are withheld for ITA, ESP
 and BEL by V16: the AMECO-vs-DSM growth divergence over the 2025–27

@@ -30,10 +30,10 @@ as for DEU, and Spain's debt from the Banco de España (DE1–DE6). Decisions
 
 ## Blocked on whom
 
-- **Committee (OQ-17):** approve the DSM interest joins (GF01_7, E05) and
-  the AR GF10 join for ITA/ESP/BEL as for FRA/DEU — one
-  `v16_approved_joins` row each + rebuild. Until then those lines end at
-  2027 for the three.
+- **Committee (OQ-17):** the DSM interest joins are APPROVED and applied
+  (D-S17-011: GF01_7/E05 to 2036). Still open: the AR GF10 join for
+  ITA/ESP/BEL (GF10 maximum ends 2027 until approved).
+- **Work list:** `NEXT_STEPS_EU3.md`.
 - **Network:** `www.tesoro.es` fails TLS verification (incomplete chain;
   DE4 uses the Banco de España); `www.airef.es`, `www.upbinfo.it`,
   `www.planbureau.be`, `stat.nbb.be` are egress-denied (national

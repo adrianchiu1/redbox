@@ -285,6 +285,15 @@ tolerances:
     # 2036 horizon (identical source, concept and seam)
     - {iso3: FRA, line_code: E05, incoming_source: EC_DSM}
     - {iso3: DEU, line_code: E05, incoming_source: EC_DSM}
+    # 2026-10-07 (D-S17-011, OQ-17): the committee approved the same DSM
+    # interest joins for ITA, ESP and BEL (divergence -0.053 / +0.062 /
+    # +0.061, measured D-S17-005); the AR GF10 joins are not approved
+    - {iso3: ITA, line_code: GF01_7, incoming_source: EC_DSM}
+    - {iso3: ESP, line_code: GF01_7, incoming_source: EC_DSM}
+    - {iso3: BEL, line_code: GF01_7, incoming_source: EC_DSM}
+    - {iso3: ITA, line_code: E05, incoming_source: EC_DSM}
+    - {iso3: ESP, line_code: E05, incoming_source: EC_DSM}
+    - {iso3: BEL, line_code: E05, incoming_source: EC_DSM}
   perimeter_sigma_pct_te: 0.5          # V24 (D-S5-002): NLB-gap stability for a
                                        # country with weo_perimeter_gap_expected
                                        # (GBR) — sigma of gap/TE across overlap

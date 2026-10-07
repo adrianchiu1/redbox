@@ -2933,3 +2933,12 @@ gone in a container that has run `ggfiscal debt fetch`.
   which fail identically on the unchanged main code with the 2026-10-07 DMO
   vintage (not this change; follow-up). Previously 33 failed + 21 errors
   for absent debt snapshots (OQ-14).
+
+## D-S17-011 — The committee approves the DSM interest joins for ITA, ESP and BEL (resolves OQ-17 in part; serves D12, D-S8-001)
+
+2026-10-07: "Approve interest switch." `tolerances.v16_approved_joins` gains
+GF01_7 and E05 with `EC_DSM` for ITA, ESP and BEL — the FRA/DEU treatment.
+GF01_7 and E05 now run to 2036 in both variants for the three countries;
+V16 keeps WARNing on the seam (−0.053 / +0.062 / +0.061). The AR GF10 join
+was not part of the approval and stays withheld (GF10 maximum ends 2027).
+GBR/FRA/DEU/USA unchanged (byte identity against the pre-change build).
