@@ -66,6 +66,12 @@ Background: `EU3_KICKOFF.md`, `DECISIONS.md` D-S17-001..011,
   France and Germany" and "14 lines per country"
   (`src/ggfiscal/report/readme.py`, `src/ggfiscal/publish/flatten.py`
   ~line 938). Derive the country list from config.
+- [ ] **Notebook tool leaves stale cells.** `tools/update_notebooks_s11.py`
+  only adds cells to an existing forecast book. When a line gains an
+  official forecast (as interest did after the approval), its old
+  statistical-forecast charts stay until the book is deleted and re-seeded.
+  Make the tool drop `fan(...)` cells for series no longer in
+  `statistical_forecasts.csv`.
 - [ ] **Open a pull request** for `claude/serene-thompson-soiwhn` when ready.
 
 ## How to rebuild everything
