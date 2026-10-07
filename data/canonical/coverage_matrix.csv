@@ -123,7 +123,7 @@ DEU,ESA_REV,R08,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_for
 DEU,ESA_REV,R09,1995,2025,2026.0,2027,2027,1,AB,EC_AMECO,grow_with_proxy,source horizon: EC_AMECO ends 2027 (V10)
 DEU,ESA_REV,R10,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 ITA,COFOG,GF01,1995,2025,2026.0,2024,2027,1,AC,EC_AMECO,grow_with_proxy,"[no_official_forecast] §7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension carries the mandated GF01_7-growth proxy (grade D, coverage measured, residual_method recorded; D-S4-002)"
-ITA,COFOG,GF01_7,1995,2025,2026.0,2027,2027,1,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+ITA,COFOG,GF01_7,1995,2025,2026.0,2036,2036,2,AB,EC_AMECO+EC_DSM,,source horizon: EC_DSM ends 2036 (V10)
 ITA,COFOG,GF01_X,1995,2024,,2024,2024,0,AB,EUROSTAT_GOV10A_EXP,,[no_official_forecast] never forecast by construction (D10); derived only
 ITA,COFOG,GF02,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_machine_readable_source] no machine-readable official projection of defence spending on the COFOG 02 concept: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"
 ITA,COFOG,GF03,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
@@ -143,7 +143,7 @@ ITA,ESA_EXP,E01,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMEC
 ITA,ESA_EXP,E02,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ITA,ESA_EXP,E03,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ITA,ESA_EXP,E04,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
-ITA,ESA_EXP,E05,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+ITA,ESA_EXP,E05,1995,2025,2026.0,2036,2036,2,AB,EC_AMECO+EC_DSM,,source horizon: EC_DSM ends 2036 (V10)
 ITA,ESA_EXP,E06,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ITA,ESA_EXP,E07,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ITA,ESA_EXP,E08,1995,2025,2026.0,2025,2027,1,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UIGG0 is gross fixed capital formation (P.51G) only — one component of P.5 + NP; §7.8 single-component proxy, applied in maximum_extension to 2027 with the measured share; no official forecast of inventories/valuables/non-produced assets exists"
@@ -164,7 +164,7 @@ ITA,ESA_REV,R08,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_for
 ITA,ESA_REV,R09,1995,2025,2026.0,2027,2027,1,AB,EC_AMECO,grow_with_proxy,source horizon: EC_AMECO ends 2027 (V10)
 ITA,ESA_REV,R10,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 ESP,COFOG,GF01,1995,2025,2026.0,2024,2027,1,AD,EC_AMECO,grow_with_proxy,"[no_official_forecast] §7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension carries the mandated GF01_7-growth proxy (grade D, coverage measured, residual_method recorded; D-S4-002)"
-ESP,COFOG,GF01_7,1995,2025,2026.0,2027,2027,1,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+ESP,COFOG,GF01_7,1995,2025,2026.0,2036,2036,2,AB,EC_AMECO+EC_DSM,,source horizon: EC_DSM ends 2036 (V10)
 ESP,COFOG,GF01_X,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,[no_official_forecast] never forecast by construction (D10); derived only
 ESP,COFOG,GF02,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_machine_readable_source] no machine-readable official projection of defence spending on the COFOG 02 concept: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"
 ESP,COFOG,GF03,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
@@ -184,7 +184,7 @@ ESP,ESA_EXP,E01,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMEC
 ESP,ESA_EXP,E02,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ESP,ESA_EXP,E03,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ESP,ESA_EXP,E04,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
-ESP,ESA_EXP,E05,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+ESP,ESA_EXP,E05,1995,2025,2026.0,2036,2036,2,AB,EC_AMECO+EC_DSM,,source horizon: EC_DSM ends 2036 (V10)
 ESP,ESA_EXP,E06,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ESP,ESA_EXP,E07,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 ESP,ESA_EXP,E08,1995,2025,2026.0,2025,2027,1,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UIGG0 is gross fixed capital formation (P.51G) only — one component of P.5 + NP; §7.8 single-component proxy, applied in maximum_extension to 2027 with the measured share; no official forecast of inventories/valuables/non-produced assets exists"
@@ -205,7 +205,7 @@ ESP,ESA_REV,R08,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_for
 ESP,ESA_REV,R09,1995,2025,2026.0,2027,2027,1,AB,EC_AMECO,grow_with_proxy,source horizon: EC_AMECO ends 2027 (V10)
 ESP,ESA_REV,R10,1995,2025,,2025,2025,0,A,EUROSTAT_GOV10A_MAIN,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
 BEL,COFOG,GF01,1995,2025,2026.0,2024,2027,1,AD,EC_AMECO,grow_with_proxy,"[no_official_forecast] §7.9: GF01 total has no direct forecast source; strict ends at the last actual — maximum_extension carries the mandated GF01_7-growth proxy (grade D, coverage measured, residual_method recorded; D-S4-002)"
-BEL,COFOG,GF01_7,1995,2025,2026.0,2027,2027,1,AB,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+BEL,COFOG,GF01_7,1995,2025,2026.0,2036,2036,2,AB,EC_AMECO+EC_DSM,,source horizon: EC_DSM ends 2036 (V10)
 BEL,COFOG,GF01_X,1995,2024,,2024,2024,0,AB,EUROSTAT_GOV10A_EXP,,[no_official_forecast] never forecast by construction (D10); derived only
 BEL,COFOG,GF02,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_machine_readable_source] no machine-readable official projection of defence spending on the COFOG 02 concept: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"
 BEL,COFOG,GF03,1995,2024,,2024,2024,0,A,EUROSTAT_GOV10A_EXP,,"[no_official_forecast] D7: no official forecast identified anywhere (seed register and Stage 3 search: AMECO GG aggregates, AR 2024, DSM 2025, Steuerschätzung); strict and maximum end at the last actual"
@@ -225,7 +225,7 @@ BEL,ESA_EXP,E01,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMEC
 BEL,ESA_EXP,E02,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 BEL,ESA_EXP,E03,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 BEL,ESA_EXP,E04,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
-BEL,ESA_EXP,E05,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
+BEL,ESA_EXP,E05,1995,2025,2026.0,2036,2036,2,AB,EC_AMECO+EC_DSM,,source horizon: EC_DSM ends 2036 (V10)
 BEL,ESA_EXP,E06,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 BEL,ESA_EXP,E07,1995,2025,2026.0,2027,2027,1,A,EC_AMECO,,source horizon: EC_AMECO ends 2027 (V10)
 BEL,ESA_EXP,E08,1995,2025,2026.0,2025,2027,1,AB,EC_AMECO,grow_with_proxy,"[grade_below_strict] AMECO UIGG0 is gross fixed capital formation (P.51G) only — one component of P.5 + NP; §7.8 single-component proxy, applied in maximum_extension to 2027 with the measured share; no official forecast of inventories/valuables/non-produced assets exists"
