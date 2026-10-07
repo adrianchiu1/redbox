@@ -14,12 +14,17 @@ from ggfiscal.debt import aggregates, chains, countries as DC, intermediates, re
 def test_every_country_is_declared_with_its_engine_modules():
     cfg = DC.configured()
     # the debt extension declares its own countries in config/debt.yaml: the
-    # three parent countries; the USA (fiscal Stage U0) joins with UD0
+    # three parent countries and, since Stage ED, ITA/ESP/BEL; the USA
+    # (fiscal Stage U0) joins with UD0
     assert set(cfg) <= set(config.COUNTRIES)
-    assert set(cfg) == {"GBR", "FRA", "DEU"}
-    assert list(cfg) == ["DEU", "GBR", "FRA"]        # the engines' historical concatenation order
+    assert set(cfg) == {"GBR", "FRA", "DEU", "ITA", "ESP", "BEL"}
+    # the engines' historical concatenation order, then the Stage ED countries
+    assert list(cfg) == ["DEU", "GBR", "FRA", "ITA", "ESP", "BEL"]
     for iso3, c in cfg.items():
-        for role in ("register", "aggregates", "official_totals"):
+        # ITA/ESP/BEL are on the DD8 aggregate path until Stage ED3: no register
+        roles = ("aggregates", "official_totals") if iso3 in ("ITA", "ESP", "BEL") \
+            else ("register", "aggregates", "official_totals")
+        for role in roles:
             assert c.get(role), (iso3, role)
         assert "subsector_source" in c and "v31_official" in c
     assert cfg["GBR"]["subsector_source"] is None
@@ -50,8 +55,11 @@ def test_unconfigured_country_raises_and_never_falls_through(monkeypatch):
         DC.country_cfg("USA")
     base = config.countries()
     # USA first, so official_totals meets it before any real builder runs
+    # a packaged (stage 6) country without a debt entry; the real USA block
+    # (stage 0, skipped by the engine since D-S17-007) must not override it
     monkeypatch.setattr(config, "countries", lambda: {
-        "USA": {**base["DEU"], "name": "United States", "currency": "USD"}, **base})
+        "USA": {**base["DEU"], "name": "United States", "currency": "USD"},
+        **{k: v for k, v in base.items() if k != "USA"}})
     assert config.COUNTRIES[0] == "USA"
     with pytest.raises(DC.DebtCountryNotConfigured):
         chains._subsector_items("USA", "interest", 2020)

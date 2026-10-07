@@ -1,6 +1,105 @@
 # HANDOFF.md
 
-Rewritten 2026-09-21, end of session 14 (Stage U0 — verify and harvest the
+Rewritten 2026-10-07, end of session 17 (Stage E — Italy, Spain and
+Belgium, `EU3_KICKOFF.md`, on `claude/serene-thompson-soiwhn` branched
+from `main` at 4374a31).
+
+## Session 17 (2026-10-07): ITA, ESP and BEL carry the full fiscal package and the DD8 debt layer; no number moved for GBR, FRA, DEU or USA on the same vintages
+
+The committee asked for the FRA/DEU approach on ITA/ESP/BEL, with the debt
+layer, before USA U1, built from main, Level II before 2001 from IMF GFS
+as for DEU, and Spain's debt from the Banco de España (DE1–DE6). Decisions
+**D-S17-001 .. D-S17-010**; open questions **OQ-17 .. OQ-19**.
+
+- Fiscal (stages E0–E6 in one pass, `stage_reached: 6`): Eurostat anchors,
+  41 lines + ledger 1995–2025, backward legs (OECD RS revenue from 1965;
+  AMECO ESA_EXP from 1995 — AMECO's own start for the three), AMECO / AR /
+  DSM forward legs by registration, declarations in config, WEO bridge and
+  §8.3, flat files `strict_{ITA,ESP,BEL}.csv`, statistical forecasts,
+  benchmarks, chartbook sections and nine forecast books.
+- Data facts met: ESP publishes no D.92/D.99 split (R10 via D.9 − D.91) and
+  no D.51 payer split in gov_10a_main (taxag, identical); BEL's TR − TE ≠
+  B.9 by up to EUR 0.8 mn; BEL's GDP agrees across sources in 2025.
+- DE3 measured: nothing reachable has ITA/BEL Level II before 2001 (OQ-18).
+- Debt: `eu3_offices` family (MEF, BDA, Banco de España),
+  `aggregates_eu3`, `official_totals_{ita,esp,bel}`; chains 1995–2025.
+  Per-security registers are Stage ED3 (below).
+- Fixes found on the way: `ggfiscal debt build` had raised since U0
+  (official_totals iterated the USA); the downstream packaging and the
+  notebook tool had picked up the USA (now gated to stage 6).
+
+## Blocked on whom
+
+- **Committee (OQ-17):** approve the DSM interest joins (GF01_7, E05) and
+  the AR GF10 join for ITA/ESP/BEL as for FRA/DEU — one
+  `v16_approved_joins` row each + rebuild. Until then those lines end at
+  2027 for the three.
+- **Network:** `www.tesoro.es` fails TLS verification (incomplete chain;
+  DE4 uses the Banco de España); `www.airef.es`, `www.upbinfo.it`,
+  `www.planbureau.be`, `stat.nbb.be` are egress-denied (national
+  forecasts — not needed for the FRA-level package);
+  `infostat.bancaditalia.it` requires a login.
+- Informational: OQ-18 (Level II start 2001), OQ-19 (ESP V24).
+
+## Next: Stage ED3 — per-security registers (BEL, then ITA)
+
+1. **BEL**: `register_bel.py` from `BEL_BDA/olo_outstanding_html` — three
+   tables: 38 OLO lines (maturity, coupon, ISIN, net outstanding,
+   buy-backs in portfolio, stripped capital), 13 Treasury Certificates,
+   56 EMTN/Schuldschein/other lines (currency, coupon or Euribor spread,
+   EUR equivalent). Positions `office_snapshot` at the page date; the
+   maturity profile from them. Year-end positions need an auction history
+   (not yet found on the BDA site — look under `datafederalstateissues`).
+   Watch the chains: a snapshot year must not add a register step to a
+   year the official totals do not cover.
+2. **ITA**: auction results are HTML per auction
+   (`/it/debito_pubblico/emissioni_titoli_di_stato_interni/risultati_aste/`)
+   plus the archive xls (`Risultati-aste-BTP-*.xls`); no per-ISIN
+   outstanding file — the AFT method (anchor + walked-back operations)
+   needs an anchor; candidate: the MEF monthly bulletin.
+3. **ESP**: stays aggregate (DE4) until the Tesoro is reachable.
+
+## Exact commands
+
+```
+pip install -e ".[dev,forecast,notebook]" && pip install playwright   # debt browser path
+ggfiscal fetch --all                          # 187 pulls
+ggfiscal debt fetch                           # > 30 min (AFT challenges): run in background, 2 h limit
+ggfiscal build && ggfiscal reconcile && ggfiscal validate && ggfiscal report && ggfiscal flatten
+ggfiscal statistical-forecasts && ggfiscal forecast-levels && ggfiscal benchmark-balance && ggfiscal benchmark-vs-weo
+python3 tools/update_notebooks_s11.py
+jupyter nbconvert --execute --inplace notebooks/chartbook*.ipynb notebooks/derivation.ipynb notebooks/forecasts_*.ipynb
+ggfiscal debt build && ggfiscal debt validate && ggfiscal flatten
+python3 -m pytest -q
+```
+
+Byte identity for a later stage: build a baseline from the branch you
+start on, on the SAME vintages (a fresh fetch moves GBR/USA values), in a
+worktree with its own `data/canonical` (symlink raw/manifest only), then
+`tools/byte_identity.py <baseline> --countries GBR,FRA,DEU,ITA,ESP,BEL,USA ...`.
+
+## Facts not to rediscover (session 17)
+
+- `ggfiscal debt fetch` prints nothing until it ends; snapshots land as it
+  goes (check `data/manifest/snapshots.jsonl`). Install `playwright`
+  (the browser is preinstalled at /opt/pw-browsers).
+- Statistical forecast intervals (Prophet, ETS, combination) are unseeded:
+  two runs differ in `se`/lo/hi; compare point columns only.
+- MEF CSVs: Latin-1, `;`-separated, Italian number format; the listing
+  pages carry the current year's monthly editions only.
+- Banco de España `be.zip`: chapter 11 tables `be11*.csv`, six header rows,
+  thousand EUR, `_` = missing; `be11b` is monthly PDE debt by sub-sector
+  (`..._AES` = Estado).
+- BDA spreadsheets (indicators, maturity schedule) are point-in-time.
+- AR/DSM sheets exist for IT/ES/BE; AR gross pensions overshoot COFOG 10.2
+  for all three (116–132%, grade D).
+
+---
+
+# Previous handoffs
+
+
+### (previous) Rewritten 2026-09-21, end of session 14 (Stage U0 — verify and harvest the
 United States, on `claude/gg-fiscal-stage-u0-usa-9lg74j` branched from
 `main` at 4b2e603).
 

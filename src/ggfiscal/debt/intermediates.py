@@ -256,8 +256,11 @@ def official_totals(run_id: str, first_year: int | None = None) -> pd.DataFrame:
 
     rows: list[dict] = []
     # the countries the debt engine builds (config/debt.yaml), in the fiscal
-    # order; a fiscal-only country (USA before UD0) has no debt rows
-    for iso3 in [c for c in config.COUNTRIES if c in configured()]:
+    # order, plus every packaged (stage 6) fiscal country — which raises if
+    # it has no debt entry; a country still being built (the USA before
+    # U6/UD0) is skipped (D-S17-007)
+    for iso3 in [c for c in config.COUNTRIES
+                 if c in configured() or config.stage_reached(c) >= 6]:
         build_ab = builder(iso3, "official_totals", "official_totals")
         if build_ab is None:
             raise LookupError(f"{iso3}: config/debt.yaml countries.{iso3}.official_totals names no builder")

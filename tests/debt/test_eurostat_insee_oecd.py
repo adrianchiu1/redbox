@@ -18,16 +18,15 @@ def test_pulls_list_all_parts_with_correct_source_ids():
     from ggfiscal.debt.families import eurostat_insee_oecd as fam
 
     pulls = fam.pulls()
-    assert len(pulls) < 60
+    assert len(pulls) < 100      # 89 since Stage ED added ITA/ESP/BEL
 
     by_source: dict[str, set[str]] = {}
     for p in pulls:
         by_source.setdefault(p.source_id, set()).add(p.part)
 
     assert by_source["EUROSTAT_GOV10A_MAIN_S1311"] == {
-        "gov_10a_main_D41PAY_FR", "gov_10a_main_D41PAY_DE",
-        "gov_10a_main_B9_FR", "gov_10a_main_B9_DE",
-    }
+        f"gov_10a_main_{item}_{geo}" for item in ("D41PAY", "B9")
+        for geo in ("FR", "DE", "IT", "ES", "BE")}         # ITA/ESP/BEL: Stage ED
     assert {"gov_10dd_ggd_S1311_FR", "gov_10dd_ggd_S13_DE",
             "gov_10dd_rmd_FR", "gov_10dd_rmd_DE",
             "gov_10dd_edpt1_FR", "gov_10dd_edpt2_DE", "gov_10dd_edpt3_FR",

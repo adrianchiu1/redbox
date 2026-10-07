@@ -2866,7 +2866,13 @@ null row naming the missing source and the reason (MEF and BDA publish
 cash outturns in PDF only; the Tesoro is unreachable). Fixed in passing:
 `intermediates.official_totals` iterated every fiscal country, so `ggfiscal
 debt build` had raised for the USA since U0; it now iterates the
-debt-configured countries.
+debt-configured countries plus every stage-6 fiscal country (a packaged
+country without a debt entry still raises; the USA at stage 0 is skipped).
+V31 for the three compares `gov_10q_ggdebt` Q4 against `gov_10dd_ggd`
+GD_F3 — two Eurostat tables of the same data, 0.00% in every year: a
+consistency check, not an independent one (the independent stock arrives
+with the ED3 registers; ESP's Banco de España Estado total is out of
+register by perimeter).
 
 ## D-S17-008 — Packaging is gated by stage 6; the three countries are packaged (serves Stage E6, D-S16-008)
 
@@ -2884,3 +2890,40 @@ the ensemble's) are simulation-based and unseeded, so `se`/intervals in
 on every run (two runs of the unchanged code differ on the same 2,565
 rows; point forecasts identical). Those four files are compared on their
 point columns only (D-S17-010).
+
+## D-S17-009 — Debt layer built and gated (serves ED0–ED2)
+
+`ggfiscal debt fetch` (all families): every pull 200 except the three DMO
+reports the config lists `not_exportable` (D1D, D5I, D9C — unchanged).
+`ggfiscal debt build`: the interest and financing chains run 1995–2025 for
+ITA, ESP and BEL (steps A null-D with reasons, B Eurostat S1311, C the
+package, S.1312–S.1314 items). Every debt table's GBR/FRA/DEU rows are
+identical (run_id excepted) to a same-vintage baseline built by the main
+code with only the official_totals iteration fix applied.
+`ggfiscal debt validate`: OK=73, WARN=28, SKIP=2 (new countries: V31 OK 43,
+V35 OK 6). `tests/debt`: 3 GBR register/bridge tests fail on the
+2026-10-07 DMO vintage with the unchanged main code too (not this change);
+all other debt tests pass — the 54 snapshot-absent failures of OQ-14 are
+gone in a container that has run `ggfiscal debt fetch`.
+
+## D-S17-010 — Gate record, Stage E (EU3_KICKOFF.md §4)
+
+- Fiscal: `ggfiscal validate` ERROR=0, OK=177, WARN=3711 (the new
+  countries' WARNs: V1 463, V25 243, V21 28, V16 9, V5 5, V24 2 — IMF GFS
+  and OECD RS concept wedges, the withheld V16 joins of OQ-17, Spain's V24
+  of OQ-19; plus V18 for the two new blocked/PDF registers).
+- `tools/byte_identity.py /tmp/gg_baseline --countries GBR,FRA,DEU,USA
+  --new-file strict_{ITA,ESP,BEL}.csv --new-scope register/ESP_TESORO
+  --new-scope register/ITA_MEF_FABBISOGNO` → OK on every canonical CSV and
+  flat file built by build/reconcile/validate/report/flatten, against a
+  baseline built from main on the same 2026-10-07 vintages. The four
+  downstream files (statistical_forecasts, forecast_levels,
+  benchmark_balance, benchmark_vs_weo) differ from that baseline only by
+  the USA rows the stage-6 gate removes and by the unseeded interval
+  columns (D-S17-008); every other column of the GBR/FRA/DEU rows is
+  identical.
+- The committed GBR and USA values move against the previously committed
+  files because the 2026-10-07 vintages differ (e.g. UK history revisions,
+  BEA 2025 data); that is the fresh harvest, not this change.
+- Notebooks: the ITA/ESP/BEL chartbook sections and nine forecast books
+  seeded and every notebook executed without error.

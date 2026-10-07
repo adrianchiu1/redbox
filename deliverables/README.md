@@ -31,16 +31,16 @@ dynamics to the IMF WEO** general-government aggregates.
 | `strict_BEL.csv` | 63 | 51 | Belgium, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `strict_USA.csv` | 55 | 51 | United States, strict variant only: one column per series, one row per year — the same series the chartbook plots, in the shape you model with |
 | `debt_reference_series.csv` | 137,548 | 11 | reference series behind the register: RPI (Jan 1987=100, 1947-), French CPI ex-tobacco (base 2025, 1990-), euro-area/FR/DE HICP ex-tobacco, SONIA, Bank Rate, euro money-market and national 3m and long rates, and the BoE nominal/real/inflation/OIS month-end curves by maturity — one row per series-date |
-| `debt_official_totals.csv` | 732 | 13 | the official intermediate totals of the two reconciliation chains per country-year: finance-ministry central-government interest / net cash requirement (step A), S.1311 D.41 / B.9 (step B), the package's GF01_7 / NLB (step C); null where the source is blocked (OQ-8) |
-| `debt_class_aggregates.csv` | 5,045 | 13 | the ministries' and statistical offices' own instrument-class totals per country-year (stock at 31 Dec, gross issuance, redemptions, net issuance, interest, own holdings) — the DD8 aggregate layer standing in for the per-security register |
-| `debt_interest_reconciliation.csv` | 2,027 | 13 | interest chain: Σ register by class → CG interest (ministry) → S.1311 D.41 → GF01_7, with every bridge item and the residual per step, per country-year (V32: official_total = carried + Σ items + residual) |
-| `debt_financing_reconciliation.csv` | 3,371 | 13 | financing chain: Σ net issuance by class → CG net cash requirement / Nettokreditaufnahme → S.1311 B.9 → NLB, same shape |
-| `debt_securities.csv` | 5,004 | 26 | the per-security register: one row per security (ISIN) with class, coupon, dates, index or floating reference, from the debt office |
-| `debt_positions.csv` | 12,031 | 16 | nominal outstanding per security at each year-end (and month-end where the office publishes it), with own holdings and market-hands |
-| `debt_flows.csv` | 22,239 | 17 | every issuance, retention, redemption, buy-back or conversion per security by settlement date, with price and yield where published |
-| `debt_index_ratios.csv` | 133,803 | 11 | the office's daily index ratios for inflation-linked securities |
-| `debt_interest_by_security.csv` | 33,834 | 18 | interest per security-year on both bases (accrued, cash): coupon, indexation uplift, bill discount, floating coupon, premium/discount amortisation, with the derivation |
-| `debt_maturity_profile.csv` | 1,939 | 14 | nominal outstanding by instrument class and residual-maturity bucket at each 31 December |
+| `debt_official_totals.csv` | 1,290 | 13 | the official intermediate totals of the two reconciliation chains per country-year: finance-ministry central-government interest / net cash requirement (step A), S.1311 D.41 / B.9 (step B), the package's GF01_7 / NLB (step C); null where the source is blocked (OQ-8) |
+| `debt_class_aggregates.csv` | 5,775 | 13 | the ministries' and statistical offices' own instrument-class totals per country-year (stock at 31 Dec, gross issuance, redemptions, net issuance, interest, own holdings) — the DD8 aggregate layer standing in for the per-security register |
+| `debt_interest_reconciliation.csv` | 3,205 | 13 | interest chain: Σ register by class → CG interest (ministry) → S.1311 D.41 → GF01_7, with every bridge item and the residual per step, per country-year (V32: official_total = carried + Σ items + residual) |
+| `debt_financing_reconciliation.csv` | 4,719 | 13 | financing chain: Σ net issuance by class → CG net cash requirement / Nettokreditaufnahme → S.1311 B.9 → NLB, same shape |
+| `debt_securities.csv` | 5,012 | 26 | the per-security register: one row per security (ISIN) with class, coupon, dates, index or floating reference, from the debt office |
+| `debt_positions.csv` | 12,114 | 16 | nominal outstanding per security at each year-end (and month-end where the office publishes it), with own holdings and market-hands |
+| `debt_flows.csv` | 22,296 | 17 | every issuance, retention, redemption, buy-back or conversion per security by settlement date, with price and yield where published |
+| `debt_index_ratios.csv` | 133,962 | 11 | the office's daily index ratios for inflation-linked securities |
+| `debt_interest_by_security.csv` | 33,860 | 18 | interest per security-year on both bases (accrued, cash): coupon, indexation uplift, bill discount, floating coupon, premium/discount amortisation, with the derivation |
+| `debt_maturity_profile.csv` | 1,942 | 14 | nominal outstanding by instrument class and residual-maturity bucket at each 31 December |
 | `debt_issuance_by_bucket.csv` | 1,208 | 13 | gross issuance by instrument class and residual maturity at settlement, per year |
 | `data_dictionary.csv` | 820 | 3 | every column of every file above, described |
 
