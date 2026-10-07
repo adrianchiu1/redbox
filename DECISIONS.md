@@ -2927,3 +2927,9 @@ gone in a container that has run `ggfiscal debt fetch`.
   BEA 2025 data); that is the fresh harvest, not this change.
 - Notebooks: the ITA/ESP/BEL chartbook sections and nine forecast books
   seeded and every notebook executed without error.
+- `python3 -m pytest -q` (after `ggfiscal debt fetch`): **473 passed, 6
+  skipped, 3 failed** — the 3 are `tests/debt/test_register_gbr.py` (2)
+  and `test_bridges.py::test_gbr_step_c_items_shrink_the_residual[financing]`,
+  which fail identically on the unchanged main code with the 2026-10-07 DMO
+  vintage (not this change; follow-up). Previously 33 failed + 21 errors
+  for absent debt snapshots (OQ-14).

@@ -40,6 +40,8 @@ as for DEU, and Spain's debt from the Banco de España (DE1–DE6). Decisions
   forecasts — not needed for the FRA-level package);
   `infostat.bancaditalia.it` requires a login.
 - Informational: OQ-18 (Level II start 2001), OQ-19 (ESP V24).
+- Pre-existing: 3 GBR debt tests fail on the 2026-10-07 DMO vintage with
+  main's code too (pytest 473 passed, 3 failed).
 
 ## Next: Stage ED3 — per-security registers (BEL, then ITA)
 
