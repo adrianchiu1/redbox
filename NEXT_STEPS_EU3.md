@@ -18,6 +18,8 @@ Working list, updated 2026-10-09 (session 17, second pass). Background:
   cells follow the forecasts (D-S17-018)
 - [x] UK debt tests: opening stubs no longer count auctions after the
   snapshot date (D-S17-019)
+- [x] Belgium R03/R04: Federal Planning Bureau outlook, strict to 2031,
+  grade B (D-S17-020)
 
 ## Not possible with current sources (decide whether to pursue)
 
@@ -32,17 +34,21 @@ Working list, updated 2026-10-09 (session 17, second pass). Background:
 
 ## Build work still open
 
-1. [ ] **National forecasts now reachable**: AIReF (www.airef.es), UPB
-   (www.upbilancio.it), Federal Planning Bureau (www.plan.be), NBB
-   (dataexplorer.nbb.be). Check each for machine-readable fiscal
-   projections that could extend R01–R04 or GF02 the way Germany's tax
-   estimate does; register and measure coverage.
-2. [ ] **Step A of the debt chains** (cash interest, cash borrowing
+1. [ ] **More from the Belgian Planning Bureau.** Its T17 also projects
+   interest, compensation, intermediate consumption, subsidies, social
+   benefits and investment to 2031 — candidates to chain after AMECO
+   (2027) on GF01_7 and E01–E08 (V16 decides; may need your approval as
+   for the DSM). Its Study Committee on Ageing file (DATA_FOR_VERG_FR.xlsx)
+   projects pensions long-term — a candidate for GF10_2, where the Ageing
+   Report failed (grade D).
+2. [ ] **AIReF, UPB, NBB**: no machine-readable fiscal projections found on
+   2026-10-09; recheck when their next reports land.
+3. [ ] **Step A of the debt chains** (cash interest, cash borrowing
    requirement) for ITA/ESP/BEL: the Tesoro bulletin's "Financiación del
    Estado" (file 09/13) may serve Spain; Italy/Belgium publish PDF only.
-3. [ ] **Italy year-end class history**: the MEF December composition file
+4. [ ] **Italy year-end class history**: the MEF December composition file
    is picked up automatically from early 2027.
-4. [ ] **Then the USA** — Stage U1 per `REPLICATION_KICKOFF.md`.
+5. [ ] **Then the USA** — Stage U1 per `REPLICATION_KICKOFF.md`.
 
 ## Housekeeping
 
