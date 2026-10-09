@@ -1,77 +1,51 @@
 # Next steps — Italy, Spain, Belgium (Stage E follow-up)
 
-Working list after session 17 (2026-10-07). Tick items off as they land.
-Background: `EU3_KICKOFF.md`, `DECISIONS.md` D-S17-001..011,
-`OPEN_QUESTIONS.md` OQ-17..19, `HANDOFF.md`.
+Working list, updated 2026-10-09 (session 17, second pass). Background:
+`EU3_KICKOFF.md`, `DECISIONS.md` D-S17-001..019, `HANDOFF.md`.
 
-## Decisions only you can make
+## Done this pass
 
-- [ ] **Ageing Report join for social protection (GF10), ITA/ESP/BEL.**
-  The AMECO → Ageing Report switch diverges by +0.021 / −0.021 / +0.031
-  (threshold 0.02). Approving it extends GF10 in the maximum variant from
-  2027 to 2070, as for France and Germany. To approve: add
-  `{iso3: ITA, line_code: GF10, incoming_source: EC_AGEING_2024}` (and ESP,
-  BEL) to `tolerances.v16_approved_joins` in `config/countries.yaml`, then
-  rebuild. (OQ-17)
-- [ ] **Italy/Belgium sub-categories before 2001.** Accept a 2001 start for
-  pensions, unemployment and transport, or name a national source
-  (ISTAT / Belgian ICN historical COFOG tables) to verify. (OQ-18)
-- [ ] **Spain vs the IMF WEO.** Revenue and spending levels differ by
-  1.5–1.7% of spending (the deficit matches). Keep the warning (default) or
-  treat Spain like the UK with an expected perimeter gap. (OQ-19)
-- [ ] **Network access** (only if you want national forecasts or Spain's
-  bond register): allow `www.airef.es`, `www.upbinfo.it`,
-  `www.planbureau.be`, `stat.nbb.be` in the environment's network
-  settings. `www.tesoro.es` fails its certificate check from here; it
-  needs either the missing intermediate certificate added to the trust
-  bundle, or a Tesoro data mirror.
+- [x] Ageing Report GF10 join approved for ITA/ESP/BEL — GF10 maximum to 2070 (D-S17-013)
+- [x] Italy/Belgium Level II start in 2001 accepted (D-S17-015)
+- [x] Spain's WEO gap treated as a known perimeter gap (D-S17-014)
+- [x] Network: nothing is blocked. tesoro.es and airef.es omit an FNMT
+  intermediate certificate — now supplied from `config/certs/` with full
+  verification; the other three were wrong/retired addresses (plan.be,
+  upbilancio.it, dataexplorer.nbb.be) (D-S17-012)
+- [x] Belgium per-bond register from the Debt Agency page (D-S17-016)
+- [x] Spain: Tesoro outstanding by instrument and tenor in the aggregates (D-S17-017)
+- [x] Seeded forecast intervals; README prose from config; notebook fan
+  cells follow the forecasts (D-S17-018)
+- [x] UK debt tests: opening stubs no longer count auctions after the
+  snapshot date (D-S17-019)
 
-## Build work (next sessions)
+## Not possible with current sources (decide whether to pursue)
 
-1. [ ] **Belgium bond register (Stage ED3).** Build
-   `src/ggfiscal/debt/register_bel.py` from the snapshot
-   `BEL_BDA/olo_outstanding_html` (38 OLO lines, 13 Treasury Certificates,
-   56 EMTN/other: ISIN, coupon, maturity, outstanding). Add `register:` to
-   BEL in `config/debt.yaml`. Gives a per-bond maturity profile and
-   interest by security. Make sure the snapshot date does not add a
-   register step to a year the chains do not cover.
-2. [ ] **Belgium auction history** (for year-end positions): look on the
-   BDA site under `datafederalstateissues` for a machine-readable history.
-3. [ ] **Italy bond register.** No per-bond outstanding file exists.
-   Candidates: the archived auction-results spreadsheets
-   (`Risultati-aste-BTP-*.xls`) plus the per-auction HTML pages, anchored
-   on a per-ISIN snapshot (try the MEF quarterly bulletin). Same method as
-   France's AFT register.
-4. [ ] **Italy year-end class history.** The MEF composition CSVs only
-   cover the current year; the December edition will be picked up
-   automatically from early 2027 (`ITA_MEF_COMPOSIZIONE`). Older years
-   exist as PDFs in the MEF archive only.
-5. [ ] **Step A of the debt chains** (cash interest and cash borrowing
-   requirement) is empty for all three. Find machine-readable sources, or
-   accept that they stay null.
-6. [ ] **Then the USA** — Stage U1 per `REPLICATION_KICKOFF.md` (paused for
-   this work).
+- [ ] **Italy per-bond register.** Recent auction results are one PDF per
+  auction; no per-ISIN outstanding file. Options: accept aggregate-only
+  (current), or allow PDF ingestion with a second keying (the OQ-5 rule),
+  or find a per-ISIN source (e.g. Borsa Italiana / MTS listings).
+- [ ] **Spain per-bond register.** The Tesoro's files identify issues by
+  tenor and coupon, never ISIN. Same options as Italy.
+- [ ] **Belgium year-end positions.** The register is a snapshot; year-end
+  history needs an auction history file, not found on the BDA site.
+
+## Build work still open
+
+1. [ ] **National forecasts now reachable**: AIReF (www.airef.es), UPB
+   (www.upbilancio.it), Federal Planning Bureau (www.plan.be), NBB
+   (dataexplorer.nbb.be). Check each for machine-readable fiscal
+   projections that could extend R01–R04 or GF02 the way Germany's tax
+   estimate does; register and measure coverage.
+2. [ ] **Step A of the debt chains** (cash interest, cash borrowing
+   requirement) for ITA/ESP/BEL: the Tesoro bulletin's "Financiación del
+   Estado" (file 09/13) may serve Spain; Italy/Belgium publish PDF only.
+3. [ ] **Italy year-end class history**: the MEF December composition file
+   is picked up automatically from early 2027.
+4. [ ] **Then the USA** — Stage U1 per `REPLICATION_KICKOFF.md`.
 
 ## Housekeeping
 
-- [ ] **Seed the statistical forecast intervals.** Prophet and ETS
-  intervals are unseeded, so `se`/lo/hi change on every run
-  (`src/ggfiscal/forecast/statistical.py`). Fixing it makes byte-identity
-  checks clean on the downstream files.
-- [ ] **Three UK debt tests fail on today's DMO data** (also on `main`):
-  `tests/debt/test_register_gbr.py` (2) and
-  `test_bridges.py::test_gbr_step_c_items_shrink_the_residual[financing]`.
-  Find what changed in the DMO export.
-- [ ] **README prose is stale.** Generated text still says "United Kingdom,
-  France and Germany" and "14 lines per country"
-  (`src/ggfiscal/report/readme.py`, `src/ggfiscal/publish/flatten.py`
-  ~line 938). Derive the country list from config.
-- [ ] **Notebook tool leaves stale cells.** `tools/update_notebooks_s11.py`
-  only adds cells to an existing forecast book. When a line gains an
-  official forecast (as interest did after the approval), its old
-  statistical-forecast charts stay until the book is deleted and re-seeded.
-  Make the tool drop `fan(...)` cells for series no longer in
-  `statistical_forecasts.csv`.
 - [ ] **Open a pull request** for `claude/serene-thompson-soiwhn` when ready.
 
 ## How to rebuild everything

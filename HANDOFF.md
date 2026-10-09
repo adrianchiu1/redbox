@@ -28,6 +28,16 @@ as for DEU, and Spain's debt from the Banco de España (DE1–DE6). Decisions
   (official_totals iterated the USA); the downstream packaging and the
   notebook tool had picked up the USA (now gated to stage 6).
 
+## Second pass (2026-10-09)
+
+GF10 AR joins approved (D-S17-013); Spain's WEO gap known (D-S17-014);
+Level II 2001 start accepted (D-S17-015); no host is blocked — the FNMT
+intermediate in `config/certs/` serves tesoro.es and airef.es
+(D-S17-012); Belgian register (D-S17-016); Tesoro aggregates (D-S17-017);
+housekeeping (D-S17-018); UK stub fix (D-S17-019). The open list is
+`NEXT_STEPS_EU3.md`; the section below is the first pass's and is
+superseded where they differ.
+
 ## Blocked on whom
 
 - **Committee (OQ-17):** the DSM interest joins are APPROVED and applied
