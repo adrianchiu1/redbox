@@ -1,9 +1,9 @@
 check_id,severity,scope,message
 V29,WARN,-,0 positions and 0 flows reference unknown securities; 1729 securities without a position (issued and redeemed between two year-ends: bills)
-V30,WARN,-,"7118 security-years reproduce snapshot(t) = snapshot(t−1) + Σ flows; 1297 do not; worst: [('DEU', 'DE0001141216', 1997, np.float64(7759.1)), ('DEU', 'DE0001141257', 1998, np.float64(7419.5)), ('DEU', 'DE0001141208', 1997, np.float64(2045.2)), ('DEU', 'DE0001141240', 1998, np.float64(1022.6)), ('DEU', 'DE0001030070', 2009, np.float64(-679.3))]"
-V33,OK,-,"bucket sums equal class totals on 339 (country, year-end, class) cells"
+V30,WARN,-,"7035 security-years reproduce snapshot(t) = snapshot(t−1) + Σ flows; 1297 do not; worst: [('DEU', 'DE0001141216', 1997, np.float64(7759.1)), ('DEU', 'DE0001141257', 1998, np.float64(7419.5)), ('DEU', 'DE0001141208', 1997, np.float64(2045.2)), ('DEU', 'DE0001141240', 1998, np.float64(1022.6)), ('DEU', 'DE0001030070', 2009, np.float64(-679.3))]"
+V33,OK,-,"bucket sums equal class totals on 340 (country, year-end, class) cells"
 V34,OK,-,32 ratio dates compared; 0 beyond 0.01%
-V36,WARN,-,3 securities with not_computable interest (DD10); declared in notes
+V36,WARN,-,8 securities with not_computable interest (DD10); declared in notes
 V40,OK,-,0 positions with market-hands above nominal
 V31,WARN,DEU/1995,"aggregate stock 494,113 vs Eurostat S1311 GD_F3 527,690: -6.36% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"
 V31,WARN,DEU/1996,"aggregate stock 525,607 vs Eurostat S1311 GD_F3 561,362: -6.37% (tol 1.0%; perimeter: État vs S.1311 incl. ODAC for FRA)"

@@ -1,6 +1,6 @@
 check_id,severity,scope,message
 S0_LINES,OK,-,287 line series enumerated (7 countries x 41); 3 declared structural zero(s) (D20)
-S0_REGISTER,OK,-,85 register entries structurally complete
+S0_REGISTER,OK,-,86 register entries structurally complete
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124529Z_f88cbdb3b751.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_EXP,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_EXP/20260831T124538Z_26601ec18b30.csv (raw store not synced)
 S0_SNAPSHOTS,WARN,EUROSTAT_GOV10A_MAIN,snapshot file missing locally: data/raw/EUROSTAT_GOV10A_MAIN/20260831T124539Z_aa12ca719566.csv (raw store not synced)
@@ -2944,13 +2944,13 @@ V16,WARN,DEU/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max diverge
 V16,OK,DEU/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0141 in 2024 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
 V16,WARN,DEU/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,ITA/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0534 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
-V16,WARN,ITA/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0213 in 2023 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,ITA/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0213 in 2023 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,ITA/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0534 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,ESP/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0618 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
-V16,WARN,ESP/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0214 in 2025 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,ESP/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0214 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,ESP/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0618 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,BEL/GF01_7,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0610 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
-V16,WARN,BEL/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0309 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv 'not_applied_v16_divergence' and OQ-7)"
+V16,WARN,BEL/GF10,"EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0309 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V16,WARN,BEL/E05,"EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0610 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)"
 V17,OK,-,"every proxy/composite row carries coverage share, year and residual_method; no proxy in strict"
 V18,WARN,register/INSEE_APU,no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)
@@ -2965,7 +2965,6 @@ V18,WARN,register/DEU_BMAS_RVB,no URL recorded and no archived copy (status: blo
 V18,WARN,register/DEU_BMF_FINPLAN,no URL recorded and no archived copy (status: not_machine_readable; Finanzplan is PDF-only (§11.4 blocked)
 V18,WARN,register/FRA_PLF_P117,no archived copy and unresolved URL (status: blocked)
 V18,WARN,register/ITA_MEF_FABBISOGNO,no archived copy and unresolved URL (status: not_machine_readable; press releases and PDF reports only; step A of both chains is unavailable for ITA (EU3_KICKOFF.md ED1))
-V18,WARN,register/ESP_TESORO,no archived copy and unresolved URL (status: blocked; TLS verification fails (server omits its intermediate certificate); DE4 — the Banco de España is the source; per-security register out of scope until reachable)
 V18,WARN,register/BDF_WEBSTAT,no archived copy and unresolved URL (status: blocked)
 V19,OK,-,Level II split identities hold in every tree; remainders never forecast
 V20,OK,-,interest rows flagged; strict rows gross
@@ -3029,8 +3028,6 @@ V21,WARN,BEL/2022,Level II 01.7 vs D.41 payable diff 7.39% > 5.0%
 V21,WARN,BEL/2024,Level II 01.7 vs D.41 payable diff 6.57% > 5.0%
 V22,OK,-,R01+...+R10 = TR within tolerance in all complete years
 V23,OK,-,TR − TE equals anchor B.9 within tolerance
-V24,WARN,ESP/2026-04/2025,gap_tr_pct_te = 1.716% beyond 1.0% of TE
-V24,WARN,ESP/2026-04/2025,gap_te_pct_te = 1.488% beyond 1.0% of TE
 V24,WARN,USA/2025-04,NLB gap sigma 1.367% of TE exceeds 0.5% — perimeter component not stable
 V24,WARN,USA/2025-10,NLB gap sigma 1.521% of TE exceeds 0.5% — perimeter component not stable
 V24,WARN,USA/2026-04,NLB gap sigma 1.510% of TE exceeds 0.5% — perimeter component not stable

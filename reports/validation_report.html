@@ -1,7 +1,7 @@
 <html><head><meta charset='utf-8'><title>gg-fiscal validation report</title><style>body{font-family:sans-serif;margin:2em;max-width:75em}table{border-collapse:collapse;margin:1em 0}td,th{border:1px solid #ccc;padding:0.3em 0.6em;text-align:left;font-size:0.9em}.ERROR{background:#fdd}.WARN{background:#ffedcc}.OK{background:#e8f5e9}.SKIP{background:#eee}</style></head><body>
 <h1>Validation report — §10 suite</h1>
-<p>Generated 2026-10-07 14:57 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
-<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>3710</td><td class='OK'>177</td><td class='SKIP'>0</td></tr></table>
+<p>Generated 2026-10-09 13:58 UTC by <code>ggfiscal report</code>; pipeline stage 5. ERROR blocks the gate; WARN does not (§10). The machine-readable twin is <code>data/canonical/exceptions.csv</code> (written by <code>ggfiscal validate</code>).</p>
+<h2>Summary</h2><table><tr><th>ERROR</th><th>WARN</th><th>OK</th><th>SKIP</th></tr><tr><td class='ERROR'>0</td><td class='WARN'>3707</td><td class='OK'>177</td><td class='SKIP'>0</td></tr></table>
 <p><b>No ERROR findings: the gate holds.</b></p>
 <p>The WARN tiers are intended visibility, not defects: documented concept wedges (V1/V21/V25 crosswalk and perimeter differences), the withheld AMECO→DSM interest join flagged for the committee (V16, OQ-7), blocked register URLs (V18, OQ-6), stitch diagnostics at their measured C/D grades (V5), and raw snapshot bytes of earlier sessions not synced into this container (S0_SNAPSHOTS, by design D-S0-004 — provenance lives in the hash manifest).</p>
 <h2>Per-check outcomes</h2>
@@ -20,14 +20,14 @@
 <tr><td>V15</td><td>forecast: covered sums ≤ envelope × (1 + tol)</td><td class='WARN'>WARN</td><td></td><td>5</td><td></td><td></td></tr>
 <tr><td>V16</td><td>short/long-term overlap divergence</td><td class='WARN'>WARN</td><td></td><td>16</td><td>2</td><td></td></tr>
 <tr><td>V17</td><td>coverage_share_year on every proxy/composite row</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>V18</td><td>register URLs resolve or archived copy present</td><td class='WARN'>WARN</td><td></td><td>14</td><td></td><td></td></tr>
+<tr><td>V18</td><td>register URLs resolve or archived copy present</td><td class='WARN'>WARN</td><td></td><td>13</td><td></td><td></td></tr>
 <tr><td>V19</td><td>Level II splits (GF01, GF04, GF10, R02, R06): remainder + Σ Level II = parent; remainders never forecast</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V2</td><td>history: Σ GF01–GF10 = TE and Σ E01–E09 = TE_ESA (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V20</td><td>interest rows carry concept_flag; strict rows gross</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V21</td><td>Level II GF01.7 vs D.41 payable within 5%</td><td class='WARN'>WARN</td><td></td><td>58</td><td></td><td></td></tr>
 <tr><td>V22</td><td>history: Σ R01–R10 = TR (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V23</td><td>history: TR − TE = anchor B.9 (0.1%)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
-<tr><td>V24</td><td>base-year bridge gaps within tolerance; GBR perimeter stable</td><td class='WARN'>WARN</td><td></td><td>5</td><td></td><td></td></tr>
+<tr><td>V24</td><td>base-year bridge gaps within tolerance; GBR perimeter stable</td><td class='WARN'>WARN</td><td></td><td>3</td><td></td><td></td></tr>
 <tr><td>V25</td><td>OECD RS reconciliation on tax lines within tolerance</td><td class='WARN'>WARN</td><td></td><td>847</td><td></td><td></td></tr>
 <tr><td>V26</td><td>decomposition additivity exact (history and forecast)</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
 <tr><td>V27</td><td>net-interest cross-check reported everywhere</td><td class='OK'>OK</td><td></td><td></td><td>1</td><td></td></tr>
@@ -115,16 +115,16 @@
 <tr class='WARN'><td>DEU/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>DEU/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0396 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>ITA/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0534 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
-<tr class='WARN'><td>ITA/GF10</td><td>EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0213 in 2023 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
+<tr class='WARN'><td>ITA/GF10</td><td>EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0213 in 2023 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>ITA/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence -0.0534 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>ESP/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0618 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
-<tr class='WARN'><td>ESP/GF10</td><td>EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0214 in 2025 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
+<tr class='WARN'><td>ESP/GF10</td><td>EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence -0.0214 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>ESP/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0618 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>BEL/GF01_7</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0610 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
-<tr class='WARN'><td>BEL/GF10</td><td>EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0309 in 2026 (threshold 0.02; D12: above it the long-term leg is withheld pending committee review, not auto-joined — see forecast_boundaries.csv &#x27;not_applied_v16_divergence&#x27; and OQ-7)</td></tr>
+<tr class='WARN'><td>BEL/GF10</td><td>EC_AMECO vs EC_AGEING_2024 growth over 5 overlap years: max divergence +0.0309 in 2026 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 <tr class='WARN'><td>BEL/E05</td><td>EC_AMECO vs EC_DSM growth over 3 overlap years: max divergence +0.0610 in 2025 (threshold 0.02; D12: the join is committee-approved (OQ-7 resolution, D-S8-001) and APPLIED — the divergence stays flagged as the seam to watch on the next vintage)</td></tr>
 </table>
-<h3>V18 — 14 WARNs: register URLs resolve or archived copy present</h3><table><tr><th>scope</th><th>message</th></tr>
+<h3>V18 — 13 WARNs: register URLs resolve or archived copy present</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>register/INSEE_APU</td><td>no archived copy and unresolved URL (status: unverified; Stage 2 concern; perimeter pre-ESA95 to document)</td></tr>
 <tr class='WARN'><td>register/DESTATIS_81000</td><td>no archived copy and unresolved URL (status: unverified; Stage 2 concern)</td></tr>
 <tr class='WARN'><td>register/CBO_SITE</td><td>no archived copy and unresolved URL (status: blocked; www.cbo.gov returns 403 (DataDome challenge) to every client here, re-tested 2026-09-21 (D24); unblock = the D-S7-001 hand-retrieval route (committee downloads the workbooks in a browser, `ggfiscal ingest-file`), as for obr.uk)</td></tr>
@@ -137,7 +137,6 @@
 <tr class='WARN'><td>register/DEU_BMF_FINPLAN</td><td>no URL recorded and no archived copy (status: not_machine_readable; Finanzplan is PDF-only (§11.4 blocked)</td></tr>
 <tr class='WARN'><td>register/FRA_PLF_P117</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
 <tr class='WARN'><td>register/ITA_MEF_FABBISOGNO</td><td>no archived copy and unresolved URL (status: not_machine_readable; press releases and PDF reports only; step A of both chains is unavailable for ITA (EU3_KICKOFF.md ED1))</td></tr>
-<tr class='WARN'><td>register/ESP_TESORO</td><td>no archived copy and unresolved URL (status: blocked; TLS verification fails (server omits its intermediate certificate); DE4 — the Banco de España is the source; per-security register out of scope until reachable)</td></tr>
 <tr class='WARN'><td>register/BDF_WEBSTAT</td><td>no archived copy and unresolved URL (status: blocked)</td></tr>
 </table>
 <h3>V21 — 58 WARNs: Level II GF01.7 vs D.41 payable within 5%</h3><table><tr><th>scope</th><th>message</th></tr>
@@ -168,9 +167,7 @@
 <tr class='WARN'><td>DEU/2019</td><td>Level II 01.7 vs D.41 payable diff 8.31% &gt; 5.0%</td></tr>
 <tr><td colspan='2'>… 33 more in exceptions.csv</td></tr>
 </table>
-<h3>V24 — 5 WARNs: base-year bridge gaps within tolerance; GBR perimeter stable</h3><table><tr><th>scope</th><th>message</th></tr>
-<tr class='WARN'><td>ESP/2026-04/2025</td><td>gap_tr_pct_te = 1.716% beyond 1.0% of TE</td></tr>
-<tr class='WARN'><td>ESP/2026-04/2025</td><td>gap_te_pct_te = 1.488% beyond 1.0% of TE</td></tr>
+<h3>V24 — 3 WARNs: base-year bridge gaps within tolerance; GBR perimeter stable</h3><table><tr><th>scope</th><th>message</th></tr>
 <tr class='WARN'><td>USA/2025-04</td><td>NLB gap sigma 1.367% of TE exceeds 0.5% — perimeter component not stable</td></tr>
 <tr class='WARN'><td>USA/2025-10</td><td>NLB gap sigma 1.521% of TE exceeds 0.5% — perimeter component not stable</td></tr>
 <tr class='WARN'><td>USA/2026-04</td><td>NLB gap sigma 1.510% of TE exceeds 0.5% — perimeter component not stable</td></tr>
@@ -230,6 +227,6 @@
 <tr><td>oecd_rs_reconciliation_pct</td><td>3.0</td></tr>
 <tr><td>perimeter_sigma_pct_te</td><td>0.5</td></tr>
 <tr><td>sum_to_total_pct</td><td>0.1</td></tr>
-<tr><td>v16_approved_joins</td><td>[{&#x27;iso3&#x27;: &#x27;FRA&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;DEU&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;GBR&#x27;, &#x27;line_code&#x27;: &#x27;R06&#x27;, &#x27;incoming_source&#x27;: &#x27;OBR_EFO_LATEST&#x27;}, {&#x27;iso3&#x27;: &#x27;FRA&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;DEU&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ITA&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ESP&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;BEL&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ITA&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ESP&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;BEL&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}]</td></tr>
+<tr><td>v16_approved_joins</td><td>[{&#x27;iso3&#x27;: &#x27;FRA&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;DEU&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;GBR&#x27;, &#x27;line_code&#x27;: &#x27;R06&#x27;, &#x27;incoming_source&#x27;: &#x27;OBR_EFO_LATEST&#x27;}, {&#x27;iso3&#x27;: &#x27;FRA&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;DEU&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ITA&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ESP&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;BEL&#x27;, &#x27;line_code&#x27;: &#x27;GF01_7&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ITA&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ESP&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;BEL&#x27;, &#x27;line_code&#x27;: &#x27;E05&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_DSM&#x27;}, {&#x27;iso3&#x27;: &#x27;ITA&#x27;, &#x27;line_code&#x27;: &#x27;GF10&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_AGEING_2024&#x27;}, {&#x27;iso3&#x27;: &#x27;ESP&#x27;, &#x27;line_code&#x27;: &#x27;GF10&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_AGEING_2024&#x27;}, {&#x27;iso3&#x27;: &#x27;BEL&#x27;, &#x27;line_code&#x27;: &#x27;GF10&#x27;, &#x27;incoming_source&#x27;: &#x27;EC_AGEING_2024&#x27;}]</td></tr>
 <tr><td>v16_overlap_divergence</td><td>0.02</td></tr>
 </table></body></html>
