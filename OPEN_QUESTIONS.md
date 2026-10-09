@@ -424,7 +424,7 @@ widen `perimeter_sigma_pct_te` for the USA per the measured 1.5, or classify
 the WEO-vs-OECD gap by a third rule (the GFSM adjustments are documented per
 year by the IMF). Default: keep the rule and the WARN; nothing absorbed.
 
-## OQ-17 — Approve the long-term joins for Italy, Spain and Belgium? — **interest joins APPROVED 2026-10-07 (D-S17-011); the AR GF10 join still open**
+## OQ-17 — Approve the long-term joins for Italy, Spain and Belgium? — **RESOLVED: interest joins approved 2026-10-07 (D-S17-011), AR GF10 joins 2026-10-09 (D-S17-013)**
 Raised 2026-10-07 (session 17, Stage E). The DSM interest path (to 2036)
 and the Ageing Report GF10 composite (to 2070) are withheld for ITA, ESP
 and BEL by V16: the AMECO-vs-DSM growth divergence over the 2025–27
@@ -437,7 +437,7 @@ the three countries to `tolerances.v16_approved_joins` (one config row each
 + rebuild; V16 keeps WARNing on the seam), and decide the GF10 AR join the
 same way. Default: withheld — GF01_7/E05/GF10 end at 2027 in maximum.
 
-## OQ-18 — Italy and Belgium have no COFOG Level II before 2001 anywhere reachable (NEW, informational; from DE3, D-S17-005)
+## OQ-18 — Italy and Belgium have no COFOG Level II before 2001 anywhere reachable — **RESOLVED 2026-10-09: 2001 start accepted (D-S17-015)**
 Raised 2026-10-07. DE3 asked for the IMF GFS leg as for Germany; it is
 enabled, and like Germany's it has nothing to apply: IMF GFS, OECD Table 11
 and Eurostat all start the four Level II groups in 2001 for ITA and BEL.
@@ -445,7 +445,7 @@ GF01_7 has 1995–2000 from the D.41 fallback (grade B). **Ask:** accept the
 2001 start (default), or name a national source (ISTAT/ICN historical
 COFOG tables) for a later session to verify.
 
-## OQ-19 — Spain's WEO revenue and expenditure levels sit outside the 1%-of-TE revision band (NEW, informational; from V24)
+## OQ-19 — Spain's WEO revenue and expenditure levels sit outside the 1%-of-TE revision band — **RESOLVED 2026-10-09: known perimeter gap (D-S17-014)**
 Raised 2026-10-07. On the 2026-04 vintage the WEO's GGR and GGX for Spain
 differ from the Eurostat anchor by 1.7% and 1.5% of TE (V24 WARN); the
 NLB gap is within the band (2024: ours −3.21% of GDP, WEO −3.22%). Spain

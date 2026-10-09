@@ -19,6 +19,41 @@ from ggfiscal.ingest.store import SnapshotStore
 TIMEOUT = 300
 RETRIES = 3
 
+# Hosts whose server omits an intermediate certificate from its TLS chain, so
+# no client can verify it (D-S17-012): the missing intermediate, fetched
+# from the issuer's own AIA URL and committed under config/certs/, is
+# appended to the normal trust bundle for those hosts only. Verification
+# stays fully on. FNMT-RCM "AC Componentes Informáticos"
+# (http://www.cert.fnmt.es/certs/ACCOMP.crt, SHA-256 F0:38:42:1F:...:76:AB,
+# valid to 2028-06-24), chained to the standard root AC RAIZ FNMT-RCM.
+EXTRA_INTERMEDIATES = {
+    "tesoro.es": "fnmt_ac_componentes_informaticos.pem",
+    "airef.es": "fnmt_ac_componentes_informaticos.pem",
+}
+
+
+def verify_for(url: str) -> str | bool:
+    """The `verify` argument for a request to `url`: True (the default trust
+    bundle) or a path to that bundle plus the host's missing intermediate."""
+    import os
+    import tempfile
+    from urllib.parse import urlparse
+
+    host = (urlparse(url).hostname or "").lower()
+    name = next((f for suffix, f in EXTRA_INTERMEDIATES.items()
+                 if host == suffix or host.endswith("." + suffix)), None)
+    if name is None:
+        return True
+    from ggfiscal import config
+
+    base = os.environ.get("REQUESTS_CA_BUNDLE") or requests.certs.where()
+    extra = config.repo_root() / "config" / "certs" / name
+    dest = os.path.join(tempfile.gettempdir(), f"ggfiscal_bundle_{name}")
+    with open(dest, "w", encoding="ascii") as out:
+        out.write(open(base, encoding="ascii", errors="ignore").read())
+        out.write("\n" + extra.read_text(encoding="ascii"))
+    return dest
+
 
 class FetchBlocked(RuntimeError):
     """Egress-policy denial (proxy 403 on CONNECT) — do not retry (OQ-1)."""
@@ -34,7 +69,7 @@ def _get(url: str, accept: str = "", extra_headers: tuple = ()) -> requests.Resp
     headers.update(dict(extra_headers))
     for attempt in range(RETRIES):
         try:
-            resp = requests.get(url, timeout=TIMEOUT, headers=headers)
+            resp = requests.get(url, timeout=TIMEOUT, headers=headers, verify=verify_for(url))
             if resp.status_code == 200:
                 return resp
             if resp.status_code in (407,):

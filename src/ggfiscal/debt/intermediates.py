@@ -207,8 +207,9 @@ _STEP_A_UNAVAILABLE = {
             "the MEF's state-sector cash requirement and interest outturn are "
             "published in PDF reports only; no machine-readable step-A total"),
     "ESP": ("ESP_TESORO",
-            "the Tesoro's cash outturn is on www.tesoro.es, which fails TLS "
-            "verification here (DE4); the Banco de España publishes no cash total"),
+            "no machine-readable cash outturn harvested from the Tesoro yet "
+            "(reachable since D-S17-012; Stage ED3); the Banco de España "
+            "publishes no cash total"),
     "BEL": ("BEL_BDA",
             "the Debt Agency publishes interest charges and the financing "
             "requirement in its annual report (PDF) only"),

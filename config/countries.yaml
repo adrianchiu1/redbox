@@ -132,7 +132,7 @@ countries:
       GF07: {classification: COFOG, status: grade_below_strict,
         note: "AR 2024 health care baseline measures 87.9% of COFOG 07 at 2024 (grade C: the AWG health care perimeter vs the COFOG function) — no strict forecast; applied in maximum_extension to 2070 per §7.8"}
       GF10: {classification: COFOG, status: grade_below_strict,
-        note: "maximum_extension carries the AMECO D.62 dominant-component proxy (to 2027; §7.8, maximum only); the AR 2024 pensions+LTC composite measures 83.1% of GF10 at 2024 (grade C) and its join is withheld by V16 (AMECO vs AR growth divergence +0.0213 > 0.02, D12) pending committee review — no strict forecast"}
+        note: "AR 2024 pensions+LTC composite measured at 83.1% of GF10 at 2024 (grade C: no official projection of family/housing/unemployment components) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12, the join committee-approved at a V16 divergence of +0.0213 (D-S17-013)"}
       R05: {classification: ESA_REV, status: grade_below_strict,
         note: "AMECO UTKG (capital taxes, D.91) covers 20.2% of the line at 2025 (grade D): not applied in either variant; D7 lists R05 as partial"}
       GF10_2: {classification: COFOG, status: grade_below_strict,
@@ -155,7 +155,7 @@ countries:
     period_basis: {anchor: CY, trees: {expenditure: CY, expenditure_esa: CY, revenue: CY}}
     fy_to_cy_weights: [0.25, 0.75]
     lines_absent: {}
-    weo_perimeter_gap_expected: false
+    weo_perimeter_gap_expected: true  # D-S17-014 (OQ-19): WEO GGR/GGX levels sit 1.5-1.7% of TE off the anchor; treated as a known perimeter gap
     perimeter_break: null
     backward_legs: {}                 # Level II from 1995 in the anchor itself (DE3 not needed)
     stage_reached: 6                  # EU3_KICKOFF.md: fiscal stages E0-E6 built in one pass (D-S17-008)
@@ -177,7 +177,7 @@ countries:
       GF02: {classification: COFOG, status: no_machine_readable_source,
         note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
       GF10: {classification: COFOG, status: grade_below_strict,
-        note: "maximum_extension carries the AMECO D.62 dominant-component proxy (to 2027; §7.8, maximum only); the AR 2024 pensions+LTC composite measures 77.7% of GF10 at 2024 (grade C) and its join is withheld by V16 (AMECO vs AR growth divergence -0.0214 > 0.02, D12) pending committee review — no strict forecast"}
+        note: "AR 2024 pensions+LTC composite measured at 77.7% of GF10 at 2024 (grade C: no official projection of family/housing/unemployment components) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12, the join committee-approved at a V16 divergence of -0.0214 (D-S17-013)"}
       R05: {classification: ESA_REV, status: grade_below_strict,
         note: "AMECO UTKG (capital taxes, D.91) covers 51.4% of the line at 2024 (grade C): applied in maximum_extension only as a §7.8 single-component proxy; D7 lists R05 as partial"}
       GF10_2: {classification: COFOG, status: grade_below_strict,
@@ -230,7 +230,7 @@ countries:
       GF09: {classification: COFOG, status: grade_below_strict,
         note: "AR 2024 education baseline measures 87.4% of COFOG 09 at 2024 (grade C: the AWG education perimeter vs the COFOG function) — no strict forecast; applied in maximum_extension to 2070 per §7.8"}
       GF10: {classification: COFOG, status: grade_below_strict,
-        note: "maximum_extension carries the AMECO D.62 dominant-component proxy (to 2027; §7.8, maximum only); the AR 2024 pensions+LTC composite measures 75.8% of GF10 at 2024 (grade C) and its join is withheld by V16 (AMECO vs AR growth divergence +0.0309 > 0.02, D12) pending committee review — no strict forecast"}
+        note: "AR 2024 pensions+LTC composite measured at 75.8% of GF10 at 2024 (grade C: no official projection of family/housing/unemployment components) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12, the join committee-approved at a V16 divergence of +0.0309 (D-S17-013)"}
       R05: {classification: ESA_REV, status: grade_below_strict,
         note: "AMECO UTKG (capital taxes, D.91) covers 52.3% of the line at 2025 (grade C): applied in maximum_extension only as a §7.8 single-component proxy; D7 lists R05 as partial"}
       GF10_2: {classification: COFOG, status: grade_below_strict,
@@ -294,6 +294,11 @@ tolerances:
     - {iso3: ITA, line_code: E05, incoming_source: EC_DSM}
     - {iso3: ESP, line_code: E05, incoming_source: EC_DSM}
     - {iso3: BEL, line_code: E05, incoming_source: EC_DSM}
+    # 2026-10-09 (D-S17-013, OQ-17 closed): the committee approved the AR
+    # GF10 joins for ITA, ESP and BEL (divergence +0.021 / -0.021 / +0.031)
+    - {iso3: ITA, line_code: GF10, incoming_source: EC_AGEING_2024}
+    - {iso3: ESP, line_code: GF10, incoming_source: EC_AGEING_2024}
+    - {iso3: BEL, line_code: GF10, incoming_source: EC_AGEING_2024}
   perimeter_sigma_pct_te: 0.5          # V24 (D-S5-002): NLB-gap stability for a
                                        # country with weo_perimeter_gap_expected
                                        # (GBR) — sigma of gap/TE across overlap

@@ -253,7 +253,7 @@ sources:
     countries: [ESP]
     role: debt_register
     api: {kind: html_and_xlsx, landing: "https://www.tesoro.es/deuda-publica"}
-    verification: {status: blocked, checked: 2026-10-07, note: "TLS verification fails (server omits its intermediate certificate); DE4 — the Banco de España is the source; per-security register out of scope until reachable"}
+    verification: {status: confirmed_live, checked: 2026-10-09, note: "the server omits its FNMT intermediate certificate; reachable with full verification through config/certs (D-S17-012). DE4 keeps the Banco de España for the aggregates; the per-ISIN register is Stage ED3"}
 
   # ---------- Cross-country ----------
   EUROSTAT_GOV10A_MAIN_S1311:

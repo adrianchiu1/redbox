@@ -2942,3 +2942,44 @@ GF01_7 and E05 now run to 2036 in both variants for the three countries;
 V16 keeps WARNing on the seam (−0.053 / +0.062 / +0.061). The AR GF10 join
 was not part of the approval and stays withheld (GF10 maximum ends 2027).
 GBR/FRA/DEU/USA unchanged (byte identity against the pre-change build).
+
+## D-S17-012 — No host is blocked: two Spanish servers omit an intermediate certificate; the other three were wrong or retired addresses (serves DE4, OQ-13 pattern)
+
+Re-tested 2026-10-09 in an environment with full network access.
+`www.tesoro.es` and `www.airef.es` present only their leaf certificate,
+issued by FNMT-RCM "AC Componentes Informáticos", without that
+intermediate — no client can build the chain ("unable to get local issuer
+certificate"). The intermediate, downloaded from the URL the certificates
+themselves name (`http://www.cert.fnmt.es/certs/ACCOMP.crt`, SHA-256
+F0:38:42:1F:07:F2:0D:63:…:76:AB, chaining to the standard root AC RAIZ
+FNMT-RCM), is committed as `config/certs/fnmt_ac_componentes_informaticos.pem`;
+`ingest.fetch.verify_for` appends it to the normal trust bundle for those
+two hosts only. Verification stays on; both return 200.
+The other three were the scoping's mistakes, not blocks:
+`www.planbureau.be` → the Federal Planning Bureau is `www.plan.be` (200);
+`www.upbinfo.it` → the Ufficio parlamentare di bilancio is
+`www.upbilancio.it` (200); `stat.nbb.be` is the retired NBB.Stat — the
+National Bank of Belgium serves data from `dataexplorer.nbb.be` and
+`nsidisseminate-stat.nbb.be` (200). `infostat.bancaditalia.it` still
+requires a login (not a network matter).
+
+## D-S17-013 — The committee approves the AR GF10 joins for ITA, ESP and BEL (closes OQ-17)
+
+2026-10-09. Three `v16_approved_joins` rows (`EC_AGEING_2024`, GF10).
+GF10 maximum now chains the AMECO D.62 proxy (to 2027) into the AR
+pensions+LTC composite to 2070 for the three countries, as for FRA/DEU;
+strict still ends at the last actual (the composite is grade C). V16
+keeps WARNing on the seam.
+
+## D-S17-014 — Spain's WEO gap is a known perimeter gap (closes OQ-19)
+
+2026-10-09. `weo_perimeter_gap_expected: true` for ESP: the bridge
+classifies Spain's GGR/GGX level gap by its stability (the GBR rule)
+instead of the 1%-of-TE revision band. On the 2026-04 vintage every year
+classifies `perimeter`; V24 no longer WARNs for Spain.
+
+## D-S17-015 — Italy and Belgium's COFOG Level II lines start in 2001 (closes OQ-18)
+
+2026-10-09: the committee accepts the 2001 start for GF10_2, GF10_5,
+GF04_5 and their remainders in ITA and BEL; no national back-series is
+sought. GF01_7 keeps 1995–2000 from the D.41 fallback.

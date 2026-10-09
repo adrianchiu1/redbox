@@ -96,7 +96,9 @@ def test_gf10_proxy_and_d12_chain():
         ameco = g[g.growth_source_id == "EC_AMECO"]
         assert len(ameco) and max(ameco.year) == 2027
         assert (ameco[ameco.is_forecast].observation_type == "proxy_forecast").all()
-        if iso3 in ("FRA", "DEU"):
+        # the AR leg: FRA/DEU under the V16 threshold, ITA/ESP/BEL by the
+        # committee's approved join (D-S17-013); GBR has no AR
+        if iso3 in ("FRA", "DEU", "ITA", "ESP", "BEL"):
             ar = g[g.growth_source_id == "EC_AGEING_2024"]
             assert len(ar) and min(ar.year) == 2028 and max(ar.year) == 2070
             assert (ar.observation_type == "composite_forecast").all()
@@ -137,10 +139,9 @@ def test_coverage_matrix_complete(matrix):
     assert gf10.loc["GBR", "final_maximum_year"] == 2027
     assert gf10.loc["FRA", "final_maximum_year"] == 2070
     assert gf10.loc["DEU", "final_maximum_year"] == 2070
-    # ITA/ESP/BEL: the AR join into GF10 is withheld by V16 pending committee
-    # review (divergence above 0.02, D12) — maximum ends with AMECO (D-S17-005)
+    # ITA/ESP/BEL: the AR join into GF10 is committee-approved (D-S17-013)
     for iso3 in ("ITA", "ESP", "BEL"):
-        assert gf10.loc[iso3, "final_maximum_year"] == 2027, iso3
+        assert gf10.loc[iso3, "final_maximum_year"] == 2070, iso3
     # remainders are never forecast: final maximum = final actual
     for code in ("GF01_X", "GF04_X", "GF10_X", "R02_X", "R06_X"):
         gx = matrix[matrix.line_code == code]
