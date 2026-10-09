@@ -34,7 +34,9 @@ GF10 AR joins approved (D-S17-013); Spain's WEO gap known (D-S17-014);
 Level II 2001 start accepted (D-S17-015); no host is blocked — the FNMT
 intermediate in `config/certs/` serves tesoro.es and airef.es
 (D-S17-012); Belgian register (D-S17-016); Tesoro aggregates (D-S17-017);
-housekeeping (D-S17-018); UK stub fix (D-S17-019). The open list is
+housekeeping (D-S17-018, D-S17-021); UK stub fix (D-S17-019); Belgian
+Planning Bureau leg for R03/R04 (D-S17-020). pytest 480 passed, 0 failed
+(D-S17-022). The open list is
 `NEXT_STEPS_EU3.md`; the section below is the first pass's and is
 superseded where they differ.
 

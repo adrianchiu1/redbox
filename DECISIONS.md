@@ -3070,3 +3070,13 @@ without ETS for 812 of 1,456 series rows. Now
 `rng=np.random.default_rng(SEED)`: every method runs and two runs give
 identical intervals (checked on additive and multiplicative
 specifications).
+
+## D-S17-022 — Gate record, second pass
+
+Full chain (build, reconcile, validate, report, flatten, the four
+downstream steps, notebook update and execution, debt build and
+validate, flatten) on the committed code: `validate` ERROR=0;
+`debt validate` OK=73, WARN=28, SKIP=2; **pytest 480 passed, 6 skipped, 0
+failed**. GBR/FRA/DEU/USA against the previous commit: unchanged except
+the seeded interval columns, the vintage-set hash and the two UK gilts of
+D-S17-019 (all intended).
