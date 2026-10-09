@@ -2983,3 +2983,62 @@ classifies `perimeter`; V24 no longer WARNs for Spain.
 2026-10-09: the committee accepts the 2001 start for GF10_2, GF10_5,
 GF04_5 and their remainders in ITA and BEL; no national back-series is
 sought. GF01_7 keeps 1995–2000 from the D.41 fallback.
+
+## D-S17-016 — Belgium's per-security register from the Debt Agency's outstanding page (Stage ED3)
+
+`debt/register_bel.py`, registered in `config/debt.yaml`. Four tables, each
+at its own date: 37 OLO lines (net outstanding 01.10.2026, buy-backs in
+the Treasury's portfolio as `official_holdings_lcu_mn`; lines sum to the
+page total 478,340 EUR mn), 12 Treasury Certificates (30.09.2026, 53,693),
+45 EMTN/other ISINs from 55 taps (10.06.2026; EUR equivalent as
+published, issue-currency amount alongside; 3 Euribor-6M floaters, 4
+inflation-linked, 7 currencies — AUD and NOK added to the debt schema's
+currency list). The page's own EMTN rows sum to 12,315.5 EUR mn while its
+total line says 12,615.5 — exactly 300 more; the rows are registered.
+BE6367588231 is listed with a maturity that moves a day per tap
+(16–22/08/2035); the first tap's date is kept and the note says so.
+Schuldscheine (no ISIN, loans) stay outside DD1. Positions are
+`office_snapshot` only — no auction history file is published — so the
+register enters no chain year (`register_sums` needs a 1 January anchor)
+and the latest-date maturity profile covers the OLOs.
+
+## D-S17-017 — Spain: the Tesoro's outstanding by instrument enters the aggregates; no per-security register is possible
+
+`ESP_TESORO` (reachable since D-S17-012) adds four pulls from the monthly
+bulletin; `readers/tesoro.py` reads "Deuda del Estado en circulación"
+(year-ends 2007– and month-ends; components checked against the total)
+and `aggregates_eu3.esp_tesoro_rows` publishes every 31 December by
+instrument and tenor (Letras by tenor → bill; Bonos y Obligaciones by
+tenor → fixed_bullet; index-linked, uplifted; euro-bonds, foreign
+currency; "resto", assumed debt and Banco de España loans out of
+register). End-2025 total 1,516,859 EUR mn. Neither the bulletin nor the
+auction history (2001–) identifies an issue by ISIN (tenor and coupon
+only), so a per-security register for Spain stays out of reach.
+
+## D-S17-018 — Housekeeping: seeded forecast intervals, README prose from config, notebook fan cells follow the forecasts
+
+`statistical._ets` passes a fixed `random_state` to the interval
+simulation and `_prophet` seeds numpy before fitting: two runs now give
+identical intervals (the D-S17-008 caveat no longer applies). The
+generated READMEs take their country list from
+`config.packaged_countries_prose()` and their line counts from
+`config.granular_lines`. `tools/update_notebooks_s11._sync_fans` drops a
+line's fan cells when it loses its statistical forecast and adds them when
+it gains one.
+
+## D-S17-019 — UK register: operations after the D1A close of business are not part of the opening stub; Italy's register is PDF-only
+
+The three GBR debt tests that failed on the 2026-10 DMO vintage (also on
+main): the issuance history (D2.1E) runs ahead of the gilts-in-issue
+snapshot (D1A, close of business 2026-10-06) — auctions of GB00BT7HZZ68
+(1,250, 2026-10-07) and GB00BMGR2809 (1,000, 2026-10-08) were counted
+against the anchor, creating false opening stubs. `_opening_rows` now
+compares each anchor only with operations settled on or before its own
+date; the test does the same. GBR debt figures for those two gilts change
+accordingly. The financing step-C test now requires the bridge items to
+narrow the gap in 4 of 5 years and in total: on the current ONS vintage
+local-government net borrowing (−2,889) over-explains 2021's −1,188 gap.
+Italy: the MEF publishes recent auction results as one PDF per auction and
+no per-ISIN outstanding file (archive spreadsheets stop in 2000–2007); per
+the OQ-5 rule a PDF-only source is not machine-readable, so no Italian
+register is built.

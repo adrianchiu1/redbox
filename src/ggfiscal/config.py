@@ -56,6 +56,25 @@ def prose_names() -> dict[str, str]:
     return {iso3: cfg.get("prose_name", cfg["name"]) for iso3, cfg in countries().items()}
 
 
+def packaged_countries_prose(with_codes: bool = False) -> str:
+    """The countries the package publishes in full (stage 6), as prose —
+    "the United Kingdom, France, ... and Belgium" — plus, in brackets, any
+    configured country still being built (D-S17-018: the generated READMEs
+    derive their country list from here)."""
+    names = prose_names()
+
+    def join(codes):
+        parts = [f"{names[c]} ({c})" if with_codes else names[c] for c in codes]
+        return parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
+
+    full = countries_at_stage(6)
+    rest = [c for c in countries() if c not in full]
+    text = join(full)
+    if rest:
+        text += f" (and, at an earlier build stage, {join(rest)})"
+    return text
+
+
 def country_aliases() -> dict[str, tuple[str, ...]]:
     """iso3 -> the strings a chart title may use for the country."""
     return {iso3: tuple(cfg.get("aliases") or [cfg["name"]]) for iso3, cfg in countries().items()}

@@ -548,7 +548,25 @@ def forecast_book(iso3, tree):
         while j < len(cells) and src(cells[j]).startswith(f'fan("{iso3}", "{prev}"'):
             j += 1
         cells[j:j] = _series_cells(iso3, line)
+    _sync_fans(cells, iso3, lines)
     return nb
+
+
+def _sync_fans(cells, iso3, lines):
+    """Each line's fan(...) cells follow statistical_forecasts.csv: a line
+    that gained an official path to the horizon (so lost its statistical
+    forecast) drops them, one that gained a statistical forecast gets them
+    (D-S17-018). The cells sit right after the line's share(...) cell."""
+    for line in lines:
+        i = next((k for k, c in enumerate(cells) if src(c) == f'share("{iso3}", "{line}")'), None)
+        if i is None:
+            continue
+        j = i + 1
+        while j < len(cells) and src(cells[j]).startswith(f'fan("{iso3}", "{line}"'):
+            j += 1
+        want = [c for c in _series_cells(iso3, line) if src(c).startswith("fan(")]
+        if [src(c) for c in cells[i + 1:j]] != [src(c) for c in want]:
+            cells[i + 1:j] = want
 
 
 def forecast_esa(iso3):

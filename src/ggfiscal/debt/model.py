@@ -16,7 +16,7 @@ def _in_countries(s):
     return s.isin(config.COUNTRIES)
 
 
-CURRENCIES = ["GBP", "EUR", "USD", "CHF", "JPY", "DEM", "FRF"]
+CURRENCIES = ["GBP", "EUR", "USD", "CHF", "JPY", "DEM", "FRF", "AUD", "NOK"]   # AUD/NOK: BEL EMTN (D-S17-016)
 INSTRUMENT_CLASSES = ["fixed_bullet", "floating", "inflation_linked", "bill", "other"]
 FLOW_TYPES = ["auction", "syndication", "tap", "tender", "conversion_in",
               "conversion_out", "switch_in", "switch_out", "buyback",

@@ -31,6 +31,7 @@ MEF_BASE = "https://www.dt.mef.gov.it"
 MEF_STAT = f"{MEF_BASE}/it/debito_pubblico/dati_statistici"
 BDA_BASE = "https://www.debtagency.be"
 BDE_ZIP = "https://www.bde.es/webbe/es/estadisticas/compartido/datos/zip/be.zip"
+TESORO_DOCS = "https://www.tesoro.es/documents/d/tesoro"
 
 _MONTHS_IT = {"gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4, "maggio": 5, "giugno": 6,
               "luglio": 7, "agosto": 8, "settembre": 9, "ottobre": 10, "novembre": 11,
@@ -83,5 +84,13 @@ def pulls() -> list[Pull]:
              f"{BDA_BASE}/sites/default/files/content/download/Accesibility_excel/data_implicit_yield.xlsx",
              headers=BROWSER_HEADERS),
         Pull("ESP_BDE_BE", "be_zip", BDE_ZIP, headers=BROWSER_HEADERS),
+        # the Tesoro's monthly bulletin (reachable with the FNMT intermediate,
+        # D-S17-012): outstanding by instrument and tenor, auctions, the
+        # auction history and the redemption profile
+        Pull("ESP_TESORO", "deuda_circulacion_xlsx", f"{TESORO_DOCS}/01-xlsx", headers=BROWSER_HEADERS),
+        Pull("ESP_TESORO", "subastas_xlsx", f"{TESORO_DOCS}/11-xlsx", headers=BROWSER_HEADERS),
+        Pull("ESP_TESORO", "historico_subastas_xlsx", f"{TESORO_DOCS}/historico_subastas-xlsx",
+             headers=BROWSER_HEADERS),
+        Pull("ESP_TESORO", "vencimientos_xlsx", f"{TESORO_DOCS}/14-xlsx", headers=BROWSER_HEADERS),
     ]
     return out

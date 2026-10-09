@@ -150,3 +150,24 @@ def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
     assert 'levels("JPN", "E01")' in [s.strip() for s in _sources(esa)]
     # the committed notebooks are untouched
     assert not (NB / "forecasts_JPN_expenditure.ipynb").exists()
+
+
+@pytest.mark.skipif(not (NB / "chartbook.ipynb").exists(), reason="notebooks absent")
+def test_fan_cells_follow_the_statistical_forecasts(monkeypatch):
+    """D-S17-018: a line that lost its statistical forecast loses its fan
+    cells; one that gained it gets them."""
+    import pandas as pd
+
+    tool = _load_tool("update_notebooks_s11", monkeypatch)
+    code = tool.code
+    cells = [code('share("ITA", "GF01_7")'), code('fan("ITA", "GF01_7", "ets")'),
+             code('levels("ITA", "GF02")'), code('share("ITA", "GF02")'),
+             code('levels("ITA", "GF03")')]
+    monkeypatch.setattr(tool, "FC", pd.DataFrame({"iso3": ["ITA"], "line_code": ["GF02"]}))
+    tool._sync_fans(cells, "ITA", ["GF01_7", "GF02"])
+    srcs = [tool.src(c) for c in cells]
+    assert not any(s.startswith('fan("ITA", "GF01_7"') for s in srcs)
+    i = srcs.index('share("ITA", "GF02")')
+    assert srcs[i + 1:i + 6] == [f'fan("ITA", "GF02", "{m}")'
+                                 for m in ("auto.arima", "ets", "prophet", "uc", "combination")]
+    assert srcs[-1] == 'levels("ITA", "GF03")'

@@ -22,7 +22,8 @@ def test_eu3_debt_routing():
         assert iso3 in cfg
         assert C.builder(iso3, "aggregates", "class_aggregates") is not None
         assert C.builder(iso3, "official_totals", "official_totals") is not None
-        assert C.builder(iso3, "register", "build") is None     # DD8 path until ED3
+        # ED3: BEL has the Debt Agency snapshot register; ITA/ESP stay on DD8
+        assert (C.builder(iso3, "register", "build") is None) == (iso3 != "BEL")
         assert cfg[iso3]["v31_official"]["kind"] == "eurostat_gd_f3"
     assert "USA" not in cfg     # UD0 has not run
 

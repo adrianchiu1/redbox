@@ -52,6 +52,7 @@ countries:
     subsector_source: EUROSTAT_GOV10A_MAIN_S1311
     v31_official: {kind: eurostat_gd_f3}
   BEL:
+    register: register_bel                          # Stage ED3 (D-S17-016): BDA snapshot register
     aggregates: "aggregates_eu3:bel_class_aggregates"
     official_totals: "intermediates:official_totals_bel"
     subsector_source: EUROSTAT_GOV10A_MAIN_S1311

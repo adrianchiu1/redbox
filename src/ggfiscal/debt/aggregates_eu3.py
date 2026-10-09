@@ -193,6 +193,34 @@ def esp_bde_rows(run_id: str) -> list[dict]:
     return rows
 
 
+# ---------------------------------------------------------------- ESP (Tesoro)
+
+def esp_tesoro_rows(run_id: str) -> list[dict]:
+    """The Tesoro's own year-end outstanding by instrument and tenor (Deuda
+    del Estado en circulación, D-S17-017): the annual rows and every
+    December of the monthly block."""
+    from ggfiscal.debt.readers import tesoro as T
+
+    try:
+        o = T.outstanding()
+    except FileNotFoundError:
+        return []
+    dec = o[(o.index.month == 12) & (o.index.day == 31)]
+    sha256 = sha(T.SOURCE, T.PART)
+    spec = {c: (k, r) for c, k, r in T.COLUMNS}
+    rows: list[dict] = []
+    for ts, values in dec.iterrows():
+        for sub, value in values.dropna().items():
+            klass, in_reg = spec[sub]
+            rows.append(row(run_id, "ESP", ts.year, klass, f"tesoro_{sub}", "stock_year_end", value,
+                            T.SOURCE, basis="nominal_uplifted" if "indexados" in sub else "nominal",
+                            in_register=in_reg, sha256=sha256, grade="A",
+                            notes='Tesoro "Deuda del Estado en circulación" at 31 December '
+                                  "(the Estado, S13111; index-linked uplifted by the "
+                                  "indexation coefficient)"))
+    return rows
+
+
 # ---------------------------------------------------------------- entry points
 
 def ita_class_aggregates(run_id: str) -> pd.DataFrame:
@@ -200,7 +228,8 @@ def ita_class_aggregates(run_id: str) -> pd.DataFrame:
 
 
 def esp_class_aggregates(run_id: str) -> pd.DataFrame:
-    return pd.DataFrame(esp_bde_rows(run_id) + eurostat_rows("ESP", run_id), columns=COLUMNS)
+    return pd.DataFrame(esp_tesoro_rows(run_id) + esp_bde_rows(run_id) + eurostat_rows("ESP", run_id),
+                        columns=COLUMNS)
 
 
 def bel_class_aggregates(run_id: str) -> pd.DataFrame:

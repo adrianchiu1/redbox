@@ -22,7 +22,7 @@ def test_every_country_is_declared_with_its_engine_modules():
     assert list(cfg) == ["DEU", "GBR", "FRA", "ITA", "ESP", "BEL"]
     for iso3, c in cfg.items():
         # ITA/ESP/BEL are on the DD8 aggregate path until Stage ED3: no register
-        roles = ("aggregates", "official_totals") if iso3 in ("ITA", "ESP", "BEL") \
+        roles = ("aggregates", "official_totals") if iso3 in ("ITA", "ESP") \
             else ("register", "aggregates", "official_totals")
         for role in roles:
             assert c.get(role), (iso3, role)
@@ -41,7 +41,8 @@ def test_module_specs_resolve_to_the_existing_builders():
     from ggfiscal.debt import aggregates_fra, aggregates_gbr, register_deu, register_fra, register_gbr
     assert DC.builder("GBR", "aggregates", "class_aggregates") is aggregates_gbr.class_aggregates
     assert DC.builder("FRA", "aggregates", "class_aggregates") is aggregates_fra.class_aggregates
-    assert register.country_modules() == {"DEU": "register_deu", "GBR": "register_gbr", "FRA": "register_fra"}
+    assert register.country_modules() == {"DEU": "register_deu", "GBR": "register_gbr", "FRA": "register_fra",
+                                          "BEL": "register_bel"}   # ED3 (D-S17-016)
     for iso3, mod in ((("DEU", register_deu)), ("GBR", register_gbr), ("FRA", register_fra)):
         assert DC.builder(iso3, "register", "build") is mod.build
     with pytest.raises(ImportError, match="cannot be imported"):

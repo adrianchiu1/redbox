@@ -234,8 +234,8 @@ def write(path: Path | None = None) -> Path:
         f"report` at {now}, run {run_id}. Do not hand-edit — edits are "
         "overwritten on the next report run. -->",
         "",
-        "Reproducible pipeline producing, for the United Kingdom (GBR), "
-        "France (FRA) and Germany (DEU): consolidated general-government "
+        f"Reproducible pipeline producing, for {config.packaged_countries_prose(with_codes=True)}: "
+        "consolidated general-government "
         "**expenditure by COFOG function** (17 lines per country: ten Level I "
         "functions plus the Level II splits for interest (GF01_7), old-age "
         "pensions (GF10_2), unemployment (GF10_5) and transport (GF04_5) "
