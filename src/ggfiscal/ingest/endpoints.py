@@ -185,6 +185,10 @@ PESA_2026_CH1_URL = ("https://assets.publishing.service.gov.uk/media/"
                      "6a57728b822fbe6b8245c9a1/PESA_2026_CP_Chapter_1_tables.xlsx")
 
 
+# Belgium's Federal Planning Bureau medium-term outlook (D-S17-020)
+FPB_OUTLOOK_2026_06_URL = "https://www.plan.be/sites/default/files/documents/DATA_FOR_MLT_FR.xlsx"
+
+
 def all_stage3_pulls() -> list[Pull]:
     """Stage 3 forecast-source pulls (machine-readable, reachable hosts only)."""
     return [
@@ -195,6 +199,8 @@ def all_stage3_pulls() -> list[Pull]:
         Pull("EC_DSM", "country_fiches_2025", DSM_2025_FICHES_URL,
              headers=BROWSER_HEADERS),
         Pull("DEU_STEUERSCHAETZUNG", "2026_05", STEUERSCHAETZUNG_2026_05_URL,
+             headers=BROWSER_HEADERS),
+        Pull("BEL_FPB_OUTLOOK", "mlt_2026_06", FPB_OUTLOOK_2026_06_URL,
              headers=BROWSER_HEADERS),
         Pull("HMT_PESA", "chapter-1", PESA_2026_CH1_URL,
              headers=BROWSER_HEADERS),

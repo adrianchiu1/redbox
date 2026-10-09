@@ -257,6 +257,23 @@ def _stsch(labels: list[tuple[str, str]], note_extra: str = "") -> FcSource:
         observation_type="composite_forecast" if len(labels) > 1 else "direct_forecast")
 
 
+FPB_XWALK = "BEL_FPB_to_ESA_REV:1.0"
+FPB_NOTE = ("Federal Planning Bureau, Perspectives économiques 2026-2031 (June "
+            "2026), general-government account (T17), national accounts basis, "
+            "accrued, EUR mn; growth only (§7.11)")
+
+
+def _fpb(label: str, note_extra: str) -> FcSource:
+    """BEL national medium-term forecast leg (D-S17-020), the Belgian
+    analogue of the Steuerschätzung leg."""
+    return FcSource(
+        source_id="BEL_FPB_OUTLOOK", series=R.fpb_series("T17", label), kind="level",
+        horizon_year=2031, last_actual_year=2025,
+        concept_note=f"{FPB_NOTE}; row '{label}'; {note_extra}",
+        crosswalk_version=FPB_XWALK, gdp_levels=R.fpb_gdp(),
+        gdp_source_id="BEL_FPB_OUTLOOK", observation_type="direct_forecast")
+
+
 _SOLI_R03 = [("Tab 8.2", "- Lohnsteuer"), ("Tab 8.2", "- veranl. Einkommensteuer"),
              ("Tab 8.2", "- AbgSt. a. Zins- u. Veräuß.-ertr."),
              ("Tab 8.2", "- nicht veranl. Steuern v. Ertrag")]
@@ -402,6 +419,13 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
         out[("ESA_EXP", code)] = [src]
     if _registered(iso3, "EC_DSM"):
         out[("ESA_EXP", "E05")].append(_dsm_interest(iso3))
+    if _registered(iso3, "BEL_FPB_OUTLOOK"):
+        r03 = _fpb("- Ménages", "direct taxes paid by households -> D.51 households (R03)")
+        r03.residual_method = config.residual_method(iso3, "R03")
+        r04 = _fpb("- Sociétés", "direct taxes paid by corporations -> D.51 corporations (R04)")
+        r04.residual_method = config.residual_method(iso3, "R04")
+        out[("ESA_REV", "R03")] = [r03]
+        out[("ESA_REV", "R04")] = [r04]
     if iso3 == "DEU":
         out[("ESA_REV", "R01")] = [_stsch(
             [("Tab 2", "Steuern vom Umsatz")],

@@ -3042,3 +3042,31 @@ Italy: the MEF publishes recent auction results as one PDF per auction and
 no per-ISIN outstanding file (archive spreadsheets stop in 2000–2007); per
 the OQ-5 rule a PDF-only source is not machine-readable, so no Italian
 register is built.
+
+## D-S17-020 — Belgium's R03/R04 from the Federal Planning Bureau's medium-term outlook
+
+The Bureau's "Perspectives économiques 2026-2031" (June 2026) statistical
+annex (`BEL_FPB_OUTLOOK`, `www.plan.be`) carries the general-government
+account T17 to 2031 on the national-accounts basis, with direct taxes
+split households / corporations / other. GDP agrees with Eurostat (2025:
+642,012 vs 642,015 EUR mn). `forward._fpb` builds level legs, growth only,
+taken by registration (`_registered(iso3, "BEL_FPB_OUTLOOK")`), crosswalk
+`crosswalks/BEL_FPB_to_ESA_REV.csv`. Measured at the 2025 boundary: R03
+1.026 and R04 1.021 of the anchor — grade B, so both run strict and
+maximum to 2031 (they had ended at the last actual). The other T17 rows
+(indirect taxes in total, contributions in total, interest, spending
+categories) are aggregates that do not map one-to-one onto the remaining
+declared lines; they are a candidate for chaining after AMECO on E-lines
+and GF01_7 (V16 decides), not used here. The Belgian, Italian and Spanish
+declarations no longer call the national forecasters egress-denied
+(D-S17-012): they say what was found.
+
+## D-S17-021 — Correction to D-S17-018: the ETS seed goes through `rng`
+
+`ETSResults.get_prediction` passes extra keywords to `simulate`, whose
+generator argument is `rng`, not `random_state`; the first version raised
+inside the ETS fit for every specification, and the ensemble silently ran
+without ETS for 812 of 1,456 series rows. Now
+`rng=np.random.default_rng(SEED)`: every method runs and two runs give
+identical intervals (checked on additive and multiplicative
+specifications).

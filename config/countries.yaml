@@ -114,21 +114,21 @@ countries:
     stage_reached: 6                  # EU3_KICKOFF.md: fiscal stages E0-E6 built in one pass (D-S17-008)
     forecast_declarations:            # DE5: lines without a strict forecast because of the country's own sources
       R01: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of VAT (D.211): the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
+        note: "no machine-readable official forecast of VAT (D.211): the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables are PDF, and the Ufficio parlamentare di bilancio (www.upbilancio.it) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
       R02: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of taxes on production other than VAT: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO UTVG is total D.2 only"}
+        note: "no machine-readable official forecast of taxes on production other than VAT: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables are PDF, and the Ufficio parlamentare di bilancio (www.upbilancio.it) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO UTVG is total D.2 only"}
       R02_A: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of excise duties (D.214A): the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied)"}
+        note: "no machine-readable official forecast of excise duties (D.214A): the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables are PDF, and the Ufficio parlamentare di bilancio (www.upbilancio.it) publishes no machine-readable fiscal projection (checked 2026-10-09)"}
       R03: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of household income taxes: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
+        note: "no machine-readable official forecast of household income taxes: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables are PDF, and the Ufficio parlamentare di bilancio (www.upbilancio.it) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
       R04: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of corporate income taxes: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); AMECO UTYG is total D.5 only"}
+        note: "no machine-readable official forecast of corporate income taxes: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables are PDF, and the Ufficio parlamentare di bilancio (www.upbilancio.it) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO UTYG is total D.5 only"}
       R06_E: {classification: ESA_REV, status: no_official_forecast,
         note: "no official forecast of employers' contributions separately: AMECO carries actual contributions in total (UTAG) and imputed (UTIG) but no employer/household split; strict and maximum end at the last actual (the FRA/DEU finding, D-S13-005)"}
       R06_H: {classification: ESA_REV, status: no_official_forecast,
         note: "as R06_E: no employer/household split in any reachable official forecast (D-S13-005)"}
       GF02: {classification: COFOG, status: no_machine_readable_source,
-        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables (PDF) and the Ufficio parlamentare di bilancio (www.upbinfo.it, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
+        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the MEF's Documento di finanza pubblica / Documento programmatico di bilancio tables are PDF, and the Ufficio parlamentare di bilancio (www.upbilancio.it) publishes no machine-readable fiscal projection (checked 2026-10-09); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
       GF07: {classification: COFOG, status: grade_below_strict,
         note: "AR 2024 health care baseline measures 87.9% of COFOG 07 at 2024 (grade C: the AWG health care perimeter vs the COFOG function) — no strict forecast; applied in maximum_extension to 2070 per §7.8"}
       GF10: {classification: COFOG, status: grade_below_strict,
@@ -161,21 +161,21 @@ countries:
     stage_reached: 6                  # EU3_KICKOFF.md: fiscal stages E0-E6 built in one pass (D-S17-008)
     forecast_declarations:            # DE5: lines without a strict forecast because of the country's own sources
       R01: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of VAT (D.211): the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
+        note: "no machine-readable official forecast of VAT (D.211): the Plan presupuestario / Informe de progreso anual is PDF, and AIReF (www.airef.es) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
       R02: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of taxes on production other than VAT: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO UTVG is total D.2 only"}
+        note: "no machine-readable official forecast of taxes on production other than VAT: the Plan presupuestario / Informe de progreso anual is PDF, and AIReF (www.airef.es) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO UTVG is total D.2 only"}
       R02_A: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of excise duties (D.214A): the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied)"}
+        note: "no machine-readable official forecast of excise duties (D.214A): the Plan presupuestario / Informe de progreso anual is PDF, and AIReF (www.airef.es) publishes no machine-readable fiscal projection (checked 2026-10-09)"}
       R03: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of household income taxes: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
+        note: "no machine-readable official forecast of household income taxes: the Plan presupuestario / Informe de progreso anual is PDF, and AIReF (www.airef.es) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
       R04: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of corporate income taxes: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); AMECO UTYG is total D.5 only"}
+        note: "no machine-readable official forecast of corporate income taxes: the Plan presupuestario / Informe de progreso anual is PDF, and AIReF (www.airef.es) publishes no machine-readable fiscal projection (checked 2026-10-09); AMECO UTYG is total D.5 only"}
       R06_E: {classification: ESA_REV, status: no_official_forecast,
         note: "no official forecast of employers' contributions separately: AMECO carries actual contributions in total (UTAG) and imputed (UTIG) but no employer/household split; strict and maximum end at the last actual (the FRA/DEU finding, D-S13-005)"}
       R06_H: {classification: ESA_REV, status: no_official_forecast,
         note: "as R06_E: no employer/household split in any reachable official forecast (D-S13-005)"}
       GF02: {classification: COFOG, status: no_machine_readable_source,
-        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the Plan presupuestario / Informe de progreso anual (PDF) and AIReF (www.airef.es, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
+        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the Plan presupuestario / Informe de progreso anual is PDF, and AIReF (www.airef.es) publishes no machine-readable fiscal projection (checked 2026-10-09); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
       GF10: {classification: COFOG, status: grade_below_strict,
         note: "AR 2024 pensions+LTC composite measured at 77.7% of GF10 at 2024 (grade C: no official projection of family/housing/unemployment components) — no strict forecast; maximum_extension chains the AMECO D.62 proxy (to 2027) into the AR composite (to 2070) per D12, the join committee-approved at a V16 divergence of -0.0214 (D-S17-013)"}
       R05: {classification: ESA_REV, status: grade_below_strict,
@@ -210,21 +210,17 @@ countries:
     stage_reached: 6                  # EU3_KICKOFF.md: fiscal stages E0-E6 built in one pass (D-S17-008)
     forecast_declarations:            # DE5: lines without a strict forecast because of the country's own sources
       R01: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of VAT (D.211): the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
+        note: "no machine-readable official forecast of VAT (D.211): the Federal Planning Bureau outlook (www.plan.be, BEL_FPB_OUTLOOK) carries this item only inside a wider aggregate (indirect taxes, social contributions or government consumption), and the Plan budgétaire et structurel is PDF (checked 2026-10-09); AMECO publishes total D.2 only (UTVG); strict and maximum end at the last actual (EU3_KICKOFF.md DE5)"}
       R02: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of taxes on production other than VAT: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO UTVG is total D.2 only"}
+        note: "no machine-readable official forecast of taxes on production other than VAT: the Federal Planning Bureau outlook (www.plan.be, BEL_FPB_OUTLOOK) carries this item only inside a wider aggregate (indirect taxes, social contributions or government consumption), and the Plan budgétaire et structurel is PDF (checked 2026-10-09); AMECO UTVG is total D.2 only"}
       R02_A: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of excise duties (D.214A): the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied)"}
-      R03: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of household income taxes: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO UTYG is total current taxes on income and wealth (D.5) only, no payer split"}
-      R04: {classification: ESA_REV, status: no_machine_readable_source,
-        note: "no machine-readable official forecast of corporate income taxes: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); AMECO UTYG is total D.5 only"}
+        note: "no machine-readable official forecast of excise duties (D.214A): the Federal Planning Bureau outlook (www.plan.be, BEL_FPB_OUTLOOK) carries this item only inside a wider aggregate (indirect taxes, social contributions or government consumption), and the Plan budgétaire et structurel is PDF (checked 2026-10-09)"}
       R06_E: {classification: ESA_REV, status: no_official_forecast,
         note: "no official forecast of employers' contributions separately: AMECO carries actual contributions in total (UTAG) and imputed (UTIG) but no employer/household split; strict and maximum end at the last actual (the FRA/DEU finding, D-S13-005)"}
       R06_H: {classification: ESA_REV, status: no_official_forecast,
         note: "as R06_E: no employer/household split in any reachable official forecast (D-S13-005)"}
       GF02: {classification: COFOG, status: no_machine_readable_source,
-        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the stability programme / Plan budgétaire et structurel (PDF) and the Federal Planning Bureau (www.planbureau.be, egress-denied); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
+        note: "no machine-readable official projection of defence spending on the COFOG 02 concept: the Federal Planning Bureau outlook (www.plan.be, BEL_FPB_OUTLOOK) carries this item only inside a wider aggregate (indirect taxes, social contributions or government consumption), and the Plan budgétaire et structurel is PDF (checked 2026-10-09); NATO estimates are a different concept (incl. pensions, excl. some civil items)"}
       GF07: {classification: COFOG, status: grade_below_strict,
         note: "AR 2024 health care baseline measures 77.1% of COFOG 07 at 2024 (grade C: the AWG health care perimeter vs the COFOG function) — no strict forecast; applied in maximum_extension to 2070 per §7.8"}
       GF09: {classification: COFOG, status: grade_below_strict,

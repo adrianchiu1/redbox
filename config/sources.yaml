@@ -728,6 +728,24 @@ sources:
     verification: {status: not_machine_readable, checked: 2026-08-31,
                    note: annex PDFs only (§11.4 blocked, OQ-6)}
 
+  BEL_FPB_OUTLOOK:
+    institution: Federal Planning Bureau (Bureau fédéral du Plan)
+    object: "Perspectives économiques 2026-2031 (June 2026), statistical annex: general-government account (T17) and GDP at current prices (T03), EUR mn, 1996-2031"
+    countries: [BEL]
+    lines: [R03, R04]
+    horizon_year: 2031
+    last_actual_year: 2025
+    concept_note: "national accounts (ICN/INR) basis, general government, accrued; direct taxes split households / corporations / other as the anchor's D.51 payer split; growth only (§7.11)"
+    api:
+      kind: xlsx_download
+      landing: https://www.plan.be/en/data/economic-outlook-2026-2031-june-2026-statistical
+      file: https://www.plan.be/sites/default/files/documents/DATA_FOR_MLT_FR.xlsx
+    verification:
+      status: confirmed_live
+      checked: 2026-10-09
+      last_update_observed: "2026-06"
+      note: "www.plan.be (the scoping's www.planbureau.be was the wrong host, D-S17-012); GDP 2025 642,012 vs Eurostat 642,015; next edition (2027-2032) supersedes — V11 watch"
+
   DEU_STEUERSCHAETZUNG:
     institution: Arbeitskreis Steuerschätzungen (BMF)
     object: 170th session (May 2026) results, revenue by tax, all levels, to 2030

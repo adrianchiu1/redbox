@@ -116,7 +116,8 @@ def _ets(y: pd.Series, h: int):
     # intervals are simulated for some specifications: fixed seed so a rerun
     # reproduces them (D-S17-018)
     frame = fit.get_prediction(start=len(values), end=len(values) + h - 1,
-                               random_state=SEED).summary_frame(alpha=0.05)
+                               rng=np.random.default_rng(SEED)
+                               ).summary_frame(alpha=0.05)
     se = (frame["pi_upper"] - frame["pi_lower"]).to_numpy() / (2 * Z95)
     return frame["mean"].to_numpy(), se, label
 

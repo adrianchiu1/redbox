@@ -507,6 +507,39 @@ def steuerschaetzung_series(sheet: str, label: str) -> pd.Series:
     return _steuerschaetzung_tab(sheet).get(label, pd.Series(dtype=float))
 
 
+@lru_cache(maxsize=None)
+def _fpb_table(sheet: str) -> dict[str, pd.Series]:
+    """One table of the Federal Planning Bureau outlook annex: row label
+    (stripped) -> annual series, EUR mn; the year header is row 2. A label
+    met twice in a table raises (the lookup must be unambiguous)."""
+    path = _snap_path("BEL_FPB_OUTLOOK", "mlt_2026_06")
+    if path is None:
+        return {}
+    df = pd.read_excel(path, sheet_name=sheet, header=None)
+    years = pd.to_numeric(df.iloc[2, 1:], errors="coerce")
+    out: dict[str, pd.Series] = {}
+    for _, r in df.iloc[3:].iterrows():
+        label = str(r.iloc[0]).strip()
+        if not label or label == "nan":
+            continue
+        if label in out:
+            raise KeyError(f"FPB {sheet}: row label {label!r} is not unique")
+        s = pd.Series(pd.to_numeric(r.iloc[1:], errors="coerce").values, index=years.values)
+        s = s[s.index.notna()].dropna()
+        s.index = s.index.astype(int)
+        out[label] = s
+    return out
+
+
+def fpb_series(sheet: str, label: str) -> pd.Series:
+    return _fpb_table(sheet).get(label, pd.Series(dtype=float))
+
+
+def fpb_gdp() -> pd.Series:
+    """T03 'Produit intérieur brut' at current prices, EUR mn."""
+    return fpb_series("T03", "Produit intérieur brut")
+
+
 def steuerschaetzung_gdp() -> pd.Series:
     """Tab 1 'BIP, nominal (Mrd. €)' -> EUR millions."""
     return steuerschaetzung_series("Tab 1", "BIP, nominal (Mrd. €)") * 1000.0

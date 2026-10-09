@@ -83,3 +83,16 @@ def test_forecast_declarations_validated(monkeypatch):
     monkeypatch.setattr(config, "countries", lambda: bad)
     with pytest.raises(ValueError, match="lacks"):
         config.forecast_declarations("ITA")
+
+
+def test_belgian_planning_bureau_leg_by_registration():
+    """D-S17-020: BEL R03/R04 from the Federal Planning Bureau outlook, by
+    source registration (no other country takes it)."""
+    from ggfiscal.forecast import forward
+
+    assert E.registered_countries("BEL_FPB_OUTLOOK") == ["BEL"]
+    assert forward._registered("BEL", "BEL_FPB_OUTLOOK")
+    assert not forward._registered("ITA", "BEL_FPB_OUTLOOK")
+    assert {"R03", "R04"}.isdisjoint(config.forecast_declarations("BEL"))
+    src = inspect.getsource(forward.forecasts_for)
+    assert '_registered(iso3, "BEL_FPB_OUTLOOK")' in src
