@@ -161,7 +161,7 @@ def test_u0_endpoints_and_pulls():
     assert {p.part for p in stage0 if p.source_id == "OECD_T11"} == set(config.COUNTRIES)
     assert {p.part for p in stage0 if p.source_id == "OECD_RS"} == set(config.COUNTRIES)
     assert ("IMF_WEO_2026_04", "USA_GGXCNL") in {(p.source_id, p.part) for p in stage0}
-    assert len(stage0) + len(E.all_stage3_pulls()) + len(pulls) == 187   # 118 + 69 for ITA/ESP/BEL (E0)
+    assert len(stage0) + len(E.all_stage3_pulls()) + len(pulls) == 188   # 118 + 69 ITA/ESP/BEL (E0) + 1 BEL_FPB_OUTLOOK
 
 
 def test_u0_register_entries():
