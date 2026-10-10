@@ -1,6 +1,6 @@
 # gg-fiscal
 
-<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-10-09 13:58 UTC, run 20261009T135556Z. Do not hand-edit — edits are overwritten on the next report run. -->
+<!-- GENERATED FILE (§11.6 deliverable 10): written by `ggfiscal report` at 2026-10-10 13:42 UTC, run 20261010T133920Z. Do not hand-edit — edits are overwritten on the next report run. -->
 
 Reproducible pipeline producing, for the United Kingdom (GBR), France (FRA), Germany (DEU), Italy (ITA), Spain (ESP) and Belgium (BEL) (and, at an earlier build stage, the United States (USA)): consolidated general-government **expenditure by COFOG function** (17 lines per country: ten Level I functions plus the Level II splits for interest (GF01_7), old-age pensions (GF10_2), unemployment (GF10_5) and transport (GF04_5) with their remainders), **expenditure by ESA economic type** (9 lines per country: compensation, intermediate consumption, social benefits in cash, social transfers in kind, interest, subsidies, other current, capital formation, capital transfers), **revenue by ESA type** (15 lines per country: ten ESA types plus the excise-duty split of R02 and the employers'/households' split of social contributions, with remainders), the **balance ledger** (TR, TE, NLB, NI, PB), and a **reconciliation of history and forecast dynamics to the IMF WEO** general-government aggregates — 123 line series plus three ledgers, each extended backwards and forwards as far as compatible official sources permit (§1).
 
@@ -99,10 +99,10 @@ The same numbers as above, rendered flat by `ggfiscal flatten` — no value is r
 |---|---|---|
 | `deliverables/expenditure_cofog.csv` | 9803 | COFOG expenditure: 14 lines + TE per country, both variants, one row per country-variant-line-year |
 | `deliverables/expenditure_esa.csv` | 5568 | expenditure by ESA economic type: 9 lines + TE_ESA per country, both variants, same shape — a second cut of total expenditure, never to be added to the COFOG lines |
-| `deliverables/revenue_esa.csv` | 10213 | ESA revenue: 10 lines + TR per country, both variants, same shape |
+| `deliverables/revenue_esa.csv` | 10237 | ESA revenue: 10 lines + TR per country, both variants, same shape |
 | `deliverables/balance_ledger.csv` | 492 | TR, TE, NLB, NI, PB per country-year in levels and % of GDP |
 | `deliverables/weo_levels_bridge.csv` | 854 | our levels beside the IMF WEO aggregates, with the gap classified (§8.2) and the forward net-interest cross-check (§8.4) |
-| `deliverables/weo_reconciliation.csv` | 14149 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
+| `deliverables/weo_reconciliation.csv` | 14213 | dynamics: the year-on-year history decomposition and the forecast decomposition of the WEO balance change, with residuals |
 | `deliverables/series_catalogue.csv` | 308 | one row per published series: span, grades, sources, the recipe that built it, and why it ends |
 | `deliverables/data_dictionary.csv` | 820 | every column of every file above, described |
 | `deliverables/fy_cy_bridge.csv` | 0 | the FY/CY bridge on total expenditure for every fiscal-year-labelled tree (D19): TE on both bases, the gap, its timing component and the residual — header only while every tree is calendar-year |
