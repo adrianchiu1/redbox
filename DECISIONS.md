@@ -3124,3 +3124,16 @@ combinations the rule changes (13 rows) and what derives from them —
 every other value reproduces exactly (seeded intervals). pytest: 486 passed
 + the updated combination test = 487 passed, 6 skipped, 0 failed; the
 forecast books' method table describes the admission rule.
+
+## D-S17-025 — Amendment to D-S17-024: no two-member floor; forward fill when no member qualifies
+
+Committee 2026-10-10: every member with a calibration ratio above 5 is
+skipped from the combination, however many that leaves. If none qualifies,
+the combination forward-fills the line's last observed % of GDP; its
+standard error at horizon k is the standard deviation of the history's own
+k-year changes (the yardstick the ratio already uses), so a line with no
+admissible model is not presented as certain. The label reads "forward
+fill of the last observation; no admissible member (excluded …)".
+On the 2026-10 vintage no series reaches the fallback and the floor never
+bound (each of the four affected series keeps three members), so the
+published values are unchanged by this amendment.

@@ -423,13 +423,13 @@ def test_statistical_forecast_intervals_are_ordered_and_finite():
 
 
 def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
-    """Point = mean of the admitted members (all four unless the calibration
-    rule excludes one, D-S17-024). Variance = their average within-model
+    """Point = mean of the admitted members (every member whose calibration
+    ratio is at most 5, D-S17-024/025; none admitted -> forward fill). Variance = their average within-model
     variance plus the variance across their point forecasts, so agreement is
     never mistaken for information."""
     import re
 
-    from ggfiscal.forecast.statistical import MAX_CALIBRATION_RATIO, MIN_MEMBERS
+    from ggfiscal.forecast.statistical import MAX_CALIBRATION_RATIO
 
     fc = read("statistical_forecasts.csv")
     key = ["iso3", "line_code", "year"]
@@ -438,12 +438,22 @@ def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
     assert len(parts) == 4 * len(comb)             # every member stays published
 
     # the label names each excluded member with its ratio, above the threshold
-    excluded = {}
+    excluded, filled = {}, set()
     for (iso3, line), label in comb.groupby(["iso3", "line_code"]).model.first().items():
         hits = re.findall(r"(\w[\w.]*) \(calibration ratio ([\d.]+)\)", label)
         assert all(float(r) > MAX_CALIBRATION_RATIO for _, r in hits), label
-        assert int(re.match(r"mean of (\d+)", label).group(1)) == 4 - len(hits) >= MIN_MEMBERS
         excluded[(iso3, line)] = {m for m, _ in hits}
+        if label.startswith("forward fill"):             # no admissible member
+            assert len(hits) == 4, label
+            filled.add((iso3, line))
+        else:
+            assert int(re.match(r"mean of (\d+)", label).group(1)) == 4 - len(hits), label
+    # forward-filled lines: flat at the last observation (checked in the
+    # unit tests); the mean/variance identities below hold for the rest
+    keep = [(i, l) not in filled for i, l in zip(comb.index.get_level_values(0),
+                                                comb.index.get_level_values(1))]
+    comb = comb[keep]
+    parts = parts[[(i, l) not in filled for i, l in zip(parts.iso3, parts.line_code)]]
     admitted = parts[[m not in excluded[(i, l)] for i, l, m
                       in zip(parts.iso3, parts.line_code, parts.method)]]
     assert any(excluded.values())                  # the rule bites on this run
