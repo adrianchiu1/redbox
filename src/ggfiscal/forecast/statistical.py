@@ -19,6 +19,10 @@ plus a fifth, `combination`: the mean of the four point forecasts, with a
 standard error that carries BOTH the average within-model variance and the
 variance across the four point forecasts, so it widens honestly when the methods
 disagree rather than pretending their agreement is information.
+A member is kept out of the combination (but still published) when its
+standard error at the horizon exceeds five times the standard deviation of
+the series' own changes over the same number of years — a model claiming far
+more uncertainty than the series has ever shown is misspecified (D-S17-024).
 
 Two deliberate choices, both committee-approved:
 
@@ -190,10 +194,34 @@ def _strict_tree() -> pd.DataFrame:
     return tree[~tree.line_code.isin(TOTALS)]
 
 
+# Ensemble admission (D-S17-024, committee 2026-10-10). A member whose
+# standard error at the horizon is more than MAX_CALIBRATION_RATIO times the
+# standard deviation of the series' own h-year changes over the fit window
+# claims far more uncertainty than the series has ever shown — a sign of
+# misspecification (e.g. a multiplicative-error ETS extrapolating a one-off
+# collapse). Such a member stays published but leaves the combination,
+# worst first, never below MIN_MEMBERS. Measured on the 2026-10 run: median
+# ratio 0.97, 99.5th percentile 4.4.
+MAX_CALIBRATION_RATIO = 5.0
+MIN_MEMBERS = 2
+
+
+def calibration_ratio(y: pd.Series, se_h: float, h: int) -> float:
+    """se at horizon h / sd of the history's h-year changes (NaN where fewer
+    than three changes exist or they never vary)."""
+    v = np.asarray(y, float)
+    changes = v[h:] - v[:-h] if len(v) > h else np.array([])
+    if len(changes) < 3:
+        return float("nan")
+    sd = float(np.std(changes, ddof=1))
+    return float(se_h) / sd if sd > 0 else float("nan")
+
+
 def forecast_series(y: pd.Series, h: int) -> tuple[dict, list[str]]:
     """Run every method on one history. Returns {method: (point, se, label)}
     plus the combination, and a list of any failures (reported, not raised —
-    one awkward series must not take the run down)."""
+    one awkward series must not take the run down) and of any member the
+    calibration rule keeps out of the combination."""
     out, failures = {}, []
     for name, fn in METHODS.items():
         try:
@@ -201,13 +229,21 @@ def forecast_series(y: pd.Series, h: int) -> tuple[dict, list[str]]:
         except Exception as exc:                      # noqa: BLE001
             failures.append(f"{name}: {type(exc).__name__}: {exc}")
     if out:
-        points = np.vstack([v[0] for v in out.values()])
-        ses = np.vstack([v[1] for v in out.values()])
+        ratios = {m: calibration_ratio(y, v[1][-1], h) for m, v in out.items()}
+        over = sorted((m for m, r in ratios.items() if r > MAX_CALIBRATION_RATIO),
+                      key=lambda m: -ratios[m])
+        excluded = over[:max(0, len(out) - MIN_MEMBERS)]
+        members = [m for m in out if m not in excluded]
+        points = np.vstack([out[m][0] for m in members])
+        ses = np.vstack([out[m][1] for m in members])
         between = points.var(axis=0, ddof=1) if len(points) > 1 else 0.0
-        out["combination"] = (
-            points.mean(axis=0),
-            np.sqrt((ses ** 2).mean(axis=0) + between),
-            f"mean of {len(points)} + between-model variance")
+        label = f"mean of {len(points)} + between-model variance"
+        if excluded:
+            why = ", ".join(f"{m} (calibration ratio {ratios[m]:.1f})" for m in excluded)
+            label += f"; excluded {why} > {MAX_CALIBRATION_RATIO:g}"
+            failures.append(f"excluded from the combination: {why}")
+        out["combination"] = (points.mean(axis=0),
+                              np.sqrt((ses ** 2).mean(axis=0) + between), label)
     return out, failures
 
 

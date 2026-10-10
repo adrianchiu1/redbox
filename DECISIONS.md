@@ -3101,3 +3101,20 @@ GDP by 2031 (se 82) and an ARIMA member reaching −3.0%; the ensemble's
 between-model variance then gives Italy's benchmark balance a ±84 pp 95%
 interval in 2031. Inadmissible for a non-negative line; the remedy is a
 committee choice (OQ-20).
+
+## D-S17-024 — Ensemble admission by calibration ratio (closes OQ-20)
+
+Committee 2026-10-10: the problem is width, not sign — a forecast error far
+wider than the series has ever moved means the model is misspecified. For
+each member, the calibration ratio = standard error at the horizon h / the
+standard deviation of the series' own h-year changes over the fit window.
+Measured over the 900 member-series pairs of the 2026-10 run: median 0.97,
+95th percentile 1.99, 99th 3.41, 99.5th 4.41; ITA GF06 ETS(M,A,N) 75.9
+(next 7.3). Rule (`statistical.MAX_CALIBRATION_RATIO = 5`,
+`MIN_MEMBERS = 2`): a member above 5 stays in `statistical_forecasts.csv`
+but leaves the combination, worst first, never below two members; the
+combination's `model` label names it with its ratio. On that run four
+members qualify: ITA GF06 ets, GBR GF01_X uc, ITA R06_X uc, GBR R10 uc.
+Not addressed here (a separate question): ITA GF06's remaining members
+still read the 2021–23 Superbonus spike into the level (2.1% of GDP in 2031
+against 0.4% before 2020 and 0.8% in 2024).
