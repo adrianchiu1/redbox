@@ -3118,3 +3118,9 @@ members qualify: ITA GF06 ets, GBR GF01_X uc, ITA R06_X uc, GBR R10 uc.
 Not addressed here (a separate question): ITA GF06's remaining members
 still read the 2021–23 Superbonus spike into the level (2.1% of GDP in 2031
 against 0.4% before 2020 and 0.8% in 2024).
+Gate (2026-10-10): full regeneration on the committed code; the existing
+countries' outputs differ from the previous commit only in the two UK
+combinations the rule changes (13 rows) and what derives from them —
+every other value reproduces exactly (seeded intervals). pytest: 486 passed
++ the updated combination test = 487 passed, 6 skipped, 0 failed; the
+forecast books' method table describes the admission rule.

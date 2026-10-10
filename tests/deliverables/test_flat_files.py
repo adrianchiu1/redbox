@@ -423,20 +423,36 @@ def test_statistical_forecast_intervals_are_ordered_and_finite():
 
 
 def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
-    """Point = mean of the four. Variance = average within-model variance
-    plus the variance across their point forecasts, so agreement is never
-    mistaken for information."""
+    """Point = mean of the admitted members (all four unless the calibration
+    rule excludes one, D-S17-024). Variance = their average within-model
+    variance plus the variance across their point forecasts, so agreement is
+    never mistaken for information."""
+    import re
+
+    from ggfiscal.forecast.statistical import MAX_CALIBRATION_RATIO, MIN_MEMBERS
+
     fc = read("statistical_forecasts.csv")
     key = ["iso3", "line_code", "year"]
     parts = fc[fc.method != "combination"]
     comb = fc[fc.method == "combination"].set_index(key)
-    assert len(parts) == 4 * len(comb)
+    assert len(parts) == 4 * len(comb)             # every member stays published
 
-    means = parts.groupby(key).pct_gdp.mean()
+    # the label names each excluded member with its ratio, above the threshold
+    excluded = {}
+    for (iso3, line), label in comb.groupby(["iso3", "line_code"]).model.first().items():
+        hits = re.findall(r"(\w[\w.]*) \(calibration ratio ([\d.]+)\)", label)
+        assert all(float(r) > MAX_CALIBRATION_RATIO for _, r in hits), label
+        assert int(re.match(r"mean of (\d+)", label).group(1)) == 4 - len(hits) >= MIN_MEMBERS
+        excluded[(iso3, line)] = {m for m, _ in hits}
+    admitted = parts[[m not in excluded[(i, l)] for i, l, m
+                      in zip(parts.iso3, parts.line_code, parts.method)]]
+    assert any(excluded.values())                  # the rule bites on this run
+
+    means = admitted.groupby(key).pct_gdp.mean()
     assert (means - comb.pct_gdp).abs().max() < 1e-9
 
-    within = parts.assign(v=parts.se ** 2).groupby(key).v.mean().reindex(comb.index)
-    between = parts.groupby(key).pct_gdp.var(ddof=1).reindex(comb.index)
+    within = admitted.assign(v=admitted.se ** 2).groupby(key).v.mean().reindex(comb.index)
+    between = admitted.groupby(key).pct_gdp.var(ddof=1).reindex(comb.index)
     assert ((within + between) - comb.se ** 2).abs().max() < 1e-9
     assert (comb.se ** 2 >= within - 1e-12).all()
 
