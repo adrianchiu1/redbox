@@ -3137,3 +3137,4 @@ fill of the last observation; no admissible member (excluded …)".
 On the 2026-10 vintage no series reaches the fallback and the floor never
 bound (each of the four affected series keeps three members), so the
 published values are unchanged by this amendment.
+Gate (D-S17-025): full regeneration byte-identical for all seven countries against the previous commit; pytest 487 passed, 6 skipped, 0 failed.
