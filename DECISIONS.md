@@ -3080,3 +3080,24 @@ validate, flatten) on the committed code: `validate` ERROR=0;
 failed**. GBR/FRA/DEU/USA against the previous commit: unchanged except
 the seeded interval columns, the vintage-set hash and the two UK gilts of
 D-S17-019 (all intended).
+
+## D-S17-023 — The chartbook's balance charts cover every packaged country, at print resolution
+
+`balance_path`, `balance_contributions`, `weo_compare_path` and
+`weo_compare_split` had `COUNTRIES = ["GBR", "FRA", "DEU"]` and a 1×3 grid
+written into their cell, which the notebook tool never rewrites (it only
+inserts per-country blocks), so ITA/ESP/BEL were left out. They now take
+`COUNTRIES = [c for c in BOOK_ORDER if c in set(BAL.iso3)]` and lay out
+three panels a row (six countries: two rows; the side split: four).
+`BOOK_ORDER`, the book's section order from config, is written into the
+setup cell by `tools/update_notebooks_s11._set_book_order` — the flat files
+are sorted by iso3, so the order cannot come from them. `show(fig, dpi=)`
+renders these four charts at 220 dpi (2,420 px wide, displayed at 1,056 px)
+instead of 72; every other chart is unchanged. The §7.6 and §8 prose now
+names all five Eurostat countries.
+Found by the new charts, not changed here: Italy's GF06 (housing — the
+2021-23 Superbonus credits) has an ETS(M,A,N) member forecasting −24.9% of
+GDP by 2031 (se 82) and an ARIMA member reaching −3.0%; the ensemble's
+between-model variance then gives Italy's benchmark balance a ±84 pp 95%
+interval in 2031. Inadmissible for a non-negative line; the remedy is a
+committee choice (OQ-20).

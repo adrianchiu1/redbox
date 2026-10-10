@@ -127,10 +127,15 @@ def test_a_fourth_country_is_seeded_by_copy(monkeypatch, tmp_path):
     i_weo = stripped.index('weo_chart("JPN", "revenue")') - 1
     rest = stripped[:i_us] + stripped[end_us:i_weo] + stripped[i_weo + 4:]
     committed = [s.strip() for s in _sources(json.loads((NB / "chartbook.ipynb").read_text()))]
-    unnumber = lambda s: re.sub(r"^(---\n\n# |## )\d+(\.\d+)?", r"\1N", s)
+    # section numbers move, and the setup cell's BOOK_ORDER gains the new
+    # country (D-S17-023): both are normalised away
+    unnumber = lambda s: re.sub(r"^BOOK_ORDER = .*$", "BOOK_ORDER", re.sub(
+        r"^(---\n\n# |## )\d+(\.\d+)?", r"\1N", s), flags=re.M)
     assert [unnumber(s) for s in rest] == [unnumber(s) for s in committed]
     # no output survives the copy
-    assert all(not c.get("outputs") for c in cb["cells"] if '"JPN"' in "".join(c["source"]))
+    assert all(not c.get("outputs") for c in cb["cells"]
+               if '"JPN"' in "".join(c["source"])
+               and not "".join(c["source"]).startswith("import io"))   # setup: BOOK_ORDER
 
     # the forecast books: preamble and setup from the last booked country's, one section per line
     book = tool.forecast_book("JPN", "expenditure")
@@ -171,3 +176,18 @@ def test_fan_cells_follow_the_statistical_forecasts(monkeypatch):
     assert srcs[i + 1:i + 6] == [f'fan("ITA", "GF02", "{m}")'
                                  for m in ("auto.arima", "ets", "prophet", "uc", "combination")]
     assert srcs[-1] == 'levels("ITA", "GF03")'
+
+
+def test_book_order_follows_config_and_drives_the_balance_charts():
+    """D-S17-023: the setup cell states the section order; the multi-country
+    balance charts take every packaged country from it, not a literal."""
+    tool = _load_tool("update_notebooks_s11", monkeypatch=pytest.MonkeyPatch())
+    nb = json.loads((NB / "chartbook.ipynb").read_text())
+    srcs = ["".join(c["source"]) for c in nb["cells"]]
+    setup = next(s for s in srcs if s.startswith("import io"))
+    want = "BOOK_ORDER = (" + ", ".join(f'"{c}"' for c in tool.COUNTRIES) + ")"
+    assert want in setup
+    bal = next(s for s in srcs if "def balance_path" in s)
+    assert 'COUNTRIES = ["GBR", "FRA", "DEU"]' not in bal
+    assert "COUNTRIES = [c for c in BOOK_ORDER if c in set(BAL.iso3)]" in bal
+    assert bal.count("show(fig, dpi=HIRES)") == 2

@@ -177,9 +177,25 @@ def seed_chartbook_country(cells, iso3):
     cells[i + 1:i + 1] = sub
 
 
+def _set_book_order(cells):
+    """The setup cell states the book's country order (the section order,
+    from config) as BOOK_ORDER: the flat files are sorted by iso3, so the
+    multi-country charts take their panel order from here."""
+    setup = cells[index_of(cells, "import io")]
+    s = "".join(setup["source"])
+    line = ("BOOK_ORDER = (" + ", ".join(f'"{c}"' for c in COUNTRIES) + ")"
+            "   # section order, written by tools/update_notebooks_s11.py")
+    if re.search(r"^BOOK_ORDER = .*$", s, flags=re.M):
+        s = re.sub(r"^BOOK_ORDER = .*$", line, s, count=1, flags=re.M)
+    else:
+        s = s.rstrip("\n") + "\n\n" + line + "\n"
+    setup["source"] = s
+
+
 def chartbook():
     nb = load("chartbook.ipynb")
     cells = nb["cells"]
+    _set_book_order(cells)
     for iso3 in COUNTRIES:
         if not any(src(c) == f'panel("{iso3}", "expenditure")' for c in cells):
             seed_chartbook_country(cells, iso3)

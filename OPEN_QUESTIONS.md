@@ -451,3 +451,17 @@ differ from the Eurostat anchor by 1.7% and 1.5% of TE (V24 WARN); the
 NLB gap is within the band (2024: ours −3.21% of GDP, WEO −3.22%). Spain
 is configured `weo_perimeter_gap_expected: false` like FRA/DEU. Default:
 keep the rule and the WARN.
+
+## OQ-20 — Inadmissible ensemble members: Italy's housing line (NEW, needs the committee; from D-S17-023)
+Raised 2026-10-10. For ITA GF06 the ETS(M,A,N) member extrapolates the
+post-Superbonus collapse to −24.9% of GDP in 2031 (se 82) and the ARIMA
+member to −3.0%; the combination (mean of the four plus between-model
+variance) is −4.6% with se 43, which blows up Italy's benchmark-balance
+cone (95%: −84 to +88 pp in 2031). Elsewhere members dip below zero only
+trivially (GBR GF10_5 ≈ −0.07, FRA R07 ≈ −0.10 % of GDP). **Ask:** (a)
+drop a member whose path leaves the line's admissible range by more than a
+materiality threshold (e.g. below −0.5% of GDP on a line not flagged
+`may_be_negative`) — removes ETS and ARIMA for ITA GF06 only, no other
+series changes; (b) drop any member with a negative path on such a line —
+also touches GBR GF10_5 and FRA R07; (c) leave it and show the cone as is.
+Default pending: (c).
