@@ -3138,3 +3138,106 @@ On the 2026-10 vintage no series reaches the fallback and the floor never
 bound (each of the four affected series keeps three members), so the
 published values are unchanged by this amendment.
 Gate (D-S17-025): full regeneration byte-identical for all seven countries against the previous commit; pytest 487 passed, 6 skipped, 0 failed.
+
+## D-S18-001 — The AFT briefing's scenarios revised: five configurations, declared spread and fiscal paths, history from 2010 (amends D-S12-001)
+
+Committee 2026-10-11. The scenario section of `reports/briefing_FRA_AFT_2026-09/`
+is rebuilt on the latest fiscal announcements, assuming slippage against
+what each camp promises.
+
+**Scenarios.** Five, replacing D-S12-001's six (the "current path" and the
+"rupture" stress are dropped): Philippe majority, Philippe hung Assembly (the
+status quo and the new `REFERENCE` for `decompose_gap`), Le Pen majority,
+Le Pen hung, Mélenchon.
+
+| Scenario | 10y spread 2027 → 2029 on, bp | Primary balance 2028–2031, EUR bn a year | From 2032 | Real growth |
+|---|---|---|---|---|
+| Philippe, majority | 150 → 125 | +10 | +5 | 1.0% |
+| Philippe, hung | 175 → 150 | +2 | +5 | 0.5% |
+| Le Pen, majority | 190 → 125 | +25 | +5 | 0.0% |
+| Le Pen, hung | 175 → 125 | +15 | +5 | 0.5% |
+| Mélenchon | 250 → 300 | −10 | +5 | 0.0% |
+
+**Rules.**
+1. The spread is an annual average declared outright: the 2027 level, a
+   straight line to the 2029 level (2028 is the midpoint), flat to 2035. The
+   rest of 2026 is financed at 135 bp in every scenario (Bloomberg spot,
+   11 Oct 2026; the bundle's OECD monthly series ends at about 100 bp in
+   September 2026). The debt-ratio feedback is set to zero.
+2. The 10-year Bund is 3.50% flat through the horizon; the rest of the curve
+   moves with it by 10 bp (2y 3.00, 5y 3.25, 30y 3.85), the 3-month stays at
+   2.50%.
+3. The primary balance is common to 2027 (−2.7% of GDP in 2026, −2.5% in
+   2027: the 2027 budget is voted before the election). From 2028 it is the
+   previous year's balance in EUR bn plus the declared change, as an outturn:
+   growth acts on the ratios through nominal GDP only.
+4. Nominal GDP is common to 2027 (EC AMECO), then grows at the scenario's
+   real growth times a 2% deflator.
+5. The issuance mix (the AFT's 2025 tenors) and the bill stock (EUR 215bn)
+   are the same in every scenario; the Le Pen bill and tenor tilts of
+   D-S12-001 are removed.
+6. Every history line in the scenario charts starts in 2010. The debt chart's
+   history is Maastricht debt, S13, % of GDP, from Eurostat
+   `gov_10dd_edpt1`, hand-keyed under `data/manual/FRA_maastricht_debt_pct_gdp.csv`
+   (retrieved 11 Oct 2026; 2025 = 115.6, matching INSEE). The bundle has no
+   clean S13 series: `debt_class_aggregates` carries S13 securities but S1311
+   loans and deposits.
+
+**External facts added to the note** (ext): the RN counter-budget of 6 October
+2026 (EUR 140bn of net savings by 2032 against 2026, deficit below 3% in 2030,
+debt 121% → 112% of GDP 2027–2032; franceinfo, Public Sénat); Odoxa-Mascaret
+for Public Sénat, 20–21 May 2026 (Bardella 32, Philippe 17, Mélenchon 16);
+Midi Libre, 8 Oct 2026.
+
+**Results (2035).** Debt: Le Pen majority 130.0%, Philippe majority 130.9%,
+Le Pen hung 132.5%, status quo 143.5%, Mélenchon 166.1%; none stabilises.
+Interest: 4.8–4.9% of GDP in the first three, 5.6% in the status quo, 7.8%
+under Mélenchon.
+
+**Not regenerated.** The descriptive charts and `key_figures.csv` (sections
+1–4) and the executed `notebooks/briefing_FRA_AFT.ipynb` were left at the
+D-S12-001 run: re-rendering them against the current bundle (run
+20261010) moves numbers outside this change (e.g. 2029 term redemptions
+8.6% → 10.8% of the stock). `tools/make_briefing_notebook.py` is updated
+for the new scenario fields, so the next full regeneration is consistent.
+
+Gate (2026-10-11): `tests/debt/test_simulate.py` 13 passed (new: five
+scenarios and the reference, declared spread levels and Bund 3.5%, primary
+balance moves by the declared euros, ordering, status quo within a fifth of
+the EC DSM path). Full suite on a clean worktree identical before and after
+this change (68 failed, 29 errors, all pre-existing and unrelated; +3 passed).
+
+## D-S18-002 — The statistical benchmark restored to the AFT briefing as a sixth path (amends D-S18-001)
+
+Committee 2026-10-11, after D-S18-001 dropped D-S12-001's "current path".
+That path was not statistics-based: it was a declared 0.4 pp-of-GDP-a-year
+consolidation with the spread easing from 85 to 70 bp. The committee asked
+for the statistics-based forecast, which is the benchmark balance
+(`benchmark_balance.csv`, D-S11-002), so that is what returns.
+
+1. **Primary balance.** Benchmark NLB + benchmark `GF01_7` interest − 0.2% of
+   GDP interest receivable. The benchmark is anchored on 2024 and does not see
+   the 2025 outturn (NLB −5.7% against the actual −5.1%), so its level is not
+   used: only its year-on-year changes, 2028–2031 (+0.17, +0.18, +0.06,
+   +0.06 pp), applied in pp of GDP from the common 2027 starting point. After
+   2031, where the benchmark ends, the primary balance is held constant as a
+   share of GDP (`simulate.benchmark_pb_changes`, `Scenario.pb_change_pp`).
+2. **Spread and growth** as Philippe, hung Assembly (175 → 150 bp, 0.5% real).
+3. **Style.** Dotted grey on every scenario chart, drawn above the status quo
+   it shadows. The status quo (Philippe, hung) moves from black to solid
+   orange; the EC AMECO/DSM line in Figure 8, previously dotted grey, becomes a
+   brown dash-dot so the two cannot be confused.
+4. Philippe, hung stays the reference for `decompose_gap`.
+5. **Assumptions as tables.** Section 5 of the note now carries four tables:
+   the scenario assumptions (six rows), the assumptions common to every
+   scenario, the statistical benchmark year by year, and the RN counter-budget
+   against the Le Pen-majority path.
+
+**Result.** The benchmark sits on the status quo to 2031 (debt 130.4% vs
+130.6%, interest within €1bn in 2030), then drifts above it as the
+status quo keeps consolidating by €5bn a year and the benchmark does not:
+debt 145.3% and interest 5.6% of GDP in 2035.
+
+Gate (2026-10-11): `tests/debt/test_simulate.py` 14 passed (new: the
+benchmark's changes are applied exactly, the ratio is flat after 2031, the
+spread and growth equal the status quo's).

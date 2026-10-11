@@ -8,8 +8,8 @@ AFT briefing of September 2026 (D-S12-001).
 It reads only the flat files in `deliverables/` — the per-security register
 at the AFT's latest snapshot, the reference rates, the ledger and the strict
 matrix — and rolls the stock forward year by year under a **declared**
-scenario: a primary-balance path, an OAT–Bund spread path, a Bund curve, an
-issuance mix and a bill-stock path. Every parameter is a number in
+scenario: a primary-balance path in EUR bn, real growth, an OAT–Bund spread
+path and a Bund curve (the issuance mix and the bill stock are common). Every parameter is a number in
 `BASELINE` or in one of the `SCENARIOS`; nothing is estimated, fitted or
 calibrated silently. Where a calibration is used (the share of the
 general-government deficit the État's negotiable debt absorbs, the wedge
@@ -19,10 +19,11 @@ deliverables and printed by `calibration()`.
 What it is: an arithmetic of the existing coupons rolling off and being
 replaced at scenario yields, with the deficit feeding back through the
 interest bill (the wrong-way loop the briefing is about). What it is not: a
-forecast of yields, growth or politics. The scenarios are the four
-2027 configurations the committee asked for (Le Pen / Philippe × majority /
-hung) plus the current path and one rupture stress, each stated in the
-`SCENARIOS` table so it can be argued with line by line.
+forecast of yields, growth or politics. The scenarios are Redbox's
+statistical benchmark (D-S18-002) and the five 2027 configurations the
+committee asked for (Le Pen / Philippe × majority / hung, and Mélenchon;
+D-S18-001), each stated in the `SCENARIOS` table so it can be
+argued with line by line.
 
 Conventions: calendar years; EUR bn unless a name says otherwise; interest
 on the accrual basis (D.41 concept: coupons pro rata, bill discount
@@ -30,7 +31,7 @@ accreted, indexation uplift accrued as it arises — DD3).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import numpy as np
@@ -59,17 +60,17 @@ class Baseline:
     """Everything the scenarios share. All numbers are declared, not fitted."""
 
     # Nominal GDP, EUR bn: 2025 ledger outturn, 2026–2027 the strict matrix
-    # (EC AMECO spring 2026), then a declared 3.0% a year (1% real, 2% deflator).
+    # (EC AMECO spring 2026). From 2028 each scenario declares its own real
+    # growth; the deflator is common.
     gdp: dict = field(default_factory=lambda: {2025: 2979.1, 2026: 3055.8, 2027: 3150.7})
-    gdp_growth_after: float = 0.030
+    deflator_after: float = 0.020
 
-    # Primary balance, % of GDP (negative = primary deficit). 2025: NLB −5.1
-    # less net interest ≈ 2.0 → −3.1. Thereafter 0.4 pp a year — slower than
-    # the EDP path (0.5 pp structural) because the 2026 budget already
-    # slipped from 4.6 to 5.0 and 2027 is an election year.
-    primary_balance: dict = field(default_factory=lambda: {
-        2025: -3.1, 2026: -2.7, 2027: -2.5, 2028: -2.1, 2029: -1.7,
-        2030: -1.3, 2031: -0.9, 2032: -0.6, 2033: -0.5, 2034: -0.5, 2035: -0.5})
+    # Primary balance, % of GDP (negative = primary deficit), common to every
+    # scenario to 2027: the 2027 budget is voted before the election. 2025:
+    # NLB −5.1 less net interest ≈ 2.0 → −3.1. From 2028 each scenario moves
+    # the primary balance by a declared number of EUR bn a year (outturn,
+    # year on year), so growth acts on the ratio through the denominator only.
+    primary_balance: dict = field(default_factory=lambda: {2025: -3.1, 2026: -2.7, 2027: -2.5})
 
     # Interest receivable (R07), % of GDP, held constant.
     interest_receivable_pct: float = 0.2
@@ -77,15 +78,22 @@ class Baseline:
     # Maastricht debt at end-2025 (INSEE, 27 March 2026: 115.6% of GDP).
     debt_2025_pct: float = 115.6
 
-    # Bund curve, % — flat through the horizon (declared). 3m and 10y are the
-    # register's own reference series at the snapshot (EA 3m money-market
-    # 2.51% Aug 2026; Bundesbank 10y 3.41% on 7 Sep 2026); 2y/5y/30y declared.
+    # Bund curve, % — flat through the horizon (declared). The 10-year is held
+    # at 3.50% (DE_LT10 averaged 3.47% in September 2026); 2y/5y/30y keep the
+    # previous vintage's slope to the 10-year, the 3-month stays at the ECB-
+    # anchored 2.50% (EA 3m money-market 2.51% Aug 2026).
     bund_curve: dict = field(default_factory=lambda: {
-        0.25: 2.50, 2: 2.90, 5: 3.15, 10: 3.40, 30: 3.75})
+        0.25: 2.50, 2: 3.00, 5: 3.25, 10: 3.50, 30: 3.85})
 
     # OAT–Bund spread term structure as a fraction of the 10y spread.
     spread_shape: dict = field(default_factory=lambda: {
         0.25: 0.15, 2: 0.45, 5: 0.75, 10: 1.00, 30: 1.15})
+
+    # The 10y spread today (Bloomberg, 11 October 2026), used for the rest of
+    # 2026 in every scenario and as the last point of the actual line. The
+    # bundle's monthly OECD series ends in September 2026 (about 100 bp).
+    spread_today_bp: float = 135.0
+    spread_today_date: str = "2026-10-11"
 
     # Inflation for indexation uplift (FR CPI ex-tobacco / EA HICP ex-tobacco).
     inflation: float = 0.020
@@ -111,79 +119,134 @@ class Baseline:
     gg_wedge_pct: float = 0.34
 
     # Feedback: spread rises with the debt ratio's deviation from the
-    # current path, bp per pp of GDP. Declared, small.
-    spread_feedback_bp_per_pp: float = 3.0
+    # reference scenario, bp per pp of GDP. Off (D-S18-001): each scenario's
+    # spread path is declared in full, so the engine does not move it.
+    spread_feedback_bp_per_pp: float = 0.0
+
+    # Bill (BTF) stock, EUR bn, held flat in every scenario; the issuance mix
+    # is the AFT's 2025 mix in every scenario.
+    btf_stock: float = 215.0
 
 
 @dataclass
 class Scenario:
     name: str
     label: str
-    # Primary-balance deviation from the baseline path, pp of GDP, by year
-    # (level deviation, not cumulative); missing years = last value.
-    pb_deviation: dict
-    # 10y OAT–Bund spread, bp, by year; missing years = last value.
-    spread_bp: dict
-    # Bill (BTF) stock path, EUR bn, by year end; missing = last value.
-    btf_stock: dict
-    # Issuance-mix tilt: bucket shares × exp(−lambda × tenor), renormalised.
-    # 0 = the AFT's 2025 mix; positive = shorter.
-    maturity_tilt: float = 0.0
+    # 10y OAT–Bund spread, bp, annual average: the 2027 level, a straight-line
+    # fade to the 2029 level, flat thereafter (2026 is today's level).
+    spread_2027_bp: float
+    spread_2029_bp: float
+    # Year-on-year improvement of the primary balance, EUR bn (negative = a
+    # loosening), 2028–2031, then `consolidation_after_bn` a year.
+    consolidation_bn: float
+    real_growth: float
+    consolidation_after_bn: float = 5.0
+    consolidation_until: int = 2031
     note: str = ""
+    # Optional overrides, used by decompose_gap to switch one lever at a time.
+    spread_bp: dict | None = None
+    pb_change_bn: dict | None = None
+    # Alternative to the EUR bn rule: year-on-year change of the primary
+    # balance in pp of GDP (missing years = no change in the ratio).
+    pb_change_pp: dict | None = None
+
+    def spread_path(self, base: "Baseline" = None) -> dict:
+        if self.spread_bp is not None:
+            return self.spread_bp
+        base = base or BASELINE
+        return {2026: base.spread_today_bp, 2027: self.spread_2027_bp,
+                2028: (self.spread_2027_bp + self.spread_2029_bp) / 2, 2029: self.spread_2029_bp}
+
+    def pb_changes(self) -> dict:
+        """Year-on-year change of the primary balance, EUR bn (the EUR bn rule
+        only; a pp-of-GDP scenario is resolved in primary_balance_path)."""
+        if self.pb_change_bn is not None:
+            return self.pb_change_bn
+        return {y: (self.consolidation_bn if y <= self.consolidation_until else self.consolidation_after_bn)
+                for y in range(2028, LAST_YEAR + 1)}
 
 
 BASELINE = Baseline()
 
-_BTF_FLAT = {2026: 215.0}
 
+def benchmark_pb_changes(first: int = 2028) -> dict:
+    """Year-on-year change of the primary balance, pp of GDP, in the Redbox
+    statistical benchmark (`benchmark_balance.csv`, D-S11-002): primary
+    balance = benchmark NLB + benchmark GF01_7 interest − interest receivable.
+    The benchmark is anchored on 2024, so its level is not used, only its
+    changes from `first` to its last year (2031)."""
+    b = pd.read_csv(DELIV / "benchmark_balance.csv", low_memory=False).query("iso3 == @ISO")
+    nlb = b[b.kind == "balance"].set_index("year").pct_gdp
+    gi = b[(b.kind == "line") & (b.line_code == "GF01_7")].set_index("year").pct_gdp
+    pb = (nlb + gi - BASELINE.interest_receivable_pct).dropna()
+    d = pb.diff()
+    return {int(y): float(v) for y, v in d.items() if y >= first}
+
+
+# The statistical benchmark plus the five 2027 configurations (committee,
+# 2026-10-11; D-S18-001, D-S18-002). The fiscal
+# paths assume slippage against what each camp promises: the RN's
+# counter-budget of 6 October 2026 promises EUR 140bn of net savings by 2032
+# (against 2026) and a deficit below 3% in 2030; the Le Pen-majority path
+# delivers EUR 25bn a year from 2028, about EUR 105bn by 2032.
 SCENARIOS = [
     Scenario(
-        "current", "Current path",
-        pb_deviation={2026: 0.0},
-        spread_bp={2026: 85, 2027: 85, 2028: 80, 2029: 75, 2030: 70},
-        btf_stock=_BTF_FLAT,
-        note="Minority governments continue to pass budgets by 49.3 with concessions; "
-             "consolidation at 0.4 pp a year; spread drifts back towards its 2025 average."),
+        "statistical", "Statistical benchmark", 175, 150, 0.0, 0.005,
+        pb_change_pp=benchmark_pb_changes(),
+        note="Redbox's statistics-based forecast of the primary balance (benchmark_balance.csv): "
+             "its year-on-year changes 2028–2031, flat as a share of GDP after; spread and "
+             "growth as Philippe, hung."),
     Scenario(
-        "philippe_majority", "Philippe, majority",
-        pb_deviation={2027: 0.0, 2028: 0.3, 2029: 0.6, 2030: 0.9, 2031: 1.0},
-        spread_bp={2026: 85, 2027: 80, 2028: 60, 2029: 50, 2030: 45},
-        btf_stock=_BTF_FLAT,
-        note="Pension age towards 65 phased from 2028, spending review, EDP path met by 2030; "
-             "spread compresses towards the 2015–2021 range (35–50 bp)."),
+        "philippe_majority", "Philippe, majority", 150, 125, 10.0, 0.010,
+        note="Pension age and spending review delivered in part: primary balance €10bn a year "
+             "better to 2031; growth 1%; spread 150 → 125 bp."),
     Scenario(
-        "philippe_hung", "Philippe, hung Assembly",
-        pb_deviation={2027: 0.0, 2028: -0.1, 2029: -0.2, 2030: -0.3, 2031: -0.4},
-        spread_bp={2026: 85, 2027: 85, 2028: 80, 2029: 80, 2030: 75},
-        btf_stock=_BTF_FLAT,
-        note="A president without a majority: budgets by 49.3, consolidation slower than the "
-             "current path; spread stays where 2025–2026 put it."),
+        "philippe_hung", "Philippe, hung Assembly", 175, 150, 2.0, 0.005,
+        note="The status quo: budgets by 49.3 with concessions, €2bn a year of consolidation; "
+             "growth 0.5%; spread 175 → 150 bp."),
     Scenario(
-        "lepen_majority", "Le Pen, majority",
-        pb_deviation={2027: 0.0, 2028: -1.2, 2029: -1.5, 2030: -1.5},
-        spread_bp={2026: 85, 2027: 110, 2028: 150, 2029: 140, 2030: 130},
-        btf_stock={2026: 215.0, 2027: 230.0, 2028: 260.0, 2029: 270.0},
-        maturity_tilt=0.04,
-        note="RN programme enacted: VAT on energy to 5.5% (≈0.5% of GDP), 2023 pension reform "
-             "rolled back (≈0.5–0.8% of GDP by 2030), partial offsets; spread re-prices to "
-             "the 2012 peak and stays; AFT leans on bills and shorter tenors."),
+        "lepen_majority", "Le Pen, majority", 190, 125, 25.0, 0.000,
+        note="RN counter-budget enacted with slippage: €25bn a year against the €140bn by 2032 "
+             "promised; growth 0% as the cuts bite; spread spikes to 190 bp, then 125 bp."),
     Scenario(
-        "lepen_hung", "Le Pen, hung Assembly",
-        pb_deviation={2027: 0.0, 2028: -0.6, 2029: -0.8, 2030: -1.0},
-        spread_bp={2026: 85, 2027: 100, 2028: 120, 2029: 120, 2030: 115},
-        btf_stock={2026: 215.0, 2027: 225.0, 2028: 240.0},
-        maturity_tilt=0.02,
-        note="RN president, no majority: paralysis rather than programme; no consolidation, "
-             "partial giveaways; spread above the current path but short of the 2012 peak."),
+        "lepen_hung", "Le Pen, hung Assembly", 175, 125, 15.0, 0.005,
+        note="RN president, no majority: part of the counter-budget passes, €15bn a year; "
+             "growth 0.5%; spread 175 → 125 bp."),
     Scenario(
-        "lepen_rupture", "Le Pen, majority, rupture (stress)",
-        pb_deviation={2027: 0.0, 2028: -1.5, 2029: -2.0, 2030: -2.0},
-        spread_bp={2026: 85, 2027: 130, 2028: 250, 2029: 220, 2030: 200},
-        btf_stock={2026: 215.0, 2027: 240.0, 2028: 300.0, 2029: 320.0},
-        maturity_tilt=0.08,
-        note="Stress, not a central case: open conflict with the Commission over the EDP, TPI "
-             "eligibility in doubt, spread at 250 bp; the AFT funds a growing share at the short end."),
+        "melenchon", "Mélenchon", 250, 300, -10.0, 0.000,
+        note="LFI programme: spending ahead of revenue, primary balance €10bn a year worse to "
+             "2031; growth 0%; spread 250 → 300 bp."),
 ]
+
+# The status quo: the reference for decompose_gap and the spread feedback.
+REFERENCE = "philippe_hung"
+
+
+def scenario(name: str) -> Scenario:
+    return next(sc for sc in SCENARIOS if sc.name == name)
+
+
+def gdp_path(sc: Scenario, base: Baseline = BASELINE) -> dict:
+    """Nominal GDP, EUR bn, by year: common to 2027, then (1+g)(1+π)."""
+    gdp = dict(base.gdp)
+    for y in range(max(gdp) + 1, LAST_YEAR + 1):
+        gdp[y] = gdp[y - 1] * (1 + sc.real_growth) * (1 + base.deflator_after)
+    return gdp
+
+
+def primary_balance_path(sc: Scenario, base: Baseline = BASELINE) -> dict:
+    """Primary balance, EUR bn, by year: common % of GDP to 2027, then the
+    previous year's balance plus the scenario's declared change."""
+    gdp = gdp_path(sc, base)
+    pb = {y: v / 100 * gdp[y] for y, v in base.primary_balance.items()}
+    if sc.pb_change_pp is not None:
+        for y in range(max(pb) + 1, LAST_YEAR + 1):
+            pb[y] = (pb[y - 1] / gdp[y - 1] + sc.pb_change_pp.get(y, 0.0) / 100) * gdp[y]
+        return pb
+    ch = sc.pb_changes()
+    for y in range(max(pb) + 1, LAST_YEAR + 1):
+        pb[y] = pb[y - 1] + ch.get(y, 0.0)
+    return pb
 
 
 # --------------------------------------------------------------------------
@@ -292,8 +355,7 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
     mix = mix if mix is not None else issuance_mix()
     tenor_of = {b: mix.attrs.get("tenor", {}).get(b, BUCKET_TENOR[b]) for b in mix.index}
     tenors = np.array([tenor_of[b] for b in mix.index])
-    w = mix.values * np.exp(-sc.maturity_tilt * tenors)
-    w = w / w.sum()
+    w = mix.values / mix.values.sum()
     mlt_avg_maturity_at_issue = float((w * tenors).sum())
 
     # Existing stock split: bills are re-rolled as a stock, bonds tranche by tranche.
@@ -302,12 +364,12 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
     btf_2025 = float(reg.loc[reg.instrument_class == "bill", "nominal"].sum())
     new = []                                   # tranches issued in the simulation
     debt = base.debt_2025_pct / 100 * base.gdp[2025]
-    gdp_prev = base.gdp[2025]
+    gdp_of, pb_of, spread_of = gdp_path(sc, base), primary_balance_path(sc, base), sc.spread_path(base)
     rows = []
     for year in range(FIRST_YEAR, LAST_YEAR + 1):
-        gdp = base.gdp.get(year, gdp_prev * (1 + base.gdp_growth_after))
-        pb = _path(base.primary_balance, year) + _path(sc.pb_deviation, year, 0.0)
-        spread = float(_path(sc.spread_bp, year))
+        gdp = gdp_of[year]
+        pb = 100 * pb_of[year] / gdp
+        spread = float(_path(spread_of, year))
         if feedback and baseline_debt_pct is not None and year > FIRST_YEAR:
             dev = rows[-1]["debt_pct_gdp"] - baseline_debt_pct.loc[year - 1]
             spread += base.spread_feedback_bp_per_pp * max(dev, 0.0)
@@ -333,7 +395,7 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
                 coupon_fixed += t["nominal"] * t["coupon"] * 0.5   # matures mid-year on average
 
         # --- bills ---------------------------------------------------------
-        btf_target = float(_path(sc.btf_stock, year))
+        btf_target = base.btf_stock
         btf_prev = btf_2025 if year == FIRST_YEAR else rows[-1]["btf_stock"]
         bill_rate = oat_yield(0.25, spread, base) / 100
         bill_interest = 0.5 * (btf_prev + btf_target) * bill_rate
@@ -387,7 +449,7 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
 
         rows.append({
             "scenario": sc.name, "label": sc.label, "year": year, "gdp_bn": gdp,
-            "primary_balance_pct": pb, "spread_bp": spread,
+            "primary_balance_pct": pb, "primary_balance_bn": pb_of[year], "spread_bp": spread,
             "oat_10y_pct": oat_yield(10, spread, base), "avg_new_yield_pct": 100 * avg_new_yield,
             "mlt_avg_maturity_at_issue": mlt_avg_maturity_at_issue,
             "redemptions_bn": redemptions, "net_issuance_bn": net_issuance,
@@ -401,35 +463,35 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
             "uplift_bn": uplift_accr, "bill_interest_bn": bill_interest,
             "new_issue_interest_bn": new_year_interest,
         })
-        gdp_prev = gdp
     return pd.DataFrame(rows)
 
 
 def run_all(scenarios=SCENARIOS, base: Baseline = BASELINE, feedback: bool = True) -> pd.DataFrame:
-    """All scenarios; the current path is run first so the feedback term has a reference."""
+    """All scenarios; the reference (status quo) is run first so the feedback
+    term has a path to deviate from (the feedback is zero by default)."""
     reg = load_register()
     mix = issuance_mix()
-    current = run_scenario(scenarios[0], base, reg, mix, feedback=False)
-    ref = current.set_index("year").debt_pct_gdp
-    out = [current]
-    for sc in scenarios[1:]:
-        out.append(run_scenario(sc, base, reg, mix, feedback=feedback, baseline_debt_pct=ref))
-    return pd.concat(out, ignore_index=True)
+    ref_sc = next(sc for sc in scenarios if sc.name == REFERENCE)
+    ref_run = run_scenario(ref_sc, base, reg, mix, feedback=False)
+    ref = ref_run.set_index("year").debt_pct_gdp
+    out = {REFERENCE: ref_run}
+    for sc in scenarios:
+        if sc.name != REFERENCE:
+            out[sc.name] = run_scenario(sc, base, reg, mix, feedback=feedback, baseline_debt_pct=ref)
+    return pd.concat([out[sc.name] for sc in scenarios], ignore_index=True)
 
 
 def decompose_gap(sc: Scenario, base: Baseline = BASELINE, years=(2030, 2035)) -> pd.DataFrame:
-    """Split a scenario's extra interest over the current path into the part
-    due to the spread (price), the part due to the primary balance and
-    issuance strategy (volume), and their interaction — by re-running the
-    scenario with one lever at a time. Feedback off so the split is clean."""
+    """Split a scenario's interest gap to the status quo (`REFERENCE`) into
+    the part due to the spread (price), the part due to the primary balance
+    and growth (volume), and their interaction — by re-running the scenario
+    with one lever at a time. Feedback off so the split is clean."""
     reg, mix = load_register(), issuance_mix()
-    cur = SCENARIOS[0]
+    ref = scenario(REFERENCE)
     full = run_scenario(sc, base, reg, mix, feedback=False).set_index("year")
-    base_run = run_scenario(cur, base, reg, mix, feedback=False).set_index("year")
-    price_only = Scenario(sc.name + "_price", sc.label, cur.pb_deviation, sc.spread_bp,
-                          cur.btf_stock, 0.0)
-    volume_only = Scenario(sc.name + "_volume", sc.label, sc.pb_deviation, cur.spread_bp,
-                           sc.btf_stock, sc.maturity_tilt)
+    base_run = run_scenario(ref, base, reg, mix, feedback=False).set_index("year")
+    price_only = replace(ref, name=sc.name + "_price", spread_bp=sc.spread_path(base))
+    volume_only = replace(sc, name=sc.name + "_volume", spread_bp=ref.spread_path(base))
     p = run_scenario(price_only, base, reg, mix, feedback=False).set_index("year")
     v = run_scenario(volume_only, base, reg, mix, feedback=False).set_index("year")
     rows = []
@@ -447,7 +509,7 @@ def decompose_gap(sc: Scenario, base: Baseline = BASELINE, years=(2030, 2035)) -
 # Mark-to-market sensitivity of the stock (for the holders section)
 # --------------------------------------------------------------------------
 
-def duration_table(spread10_bp: float = 90.0, base: Baseline = BASELINE,
+def duration_table(spread10_bp: float = 135.0, base: Baseline = BASELINE,
                    register: pd.DataFrame | None = None, as_of: str = SNAPSHOT) -> pd.DataFrame:
     """Price, modified duration and value per basis point of every bond in
     the register at the current curve. Annual coupons, ACT/365 residual life."""
@@ -478,7 +540,7 @@ def duration_table(spread10_bp: float = 90.0, base: Baseline = BASELINE,
     return out
 
 
-def duration_summary(spread10_bp: float = 90.0) -> dict:
+def duration_summary(spread10_bp: float = 135.0) -> dict:
     d = duration_table(spread10_bp)
     mv = d.market_value_bn.sum()
     dur = (d.market_value_bn * d.modified_duration).sum() / mv

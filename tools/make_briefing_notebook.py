@@ -30,10 +30,12 @@ Three modules do the work:
   the OAT–Bund spread, issuance by bucket; plus `key_figures.csv`.
 * `ggfiscal.debt.simulate` — the yield-path simulation `DEBT_KICKOFF.md` §1 said
   the register was shaped for: the stock rolled forward year by year under a
-  **declared** primary-balance path, spread path, bill stock and tenor mix, with
-  interest feeding back into the deficit. Six scenarios: the current path, the
-  four 2027 configurations (Le Pen / Philippe × majority / hung) and one rupture
-  stress. Every parameter is a number in `BASELINE` or `SCENARIOS`.
+  **declared** primary-balance path (EUR bn a year), real growth and spread path,
+  with interest feeding back into the deficit. Six paths: Redbox's statistical
+  benchmark (D-S18-002) and five scenarios (D-S18-001): Philippe and Le Pen, each
+  with a majority or a hung Assembly, and Mélenchon; Philippe with a hung
+  Assembly is the status quo. Every parameter is a number in
+  `BASELINE` or `SCENARIOS`.
 * `ggfiscal.report.briefing_fra_scenarios` — the scenario charts, the spread-vs-
   volume decomposition of each scenario's interest gap, and the mark-to-market
   sensitivity (duration) of the stock.
@@ -95,8 +97,10 @@ financed (Δ(F.31+F.32) over −NLB, 2015–2025) and the wedge between the
 register's interest and `GF01_7` in 2025."""))
 cells.append(nbf.v4.new_code_cell("sim.calibration()"))
 cells.append(nbf.v4.new_markdown_cell("The declared scenarios, exactly as the engine reads them."))
-cells.append(nbf.v4.new_code_cell("""pd.DataFrame([{"scenario": s.name, "label": s.label, "primary balance dev (pp GDP)": s.pb_deviation,
-               "10y spread (bp)": s.spread_bp, "bill stock (EUR bn)": s.btf_stock, "tenor tilt": s.maturity_tilt}
+cells.append(nbf.v4.new_code_cell("""pd.DataFrame([{"scenario": s.name, "label": s.label, "10y spread (bp)": s.spread_path(),
+               "primary balance change 2028-31 (EUR bn/yr)": s.consolidation_bn if s.pb_change_pp is None else None,
+               "primary balance change (pp GDP)": s.pb_change_pp,
+               "after 2031 (EUR bn/yr)": s.consolidation_after_bn, "real growth": s.real_growth}
               for s in sim.SCENARIOS]).set_index("scenario")"""))
 cells.append(nbf.v4.new_code_cell("""RES = pd.read_csv(OUT / "scenarios_FRA.csv")
 cols = ["label", "year", "spread_bp", "oat_10y_pct", "gg_interest_bn", "gg_interest_pct_gdp",
@@ -106,20 +110,20 @@ for k in ("scen_interest", "scen_spread", "scen_deficit", "scen_debt", "scen_iss
     cells.append(nbf.v4.new_code_cell(f"show('{k}')"))
 cells.append(nbf.v4.new_markdown_cell("""### The wrong-way loop, decomposed
 
-Each scenario's extra interest over the current path, split by re-running one
-lever at a time: the spread alone (price), the primary balance and issuance
-strategy alone (volume), and what is left (the interaction: extra issuance
+Each scenario's interest gap to the status quo (Philippe, hung Assembly), split
+by re-running one lever at a time: the spread alone (price), the primary balance
+and growth alone (volume), and what is left (the interaction: extra issuance
 that the extra interest itself requires, priced at the wider spread)."""))
 cells.append(nbf.v4.new_code_cell("pd.read_csv(OUT / 'scenario_decomposition.csv').round(1).set_index(['label', 'year'])"))
 cells.append(nbf.v4.new_code_cell("show('scen_decomposition')"))
 cells.append(nbf.v4.new_markdown_cell("""## 5. Rate sensitivity of the stock
 
-Every bond in the register priced at the Bund curve plus 90 bp (linkers on
+Every bond in the register priced at the Bund curve plus today's 135 bp (linkers on
 real yields), with its modified duration; the sum is what a 100 bp move does
 to the market value of the OAT stock, and where in the curve it sits."""))
-cells.append(nbf.v4.new_code_cell("sim.duration_summary(90.0)"))
+cells.append(nbf.v4.new_code_cell("sim.duration_summary(sim.BASELINE.spread_today_bp)"))
 cells.append(nbf.v4.new_code_cell("show('duration')"))
-cells.append(nbf.v4.new_code_cell("""d = sim.duration_table(90.0)
+cells.append(nbf.v4.new_code_cell("""d = sim.duration_table(sim.BASELINE.spread_today_bp)
 d.sort_values("value_per_bp_mn", ascending=False).head(12)[["name", "class", "nominal_bn", "years_to_maturity", "yield_pct", "price", "modified_duration", "value_per_bp_mn"]].round(2)"""))
 
 nb["cells"] = cells
