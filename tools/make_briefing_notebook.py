@@ -63,7 +63,7 @@ FIGS.update(briefing_fra_scenarios.render_all(OUT))
 pd.set_option("display.width", 160)
 
 
-def show(key, colours=48, width=880):
+def show(key, colours=96, width=1200):
     \"\"\"Display a rendered PNG quantised to a small palette (D-S9-004: keep the
     notebook renderable on GitHub).\"\"\"
     im = Image.open(FIGS[key]).convert("RGB")

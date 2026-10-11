@@ -46,7 +46,7 @@ BUCKET_ORDER = ["0-1", "1-2", "2-3", "3-5", "5-7", "7-10", "10-15", "15-20",
                 "20-30", "30+"]
 
 plt.rcParams.update({
-    "figure.figsize": (7.2, 3.3), "figure.dpi": 120,
+    "figure.figsize": (7.2, 3.3), "figure.dpi": 220,
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE,
     "savefig.facecolor": SURFACE,
     "axes.edgecolor": AXIS, "axes.labelcolor": INK, "axes.titlecolor": INK,
@@ -80,7 +80,7 @@ def _source(fig, text: str) -> None:
 
 def _save(fig, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=120, bbox_inches="tight", facecolor=SURFACE)
+    fig.savefig(path, dpi=220, bbox_inches="tight", facecolor=SURFACE)
     plt.close(fig)
     return path
 

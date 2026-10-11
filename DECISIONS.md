@@ -3279,3 +3279,42 @@ the questions for the AFT go.
 Gate (2026-10-11): `tests/debt/test_france_brief.py` (new, 3) and
 `tests/debt/test_simulate.py` (14) pass. The notebook executes in about 15 s
 with no errors.
+
+## D-S18-004 — Briefing charts: one colour per candidate, dotted for a hung Assembly, higher resolution, and the scenario tree
+
+Committee 2026-10-11.
+
+1. **Colours.** Philippe is yellow `#D4A200`, Le Pen is French blue `#0055A4` and
+   Mélenchon is dark red `#A51E22`. A majority is a solid line and a hung
+   Assembly a dotted one. The statistical benchmark is solid grey `#8A8A85`.
+   History and outturn lines are near-black ink, so none of them reads as Le
+   Pen's blue. The EC DSM path stays a thin brown dash-dot.
+   - The three party hues pass the dataviz validator against the chart surface:
+     lightness band, chroma, colour-blind and normal-vision separation (all
+     pairs, ΔE ≥ 20.9). The dark red was stepped up from `#8B1A1A`, which fell
+     below the lightness band.
+   - The yellow is below 3:1 contrast. As relief, every chart has a legend, and
+     the end labels on the debt and interest charts are in ink and name their
+     scenario.
+   - Dotted lines are drawn heavier and on top. Where Philippe hung and the
+     benchmark share a path (the spread chart), the grey shows through the dots.
+   - In Figure 9 the "volume" component changes from blue to teal, so no bar
+     carries a party hue.
+2. **Resolution.** Every briefing chart is saved at 220 dpi instead of 120.
+   The notebooks show charts at 1,200 px with 96 colours instead of 880 px with
+   48. `briefing_inline.html` grows from 1.9 to 4.3 MB.
+3. **The scenario tree** (`scen_tree.png`, `briefing_fra_scenarios.chart_tree`,
+   section 5 of the note and the notebook).
+   - The tree runs from the election to the president to the Assembly outcome
+     (Mélenchon is one case).
+   - Each branch carries its three assumptions: the primary-balance change in
+     EUR bn a year (2028–31 and after), the 10y spread from 2027 to 2029, and
+     real growth.
+   - The statistical benchmark sits below as the no-politics reference.
+   - Every value is read from `sim.SCENARIOS` and the benchmark run, so the
+     tree cannot drift from the engine.
+
+Gate (2026-10-11): `tests/debt/test_simulate.py` and
+`tests/debt/test_france_brief.py` pass (17). Both notebooks are re-executed,
+and the HTML the France brief notebook writes is byte-identical to a separate
+build.
