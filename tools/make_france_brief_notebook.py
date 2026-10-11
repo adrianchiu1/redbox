@@ -43,7 +43,7 @@ This notebook is the executable form of the briefing note
 The questions for the AFT (section 7 of the note and the "To ask the AFT"
 boxes) are left out here; the HTML keeps them. Facts marked **[ext]** come
 from outside Redbox and are listed in section 8. Scenario assumptions are in
-the tables of section 5; decisions D-S18-001 to D-S18-003 in `DECISIONS.md`.""")]
+the tables of section 5; decisions D-S18-001 to D-S18-004 in `DECISIONS.md`.""")]
 
 cells.append(nbf.v4.new_code_cell("""import io
 
@@ -60,7 +60,7 @@ FIGS.update(briefing_fra.render_all(FIG))         # descriptive charts, key_figu
 france_brief.clear_cache()
 
 
-def show(key, colours=48, width=880):
+def show(key, colours=96, width=1200):
     \"\"\"Display a rendered PNG quantised to a small palette (D-S9-004: keep the
     notebook renderable on GitHub).\"\"\"
     im = Image.open(FIGS[key]).convert("RGB")
