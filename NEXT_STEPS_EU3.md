@@ -52,7 +52,7 @@ Working list, updated 2026-10-09 (session 17, second pass). Background:
 
 ## Housekeeping
 
-- [ ] **Open a pull request** for `claude/serene-thompson-soiwhn` when ready.
+- [x] Merged `claude/serene-thompson-soiwhn` into `main` (2026-10-11).
 
 ## How to rebuild everything
 
