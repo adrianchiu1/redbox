@@ -3241,3 +3241,41 @@ debt 145.3% and interest 5.6% of GDP in 2035.
 Gate (2026-10-11): `tests/debt/test_simulate.py` 14 passed (new: the
 benchmark's changes are applied exactly, the ratio is flat after 2031, the
 spread and growth equal the status quo's).
+
+## D-S18-003 — The France fiscal brief notebook: the briefing note reproduced from the flat files, full refresh
+
+Committee 2026-10-11: a new notebook, `notebooks/France_fiscal_brief_20261013.ipynb`,
+from which `reports/briefing_FRA_AFT_2026-09/briefing_inline.html` can be
+reproduced, on a full refresh of every chart. All the charts and the analysis stay;
+the questions for the AFT go.
+
+1. **What the notebook does.** It renders every chart (`briefing_fra_scenarios`,
+   then `briefing_fra`). It shows each section of the note in order, using
+   `ggfiscal.report.france_brief`: text and tables as HTML, the 18 charts as
+   images quantised for GitHub (D-S9-004), and the loop diagram as SVG. The
+   key-figure tiles become a table. Section 7 and the "To ask the AFT" boxes
+   are dropped. The last cell runs the HTML builder and checks that all 18
+   charts are embedded. Re-running it reproduces `briefing_inline.html` byte
+   for byte (checked against a separate rebuild). Generator:
+   `tools/make_france_brief_notebook.py`.
+2. **Builder split.** `tools/build_briefing_fra.py` now exposes `template()`,
+   `values()` and `fill()`, and `main()` uses them. The output was
+   byte-identical before and after the split.
+3. **Full refresh.** The descriptive charts and `key_figures.csv` are
+   re-rendered on the current bundle. The only value changes are the new
+   OECD months: the 2026 spread average is 74.9 bp, not 68.7; the latest
+   month is September at 100.8 bp, not July at 78.0; earlier annual averages
+   moved by 0.2–0.6 bp. There are also two consequences of D-S18-001: 2029
+   redemptions are 8.53% of the stock, not 8.57%, and 2030 is 6.06%, not 6.13%.
+4. **Fix.** `briefing_fra._refinancing_by_year` took its forward stock from the
+   "current" scenario in `scenarios_FRA.csv`. Once D-S18-001 removed that
+   scenario, it silently held the stock flat, which would have shown 2029
+   redemptions at 10.8% of the stock. It now runs the reference scenario
+   (status quo) directly, so it no longer depends on rendering order. A
+   chart typo is also fixed: "détte" → "dette".
+5. `notebooks/briefing_FRA_AFT.ipynb` is regenerated and re-executed on the
+   same refresh.
+
+Gate (2026-10-11): `tests/debt/test_france_brief.py` (new, 3) and
+`tests/debt/test_simulate.py` (14) pass. The notebook executes in about 15 s
+with no errors.

@@ -51,8 +51,13 @@ def fmt(key: str, v) -> str:
     return f"{v}"
 
 
-def main() -> Path:
-    tpl = (OUT / "briefing_template.html").read_text()
+def template() -> str:
+    return (OUT / "briefing_template.html").read_text()
+
+
+def values() -> dict[str, object]:
+    """Every {{placeholder}} of the template, from the CSVs under figures/
+    and the engine's summaries."""
     kf = pd.read_csv(FIG / "key_figures.csv").set_index("metric").value
     kf = kf.map(lambda v: float(v) if re.fullmatch(r"-?\d+(\.\d+)?", str(v)) else v)
     V: dict[str, object] = {}
@@ -195,29 +200,39 @@ def main() -> Path:
     V["benchmark_base_year"] = str(int(bb.base_year.iloc[0]))
     V["stat_2031_pb_bn"] = f"{R[('statistical', 2031)].primary_balance_bn:,.0f}"
 
-    def fill(html: str, inline: bool) -> str:
-        def img(m):
-            key = m.group(1)
-            path = FIG / f"{key}.png"
-            if not path.exists():
-                raise SystemExit(f"missing figure {path}")
-            if inline:
-                b64 = base64.b64encode(path.read_bytes()).decode()
-                return f'<img src="data:image/png;base64,{b64}" alt="{key}" loading="lazy">'
-            return f'<img src="figures/{key}.png" alt="{key}" loading="lazy">'
+    return V
+
+
+def fill(html: str, V: dict, inline: bool, figures: bool = True) -> str:
+    """Substitute the figures (by path, or embedded as data URIs) and the
+    values. With figures=False the {{fig:key}} markers are left in place."""
+    def img(m):
+        key = m.group(1)
+        path = FIG / f"{key}.png"
+        if not path.exists():
+            raise SystemExit(f"missing figure {path}")
+        if inline:
+            b64 = base64.b64encode(path.read_bytes()).decode()
+            return f'<img src="data:image/png;base64,{b64}" alt="{key}" loading="lazy">'
+        return f'<img src="figures/{key}.png" alt="{key}" loading="lazy">'
+    if figures:
         html = re.sub(r"\{\{fig:([a-z_0-9]+)\}\}", img, html)
 
-        def var(m):
-            key = m.group(1)
-            if key not in V:
-                raise SystemExit(f"unfilled placeholder {{{{{key}}}}}")
-            return str(V[key])
-        html = re.sub(r"\{\{([^{}]+)\}\}", var, html)
-        return html
+    def var(m):
+        key = m.group(1)
+        if key.startswith("fig:"):
+            return m.group(0)
+        if key not in V:
+            raise SystemExit(f"unfilled placeholder {{{{{key}}}}}")
+        return str(V[key])
+    return re.sub(r"\{\{([^{}]+)\}\}", var, html)
 
-    (OUT / "briefing.html").write_text(fill(tpl, inline=False))
+
+def main() -> Path:
+    tpl, V = template(), values()
+    (OUT / "briefing.html").write_text(fill(tpl, V, inline=False))
     inline = OUT / "briefing_inline.html"
-    inline.write_text(fill(tpl, inline=True))
+    inline.write_text(fill(tpl, V, inline=True))
     print(f"wrote {OUT / 'briefing.html'} and {inline} ({inline.stat().st_size / 1e6:.2f} MB)")
     return inline
 
