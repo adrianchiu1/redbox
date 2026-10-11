@@ -14,6 +14,8 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
+from ggfiscal.debt import simulate as sim
+
 ROOT = next(p for p in [Path(__file__).resolve(), *Path(__file__).resolve().parents]
             if (p / "deliverables" / "debt_reference_series.csv").exists())
 DELIV = ROOT / "deliverables"
@@ -204,7 +206,7 @@ def _chart_stock_by_class(out: Path) -> Path:
                width=0.75, label=CLASS_LABEL[c])
         bottom += by_class[c].to_numpy()
     ax.plot(aft_total.index, aft_total.values, color=INK, marker="o", ms=2.5,
-            label="AFT détte négociable (total)")
+            label="AFT dette négociable (total)")
     ax.plot(eurostat_total.index, eurostat_total.values, color=MUTED, linestyle="--",
             label="Eurostat F.31+F.32, S.1311")
     ax.set_ylabel("EUR bn")
@@ -336,15 +338,13 @@ def _refinancing_by_year() -> pd.DataFrame:
     btf = ye[ye.instrument_class == "bill"].groupby("y").nominal_lcu_mn.sum() / 1000
     out["stock_prev"] = stock.shift(1).reindex(out.index)
     out["btf_prev"] = btf.shift(1).reindex(out.index)
-    # forward: carry the last year-end stock, grown by the current path's
-    # negotiable stock in the scenario file when present, else flat
-    scen = ROOT / "reports" / "briefing_FRA_AFT_2026-09" / "figures" / "scenarios_FRA.csv"
-    if scen.exists():
-        cur = pd.read_csv(scen).query("scenario == 'current'").set_index("year")
-        for y in out.index[out.stock_prev.isna()]:
-            if y - 1 in cur.index:
-                out.loc[y, "stock_prev"] = cur.loc[y - 1, "negotiable_stock_bn"]
-                out.loc[y, "btf_prev"] = cur.loc[y - 1, "btf_stock"]
+    # forward: the status quo's negotiable stock from the simulation (the
+    # reference scenario, D-S18-001; the "current path" before it)
+    cur = sim.run_scenario(sim.scenario(sim.REFERENCE), feedback=False).set_index("year")
+    for y in out.index[out.stock_prev.isna()]:
+        if y - 1 in cur.index:
+            out.loc[y, "stock_prev"] = cur.loc[y - 1, "negotiable_stock_bn"]
+            out.loc[y, "btf_prev"] = cur.loc[y - 1, "btf_stock"]
     out["stock_prev"] = out.stock_prev.ffill()
     out["btf_prev"] = out.btf_prev.ffill()
     strict = pd.read_csv(DELIV / "strict_FRA.csv").set_index("year")
