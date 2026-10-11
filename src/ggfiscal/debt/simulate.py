@@ -19,9 +19,10 @@ deliverables and printed by `calibration()`.
 What it is: an arithmetic of the existing coupons rolling off and being
 replaced at scenario yields, with the deficit feeding back through the
 interest bill (the wrong-way loop the briefing is about). What it is not: a
-forecast of yields, growth or politics. The scenarios are the five 2027
-configurations the committee asked for (Le Pen / Philippe × majority / hung,
-and Mélenchon; D-S18-001), each stated in the `SCENARIOS` table so it can be
+forecast of yields, growth or politics. The scenarios are Redbox's
+statistical benchmark (D-S18-002) and the five 2027 configurations the
+committee asked for (Le Pen / Philippe × majority / hung, and Mélenchon;
+D-S18-001), each stated in the `SCENARIOS` table so it can be
 argued with line by line.
 
 Conventions: calendar years; EUR bn unless a name says otherwise; interest
@@ -30,7 +31,7 @@ accreted, indexation uplift accrued as it arises — DD3).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import numpy as np
@@ -145,6 +146,9 @@ class Scenario:
     # Optional overrides, used by decompose_gap to switch one lever at a time.
     spread_bp: dict | None = None
     pb_change_bn: dict | None = None
+    # Alternative to the EUR bn rule: year-on-year change of the primary
+    # balance in pp of GDP (missing years = no change in the ratio).
+    pb_change_pp: dict | None = None
 
     def spread_path(self, base: "Baseline" = None) -> dict:
         if self.spread_bp is not None:
@@ -154,6 +158,8 @@ class Scenario:
                 2028: (self.spread_2027_bp + self.spread_2029_bp) / 2, 2029: self.spread_2029_bp}
 
     def pb_changes(self) -> dict:
+        """Year-on-year change of the primary balance, EUR bn (the EUR bn rule
+        only; a pp-of-GDP scenario is resolved in primary_balance_path)."""
         if self.pb_change_bn is not None:
             return self.pb_change_bn
         return {y: (self.consolidation_bn if y <= self.consolidation_until else self.consolidation_after_bn)
@@ -162,12 +168,34 @@ class Scenario:
 
 BASELINE = Baseline()
 
-# The five 2027 configurations (committee, 2026-10-11; D-S18-001). The fiscal
+
+def benchmark_pb_changes(first: int = 2028) -> dict:
+    """Year-on-year change of the primary balance, pp of GDP, in the Redbox
+    statistical benchmark (`benchmark_balance.csv`, D-S11-002): primary
+    balance = benchmark NLB + benchmark GF01_7 interest − interest receivable.
+    The benchmark is anchored on 2024, so its level is not used, only its
+    changes from `first` to its last year (2031)."""
+    b = pd.read_csv(DELIV / "benchmark_balance.csv", low_memory=False).query("iso3 == @ISO")
+    nlb = b[b.kind == "balance"].set_index("year").pct_gdp
+    gi = b[(b.kind == "line") & (b.line_code == "GF01_7")].set_index("year").pct_gdp
+    pb = (nlb + gi - BASELINE.interest_receivable_pct).dropna()
+    d = pb.diff()
+    return {int(y): float(v) for y, v in d.items() if y >= first}
+
+
+# The statistical benchmark plus the five 2027 configurations (committee,
+# 2026-10-11; D-S18-001, D-S18-002). The fiscal
 # paths assume slippage against what each camp promises: the RN's
 # counter-budget of 6 October 2026 promises EUR 140bn of net savings by 2032
 # (against 2026) and a deficit below 3% in 2030; the Le Pen-majority path
 # delivers EUR 25bn a year from 2028, about EUR 105bn by 2032.
 SCENARIOS = [
+    Scenario(
+        "statistical", "Statistical benchmark", 175, 150, 0.0, 0.005,
+        pb_change_pp=benchmark_pb_changes(),
+        note="Redbox's statistics-based forecast of the primary balance (benchmark_balance.csv): "
+             "its year-on-year changes 2028–2031, flat as a share of GDP after; spread and "
+             "growth as Philippe, hung."),
     Scenario(
         "philippe_majority", "Philippe, majority", 150, 125, 10.0, 0.010,
         note="Pension age and spending review delivered in part: primary balance €10bn a year "
@@ -211,6 +239,10 @@ def primary_balance_path(sc: Scenario, base: Baseline = BASELINE) -> dict:
     previous year's balance plus the scenario's declared change."""
     gdp = gdp_path(sc, base)
     pb = {y: v / 100 * gdp[y] for y, v in base.primary_balance.items()}
+    if sc.pb_change_pp is not None:
+        for y in range(max(pb) + 1, LAST_YEAR + 1):
+            pb[y] = (pb[y - 1] / gdp[y - 1] + sc.pb_change_pp.get(y, 0.0) / 100) * gdp[y]
+        return pb
     ch = sc.pb_changes()
     for y in range(max(pb) + 1, LAST_YEAR + 1):
         pb[y] = pb[y - 1] + ch.get(y, 0.0)
@@ -458,10 +490,8 @@ def decompose_gap(sc: Scenario, base: Baseline = BASELINE, years=(2030, 2035)) -
     ref = scenario(REFERENCE)
     full = run_scenario(sc, base, reg, mix, feedback=False).set_index("year")
     base_run = run_scenario(ref, base, reg, mix, feedback=False).set_index("year")
-    price_only = Scenario(sc.name + "_price", sc.label, 0, 0, 0.0, ref.real_growth,
-                          spread_bp=sc.spread_path(base), pb_change_bn=ref.pb_changes())
-    volume_only = Scenario(sc.name + "_volume", sc.label, 0, 0, 0.0, sc.real_growth,
-                           spread_bp=ref.spread_path(base), pb_change_bn=sc.pb_changes())
+    price_only = replace(ref, name=sc.name + "_price", spread_bp=sc.spread_path(base))
+    volume_only = replace(sc, name=sc.name + "_volume", spread_bp=ref.spread_path(base))
     p = run_scenario(price_only, base, reg, mix, feedback=False).set_index("year")
     v = run_scenario(volume_only, base, reg, mix, feedback=False).set_index("year")
     rows = []

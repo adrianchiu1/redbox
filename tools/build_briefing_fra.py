@@ -68,7 +68,7 @@ def main() -> Path:
     dec = pd.read_csv(FIG / "scenario_decomposition.csv")
     R = {(r.scenario, int(r.year)): r for r in res.itertuples()}
     D = {(r.scenario, int(r.year)): r for r in dec.itertuples()}
-    short = {"philippe_majority": "pm", "philippe_hung": "ph", "lepen_majority": "lp",
+    short = {"statistical": "stat", "philippe_majority": "pm", "philippe_hung": "ph", "lepen_majority": "lp",
              "lepen_hung": "lph", "melenchon": "mel"}
     for name, s in short.items():
         for y in (2027, 2028, 2029, 2030, 2031, 2032, 2035):
@@ -162,13 +162,38 @@ def main() -> Path:
     for sc in sim.SCENARIOS:
         sp = sc.spread_path(b)
         cls = " class='hl'" if sc.name == sim.REFERENCE else ""
+        if sc.pb_change_pp is not None:      # the statistical benchmark: a pp-of-GDP path
+            g = {y: R[(sc.name, y)].primary_balance_bn - R[(sc.name, y - 1)].primary_balance_bn for y in range(2028, 2036)}
+            during = f"{min(g[y] for y in range(2028, 2032)):+.0f} to {max(g[y] for y in range(2028, 2032)):+.0f}*"
+            after = "ratio flat*"
+        else:
+            during, after = f"{sc.consolidation_bn:+.0f}", f"{sc.consolidation_after_bn:+.0f}"
         rows.append(f"<tr{cls}><td class='l'>{sc.label}</td><td>{sc.spread_2027_bp:.0f}</td><td>{sp[2028]:.1f}</td>"
-                    f"<td>{sc.spread_2029_bp:.0f}</td><td>{sc.consolidation_bn:+.0f}</td><td>{sc.consolidation_after_bn:+.0f}</td>"
+                    f"<td>{sc.spread_2029_bp:.0f}</td><td>{during}</td><td>{after}</td>"
                     f"<td>{100 * sc.real_growth:.1f}%</td><td>{100 * ((1 + sc.real_growth) * (1 + b.deflator_after) - 1):.1f}%</td>"
                     f"<td>{R[(sc.name, 2031)].primary_balance_pct:+.1f}</td><td>{R[(sc.name, 2035)].primary_balance_pct:+.1f}</td></tr>")
         notes.append(f"<tr><td class='l'>{sc.label}</td><td class='l'>{sc.note}</td></tr>")
     V["assumption_rows"] = "\n".join(rows)
     V["assumption_notes"] = "\n".join(notes)
+
+    # the statistical benchmark, year by year: what the engine takes from it
+    bb = pd.read_csv(sim.DELIV / "benchmark_balance.csv", low_memory=False).query("iso3 == 'FRA'")
+    nlb = bb[bb.kind == "balance"].set_index("year")
+    gi = bb[(bb.kind == "line") & (bb.line_code == "GF01_7")].set_index("year").pct_gdp
+    dpp = sim.benchmark_pb_changes(first=2026)
+    rows = []
+    for y in nlb.index:
+        pbv = nlb.pct_gdp[y] + gi[y] - b.interest_receivable_pct
+        used = 2028 <= y
+        d = f"{dpp[y]:+.2f}" if y in dpp else "–"
+        eng = f"{R[('statistical', y)].primary_balance_pct:+.1f}" if ("statistical", y) in R else "–"
+        rows.append(f"<tr{' class=hl' if used else ''}><td class='l'>{y}</td><td>{-nlb.pct_gdp[y]:.1f}</td>"
+                    f"<td>{-nlb.hi80[y]:.1f} to {-nlb.lo80[y]:.1f}</td><td>{gi[y]:.1f}</td><td>{pbv:+.1f}</td>"
+                    f"<td>{d}</td><td>{'yes' if used else 'no'}</td><td>{eng}</td></tr>")
+    V["benchmark_rows"] = "\n".join(rows)
+    V["benchmark_run"] = str(bb.run_id.iloc[0])
+    V["benchmark_base_year"] = str(int(bb.base_year.iloc[0]))
+    V["stat_2031_pb_bn"] = f"{R[('statistical', 2031)].primary_balance_bn:,.0f}"
 
     def fill(html: str, inline: bool) -> str:
         def img(m):

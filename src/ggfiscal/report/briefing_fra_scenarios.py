@@ -21,7 +21,8 @@ INK, MUTED, AXIS = "#0b0b0b", "#898781", "#c3c2b7"
 SURFACE, SHADE = "#fcfcfb", "#eceae4"
 
 SCEN_STYLE = {                       # one colour per scenario, never reused
-    "philippe_majority": (GREEN, "-"), "philippe_hung": (INK, "-"),
+    "statistical": (MUTED, ":"),
+    "philippe_majority": (GREEN, "-"), "philippe_hung": (ORANGE, "-"),
     "lepen_majority": (RED, "-"), "lepen_hung": (GOLD, "--"), "melenchon": (PURPLE, "-"),
 }
 HIST_FROM = 2010                     # every history line starts here (D-S18-001)
@@ -33,7 +34,11 @@ def _label(name):
 
 
 def _lw(name):
-    return 2.2 if name == REF else 1.8
+    return 2.4 if name == "statistical" else 2.2 if name == REF else 1.8
+
+
+def _z(name):                        # the dotted benchmark is drawn over the status quo it shadows
+    return 4 if name == "statistical" else 3
 
 plt.rcParams.update({
     "figure.figsize": (7.2, 3.3), "figure.dpi": 120,
@@ -82,13 +87,13 @@ def chart_interest(res, out):
     h = exp.loc[HIST_FROM:2024, "pct_gdp"]
     ax.plot(h.index, h.values, color=BLUE, lw=2.2, label="outturn (Eurostat, GF01_7)")
     d = exp.loc[2025:2035, "pct_gdp"]
-    ax.plot(d.index, d.values, color=MUTED, ls=":", lw=1.6, label="EC AMECO / DSM path in the strict file")
+    ax.plot(d.index, d.values, color=BROWN, ls="-.", lw=1.2, label="EC AMECO / DSM path in the strict file")
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[res.scenario == name].set_index("year")
         s = pd.concat([pd.Series({2025: exp.loc[2025, "pct_gdp"]}), s.gg_interest_pct_gdp])
-        ax.plot(s.index, s.values, color=c, ls=ls, lw=_lw(name), label=_label(name))
+        ax.plot(s.index, s.values, color=c, ls=ls, lw=_lw(name), zorder=_z(name), label=_label(name))
     ax.set_ylabel("% of GDP"); ax.set_xlim(HIST_FROM - 0.3, 2035.5); ax.grid(axis="y")
-    ax.set_title("France · general-government interest, outturn and five paths from the register")
+    ax.set_title("France · general-government interest, outturn and six paths from the register")
     ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.12))
     for name in ("melenchon", "philippe_hung", "lepen_majority"):
         s = res[(res.scenario == name) & (res.year == 2035)].iloc[0]
@@ -108,7 +113,7 @@ def chart_paths(res, out, col, ylabel, title, ref=None, hist=None, annotate=Fals
         s = res[res.scenario == name].set_index("year")[col]
         if hist is not None and 2025 in hist.index:
             s = pd.concat([pd.Series({2025: hist.loc[2025]}), s])
-        ax.plot(s.index, s.values, color=c, ls=ls, lw=_lw(name), label=_label(name))
+        ax.plot(s.index, s.values, color=c, ls=ls, lw=_lw(name), zorder=_z(name), label=_label(name))
         ends[name] = float(s.iloc[-1])
     if annotate:                     # end labels, nudged apart so none overlap
         span = ax.get_ylim()[1] - ax.get_ylim()[0]
@@ -146,7 +151,7 @@ def chart_spread(res, out):
                 textcoords="offset points", fontsize=7.5, color=BLUE, ha="right")
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[(res.scenario == name) & (res.year >= 2027)].set_index("year").spread_bp
-        ax.plot([xt, *(s.index + 0.5)], [b.spread_today_bp, *s.values], color=c, ls=ls, lw=_lw(name),
+        ax.plot([xt, *(s.index + 0.5)], [b.spread_today_bp, *s.values], color=c, ls=ls, lw=_lw(name), zorder=_z(name),
                 label=_label(name), marker="o", ms=3, markevery=list(range(1, len(s) + 1)))
     ax.set_ylabel("basis points"); ax.grid(axis="y"); ax.set_xlim(HIST_FROM - 0.3, 2035.9)
     ax.set_title("France · the OAT–Bund spread, history and the paths each scenario declares")
@@ -158,7 +163,7 @@ def chart_spread(res, out):
 
 def chart_decomposition(dec, out):
     d = dec[dec.year == 2030].set_index("scenario").drop(index=REF, errors="ignore")
-    order = ["philippe_majority", "lepen_majority", "lepen_hung", "melenchon"]
+    order = ["statistical", "philippe_majority", "lepen_majority", "lepen_hung", "melenchon"]
     d = d.reindex([o for o in order if o in d.index])
     fig, ax = plt.subplots(figsize=(7.2, 3.4))
     x = range(len(d))
@@ -171,7 +176,7 @@ def chart_decomposition(dec, out):
     ax.set_ylim(min(d.gap_bn.min(), 0) - 5, top * 1.35)
     for i, (_, r) in enumerate(d.iterrows()):
         y = r.gap_bn + 1.0 if r.gap_bn >= 0 else min(r.spread_effect_bn, 0) + min(r.volume_effect_bn, 0) - 1.0
-        ax.text(i, y, f"{r.gap_bn:+.0f}", ha="center", va="bottom" if r.gap_bn >= 0 else "top", fontsize=8.5, color=INK, fontweight="bold")
+        ax.text(i, y, f"{r.gap_bn:+.1f}" if abs(r.gap_bn) < 1 else f"{r.gap_bn:+.0f}", ha="center", va="bottom" if r.gap_bn >= 0 else "top", fontsize=8.5, color=INK, fontweight="bold")
     ax.axhline(0, color=AXIS, lw=1)
     ax.set_xticks(list(x)); ax.set_xticklabels([r.label.replace(", ", "\n") for _, r in d.iterrows()], fontsize=8)
     ax.set_ylabel("EUR bn, 2030, vs Philippe hung"); ax.grid(axis="y")
@@ -186,7 +191,7 @@ def chart_issuance(res, out):
     ax.axvspan(2026.5, 2035.5, color=SHADE, lw=0, zorder=0)
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[(res.scenario == name) & (res.year >= 2027)].set_index("year")
-        ax.plot(s.index, s.mlt_gross_issuance_bn, color=c, ls=ls, lw=_lw(name), label=_label(name))
+        ax.plot(s.index, s.mlt_gross_issuance_bn, color=c, ls=ls, lw=_lw(name), zorder=_z(name), label=_label(name))
     ax.axhline(310, color=AXIS, ls="--", lw=1); ax.text(2027.1, 313, "2026 programme €310bn (net of buybacks)", fontsize=7.5, color=MUTED)
     ax.set_ylabel("EUR bn, gross medium/long-term"); ax.grid(axis="y"); ax.set_xlim(2026.6, 2035.4)
     ax.set_title("France · gross OAT issuance the register implies (redemptions + net financing)")
@@ -208,8 +213,8 @@ def chart_coupon(res, out):
     ax.plot(w.index, w.values, color=BLUE, lw=2.2, label="average coupon, fixed-rate stock (register)")
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[res.scenario == name].set_index("year")
-        ax.plot([2025, *s.index], [w.loc[2025], *s.avg_coupon_fixed_pct], color=c, ls=ls, lw=_lw(name), label=_label(name))
-        if name in ("philippe_hung", "melenchon"):
+        ax.plot([2025, *s.index], [w.loc[2025], *s.avg_coupon_fixed_pct], color=c, ls=ls, lw=_lw(name), zorder=_z(name), label=_label(name))
+        if name in ("philippe_hung", "melenchon"):          # thin 10y-yield lines
             ax.plot(s.index, s.oat_10y_pct, color=c, ls=ls, lw=0.9, alpha=0.6)
     ax.text(2011.0, 6.55, "thin lines: the 10y OAT yield, status quo and Mélenchon", fontsize=7.5, color=MUTED)
     ax.set_ylabel("%"); ax.grid(axis="y"); ax.set_xlim(HIST_FROM - 0.3, 2035.5); ax.set_ylim(1.2, 6.9)

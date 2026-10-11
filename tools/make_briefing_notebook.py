@@ -31,9 +31,10 @@ Three modules do the work:
 * `ggfiscal.debt.simulate` — the yield-path simulation `DEBT_KICKOFF.md` §1 said
   the register was shaped for: the stock rolled forward year by year under a
   **declared** primary-balance path (EUR bn a year), real growth and spread path,
-  with interest feeding back into the deficit. Five scenarios (D-S18-001): Philippe
-  and Le Pen, each with a majority or a hung Assembly, and Mélenchon; Philippe
-  with a hung Assembly is the status quo. Every parameter is a number in
+  with interest feeding back into the deficit. Six paths: Redbox's statistical
+  benchmark (D-S18-002) and five scenarios (D-S18-001): Philippe and Le Pen, each
+  with a majority or a hung Assembly, and Mélenchon; Philippe with a hung
+  Assembly is the status quo. Every parameter is a number in
   `BASELINE` or `SCENARIOS`.
 * `ggfiscal.report.briefing_fra_scenarios` — the scenario charts, the spread-vs-
   volume decomposition of each scenario's interest gap, and the mark-to-market
@@ -97,7 +98,8 @@ register's interest and `GF01_7` in 2025."""))
 cells.append(nbf.v4.new_code_cell("sim.calibration()"))
 cells.append(nbf.v4.new_markdown_cell("The declared scenarios, exactly as the engine reads them."))
 cells.append(nbf.v4.new_code_cell("""pd.DataFrame([{"scenario": s.name, "label": s.label, "10y spread (bp)": s.spread_path(),
-               "primary balance change 2028-31 (EUR bn/yr)": s.consolidation_bn,
+               "primary balance change 2028-31 (EUR bn/yr)": s.consolidation_bn if s.pb_change_pp is None else None,
+               "primary balance change (pp GDP)": s.pb_change_pp,
                "after 2031 (EUR bn/yr)": s.consolidation_after_bn, "real growth": s.real_growth}
               for s in sim.SCENARIOS]).set_index("scenario")"""))
 cells.append(nbf.v4.new_code_cell("""RES = pd.read_csv(OUT / "scenarios_FRA.csv")

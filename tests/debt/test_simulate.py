@@ -64,7 +64,7 @@ def test_identities_hold(results):
 
 def test_five_scenarios_and_the_reference():
     names = [sc.name for sc in sim.SCENARIOS]
-    assert names == ["philippe_majority", "philippe_hung", "lepen_majority", "lepen_hung", "melenchon"]
+    assert names == ["statistical", "philippe_majority", "philippe_hung", "lepen_majority", "lepen_hung", "melenchon"]
     assert sim.REFERENCE in names
 
 
@@ -84,6 +84,8 @@ def test_spread_paths_are_the_declared_levels(results):
 
 def test_primary_balance_moves_by_the_declared_euros(results):
     for sc in sim.SCENARIOS:
+        if sc.pb_change_pp is not None:
+            continue
         g = results[results.scenario == sc.name].set_index("year")
         d = g.primary_balance_bn.diff()
         assert np.allclose(d.loc[2028:2031], sc.consolidation_bn)
@@ -94,9 +96,20 @@ def test_primary_balance_moves_by_the_declared_euros(results):
         assert np.allclose(growth, (1 + sc.real_growth) * (1 + sim.BASELINE.deflator_after) - 1)
 
 
+def test_statistical_takes_the_benchmark_changes_and_the_status_quo_market(results):
+    sc, ref = sim.scenario("statistical"), sim.scenario(sim.REFERENCE)
+    assert sc.spread_path() == ref.spread_path() and sc.real_growth == ref.real_growth
+    g = results[results.scenario == "statistical"].set_index("year").primary_balance_pct
+    d = sim.benchmark_pb_changes()
+    assert set(d) == {2028, 2029, 2030, 2031}
+    for y, v in d.items():
+        assert np.isclose(g[y] - g[y - 1], v)
+    assert np.allclose(g.loc[2032:], g[2031])           # flat after the benchmark ends
+
+
 def test_melenchon_is_the_costliest_and_status_quo_the_next(results):
     at = results[results.year == 2032].set_index("scenario").gg_interest_bn
-    others = at.drop(["melenchon", "philippe_hung"])
+    others = at.drop(["melenchon", "philippe_hung", "statistical"])
     assert at["melenchon"] > at["philippe_hung"] > others.max()
 
 

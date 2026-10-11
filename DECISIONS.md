@@ -3206,3 +3206,38 @@ scenarios and the reference, declared spread levels and Bund 3.5%, primary
 balance moves by the declared euros, ordering, status quo within a fifth of
 the EC DSM path). Full suite on a clean worktree identical before and after
 this change (68 failed, 29 errors, all pre-existing and unrelated; +3 passed).
+
+## D-S18-002 — The statistical benchmark restored to the AFT briefing as a sixth path (amends D-S18-001)
+
+Committee 2026-10-11, after D-S18-001 dropped D-S12-001's "current path".
+That path was not statistics-based: it was a declared 0.4 pp-of-GDP-a-year
+consolidation with the spread easing from 85 to 70 bp. The committee asked
+for the statistics-based forecast, which is the benchmark balance
+(`benchmark_balance.csv`, D-S11-002), so that is what returns.
+
+1. **Primary balance.** Benchmark NLB + benchmark `GF01_7` interest − 0.2% of
+   GDP interest receivable. The benchmark is anchored on 2024 and does not see
+   the 2025 outturn (NLB −5.7% against the actual −5.1%), so its level is not
+   used: only its year-on-year changes, 2028–2031 (+0.17, +0.18, +0.06,
+   +0.06 pp), applied in pp of GDP from the common 2027 starting point. After
+   2031, where the benchmark ends, the primary balance is held constant as a
+   share of GDP (`simulate.benchmark_pb_changes`, `Scenario.pb_change_pp`).
+2. **Spread and growth** as Philippe, hung Assembly (175 → 150 bp, 0.5% real).
+3. **Style.** Dotted grey on every scenario chart, drawn above the status quo
+   it shadows. The status quo (Philippe, hung) moves from black to solid
+   orange; the EC AMECO/DSM line in Figure 8, previously dotted grey, becomes a
+   brown dash-dot so the two cannot be confused.
+4. Philippe, hung stays the reference for `decompose_gap`.
+5. **Assumptions as tables.** Section 5 of the note now carries four tables:
+   the scenario assumptions (six rows), the assumptions common to every
+   scenario, the statistical benchmark year by year, and the RN counter-budget
+   against the Le Pen-majority path.
+
+**Result.** The benchmark sits on the status quo to 2031 (debt 130.4% vs
+130.6%, interest within €1bn in 2030), then drifts above it as the
+status quo keeps consolidating by €5bn a year and the benchmark does not:
+debt 145.3% and interest 5.6% of GDP in 2035.
+
+Gate (2026-10-11): `tests/debt/test_simulate.py` 14 passed (new: the
+benchmark's changes are applied exactly, the ratio is flat after 2031, the
+spread and growth equal the status quo's).
