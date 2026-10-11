@@ -21,9 +21,19 @@ INK, MUTED, AXIS = "#0b0b0b", "#898781", "#c3c2b7"
 SURFACE, SHADE = "#fcfcfb", "#eceae4"
 
 SCEN_STYLE = {                       # one colour per scenario, never reused
-    "current": (INK, "-"), "philippe_majority": (GREEN, "-"), "philippe_hung": (TEAL, "--"),
-    "lepen_hung": (GOLD, "--"), "lepen_majority": (RED, "-"), "lepen_rupture": (RED, ":"),
+    "philippe_majority": (GREEN, "-"), "philippe_hung": (INK, "-"),
+    "lepen_majority": (RED, "-"), "lepen_hung": (GOLD, "--"), "melenchon": (PURPLE, "-"),
 }
+HIST_FROM = 2010                     # every history line starts here (D-S18-001)
+REF = sim.REFERENCE
+
+
+def _label(name):
+    return sim.scenario(name).label
+
+
+def _lw(name):
+    return 2.2 if name == REF else 1.8
 
 plt.rcParams.update({
     "figure.figsize": (7.2, 3.3), "figure.dpi": 120,
@@ -58,22 +68,29 @@ def _history():
     return gf, gdp, led, exp
 
 
+def debt_history() -> pd.Series:
+    """Maastricht debt, % of GDP, general government (Eurostat gov_10dd_edpt1,
+    S13 GD), from the hand-keyed file under data/manual."""
+    d = pd.read_csv(sim.ROOT / "data" / "manual" / "FRA_maastricht_debt_pct_gdp.csv")
+    return d.set_index("year").value.astype(float)
+
+
 def chart_interest(res, out):
     gf, gdp, led, exp = _history()
     fig, ax = plt.subplots()
     ax.axvspan(2025.5, 2035.5, color=SHADE, lw=0, zorder=0)
-    h = exp.loc[2010:2024, "pct_gdp"]
+    h = exp.loc[HIST_FROM:2024, "pct_gdp"]
     ax.plot(h.index, h.values, color=BLUE, lw=2.2, label="outturn (Eurostat, GF01_7)")
     d = exp.loc[2025:2035, "pct_gdp"]
     ax.plot(d.index, d.values, color=MUTED, ls=":", lw=1.6, label="EC AMECO / DSM path in the strict file")
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[res.scenario == name].set_index("year")
         s = pd.concat([pd.Series({2025: exp.loc[2025, "pct_gdp"]}), s.gg_interest_pct_gdp])
-        ax.plot(s.index, s.values, color=c, ls=ls, lw=1.8 if name != "current" else 2.2, label=s.name or sim.SCENARIOS[[x.name for x in sim.SCENARIOS].index(name)].label)
-    ax.set_ylabel("% of GDP"); ax.set_xlim(2010, 2035.5); ax.grid(axis="y")
-    ax.set_title("France · general-government interest, outturn and six paths from the register")
+        ax.plot(s.index, s.values, color=c, ls=ls, lw=_lw(name), label=_label(name))
+    ax.set_ylabel("% of GDP"); ax.set_xlim(HIST_FROM - 0.3, 2035.5); ax.grid(axis="y")
+    ax.set_title("France · general-government interest, outturn and five paths from the register")
     ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.12))
-    for name in ("current", "lepen_majority", "philippe_majority"):
+    for name in ("melenchon", "philippe_hung", "lepen_majority"):
         s = res[(res.scenario == name) & (res.year == 2035)].iloc[0]
         ax.annotate(f"{s.gg_interest_pct_gdp:.1f}%  €{s.gg_interest_bn:,.0f}bn", (2035, s.gg_interest_pct_gdp),
                     xytext=(4, 0), textcoords="offset points", fontsize=7.5, color=SCEN_STYLE[name][0], va="center")
@@ -81,23 +98,32 @@ def chart_interest(res, out):
     _save(fig, out); return out
 
 
-def chart_paths(res, out, col, ylabel, title, ref=None, hist=None):
+def chart_paths(res, out, col, ylabel, title, ref=None, hist=None, annotate=False, source=None):
     fig, ax = plt.subplots()
     ax.axvspan(2025.5, 2035.5, color=SHADE, lw=0, zorder=0)
+    ends = {}
     if hist is not None:
         ax.plot(hist.index, hist.values, color=BLUE, lw=2.2, label="outturn")
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[res.scenario == name].set_index("year")[col]
         if hist is not None and 2025 in hist.index:
             s = pd.concat([pd.Series({2025: hist.loc[2025]}), s])
-        lab = sim.SCENARIOS[[x.name for x in sim.SCENARIOS].index(name)].label
-        ax.plot(s.index, s.values, color=c, ls=ls, lw=2.2 if name == "current" else 1.8, label=lab)
+        ax.plot(s.index, s.values, color=c, ls=ls, lw=_lw(name), label=_label(name))
+        ends[name] = float(s.iloc[-1])
+    if annotate:                     # end labels, nudged apart so none overlap
+        span = ax.get_ylim()[1] - ax.get_ylim()[0]
+        placed = []
+        for name, v in sorted(ends.items(), key=lambda kv: kv[1]):
+            y = max(v, placed[-1] + 0.045 * span) if placed else v
+            placed.append(y)
+            ax.annotate(f"{v:.0f}%", (2035, v), xytext=(2035.25, y), textcoords="data",
+                        fontsize=7.5, color=SCEN_STYLE[name][0], va="center")
     if ref is not None:
         ax.axhline(ref, color=AXIS, ls="--", lw=1)
     ax.set_ylabel(ylabel); ax.grid(axis="y"); ax.set_title(title)
-    ax.set_xlim((hist.index.min() if hist is not None else 2025) - 0.3, 2035.5)
+    ax.set_xlim((hist.index.min() if hist is not None else 2025) - 0.3, 2036.2 if annotate else 2035.5)
     ax.legend(ncol=2, loc="upper left")
-    _source(fig, "Source: ggfiscal.debt.simulate (declared scenarios, see the assumptions table); balance_ledger.csv for the outturn.")
+    _source(fig, source or "Source: ggfiscal.debt.simulate (declared scenarios, see the assumptions table); balance_ledger.csv for the outturn.")
     _save(fig, out); return out
 
 
@@ -106,31 +132,39 @@ def chart_spread(res, out):
     p = ref[ref.series_id.isin(["FR_LT10", "DE_LT10"])].pivot_table(index="date", columns="series_id", values="value")
     p.index = pd.to_datetime(p.index)
     sp = ((p.FR_LT10 - p.DE_LT10) * 100).dropna()
-    sp = sp[sp.index >= "2019-01-01"]
+    sp = sp[sp.index >= f"{HIST_FROM}-01-01"]
+    b = sim.BASELINE
+    today = pd.Timestamp(b.spread_today_date)
+    xt = today.year + (today.dayofyear - 0.5) / 365
     fig, ax = plt.subplots()
-    ax.axvspan(2026.7, 2035.5, color=SHADE, lw=0, zorder=0)
+    ax.axvspan(2026.85, 2035.5, color=SHADE, lw=0, zorder=0)
     x = sp.index.year + (sp.index.month - 0.5) / 12
-    ax.plot(x, sp.values, color=BLUE, lw=1.4, label="OAT–Bund 10y, monthly (OECD long-term rates)")
+    ax.plot(x, sp.values, color=BLUE, lw=1.4, label="OAT–Bund 10y, monthly (OECD) and today (Bloomberg)")
+    ax.plot([x[-1], xt], [sp.values[-1], b.spread_today_bp], color=BLUE, lw=1.4)
+    ax.plot([xt], [b.spread_today_bp], marker="o", ms=5, color=BLUE)
+    ax.annotate(f"{b.spread_today_bp:.0f} bp, {today:%-d %b %Y}", (xt, b.spread_today_bp), xytext=(-6, 8),
+                textcoords="offset points", fontsize=7.5, color=BLUE, ha="right")
     for name, (c, ls) in SCEN_STYLE.items():
-        s = res[res.scenario == name].set_index("year").spread_bp
-        lab = sim.SCENARIOS[[x.name for x in sim.SCENARIOS].index(name)].label
-        ax.plot(s.index + 0.5, s.values, color=c, ls=ls, lw=2.2 if name == "current" else 1.8, label=lab, marker="o", ms=3)
-    ax.set_ylabel("basis points"); ax.grid(axis="y"); ax.set_xlim(2019, 2035.9)
+        s = res[(res.scenario == name) & (res.year >= 2027)].set_index("year").spread_bp
+        ax.plot([xt, *(s.index + 0.5)], [b.spread_today_bp, *s.values], color=c, ls=ls, lw=_lw(name),
+                label=_label(name), marker="o", ms=3, markevery=list(range(1, len(s) + 1)))
+    ax.set_ylabel("basis points"); ax.grid(axis="y"); ax.set_xlim(HIST_FROM - 0.3, 2035.9)
     ax.set_title("France · the OAT–Bund spread, history and the paths each scenario declares")
-    ax.legend(ncol=2, loc="upper left")
-    _source(fig, "Source: deliverables/debt_reference_series.csv (FR_LT10 − DE_LT10); scenario paths are declared inputs, with a +3 bp per pp debt-ratio feedback.")
+    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.12))
+    _source(fig, f"Source: debt_reference_series.csv (FR_LT10 − DE_LT10, OECD monthly to Sep 2026); {today:%-d %b %Y} spot, Bloomberg.\n"
+                 "Scenario paths are declared annual averages: the 2027 level, a straight fade to 2029, flat after; no feedback.", y=-0.24)
     _save(fig, out); return out
 
 
 def chart_decomposition(dec, out):
-    d = dec[dec.year == 2030].set_index("scenario").drop(index="current", errors="ignore")
-    order = ["philippe_majority", "philippe_hung", "lepen_hung", "lepen_majority", "lepen_rupture"]
+    d = dec[dec.year == 2030].set_index("scenario").drop(index=REF, errors="ignore")
+    order = ["philippe_majority", "lepen_majority", "lepen_hung", "melenchon"]
     d = d.reindex([o for o in order if o in d.index])
     fig, ax = plt.subplots(figsize=(7.2, 3.4))
     x = range(len(d))
     ax.bar(x, d.spread_effect_bn, color=ORANGE, width=0.6, label="spread (price of new debt)")
     neg = d.spread_effect_bn < 0
-    ax.bar(x, d.volume_effect_bn, bottom=d.spread_effect_bn.where(~neg, 0).where(d.volume_effect_bn >= 0, d.spread_effect_bn.clip(upper=0)), color=BLUE, width=0.6, label="primary balance & issuance strategy (volume)")
+    ax.bar(x, d.volume_effect_bn, bottom=d.spread_effect_bn.where(~neg, 0).where(d.volume_effect_bn >= 0, d.spread_effect_bn.clip(upper=0)), color=BLUE, width=0.6, label="primary balance & growth (volume)")
     ax.bar(x, d.interaction_bn, bottom=(d.spread_effect_bn.clip(lower=0) + d.volume_effect_bn.clip(lower=0)), color=MUTED, width=0.6, label="interaction (the loop)")
     top = d.gap_bn.max() + max(d.interaction_bn.clip(lower=0).max(), 0)
     lo = min(d.spread_effect_bn.clip(upper=0).sum(), 0) - 1
@@ -140,10 +174,10 @@ def chart_decomposition(dec, out):
         ax.text(i, y, f"{r.gap_bn:+.0f}", ha="center", va="bottom" if r.gap_bn >= 0 else "top", fontsize=8.5, color=INK, fontweight="bold")
     ax.axhline(0, color=AXIS, lw=1)
     ax.set_xticks(list(x)); ax.set_xticklabels([r.label.replace(", ", "\n") for _, r in d.iterrows()], fontsize=8)
-    ax.set_ylabel("EUR bn, 2030, vs current path"); ax.grid(axis="y")
-    ax.set_title("France · what the 2030 interest gap to the current path is made of")
+    ax.set_ylabel("EUR bn, 2030, vs Philippe hung"); ax.grid(axis="y")
+    ax.set_title("France · what the 2030 interest gap to the status quo (Philippe, hung) is made of")
     ax.legend(loc="upper left")
-    _source(fig, "Source: ggfiscal.debt.simulate.decompose_gap — each lever re-run alone against the current path, feedback off.")
+    _source(fig, "Source: ggfiscal.debt.simulate.decompose_gap — each lever re-run alone against the status quo, feedback off.")
     _save(fig, out); return out
 
 
@@ -152,8 +186,7 @@ def chart_issuance(res, out):
     ax.axvspan(2026.5, 2035.5, color=SHADE, lw=0, zorder=0)
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[(res.scenario == name) & (res.year >= 2027)].set_index("year")
-        lab = sim.SCENARIOS[[x.name for x in sim.SCENARIOS].index(name)].label
-        ax.plot(s.index, s.mlt_gross_issuance_bn, color=c, ls=ls, lw=2.2 if name == "current" else 1.8, label=lab)
+        ax.plot(s.index, s.mlt_gross_issuance_bn, color=c, ls=ls, lw=_lw(name), label=_label(name))
     ax.axhline(310, color=AXIS, ls="--", lw=1); ax.text(2027.1, 313, "2026 programme €310bn (net of buybacks)", fontsize=7.5, color=MUTED)
     ax.set_ylabel("EUR bn, gross medium/long-term"); ax.grid(axis="y"); ax.set_xlim(2026.6, 2035.4)
     ax.set_title("France · gross OAT issuance the register implies (redemptions + net financing)")
@@ -171,23 +204,22 @@ def chart_coupon(res, out):
     fb = ye[ye.instrument_class == "fixed_bullet"]
     w = fb.groupby("as_of").apply(lambda g: (g.coupon_pct * g.nominal_lcu_mn).sum() / g.nominal_lcu_mn.sum(), include_groups=False)
     w.index = pd.to_datetime(w.index).year
-    w = w.loc[2010:]
+    w = w.loc[HIST_FROM:]
     ax.plot(w.index, w.values, color=BLUE, lw=2.2, label="average coupon, fixed-rate stock (register)")
     for name, (c, ls) in SCEN_STYLE.items():
         s = res[res.scenario == name].set_index("year")
-        lab = sim.SCENARIOS[[x.name for x in sim.SCENARIOS].index(name)].label
-        ax.plot([2025, *s.index], [w.loc[2025], *s.avg_coupon_fixed_pct], color=c, ls=ls, lw=2.2 if name == "current" else 1.6, label=lab)
-        if name in ("current", "lepen_majority", "philippe_majority"):
+        ax.plot([2025, *s.index], [w.loc[2025], *s.avg_coupon_fixed_pct], color=c, ls=ls, lw=_lw(name), label=_label(name))
+        if name in ("philippe_hung", "melenchon"):
             ax.plot(s.index, s.oat_10y_pct, color=c, ls=ls, lw=0.9, alpha=0.6)
-    ax.text(2026.0, 5.35, "thin lines: the 10y OAT yield each scenario implies", fontsize=7.5, color=MUTED)
-    ax.set_ylabel("%"); ax.grid(axis="y"); ax.set_xlim(2010, 2035.5); ax.set_ylim(1.2, 5.6)
+    ax.text(2011.0, 6.55, "thin lines: the 10y OAT yield, status quo and Mélenchon", fontsize=7.5, color=MUTED)
+    ax.set_ylabel("%"); ax.grid(axis="y"); ax.set_xlim(HIST_FROM - 0.3, 2035.5); ax.set_ylim(1.2, 6.9)
     ax.set_title("France · the average coupon keeps rising whoever wins: the refinancing drag")
     ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.12))
     _source(fig, "Source: deliverables/debt_positions.csv × debt_securities.csv; ggfiscal.debt.simulate for the paths.", y=-0.2)
     _save(fig, out); return out
 
 
-def chart_duration(out, spread_bp=90.0):
+def chart_duration(out, spread_bp=sim.BASELINE.spread_today_bp):
     d = sim.duration_table(spread_bp)
     bins = [0, 1, 2, 3, 5, 7, 10, 15, 20, 30, 100]
     labels = ["0-1", "1-2", "2-3", "3-5", "5-7", "7-10", "10-15", "15-20", "20-30", "30+"]
@@ -214,17 +246,18 @@ def render_all(out_dir: Path) -> dict[str, Path]:
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
     res = sim.run_all()
     res.to_csv(out_dir / "scenarios_FRA.csv", index=False)
-    dec = pd.concat([sim.decompose_gap(sc) for sc in sim.SCENARIOS[1:]], ignore_index=True)
+    dec = pd.concat([sim.decompose_gap(sc) for sc in sim.SCENARIOS if sc.name != REF], ignore_index=True)
     dec.to_csv(out_dir / "scenario_decomposition.csv", index=False)
     gf, gdp, led, exp = _history()
     figs = {}
     figs["scen_interest"] = chart_interest(res, out_dir / "scen_interest.png")
     figs["scen_deficit"] = chart_paths(res, out_dir / "scen_deficit.png", "deficit_pct_gdp", "% of GDP (deficit, positive)",
                                        "France · general-government deficit each scenario implies", ref=3.0,
-                                       hist=(-led.loc[2015:2025, "nlb_pct_gdp"]))
+                                       hist=(-led.loc[HIST_FROM:2025, "nlb_pct_gdp"]))
     figs["scen_debt"] = chart_paths(res, out_dir / "scen_debt.png", "debt_pct_gdp", "% of GDP",
-                                    "France · Maastricht debt ratio each scenario implies", ref=None,
-                                    hist=pd.Series({2025: sim.BASELINE.debt_2025_pct}))
+                                    "France · Maastricht debt ratio, outturn and the path each scenario implies", ref=None,
+                                    hist=debt_history().loc[HIST_FROM:2025], annotate=True,
+                                    source="Source: Eurostat gov_10dd_edpt1 (S13, GD) to 2025, data/manual; ggfiscal.debt.simulate from 2026 (declared scenarios).")
     figs["scen_spread"] = chart_spread(res, out_dir / "scen_spread.png")
     figs["scen_decomposition"] = chart_decomposition(dec, out_dir / "scen_decomposition.png")
     figs["scen_issuance"] = chart_issuance(res, out_dir / "scen_issuance.png")

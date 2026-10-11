@@ -68,15 +68,19 @@ def main() -> Path:
     dec = pd.read_csv(FIG / "scenario_decomposition.csv")
     R = {(r.scenario, int(r.year)): r for r in res.itertuples()}
     D = {(r.scenario, int(r.year)): r for r in dec.itertuples()}
-    short = {"current": "cur", "philippe_majority": "pm", "philippe_hung": "ph",
-             "lepen_majority": "lp", "lepen_hung": "lph", "lepen_rupture": "rup"}
+    short = {"philippe_majority": "pm", "philippe_hung": "ph", "lepen_majority": "lp",
+             "lepen_hung": "lph", "melenchon": "mel"}
     for name, s in short.items():
-        for y in (2027, 2028, 2030, 2032, 2035):
+        for y in (2027, 2028, 2029, 2030, 2031, 2032, 2035):
             r = R[(name, y)]
             V[f"{s}_{y}_bn"] = f"{r.gg_interest_bn:,.0f}"
             V[f"{s}_{y}_pct"] = f"{r.gg_interest_pct_gdp:.1f}"
             V[f"{s}_{y}_debt"] = f"{r.debt_pct_gdp:.0f}"
             V[f"{s}_{y}_deficit"] = f"{r.deficit_pct_gdp:.1f}"
+            V[f"{s}_{y}_pb"] = f"{r.primary_balance_pct:+.1f}"
+            V[f"{s}_{y}_oat10"] = f"{r.oat_10y_pct:.1f}"
+            V[f"{s}_{y}_iss"] = f"{r.mlt_gross_issuance_bn:,.0f}"
+            V[f"{s}_{y}_cpn"] = f"{r.avg_coupon_fixed_pct:.1f}"
         for y in (2030, 2035):
             if (name, y) in D:
                 d = D[(name, y)]
@@ -87,8 +91,29 @@ def main() -> Path:
                 V[f"{s}_{y}_interaction"] = f"{d.interaction_bn:,.1f}"
                 V[f"{s}_{y}_interaction_round"] = f"{math.ceil(d.interaction_bn):,.0f}"
 
+    # the status quo against the EC DSM path carried in the strict file
+    strict = pd.read_csv(sim.DELIV / "strict_FRA.csv").set_index("year")
+    dsm = strict["GF01_7 - Public debt transactions (interest)"] / 1000
+    V["dsm_2030_bn"] = f"{dsm.loc[2030]:,.0f}"
+    V["ph_dsm_2030_gap"] = f"{R[('philippe_hung', 2030)].gg_interest_bn - dsm.loc[2030]:,.0f}"
+    # RN promise against the Le Pen-majority path: savings to 2032 vs 2027
+    lp = sim.scenario("lepen_majority")
+    V["lp_savings_2032_bn"] = f"{sum(v for y, v in lp.pb_changes().items() if y <= 2032):,.0f}"
+
     # engine summaries
-    ds = sim.duration_summary(90.0)
+    b = sim.BASELINE
+    V["spread_today_bp"] = f"{b.spread_today_bp:.0f}"
+    V["oat10_today_pct"] = f"{b.bund_curve[10] + b.spread_today_bp / 100:.2f}"
+    V["bund10_pct"] = f"{b.bund_curve[10]:.2f}"
+    ref = pd.read_csv(sim.DELIV / "debt_reference_series.csv", low_memory=False)
+    p10 = ref[ref.series_id.isin(["FR_LT10", "DE_LT10"])].pivot_table(index="date", columns="series_id", values="value").dropna()
+    V["spread_latest_month_bp"] = f"{(p10.FR_LT10.iloc[-1] - p10.DE_LT10.iloc[-1]) * 100:.0f}"
+    V["spread_latest_month"] = pd.Timestamp(p10.index[-1]).strftime("%B %Y")
+    from ggfiscal.report.briefing_fra_scenarios import debt_history  # noqa: E402
+    dh = debt_history()
+    for y in (2000, 2007, 2010, 2019, 2020, 2023, 2025):
+        V[f"debt_hist_{y}"] = f"{dh.loc[y]:.1f}"
+    ds = sim.duration_summary(b.spread_today_bp)
     V["dur_mod"] = f"{ds['modified_duration_years']:.1f}"
     V["dur_loss100"] = f"{ds['loss_per_100bp_bn']:,.0f}"
     V["dur_loss100_pct"] = f"{ds['loss_per_100bp_pct_gdp']:.1f}"
@@ -125,22 +150,25 @@ def main() -> Path:
     rows = []
     for sc in sim.SCENARIOS:
         r30, r28, r35 = R[(sc.name, 2030)], R[(sc.name, 2028)], R[(sc.name, 2035)]
-        cls = " class='hl'" if sc.name == "current" else ""
+        cls = " class='hl'" if sc.name == sim.REFERENCE else ""
         rows.append(f"<tr{cls}><td class='l'>{sc.label}</td><td>{r30.spread_bp:.0f}</td><td>{r30.oat_10y_pct:.1f}%</td>"
                     f"<td>{r28.gg_interest_bn:,.0f}</td><td>{r30.gg_interest_bn:,.0f}</td><td>{r30.gg_interest_pct_gdp:.1f}</td>"
                     f"<td>{r35.gg_interest_bn:,.0f}</td><td>{r35.gg_interest_pct_gdp:.1f}</td><td>{r30.deficit_pct_gdp:.1f}</td>"
                     f"<td>{r30.debt_pct_gdp:.0f}</td><td>{r35.debt_pct_gdp:.0f}</td><td>{r30.mlt_gross_issuance_bn:,.0f}</td></tr>")
     V["scenario_rows"] = "\n".join(rows)
 
-    # assumptions table
-    def dpath(d, unit=""):
-        return ", ".join(f"{y} {v:+.1f}{unit}" if isinstance(v, float) and unit == "" else f"{y} {v:g}{unit}" for y, v in sorted(d.items()))
-    rows = []
+    # scenario assumptions table (section 5) and its narrative twin (section 8)
+    rows, notes = [], []
     for sc in sim.SCENARIOS:
-        r = R[(sc.name, 2030)]
-        rows.append(f"<tr><td class='l'>{sc.label}</td><td class='l'>{dpath(sc.pb_deviation)}</td><td class='l'>{dpath(sc.spread_bp)}</td>"
-                    f"<td class='l'>{dpath(sc.btf_stock)}</td><td>{sc.maturity_tilt:.2f}</td><td>{r.mlt_avg_maturity_at_issue:.1f}y</td><td class='l'>{sc.note}</td></tr>")
+        sp = sc.spread_path(b)
+        cls = " class='hl'" if sc.name == sim.REFERENCE else ""
+        rows.append(f"<tr{cls}><td class='l'>{sc.label}</td><td>{sc.spread_2027_bp:.0f}</td><td>{sp[2028]:.1f}</td>"
+                    f"<td>{sc.spread_2029_bp:.0f}</td><td>{sc.consolidation_bn:+.0f}</td><td>{sc.consolidation_after_bn:+.0f}</td>"
+                    f"<td>{100 * sc.real_growth:.1f}%</td><td>{100 * ((1 + sc.real_growth) * (1 + b.deflator_after) - 1):.1f}%</td>"
+                    f"<td>{R[(sc.name, 2031)].primary_balance_pct:+.1f}</td><td>{R[(sc.name, 2035)].primary_balance_pct:+.1f}</td></tr>")
+        notes.append(f"<tr><td class='l'>{sc.label}</td><td class='l'>{sc.note}</td></tr>")
     V["assumption_rows"] = "\n".join(rows)
+    V["assumption_notes"] = "\n".join(notes)
 
     def fill(html: str, inline: bool) -> str:
         def img(m):

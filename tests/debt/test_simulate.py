@@ -62,23 +62,58 @@ def test_identities_hold(results):
         assert np.allclose(g.debt_bn.values, d0 + g.deficit_bn.cumsum().values)
 
 
-def test_ordering_of_the_political_scenarios(results):
+def test_five_scenarios_and_the_reference():
+    names = [sc.name for sc in sim.SCENARIOS]
+    assert names == ["philippe_majority", "philippe_hung", "lepen_majority", "lepen_hung", "melenchon"]
+    assert sim.REFERENCE in names
+
+
+def test_spread_paths_are_the_declared_levels(results):
+    """2026 at today's level, the 2027 level, a straight fade to 2029, flat
+    after; no feedback moves them."""
+    for sc in sim.SCENARIOS:
+        s = results[results.scenario == sc.name].set_index("year").spread_bp
+        assert s[2026] == sim.BASELINE.spread_today_bp
+        assert s[2027] == sc.spread_2027_bp
+        assert s[2028] == (sc.spread_2027_bp + sc.spread_2029_bp) / 2
+        assert (s.loc[2029:] == sc.spread_2029_bp).all()
+        assert np.allclose(results[results.scenario == sc.name].oat_10y_pct,
+                           sim.BASELINE.bund_curve[10] + s.values / 100)
+    assert sim.BASELINE.bund_curve[10] == 3.5
+
+
+def test_primary_balance_moves_by_the_declared_euros(results):
+    for sc in sim.SCENARIOS:
+        g = results[results.scenario == sc.name].set_index("year")
+        d = g.primary_balance_bn.diff()
+        assert np.allclose(d.loc[2028:2031], sc.consolidation_bn)
+        assert np.allclose(d.loc[2032:], sc.consolidation_after_bn)
+        # common to 2027, then nominal growth = real growth plus the deflator
+        assert np.isclose(g.primary_balance_pct[2027], sim.BASELINE.primary_balance[2027])
+        growth = g.gdp_bn.pct_change().loc[2028:]
+        assert np.allclose(growth, (1 + sc.real_growth) * (1 + sim.BASELINE.deflator_after) - 1)
+
+
+def test_melenchon_is_the_costliest_and_status_quo_the_next(results):
     at = results[results.year == 2032].set_index("scenario").gg_interest_bn
-    assert at["philippe_majority"] < at["current"] < at["lepen_hung"] < at["lepen_majority"] < at["lepen_rupture"]
+    others = at.drop(["melenchon", "philippe_hung"])
+    assert at["melenchon"] > at["philippe_hung"] > others.max()
 
 
-def test_current_path_is_near_the_ec_dsm_path(results):
-    """The strict file carries the EC DSM interest path; a register roll under
-    the current spread should land within a fifth of it in 2030."""
+def test_status_quo_is_near_the_ec_dsm_path(results):
+    """The strict file carries the EC DSM interest path; a register roll in
+    the status quo should land within a fifth of it in 2030 (it is above it:
+    the spread starts at 135 bp)."""
     strict = pd.read_csv(sim.DELIV / "strict_FRA.csv").set_index("year")
     dsm_2030 = strict.loc[2030, "GF01_7 - Public debt transactions (interest)"] / 1000
-    ours = results.query("scenario == 'current' and year == 2030").gg_interest_bn.iloc[0]
+    ours = results.query("scenario == @sim.REFERENCE and year == 2030").gg_interest_bn.iloc[0]
     assert abs(ours / dsm_2030 - 1) < 0.2
 
 
 def test_decomposition_adds_up():
-    d = sim.decompose_gap(sim.SCENARIOS[3])
+    d = sim.decompose_gap(sim.scenario("melenchon"))
     assert np.allclose(d.gap_bn, d.spread_effect_bn + d.volume_effect_bn + d.interaction_bn)
+    assert (d.spread_effect_bn > 0).all()
 
 
 def test_duration_table_prices_sensibly():
