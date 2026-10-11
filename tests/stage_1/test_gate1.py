@@ -66,7 +66,9 @@ def test_esa_exp_identity_and_every_level2_split_hold_in_every_anchor_year():
                     index="year", columns="line_code", values="value_lcu_mn")
                 cols = [sp["parent"], sp["remainder"], *sp["level2s"]]
                 full = g.dropna(subset=cols)
-                assert len(full) >= 25, (iso3, variant, sp["parent"])
+                # ITA and BEL publish COFOG Level II from 2001 only (2001-2024,
+                # 24 years; EU3_KICKOFF.md DE3 — no IMF/OECD series earlier)
+                assert len(full) >= 24, (iso3, variant, sp["parent"])
                 total = full[sp["remainder"]] + full[sp["level2s"]].sum(axis=1)
                 assert (total - full[sp["parent"]]).abs().max() < 1e-6 * full[sp["parent"]].abs().max()
                 for c in sp["level2s"]:
@@ -106,7 +108,12 @@ def test_history_only_all_grade_a_or_b_no_forecasts():
                 rem = {sp["remainder"] for sp in config.level2_splits("COFOG")}
                 assert lines <= l2 | rem, (iso3, lines)
             else:
-                assert iso3 == "DEU" and lines <= {"GF01_7", "GF01_X"}, (iso3, lines)
+                # the D10 proxy fills the anchor years before the anchor's own
+                # Level II table starts (DEU 1995-99; ITA, BEL 1995-2000)
+                assert lines <= {"GF01_7", "GF01_X"}, (iso3, lines)
+                l2_start = config.family(iso3).cofog(iso3, "GF0107").index.min()
+                yrs = b_anchor[b_anchor.iso3 == iso3].year
+                assert (yrs < l2_start).all(), (iso3, sorted(set(yrs)), l2_start)
 
 
 def test_v_suite_green_at_stage_1():

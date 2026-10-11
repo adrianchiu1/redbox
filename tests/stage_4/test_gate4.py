@@ -43,8 +43,14 @@ def test_gate4_variants_distinguishable_row_by_row():
     assert ("FRA", "R05") in extra_lines
     # and every maximum-only row is flagged by grade or observation type
     m_only = m.merge(pd.DataFrame(list(extra), columns=key), on=key)
+    # ... or belongs to a §7.8 proxy leg (maximum-only by design whatever its
+    # measured band: ITA/ESP GF10's AMECO D.62 proxy measures B, and its
+    # 2025 row is a stitched actual on the proxy's growth — D-S17-005)
+    proxy_legs = set(zip(*m.loc[m.observation_type == "proxy_forecast", ["iso3", "line_code"]].T.values))
+    in_proxy_leg = pd.Series([(i, l) in proxy_legs for i, l in zip(m_only.iso3, m_only.line_code)],
+                             index=m_only.index)
     assert ((m_only.quality_grade.isin(["C", "D"]))
-            | (m_only.observation_type == "proxy_forecast")).all()
+            | (m_only.observation_type == "proxy_forecast") | in_proxy_leg).all()
 
 
 def test_gate4_no_leakage_into_strict():
@@ -72,7 +78,9 @@ def test_gf01_via_gf01_7_growth_with_residual_method():
         for y in g1:
             assert g1[y] == pytest.approx(g7[y], rel=1e-12)
         assert (gf01.residual_method == config.residual_method(iso3, "GF01")).all()
-        assert (gf01.quality_grade == "D").all()  # measured band, recorded
+        # measured band, recorded: D for GBR/FRA/DEU/ESP/BEL; C for ITA,
+        # where interest is a larger share of GF01 (D-S17-005)
+        assert (gf01.quality_grade == ("C" if iso3 == "ITA" else "D")).all(), iso3
         assert gf01.coverage_share.notna().all()
         # strict never carries it
         s = _rows("strict")
@@ -88,7 +96,9 @@ def test_gf10_proxy_and_d12_chain():
         ameco = g[g.growth_source_id == "EC_AMECO"]
         assert len(ameco) and max(ameco.year) == 2027
         assert (ameco[ameco.is_forecast].observation_type == "proxy_forecast").all()
-        if iso3 in ("FRA", "DEU"):
+        # the AR leg: FRA/DEU under the V16 threshold, ITA/ESP/BEL by the
+        # committee's approved join (D-S17-013); GBR has no AR
+        if iso3 in ("FRA", "DEU", "ITA", "ESP", "BEL"):
             ar = g[g.growth_source_id == "EC_AGEING_2024"]
             assert len(ar) and min(ar.year) == 2028 and max(ar.year) == 2070
             assert (ar.observation_type == "composite_forecast").all()
@@ -122,13 +132,16 @@ def test_coverage_matrix_complete(matrix):
     # (for the countries whose build has reached Stage 4; D-S16-008)
     staged = matrix.iso3.isin(config.countries_at_stage(4))
     gf01 = matrix[(matrix.line_code == "GF01") & staged]
-    assert len(gf01) == 3
+    assert len(gf01) == len(config.countries_at_stage(4))
     assert (gf01.final_maximum_year == 2027).all()
     assert (gf01.residual_method == "grow_with_proxy").all()
     gf10 = matrix[matrix.line_code == "GF10"].set_index("iso3")
     assert gf10.loc["GBR", "final_maximum_year"] == 2027
     assert gf10.loc["FRA", "final_maximum_year"] == 2070
     assert gf10.loc["DEU", "final_maximum_year"] == 2070
+    # ITA/ESP/BEL: the AR join into GF10 is committee-approved (D-S17-013)
+    for iso3 in ("ITA", "ESP", "BEL"):
+        assert gf10.loc[iso3, "final_maximum_year"] == 2070, iso3
     # remainders are never forecast: final maximum = final actual
     for code in ("GF01_X", "GF04_X", "GF10_X", "R02_X", "R06_X"):
         gx = matrix[matrix.line_code == code]
@@ -149,7 +162,7 @@ def test_coverage_matrix_complete(matrix):
     assert g102.loc["GBR", "final_strict_year"] == g102.loc["GBR", "final_actual_year"]
     # the ESA_EXP social-benefits line is a direct AMECO forecast (D-S13-003)
     e03 = matrix[(matrix.classification == "ESA_EXP") & (matrix.line_code == "E03") & staged]
-    assert len(e03) == 3 and (e03.final_strict_year == 2027).all()
+    assert len(e03) == len(config.countries_at_stage(4)) and (e03.final_strict_year == 2027).all()
 
 
 def test_v17_and_suite_green_at_stage_4():

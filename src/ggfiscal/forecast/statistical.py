@@ -19,6 +19,12 @@ plus a fifth, `combination`: the mean of the four point forecasts, with a
 standard error that carries BOTH the average within-model variance and the
 variance across the four point forecasts, so it widens honestly when the methods
 disagree rather than pretending their agreement is information.
+A member is skipped from the combination (but still published) when its
+standard error at the horizon exceeds five times the standard deviation of
+the series' own changes over the same number of years — a model claiming far
+more uncertainty than the series has ever shown is misspecified. If no member
+qualifies, the combination forward-fills the last observed % of GDP
+(D-S17-024, D-S17-025).
 
 Two deliberate choices, both committee-approved:
 
@@ -113,10 +119,16 @@ def _ets(y: pd.Series, h: int):
     if best is None:
         raise RuntimeError("no ETS specification converged")
     _, fit, label = best
-    frame = fit.get_prediction(start=len(values), end=len(values) + h - 1
+    # intervals are simulated for some specifications: fixed seed so a rerun
+    # reproduces them (D-S17-018)
+    frame = fit.get_prediction(start=len(values), end=len(values) + h - 1,
+                               rng=np.random.default_rng(SEED)
                                ).summary_frame(alpha=0.05)
     se = (frame["pi_upper"] - frame["pi_lower"]).to_numpy() / (2 * Z95)
     return frame["mean"].to_numpy(), se, label
+
+
+SEED = 20260907   # any fixed value: the interval simulations must be reproducible
 
 
 def _prophet(y: pd.Series, h: int):
@@ -127,6 +139,7 @@ def _prophet(y: pd.Series, h: int):
         "y": y.to_numpy(float)})
     model = Prophet(yearly_seasonality=False, weekly_seasonality=False,
                     daily_seasonality=False, interval_width=0.95)
+    np.random.seed(SEED)          # Prophet samples its intervals (D-S17-018)
     model.fit(history)
     last = int(y.index.max())
     future = pd.DataFrame({"ds": pd.to_datetime(
@@ -177,13 +190,42 @@ def _strict_tree() -> pd.DataFrame:
                          float_precision="round_trip")
         frames.append(df.assign(classification=classification))
     tree = pd.concat(frames, ignore_index=True)
+    # packaging (Stage 6) only: a country whose build has not reached it (the
+    # USA before U6) gets no statistical forecasts (D-S16-008, D-S17-008)
+    tree = tree[tree.iso3.isin(config.countries_at_stage(6))]
     return tree[~tree.line_code.isin(TOTALS)]
+
+
+# Ensemble admission (D-S17-024, amended D-S17-025, committee 2026-10-10). A
+# member whose standard error at the horizon is more than
+# MAX_CALIBRATION_RATIO times the standard deviation of the series' own
+# h-year changes over the fit window claims far more uncertainty than the
+# series has ever shown — a sign of misspecification. Such a member stays
+# published but is skipped from the combination. If no member qualifies, the
+# combination forward-fills the last observed % of GDP, with the history's
+# own h-year change volatility as its standard error. Measured on the 2026-10
+# run: median ratio 0.97, 99.5th percentile 4.4.
+MAX_CALIBRATION_RATIO = 5.0
+
+
+def _hist_change_sd(y: pd.Series, h: int) -> float:
+    v = np.asarray(y, float)
+    changes = v[h:] - v[:-h] if len(v) > h else np.array([])
+    return float(np.std(changes, ddof=1)) if len(changes) >= 3 else float("nan")
+
+
+def calibration_ratio(y: pd.Series, se_h: float, h: int) -> float:
+    """se at horizon h / sd of the history's h-year changes (NaN where fewer
+    than three changes exist or they never vary)."""
+    sd = _hist_change_sd(y, h)
+    return float(se_h) / sd if sd > 0 else float("nan")
 
 
 def forecast_series(y: pd.Series, h: int) -> tuple[dict, list[str]]:
     """Run every method on one history. Returns {method: (point, se, label)}
     plus the combination, and a list of any failures (reported, not raised —
-    one awkward series must not take the run down)."""
+    one awkward series must not take the run down) and of any member the
+    calibration rule keeps out of the combination."""
     out, failures = {}, []
     for name, fn in METHODS.items():
         try:
@@ -191,13 +233,31 @@ def forecast_series(y: pd.Series, h: int) -> tuple[dict, list[str]]:
         except Exception as exc:                      # noqa: BLE001
             failures.append(f"{name}: {type(exc).__name__}: {exc}")
     if out:
-        points = np.vstack([v[0] for v in out.values()])
-        ses = np.vstack([v[1] for v in out.values()])
-        between = points.var(axis=0, ddof=1) if len(points) > 1 else 0.0
-        out["combination"] = (
-            points.mean(axis=0),
-            np.sqrt((ses ** 2).mean(axis=0) + between),
-            f"mean of {len(points)} + between-model variance")
+        ratios = {m: calibration_ratio(y, v[1][-1], h) for m, v in out.items()}
+        excluded = sorted((m for m, r in ratios.items() if r > MAX_CALIBRATION_RATIO),
+                          key=lambda m: -ratios[m])
+        members = [m for m in out if m not in excluded]
+        why = ", ".join(f"{m} (calibration ratio {ratios[m]:.1f})" for m in excluded)
+        if excluded:
+            failures.append(f"excluded from the combination: {why}")
+        if members:
+            points = np.vstack([out[m][0] for m in members])
+            ses = np.vstack([out[m][1] for m in members])
+            between = points.var(axis=0, ddof=1) if len(points) > 1 else 0.0
+            label = f"mean of {len(points)} + between-model variance"
+            if excluded:
+                label += f"; excluded {why} > {MAX_CALIBRATION_RATIO:g}"
+            out["combination"] = (points.mean(axis=0),
+                                  np.sqrt((ses ** 2).mean(axis=0) + between), label)
+        else:
+            # no admissible member: the last observation carried forward; the
+            # band is the history's own k-year change volatility, k = 1..h
+            last = float(np.asarray(y, float)[-1])
+            se = np.array([_hist_change_sd(y, k) for k in range(1, h + 1)])
+            out["combination"] = (np.full(h, last), se,
+                                  f"forward fill of the last observation; no admissible "
+                                  f"member (excluded {why} > {MAX_CALIBRATION_RATIO:g})")
+            failures.append("no admissible member: forward fill of the last observation")
     return out, failures
 
 

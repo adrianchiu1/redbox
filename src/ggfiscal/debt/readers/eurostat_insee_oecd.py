@@ -39,10 +39,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from ggfiscal.debt.families.eurostat_insee_oecd import (
-    EUROSTAT_GEO,
-    INSEE_AFT_AGG_IDBANKS,
-)
+from ggfiscal import config
+from ggfiscal.debt.families.eurostat_insee_oecd import INSEE_AFT_AGG_IDBANKS
 from ggfiscal.debt.readers import snap_path
 
 # ---------- shared period parsing ----------
@@ -125,7 +123,7 @@ def _monthly_series(df: pd.DataFrame) -> pd.Series:
 def d41pay(iso3: str, sector: str) -> pd.Series:
     """gov_10a_main D41PAY (interest, expenditure), MIO_NAC, one subsector,
     annual (int-year index)."""
-    geo = EUROSTAT_GEO[iso3]
+    geo = config.eurostat_geo(iso3)
     df = eurostat(f"gov_10a_main_D41PAY_{geo}")
     return _annual_series(df[df["sector"] == sector])
 
@@ -133,7 +131,7 @@ def d41pay(iso3: str, sector: str) -> pd.Series:
 def b9(iso3: str, sector: str) -> pd.Series:
     """gov_10a_main B9 (net lending(+)/borrowing(-)), MIO_NAC, one subsector,
     annual (int-year index)."""
-    geo = EUROSTAT_GEO[iso3]
+    geo = config.eurostat_geo(iso3)
     df = eurostat(f"gov_10a_main_B9_{geo}")
     return _annual_series(df[df["sector"] == sector])
 
@@ -144,7 +142,7 @@ def debt_by_maturity(iso3: str, sector: str = "S1311") -> pd.DataFrame:
     """gov_10dd_rmd: gross debt (`GD`) and average residual maturity
     (`GD_VAR`, unit `YR`) by the 7 maturity bands (TOTAL, Y_LE1 <=1y, Y1-5,
     Y_GT1 >1y, Y5-10, Y10-30, Y_GT30 >30y), one subsector, all units."""
-    geo = EUROSTAT_GEO[iso3]
+    geo = config.eurostat_geo(iso3)
     df = eurostat(f"gov_10dd_rmd_{geo}")
     sel = df[df["sector"] == sector]
     return sel.sort_values(["na_item", "unit", "maturity", "time_period"]).reset_index(drop=True)
@@ -160,7 +158,7 @@ def debt_by_instrument(iso3: str, sector: str) -> pd.DataFrame:
     module docstring on the sector/sector2 key-order correction). Callers
     select the holders-total view with `df[df.sector2 == "S1_S2"]` or break
     out by holder by grouping on `sector2`."""
-    geo = EUROSTAT_GEO[iso3]
+    geo = config.eurostat_geo(iso3)
     df = eurostat(f"gov_10dd_ggd_{sector}_{geo}")
     return df.sort_values(["na_item", "sector2", "maturity", "time_period"]).reset_index(drop=True)
 
@@ -169,7 +167,7 @@ def quarterly_debt(iso3: str, sector: str) -> pd.DataFrame:
     """gov_10q_ggdebt: quarterly gross debt (`GD`) and instrument components
     (F2/F21/F22_F29/F3/F31/F32/F4/F41/F42), unit MIO_NAC, one subsector
     (S13, S1311, S13111, S13112, ... as available for the country)."""
-    geo = EUROSTAT_GEO[iso3]
+    geo = config.eurostat_geo(iso3)
     df = eurostat(f"gov_10q_ggdebt_{geo}")
     sel = df[df["sector"] == sector]
     return sel.sort_values(["na_item", "time_period"]).reset_index(drop=True)
@@ -262,7 +260,7 @@ def sfa_components(iso3: str) -> pd.DataFrame:
     edpt3's `KX`/`ORINV`/`ORRNV`/`ORFCD`/`ORADJ` items are the
     `sfa_financial_transactions`/`sfa_accrual_adjustments`/`sfa_other`
     bridge items of `debt_financing_reconciliation`."""
-    geo = EUROSTAT_GEO[iso3]
+    geo = config.eurostat_geo(iso3)
     d2 = eurostat(f"gov_10dd_edpt2_{geo}")
     d2 = d2[d2["unit"] == "MIO_NAC"].assign(table="edpt2")
     d3 = eurostat(f"gov_10dd_edpt3_{geo}")

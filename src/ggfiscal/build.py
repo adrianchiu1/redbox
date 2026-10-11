@@ -139,9 +139,11 @@ def anchor_series(iso3: str) -> dict[tuple[str, str], dict]:
         concept = "d41_gross_accrued" if "d41_gross_accrued" in meta.get("concept_flags", []) else ""
         out.update([m("ESA_EXP", code, series, esa_src, obs, level, meta["label"],
                       concept=concept, notes=notes)])
-    for code, (series, obs, notes) in rev.items():
+    for code, (series, obs, notes, *own_src) in rev.items():
+        # a family may name a line's own table (D-S17-004: ESP R03/R04 from
+        # gov_10a_taxag where gov_10a_main publishes no D.51 split)
         concept = "d41_gross_accrued" if code == "R07" else ""
-        out.update([m("ESA_REV", code, series, rev_src, obs, "1",
+        out.update([m("ESA_REV", code, series, own_src[0] if own_src else rev_src, obs, "1",
                       rev_meta[code]["label"], concept=concept, notes=notes)])
     out.update([m("ESA_REV", "TR", tr, rev_src, "anchor_actual", "total",
                   "Total revenue")])

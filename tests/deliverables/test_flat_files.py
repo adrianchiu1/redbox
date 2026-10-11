@@ -220,8 +220,14 @@ def test_ledger_identities_hold_in_the_flat_file():
     # ONS / Eurostat close exactly; the OECD Table 12 balancing item (USA) is
     # published rounded to USD 0.001 mn beside OTR and OTE, so a USD 1,000
     # difference is the anchor's own rounding (V23 tolerance is 0.1% of TE)
-    assert (led.nlb_lcu_mn - led.b9_anchor_lcu_mn).abs().max() == pytest.approx(
-        0, abs=2e-3)
+    # Eurostat's BEL main aggregates do not close exactly: TR - TE differs
+    # from the published B.9 by up to EUR 0.8 mn (2024-25, provisional;
+    # 2.4e-6 of TE) — the anchor's own inconsistency, far inside V23's 0.1%
+    # of TE (D-S17-004). Every country: within 1e-5 of TE.
+    assert ((led.nlb_lcu_mn - led.b9_anchor_lcu_mn).abs()
+            <= (1e-5 * led.te_lcu_mn.abs()).clip(lower=2e-3)).all()
+    exact = led[led.iso3 != "BEL"]
+    assert (exact.nlb_lcu_mn - exact.b9_anchor_lcu_mn).abs().max() == pytest.approx(0, abs=2e-3)
     pct = 100.0 * led.nlb_lcu_mn / led.gdp_lcu_mn
     assert (pct - led.nlb_pct_gdp).abs().max() == pytest.approx(0, abs=1e-9)
     assert set(led.basis) == {"actual"}     # outturn years only, by design
@@ -417,20 +423,46 @@ def test_statistical_forecast_intervals_are_ordered_and_finite():
 
 
 def test_combination_is_the_mean_of_the_four_and_never_narrower_than_them():
-    """Point = mean of the four. Variance = average within-model variance
-    plus the variance across their point forecasts, so agreement is never
-    mistaken for information."""
+    """Point = mean of the admitted members (every member whose calibration
+    ratio is at most 5, D-S17-024/025; none admitted -> forward fill). Variance = their average within-model
+    variance plus the variance across their point forecasts, so agreement is
+    never mistaken for information."""
+    import re
+
+    from ggfiscal.forecast.statistical import MAX_CALIBRATION_RATIO
+
     fc = read("statistical_forecasts.csv")
     key = ["iso3", "line_code", "year"]
     parts = fc[fc.method != "combination"]
     comb = fc[fc.method == "combination"].set_index(key)
-    assert len(parts) == 4 * len(comb)
+    assert len(parts) == 4 * len(comb)             # every member stays published
 
-    means = parts.groupby(key).pct_gdp.mean()
+    # the label names each excluded member with its ratio, above the threshold
+    excluded, filled = {}, set()
+    for (iso3, line), label in comb.groupby(["iso3", "line_code"]).model.first().items():
+        hits = re.findall(r"(\w[\w.]*) \(calibration ratio ([\d.]+)\)", label)
+        assert all(float(r) > MAX_CALIBRATION_RATIO for _, r in hits), label
+        excluded[(iso3, line)] = {m for m, _ in hits}
+        if label.startswith("forward fill"):             # no admissible member
+            assert len(hits) == 4, label
+            filled.add((iso3, line))
+        else:
+            assert int(re.match(r"mean of (\d+)", label).group(1)) == 4 - len(hits), label
+    # forward-filled lines: flat at the last observation (checked in the
+    # unit tests); the mean/variance identities below hold for the rest
+    keep = [(i, l) not in filled for i, l in zip(comb.index.get_level_values(0),
+                                                comb.index.get_level_values(1))]
+    comb = comb[keep]
+    parts = parts[[(i, l) not in filled for i, l in zip(parts.iso3, parts.line_code)]]
+    admitted = parts[[m not in excluded[(i, l)] for i, l, m
+                      in zip(parts.iso3, parts.line_code, parts.method)]]
+    assert any(excluded.values())                  # the rule bites on this run
+
+    means = admitted.groupby(key).pct_gdp.mean()
     assert (means - comb.pct_gdp).abs().max() < 1e-9
 
-    within = parts.assign(v=parts.se ** 2).groupby(key).v.mean().reindex(comb.index)
-    between = parts.groupby(key).pct_gdp.var(ddof=1).reindex(comb.index)
+    within = admitted.assign(v=admitted.se ** 2).groupby(key).v.mean().reindex(comb.index)
+    between = admitted.groupby(key).pct_gdp.var(ddof=1).reindex(comb.index)
     assert ((within + between) - comb.se ** 2).abs().max() < 1e-9
     assert (comb.se ** 2 >= within - 1e-12).all()
 
@@ -490,23 +522,32 @@ def test_forecast_levels_anchors_on_our_own_gdp_and_grows_from_there():
     actual = tree.query("variant == 'strict' and basis == 'actual'").dropna(
         subset=["gdp_lcu_mn"])
 
+    forked: set[str] = set()
     for iso3, g in lv.groupby("iso3"):
         anchor_year = int(g.gdp_anchor_year.iloc[0])
         ours = actual.query("iso3 == @iso3").groupby("year").gdp_lcu_mn
         agreed = ours.nunique()
         assert anchor_year == int(agreed[agreed == 1].index.max()), iso3
-        # the last outturn really is ambiguous — that is why the anchor is
-        # a year earlier, and a test that never sees it would not notice
-        assert int(agreed.index.max()) > anchor_year, iso3
-        assert agreed.loc[int(agreed.index.max())] > 1, iso3
+        # where the last outturn is ambiguous the anchor is a year earlier
+        # (GBR/FRA/DEU/ITA/ESP); where every source agrees on it (BEL 2025)
+        # the anchor is the last outturn itself (D-S17-008)
+        if int(agreed.index.max()) > anchor_year:
+            assert agreed.loc[int(agreed.index.max())] > 1, iso3
+            forked.add(iso3)
 
         assert abs(float(g.gdp_anchor_lcu_mn.iloc[0])
                    - float(ours.first().loc[anchor_year])) < 1e-6, iso3
         path = g.drop_duplicates("year").set_index("year").gdp_lcu_mn.sort_index()
-        assert path.index.min() > anchor_year
+        # rows at or before the anchor carry the outturn itself
+        for year, value in path[path.index <= anchor_year].items():
+            assert abs(value - float(ours.first().loc[year])) < 1e-6, (iso3, year)
+        path = path[path.index > anchor_year]
+        assert len(path) and path.index.min() > anchor_year
         assert (path.diff().dropna() > 0).all(), iso3   # nominal, so rising
         assert g.gdp_growth_source.eq("IMF_WEO").all()
         assert g.gdp_growth_vintage.nunique() == 1
+    # a test that never saw the fork would not notice it
+    assert forked >= {"GBR", "FRA", "DEU"}, forked
 
 
 @needs_weo
@@ -522,6 +563,7 @@ def test_forecast_levels_chains_weo_growth_and_never_its_level():
         weo = weo_series(vintage, iso3, GROWTH_INDICATOR).dropna() / 1e6
         anchor_year = int(g.gdp_anchor_year.iloc[0])
         path = g.drop_duplicates("year").set_index("year").gdp_lcu_mn.sort_index()
+        path = path[path.index > anchor_year]     # outturn rows: previous test
         before = float(g.gdp_anchor_lcu_mn.iloc[0])
         for year, value in path.items():
             growth = float(weo[year]) / float(weo[year - 1])

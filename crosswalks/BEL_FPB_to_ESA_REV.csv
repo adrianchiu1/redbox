@@ -1,0 +1,3 @@
+source_code,source_label,target_line,allocation_pct,inclusion_note,consolidation_treatment,evidence,reviewer,crosswalk_version
+T17:- Ménages,"Impôts directs - Ménages (general government, national accounts)",R03,100,"growth only (§7.11); the outlook's household direct taxes are the ESA D.51 paid by households, the anchor's D51A_C1",general government (consolidated),"measured coverage at the boundary in forecast_boundaries.csv",stage-e-build,1.0
+T17:- Sociétés,"Impôts directs - Sociétés (general government, national accounts)",R04,100,"growth only (§7.11); corporate income taxes, the anchor's D51B_C2",general government (consolidated),"measured coverage at the boundary in forecast_boundaries.csv",stage-e-build,1.0

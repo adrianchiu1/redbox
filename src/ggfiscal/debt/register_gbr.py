@@ -266,6 +266,15 @@ def _opening_rows(master: pd.DataFrame, ops: list[dict]) -> tuple[list[dict], di
     # the anchor of a redeemed gilt is its redemption nominal, so the
     # redemption flow itself stays out of the sum that is compared to it
     df = df[df["flow_type"] != "redemption"]
+    # only operations settled on or before the anchor's own date count: the
+    # issuance history runs ahead of the D1A close of business (auctions
+    # settled after it are flows after the snapshot, not part of the stub —
+    # D-S17-019; on the 2026-10-06 D1A, 2026-10-07/08 auctions of
+    # GB00BT7HZZ68 and GB00BMGR2809)
+    if len(df):
+        anchor = master.set_index("security_id")["anchor_date"]
+        due = pd.to_datetime(df["security_id"].map(anchor))
+        df = df[due.isna() | (pd.to_datetime(df["settlement_date"]) <= due)]
     signed = (df["nominal_lcu_mn"] * df["flow_type"].map(SIGN)).groupby(df["security_id"]).sum() \
         if len(df) else pd.Series(dtype=float)
     rows, stubs = [], {}

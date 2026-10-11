@@ -41,7 +41,16 @@ from ggfiscal.ingest.endpoints import EUROSTAT_BASE, SDMX_CSV, Pull, eurostat_da
 
 OECD_BASE = "https://sdmx.oecd.org/public/rest"
 
-EUROSTAT_GEO = {"FRA": "FR", "DEU": "DE"}
+def eurostat_geo() -> dict[str, str]:
+    """DE6 (EU3_KICKOFF.md): iso3 -> Eurostat geo for every country the debt
+    engine builds (config/debt.yaml `countries`) that Eurostat publishes, in
+    countries.yaml order (FRA, DEU, then the Stage ED countries)."""
+    from ggfiscal import config
+    from ggfiscal.debt.countries import configured
+
+    return {iso3: geo for iso3, geo in config.eurostat_geos().items() if iso3 in configured()}
+
+
 ISO3 = ("GBR", "FRA", "DEU")
 
 _GOV10A_MAIN = "EUROSTAT_GOV10A_MAIN_S1311"
@@ -104,7 +113,7 @@ def pulls() -> list[Pull]:
 
     # ---------- gov_10a_main: D41PAY, B9 by subsector (sector wildcarded) ----------
     for na_item in ("D41PAY", "B9"):
-        for iso3, geo in EUROSTAT_GEO.items():
+        for iso3, geo in eurostat_geo().items():
             key = f"A.MIO_NAC.*.{na_item}.{geo}"
             out.append(Pull(_GOV10A_MAIN, f"gov_10a_main_{na_item}_{geo}",
                              eurostat_data_url("gov_10a_main", key)))
@@ -113,7 +122,7 @@ def pulls() -> list[Pull]:
     # sector (issuer subsector) fixed per pull; na_item, sector2 (holder,
     # incl. S1_S2 "holders total"), maturity wildcarded.
     for sector in ("S1311", "S13"):
-        for iso3, geo in EUROSTAT_GEO.items():
+        for iso3, geo in eurostat_geo().items():
             key = f"A.*.*.{sector}.*.MIO_NAC.{geo}"
             out.append(Pull(_GOV10DD, f"gov_10dd_ggd_{sector}_{geo}",
                              eurostat_data_url("gov_10dd_ggd", key)))
@@ -121,37 +130,37 @@ def pulls() -> list[Pull]:
     # ---------- gov_10dd_rmd: freq.sector.maturity.na_item.unit.geo ----------
     # fully wildcarded except geo: returns S13 and S1311, all maturities,
     # GD and GD_VAR, all units (incl. YR average residual maturity) in one pull.
-    for iso3, geo in EUROSTAT_GEO.items():
+    for iso3, geo in eurostat_geo().items():
         key = f"A.*.*.*.*.{geo}"
         out.append(Pull(_GOV10DD, f"gov_10dd_rmd_{geo}",
                          eurostat_data_url("gov_10dd_rmd", key)))
 
     # ---------- gov_10dd_edpt1: freq.unit.sector.na_item.geo ----------
-    for iso3, geo in EUROSTAT_GEO.items():
+    for iso3, geo in eurostat_geo().items():
         key = f"A.*.*.*.{geo}"
         out.append(Pull(_GOV10DD, f"gov_10dd_edpt1_{geo}",
                          eurostat_data_url("gov_10dd_edpt1", key)))
 
     # ---------- gov_10dd_edpt2: freq.unit.sector.na_item.geo (SFA transactions) ----------
-    for iso3, geo in EUROSTAT_GEO.items():
+    for iso3, geo in eurostat_geo().items():
         key = f"A.*.*.*.{geo}"
         out.append(Pull(_GOV10DD, f"gov_10dd_edpt2_{geo}",
                          eurostat_data_url("gov_10dd_edpt2", key)))
 
     # ---------- gov_10dd_edpt3: freq.unit.sector.na_item.geo (SFA valuation/other) ----------
-    for iso3, geo in EUROSTAT_GEO.items():
+    for iso3, geo in eurostat_geo().items():
         key = f"A.*.*.*.{geo}"
         out.append(Pull(_GOV10DD, f"gov_10dd_edpt3_{geo}",
                          eurostat_data_url("gov_10dd_edpt3", key)))
 
     # ---------- gov_10dd_dcur: freq.sector.currency.na_item.unit.geo ----------
-    for iso3, geo in EUROSTAT_GEO.items():
+    for iso3, geo in eurostat_geo().items():
         key = f"A.*.*.*.*.{geo}"
         out.append(Pull(_GOV10DD, f"gov_10dd_dcur_{geo}",
                          eurostat_data_url("gov_10dd_dcur", key)))
 
     # ---------- gov_10q_ggdebt: freq.na_item.sector.unit.geo ----------
-    for iso3, geo in EUROSTAT_GEO.items():
+    for iso3, geo in eurostat_geo().items():
         key = f"Q.*.*.MIO_NAC.{geo}"
         out.append(Pull(_GOV10DD, f"gov_10q_ggdebt_{geo}",
                          eurostat_data_url("gov_10q_ggdebt", key)))

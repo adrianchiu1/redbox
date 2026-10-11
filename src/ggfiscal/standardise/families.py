@@ -285,20 +285,63 @@ class EurostatFamily(_Base):
             "R01": (em("D211REC"), "anchor_actual", ""),
             "R02": ((em("D2REC") - em("D211REC")).dropna(), "derived_actual",
                     "derived D.2 - D.211"),
-            "R03": (em("D51A_C1REC"), "anchor_actual", "CSG is D.5 -> here, not R06 (§14)"
-                    if iso3 == "FRA" else ""),
-            "R04": (em("D51B_C2REC"), "anchor_actual", ""),
-            "R05": ((em("D5REC") - em("D51A_C1REC") - em("D51B_C2REC")
+            "R03": self._d51_line(iso3, "D51A_C1", "CSG is D.5 -> here, not R06 (§14)"
+                                  if iso3 == "FRA" else ""),
+            "R04": self._d51_line(iso3, "D51B_C2", ""),
+            "R05": ((em("D5REC") - self._d51(iso3, "D51A_C1")[0] - self._d51(iso3, "D51B_C2")[0]
                      + em("D91REC")).dropna(),
-                    "derived_actual", "derived D.5 - R03 - R04 + D.91 (D.59 inside D.5)"),
+                    "derived_actual", "derived D.5 - R03 - R04 + D.91 (D.59 inside D.5)"
+                    + self._d51(iso3, "D51A_C1")[2]),
             "R06": (em("D61REC"), "anchor_actual", ""),
             "R07": (em("D41REC"), "anchor_actual", ""),
             "R08": ((em("D4REC") - em("D41REC")).dropna(), "derived_actual",
                     "derived D.4 - D.41 resources"),
             "R09": (em("P11_P12_P131"), "anchor_actual", ""),
-            "R10": ((em("D39REC") + em("D7REC") + em("D92REC") + em("D99REC")).dropna(),
-                    "derived_actual", "derived D.39 + D.7 + D.92 + D.99 resources"),
+            "R10": self._r10(iso3),
         }
+
+    @staticmethod
+    def _d51(iso3: str, code: str) -> tuple[pd.Series, str, str]:
+        """(series, source_id, note suffix) of a D.51 payer split. The main
+        table's own REC cell (D-S1-002); where gov_10a_main publishes no
+        split (ESP), the tax-detail table's cell — measured identical to the
+        main table's D.5/D.2 over every common year for ESP, it lacks only
+        the main table's freshest year (D-S17-004)."""
+        main = R.eurostat_main(iso3, f"{code}REC")
+        if not main.empty:
+            return main, "EUROSTAT_GOV10A_MAIN", ""
+        return (R.eurostat_taxag(iso3, code), "EUROSTAT_GOV10A_TAXAG",
+                f"; {code} from gov_10a_taxag (gov_10a_main publishes no D.51 payer split)")
+
+    def _d51_line(self, iso3: str, code: str, note: str) -> tuple:
+        s, src, suffix = self._d51(iso3, code)
+        if src == "EUROSTAT_GOV10A_MAIN":
+            return (s, "anchor_actual", note)
+        return (s, "anchor_actual", (note + suffix).lstrip("; "), src)
+
+    @staticmethod
+    def _r10_parts(iso3: str) -> tuple[list[pd.Series], list[pd.Series], str]:
+        """(plus, minus, note) of R10. D.92 + D.99 where the country publishes
+        the split; else D.9 - D.91, the same quantity (ESP publishes no
+        D92REC/D99REC in gov_10a_main; the identity D.9 = D.91 + D.92 + D.99
+        holds to 1e-12 on FRA) — D-S17-003."""
+        em = lambda c: R.eurostat_main(iso3, c)  # noqa: E731
+        d92, d99 = em("D92REC"), em("D99REC")
+        if not d92.empty and not d99.empty:
+            return ([em("D39REC"), em("D7REC"), d92, d99], [],
+                    "derived D.39 + D.7 + D.92 + D.99 resources")
+        return ([em("D39REC"), em("D7REC"), em("D9REC")], [em("D91REC")],
+                "derived D.39 + D.7 + (D.9 - D.91) resources (no D.92/D.99 split "
+                "published; same quantity)")
+
+    def _r10(self, iso3: str) -> tuple[pd.Series, str, str]:
+        plus, minus, note = self._r10_parts(iso3)
+        s = plus[0]
+        for x in plus[1:]:
+            s = s + x
+        for x in minus:
+            s = s - x
+        return (s.dropna(), "derived_actual", note)
 
     def revenue_total(self, iso3: str) -> pd.Series:
         return R.eurostat_main(iso3, "TR")
@@ -313,24 +356,23 @@ class EurostatFamily(_Base):
                     ("EUROSTAT_GOV10A_TAXAG", et("D211"), "detail/verification")],
             "R02": [("EUROSTAT_GOV10A_MAIN", _intersect(em("D2REC"), em("D211REC")),
                      "derived D.2 - D.211")],
-            "R03": [("EUROSTAT_GOV10A_MAIN", em("D51A_C1REC"),
+            "R03": [(self._d51(iso3, "D51A_C1")[1], self._d51(iso3, "D51A_C1")[0],
                      "anchor; household income taxes incl. holding gains"),
                     ("EUROSTAT_GOV10A_TAXAG", et("D51A_C1"), "detail/verification")],
-            "R04": [("EUROSTAT_GOV10A_MAIN", em("D51B_C2REC"),
+            "R04": [(self._d51(iso3, "D51B_C2")[1], self._d51(iso3, "D51B_C2")[0],
                      "anchor; corporate income taxes incl. holding gains"),
                     ("EUROSTAT_GOV10A_TAXAG", et("D51B_C2"), "detail/verification")],
             "R05": [("EUROSTAT_GOV10A_MAIN",
-                     _intersect(em("D5REC"), em("D51A_C1REC"), em("D51B_C2REC"),
-                                em("D91REC")),
+                     _intersect(em("D5REC"), self._d51(iso3, "D51A_C1")[0],
+                                self._d51(iso3, "D51B_C2")[0], em("D91REC")),
                      "derived D.5 - R03 - R04 + D.91 (D.59 inside D.5)")],
             "R06": [("EUROSTAT_GOV10A_MAIN", em("D61REC"), "anchor; D.61 resources")],
             "R07": [("EUROSTAT_GOV10A_MAIN", em("D41REC"), "anchor; D.41 resources")],
             "R08": [("EUROSTAT_GOV10A_MAIN", _intersect(em("D4REC"), em("D41REC")),
                      "derived D.4 - D.41 resources")],
             "R09": [("EUROSTAT_GOV10A_MAIN", em("P11_P12_P131"), "anchor")],
-            "R10": [("EUROSTAT_GOV10A_MAIN",
-                     _intersect(em("D39REC"), em("D7REC"), em("D92REC"), em("D99REC")),
-                     "derived D.39 + D.7 + D.92 + D.99 resources")],
+            "R10": [("EUROSTAT_GOV10A_MAIN", _intersect(*sum(self._r10_parts(iso3)[:2], [])),
+                     self._r10_parts(iso3)[2])],
         }
 
     def revenue_level2(self, iso3: str, meta: dict) -> tuple[pd.Series, str, str]:

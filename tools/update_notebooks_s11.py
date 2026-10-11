@@ -41,7 +41,10 @@ from ggfiscal import config  # noqa: E402
 # setup cells — then the ordinary per-line insertion runs. Later top-level
 # sections of the chartbook are renumbered; prose cross-references to
 # them (§4.x) are left for the author.
-COUNTRIES = tuple(config.COUNTRIES)
+# Only countries whose build has reached Stage 6 (packaging) get books:
+# the USA stays out until its U6 pass (D-S16-008); ITA/ESP/BEL are at 6
+# (EU3_KICKOFF.md Stage E6, D-S17-008).
+COUNTRIES = tuple(config.countries_at_stage(6))
 SECTION = {iso3: i + 1 for i, iso3 in enumerate(COUNTRIES)}
 NAME = config.country_names()
 CAT = pd.read_csv(ROOT / "deliverables" / "series_catalogue.csv")
@@ -174,9 +177,25 @@ def seed_chartbook_country(cells, iso3):
     cells[i + 1:i + 1] = sub
 
 
+def _set_book_order(cells):
+    """The setup cell states the book's country order (the section order,
+    from config) as BOOK_ORDER: the flat files are sorted by iso3, so the
+    multi-country charts take their panel order from here."""
+    setup = cells[index_of(cells, "import io")]
+    s = "".join(setup["source"])
+    line = ("BOOK_ORDER = (" + ", ".join(f'"{c}"' for c in COUNTRIES) + ")"
+            "   # section order, written by tools/update_notebooks_s11.py")
+    if re.search(r"^BOOK_ORDER = .*$", s, flags=re.M):
+        s = re.sub(r"^BOOK_ORDER = .*$", line, s, count=1, flags=re.M)
+    else:
+        s = s.rstrip("\n") + "\n\n" + line + "\n"
+    setup["source"] = s
+
+
 def chartbook():
     nb = load("chartbook.ipynb")
     cells = nb["cells"]
+    _set_book_order(cells)
     for iso3 in COUNTRIES:
         if not any(src(c) == f'panel("{iso3}", "expenditure")' for c in cells):
             seed_chartbook_country(cells, iso3)
@@ -545,7 +564,25 @@ def forecast_book(iso3, tree):
         while j < len(cells) and src(cells[j]).startswith(f'fan("{iso3}", "{prev}"'):
             j += 1
         cells[j:j] = _series_cells(iso3, line)
+    _sync_fans(cells, iso3, lines)
     return nb
+
+
+def _sync_fans(cells, iso3, lines):
+    """Each line's fan(...) cells follow statistical_forecasts.csv: a line
+    that gained an official path to the horizon (so lost its statistical
+    forecast) drops them, one that gained a statistical forecast gets them
+    (D-S17-018). The cells sit right after the line's share(...) cell."""
+    for line in lines:
+        i = next((k for k, c in enumerate(cells) if src(c) == f'share("{iso3}", "{line}")'), None)
+        if i is None:
+            continue
+        j = i + 1
+        while j < len(cells) and src(cells[j]).startswith(f'fan("{iso3}", "{line}"'):
+            j += 1
+        want = [c for c in _series_cells(iso3, line) if src(c).startswith("fan(")]
+        if [src(c) for c in cells[i + 1:j]] != [src(c) for c in want]:
+            cells[i + 1:j] = want
 
 
 def forecast_esa(iso3):

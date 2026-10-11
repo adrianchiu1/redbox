@@ -22,9 +22,6 @@ import pandas as pd
 
 from ggfiscal import config
 
-ISO3_TO_GEO = {"FRA": "FR", "DEU": "DE"}
-
-
 def latest_snapshots() -> dict[tuple[str, str], dict]:
     """Latest manifest entry per (source_id, part) whose bytes are on THIS
     machine.
@@ -331,7 +328,6 @@ def weo_latest_actual(vintage: str, iso3: str, indicator: str) -> int | None:
 
 # ---------- Stage 3 forecast sources ----------
 
-AR_CC = {"FRA": "FR", "DEU": "DE"}  # Ageing Report / DSM sheet codes
 
 
 @lru_cache(maxsize=None)
@@ -405,7 +401,7 @@ AR_ITEMS = {  # item -> (fiche sheet suffix, section header prefix, row label)
 def ar_series(iso3: str, item: str) -> pd.Series:
     """2024 Ageing Report country-fiche series: expenditure items as % of GDP,
     assumptions as growth rates (%), annual 2022-2070."""
-    cc = AR_CC.get(iso3)
+    cc = config.eurostat_geo(iso3)  # DE6: the AR / DSM sheet code
     if cc is None:
         return pd.Series(dtype=float)
     suffix, section, label = AR_ITEMS[item]
@@ -424,7 +420,7 @@ def ar_nominal_gdp_growth(iso3: str) -> pd.Series:
 @lru_cache(maxsize=None)
 def _dsm_sheet(iso3: str) -> pd.DataFrame:
     path = _snap_path("EC_DSM", "country_fiches_2025")
-    cc = AR_CC.get(iso3)
+    cc = config.eurostat_geo(iso3)  # DE6: the AR / DSM sheet code
     if path is None or cc is None:
         return pd.DataFrame()
     return pd.read_excel(path, sheet_name=cc, engine="openpyxl", header=None)
@@ -509,6 +505,39 @@ def _steuerschaetzung_tab(sheet: str) -> dict[str, pd.Series]:
 
 def steuerschaetzung_series(sheet: str, label: str) -> pd.Series:
     return _steuerschaetzung_tab(sheet).get(label, pd.Series(dtype=float))
+
+
+@lru_cache(maxsize=None)
+def _fpb_table(sheet: str) -> dict[str, pd.Series]:
+    """One table of the Federal Planning Bureau outlook annex: row label
+    (stripped) -> annual series, EUR mn; the year header is row 2. A label
+    met twice in a table raises (the lookup must be unambiguous)."""
+    path = _snap_path("BEL_FPB_OUTLOOK", "mlt_2026_06")
+    if path is None:
+        return {}
+    df = pd.read_excel(path, sheet_name=sheet, header=None)
+    years = pd.to_numeric(df.iloc[2, 1:], errors="coerce")
+    out: dict[str, pd.Series] = {}
+    for _, r in df.iloc[3:].iterrows():
+        label = str(r.iloc[0]).strip()
+        if not label or label == "nan":
+            continue
+        if label in out:
+            raise KeyError(f"FPB {sheet}: row label {label!r} is not unique")
+        s = pd.Series(pd.to_numeric(r.iloc[1:], errors="coerce").values, index=years.values)
+        s = s[s.index.notna()].dropna()
+        s.index = s.index.astype(int)
+        out[label] = s
+    return out
+
+
+def fpb_series(sheet: str, label: str) -> pd.Series:
+    return _fpb_table(sheet).get(label, pd.Series(dtype=float))
+
+
+def fpb_gdp() -> pd.Series:
+    """T03 'Produit intérieur brut' at current prices, EUR mn."""
+    return fpb_series("T03", "Produit intérieur brut")
 
 
 def steuerschaetzung_gdp() -> pd.Series:

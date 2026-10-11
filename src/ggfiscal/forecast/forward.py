@@ -208,6 +208,15 @@ STSCH_NOTE = ("Arbeitskreis Steuerschätzungen (170th, May 2026), cash "
               "resources are financing items outside the tax lines used")
 
 
+def _registered(iso3: str, source_id: str) -> bool:
+    """DE5 (EU3_KICKOFF.md): an EU-wide projection source (Ageing Report,
+    DSM) applies to a country when the register lists it in the source's
+    `countries` (config/sources.yaml) — never by an ISO3 literal."""
+    from ggfiscal.ingest.endpoints import registered_countries
+
+    return iso3 in registered_countries(source_id)
+
+
 def _dsm_interest(iso3: str) -> FcSource:
     return FcSource(
         source_id="EC_DSM", series=R.dsm_series(iso3, "(2.1) Interest expenditure"),
@@ -246,6 +255,23 @@ def _stsch(labels: list[tuple[str, str]], note_extra: str = "") -> FcSource:
         gdp_levels=R.steuerschaetzung_gdp(),
         gdp_source_id="DEU_STEUERSCHAETZUNG",
         observation_type="composite_forecast" if len(labels) > 1 else "direct_forecast")
+
+
+FPB_XWALK = "BEL_FPB_to_ESA_REV:1.0"
+FPB_NOTE = ("Federal Planning Bureau, Perspectives économiques 2026-2031 (June "
+            "2026), general-government account (T17), national accounts basis, "
+            "accrued, EUR mn; growth only (§7.11)")
+
+
+def _fpb(label: str, note_extra: str) -> FcSource:
+    """BEL national medium-term forecast leg (D-S17-020), the Belgian
+    analogue of the Steuerschätzung leg."""
+    return FcSource(
+        source_id="BEL_FPB_OUTLOOK", series=R.fpb_series("T17", label), kind="level",
+        horizon_year=2031, last_actual_year=2025,
+        concept_note=f"{FPB_NOTE}; row '{label}'; {note_extra}",
+        crosswalk_version=FPB_XWALK, gdp_levels=R.fpb_gdp(),
+        gdp_source_id="BEL_FPB_OUTLOOK", observation_type="direct_forecast")
 
 
 _SOLI_R03 = [("Tab 8.2", "- Lohnsteuer"), ("Tab 8.2", "- veranl. Einkommensteuer"),
@@ -323,7 +349,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
     uyig = _ameco(iso3, "UYIG", AMECO_UYIG_NOTE, AMECO_INT_XWALK,
                   direct=False, flag="d41_gross_accrued")
     out[("COFOG", "GF01_7")] = [uyig] + (
-        [_dsm_interest(iso3)] if iso3 in ("FRA", "DEU") else [])
+        [_dsm_interest(iso3)] if _registered(iso3, "EC_DSM") else [])
     # §7.9 (Stage 4): GF01 via GF01_7 growth — mandated, maximum only, with
     # the explicit D2 residual assumption; measured coverage is D band
     # everywhere (interest is the minor share of GF01)
@@ -363,7 +389,7 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
     gf10.max_only = True
     gf10.residual_method = config.residual_method(iso3, "GF10")
     out[("COFOG", "GF10")] = [gf10]
-    if iso3 in ("FRA", "DEU"):
+    if _registered(iso3, "EC_AGEING_2024"):
         out[("COFOG", "GF07")] = [_ar(iso3, "GF07", ["health"])]
         out[("COFOG", "GF09")] = [_ar(iso3, "GF09", ["education"])]
         out[("COFOG", "GF10")] = [gf10, _ar(iso3, "GF10", ["pensions", "ltc"])]
@@ -391,8 +417,15 @@ def forecasts_for(iso3: str) -> dict[tuple[str, str], list[FcSource]]:
                 var=var, label=meta["label"], esa=meta["esa"]), AMECO_EXP_XWALK,
                 direct=True, flag="d41_gross_accrued" if code == "E05" else "")
         out[("ESA_EXP", code)] = [src]
-    if iso3 in ("FRA", "DEU"):
+    if _registered(iso3, "EC_DSM"):
         out[("ESA_EXP", "E05")].append(_dsm_interest(iso3))
+    if _registered(iso3, "BEL_FPB_OUTLOOK"):
+        r03 = _fpb("- Ménages", "direct taxes paid by households -> D.51 households (R03)")
+        r03.residual_method = config.residual_method(iso3, "R03")
+        r04 = _fpb("- Sociétés", "direct taxes paid by corporations -> D.51 corporations (R04)")
+        r04.residual_method = config.residual_method(iso3, "R04")
+        out[("ESA_REV", "R03")] = [r03]
+        out[("ESA_REV", "R04")] = [r04]
     if iso3 == "DEU":
         out[("ESA_REV", "R01")] = [_stsch(
             [("Tab 2", "Steuern vom Umsatz")],
@@ -615,6 +648,8 @@ def declarations_for(iso3: str) -> list[Declaration]:
     """One note per line that carries no strict forecast after Stage 3 (plus
     the totals, which are never extended). Lines with applied forecasts get
     their row from the build itself."""
+    from ggfiscal import config
+
     def d(cls, line, status, note):
         return Declaration(iso3, cls, line, status, note)
 
@@ -744,6 +779,12 @@ def declarations_for(iso3: str) -> list[Declaration]:
               "as R06_E: no employer/household split in any reachable "
               "official forecast (D-S13-005)"),
         ]
+    # DE5 (EU3_KICKOFF.md): a country whose declarations are facts about its
+    # own national sources states them in countries.yaml
+    # `forecast_declarations` (line -> {classification, status, note}); the
+    # GBR/FRA/DEU notes predate the key and stay below verbatim
+    for line, spec in config.forecast_declarations(iso3).items():
+        out.append(d(spec["classification"], line, spec["status"], spec["note"]))
     if iso3 == "FRA":
         out += [
             d("ESA_REV", "R02_A", "source_blocked",

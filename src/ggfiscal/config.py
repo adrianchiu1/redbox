@@ -56,6 +56,25 @@ def prose_names() -> dict[str, str]:
     return {iso3: cfg.get("prose_name", cfg["name"]) for iso3, cfg in countries().items()}
 
 
+def packaged_countries_prose(with_codes: bool = False) -> str:
+    """The countries the package publishes in full (stage 6), as prose —
+    "the United Kingdom, France, ... and Belgium" — plus, in brackets, any
+    configured country still being built (D-S17-018: the generated READMEs
+    derive their country list from here)."""
+    names = prose_names()
+
+    def join(codes):
+        parts = [f"{names[c]} ({c})" if with_codes else names[c] for c in codes]
+        return parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
+
+    full = countries_at_stage(6)
+    rest = [c for c in countries() if c not in full]
+    text = join(full)
+    if rest:
+        text += f" (and, at an earlier build stage, {join(rest)})"
+    return text
+
+
 def country_aliases() -> dict[str, tuple[str, ...]]:
     """iso3 -> the strings a chart title may use for the country."""
     return {iso3: tuple(cfg.get("aliases") or [cfg["name"]]) for iso3, cfg in countries().items()}
@@ -64,6 +83,32 @@ def country_aliases() -> dict[str, tuple[str, ...]]:
 def currencies() -> list[str]:
     """The set of currencies the schema admits (§5: read from config)."""
     return list(dict.fromkeys(cfg["currency"] for cfg in countries().values()))
+
+
+def eurostat_geo(iso3: str) -> str | None:
+    """DE6 (EU3_KICKOFF.md): the country's Eurostat geo code (also the
+    Ageing Report / DSM sheet code), `eurostat_geo` in countries.yaml;
+    None for a country Eurostat does not publish."""
+    return country(iso3).get("eurostat_geo") or None
+
+
+def forecast_declarations(iso3: str) -> dict[str, dict]:
+    """DE5: line_code -> {classification, status, note} for the lines a
+    country declares unforecast because of its own national sources
+    (`forecast_declarations` in countries.yaml; empty unless declared)."""
+    out = dict(country(iso3).get("forecast_declarations") or {})
+    for line, spec in out.items():
+        missing = {"classification", "status", "note"} - set(spec or {})
+        if missing:
+            raise ValueError(f"{iso3}: forecast_declarations[{line!r}] lacks {sorted(missing)}")
+    return out
+
+
+def eurostat_geos() -> dict[str, str]:
+    """iso3 -> Eurostat geo code for every configured country that has one,
+    in countries.yaml order."""
+    return {iso3: cfg["eurostat_geo"] for iso3, cfg in countries().items()
+            if cfg.get("eurostat_geo")}
 
 
 def lines_absent(iso3: str) -> dict[str, str]:

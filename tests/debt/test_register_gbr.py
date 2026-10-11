@@ -48,8 +48,13 @@ def test_name_key_folds_tranches_and_separates_undated_stock():
 def test_issuance_history_reproduces_the_nominal_in_issue():
     """Σ signed operations per ISIN vs D1A: the operations record is complete
     for the gilts in issue (the two exceptions are documented stubs)."""
-    g = D.gilts_in_issue().set_index("isin")["amount_mn"]
-    s = D.issuance_history().groupby("isin")["nominal_mn"].sum().reindex(g.index)
+    gi = D.gilts_in_issue().set_index("isin")
+    g = gi["amount_mn"]
+    # operations after the D1A close of business are not in its amounts
+    # (the issuance history runs ahead of it; D-S17-019)
+    h = D.issuance_history()
+    h = h[h["date"] <= gi["cob_date"].max()]
+    s = h.groupby("isin")["nominal_mn"].sum().reindex(g.index)
     off = (g - s).abs() > 1.0
     assert off.sum() <= 2, g[off]
 
