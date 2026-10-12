@@ -3318,3 +3318,268 @@ Gate (2026-10-11): `tests/debt/test_simulate.py` and
 `tests/debt/test_france_brief.py` pass (17). Both notebooks are re-executed,
 and the HTML the France brief notebook writes is byte-identical to a separate
 build.
+
+## D-S18-005 — Hardening the France scenario engine: four arithmetic defects fixed, the loop measured, the feedback stated (amends D-S18-001)
+
+Session 18, 2026-10-12, a line-by-line audit of `ggfiscal.debt.simulate`
+and of the chain that feeds it (`forecast.statistical` → `forecast.balance`
+→ `simulate`). The scenario definitions of D-S18-001/002 are unchanged; what
+changed is the engine's bookkeeping. Every identity the engine is now held
+to is listed in its module docstring and checked by
+`tests/debt/test_simulate.py`.
+
+**Defects fixed in `simulate.py`.**
+
+1. *Bridge-year double count.* 2026's deficit was the primary balance plus
+   the EC AMECO interest bill (77.66) PLUS the half-year interest on the
+   issuance of the rest of 2026 — which the AMECO bill already contains.
+   2.5 EUR bn too much in the 2026 deficit, carried in the debt of every
+   later year; the deficit also failed the identity
+   deficit = −PB + interest − receivable in that year. The bridge year now
+   takes the AMECO bill as the whole year's interest and finances
+   0.90 × deficit × (days after the snapshot / 365).
+2. *Uplift financed twice.* Net issuance was 0.90 × the deficit, the deficit
+   contains the indexation uplift accrued on linkers (D.41), and the stock
+   also grew by that uplift through the indexed nominal — so the negotiable
+   stock rose by the uplift twice (about 6 EUR bn a year of issuance that
+   is never made: the uplift is paid at redemption, not issued against; in
+   ESA it is a reinvestment in F.32, so the 0.90 calibration already holds
+   it). Gross MLT issuance is now redemptions + 0.90 × deficit − uplift
+   accrual − Δbills, and Δ(negotiable stock) = 0.90 × deficit from 2027.
+3. *GDP level seam.* 2025 was the ledger's Eurostat level (2,979.1) and 2026
+   AMECO's level (3,055.8); AMECO's own 2025 is 2,991.1, so the 0.4% between
+   the two 2025s was booked as 2026 growth and every debt ratio from 2026 was
+   about 0.4 pp too low. The engine now chains AMECO's growth rates on the
+   ledger level (D-S4-002, as `forecast.levels` does): 2026 3,043.6,
+   2027 3,138.1. `Baseline.gdp` holds the level, `Baseline.gdp_ameco` the
+   AMECO path the growth is read from.
+4. *Wedge basis.* The GF01_7 − register wedge (0.34% of GDP) was the register's
+   CASH 2025 total against an accrual roll. On the roll's own concept
+   (coupon pro rata + uplift accrued + bill discount accreted) the 2025 wedge
+   is 65.2 − 55.8 = 9.5 EUR bn = 0.32% of GDP, which is now the declared
+   value. `calibration()` reports the three bases side by side.
+
+**Also fixed.** `interest.py`: `premium_discount_amortisation` ran on bills,
+so on the accrued basis every bill's issue discount was counted twice
+(accreted by §7.5 and amortised by §7.7 — e.g. BTF 2 Dec 2026: discount
+298.4, amortisation −298.4, total 596.8). Bills are excluded; the accrued
+totals in `debt_interest_by_security.csv` are overstated by the bill
+discount (4.0 EUR bn in 2026 for France) until `ggfiscal debt build` is
+re-run. The register's accrued wedge (0.29%) is therefore not used.
+`linker_share_of_mlt` (declared, never read) is removed; the dead
+expression in `duration_table` is removed; `duration_summary` reads GDP
+from `gdp_path`.
+
+**Measured, not changed.**
+
+- The roll's fixed-coupon accrual reproduces the register's own accrued
+  coupon exactly for the 24 bonds not reopened in 2026 (13.28 vs 13.28 EUR
+  bn); linkers differ by 0.2 EUR bn from the declared 2% inflation against
+  the realised index ratios.
+- The "interaction" of `decompose_gap` is the price × volume cross-effect,
+  not the loop. The loop proper — the interest the extra interest costs
+  once refinanced — is now measured by `loop_size` (the scenario re-run with
+  issuance sized on the status quo's interest bill): Mélenchon 1.6 EUR bn
+  in 2030 and 15 EUR bn in 2035 (19% of the gap), against an interaction of
+  0.7 and 4.9. The briefing template and `tools/build_briefing_fra.py` now
+  say and fill this; `render_all` writes `scenario_loop.csv`.
+- What feeds back: interest → deficit → issuance → interest only. The
+  spread path, real growth and the primary-balance changes are declared and
+  do not respond to the debt ratio, to each other or to the bill. With the
+  primary balance declared in EUR, weaker growth does not cut revenue: a
+  budget semi-elasticity of 0.6 against 0.8% potential growth would move
+  2035 debt from 129.7 to 147.2% in Le Pen majority (0% growth), 130.7 to
+  126.6% in Philippe majority (1%), 143.4 to 149.8% in the status quo, and
+  would reorder the five. Left as declared (D-S18-001 rule 3), recorded as
+  the engine's largest modelling caveat.
+- Holding the wedge at a share of GDP is within 0.1 EUR bn of letting it
+  grow with the non-negotiable debt (the 10% of each deficit the État does
+  not issue against): both grow at about 2.5–3% a year.
+- The primary balance of 2026–2027 (−2.7, −2.5% of GDP) cannot be verified
+  from the bundle: the strict file has no NLB forecast and the AMECO
+  snapshot is not committed. It is consistent with the Commission's 5.1%
+  deficit for 2026 that the note quotes.
+- Up the chain: the benchmark's line sets add to TE and TR exactly in
+  history and GF01/GF10 split exactly; (ΣR − ΣE) − NLB ≤ 0.03 pp except
+  GBR (0.36, perimeter). The trees carry one GDP per source, so `pct_gdp`
+  across lines in a forecast year sit on different denominators (FRA 2025:
+  2,979 Eurostat for GF01_7, 2,991 Eurostat for the revenue lines, 3,028
+  Ageing Report for GF07/GF09/GF10_2; ≈0.1–0.2 pp on the benchmark NLB);
+  the strict matrix's GDP column from 2025 is whichever source comes first.
+
+**Results (2035, old → new).** Interest % of GDP: Philippe majority
+4.88 → 4.80, status quo 5.55 → 5.47, Le Pen majority 4.84 → 4.76, Le Pen
+hung 4.95 → 4.87, Mélenchon 7.84 → 7.75, benchmark 5.61 → 5.53. Debt:
+within ±0.2 pp of D-S18-001 (the 0.4 pp seam and the 0.1 pp less interest
+offset). 2026 deficit 5.12 → 5.05%, debt 117.8 → 118.2%. Gross issuance
+about 8–11 EUR bn a year lower. Ordering unchanged; "none stabilises"
+unchanged.
+
+**Regenerated** (2026-10-12, second commit): every chart under
+`reports/briefing_FRA_AFT_2026-09/figures/` (`briefing_fra_scenarios`, then
+`briefing_fra`), `key_figures.csv` (the 2027–2030 redemptions as a share of
+the stock move by 0.01–0.05 pp with the smaller forward stock),
+`scenarios_FRA.csv`, `scenario_decomposition.csv`, the new
+`scenario_loop.csv`, `briefing.html`, `briefing_inline.html`, and both
+notebooks re-executed. The HTML the France brief notebook writes is
+byte-identical to a rebuild from the figures on disk. Note for the next
+refresh: the descriptive charts' bytes depend on whether
+`briefing_fra_scenarios` was imported first in the same process (its
+`rcParams.update` at import is inherited), so run them as the notebook does,
+in one process, or accept a byte-level difference in those PNGs.
+**Not regenerated:** `debt_interest_by_security.csv` and the files derived
+from it keep the bill double count until `ggfiscal debt build`.
+
+Gate (2026-10-12): `tests/debt/test_simulate.py` 21 passed (new: the
+deficit identity in every year, the financing identities, GDP chaining,
+loop size, wedge basis); `tests/debt/test_engines.py` and
+`tests/debt/test_france_brief.py` pass.
+
+### D-S18-005, addendum (2026-10-12, same day): the debt layer rebuilt where the bundle allows, the wedge moved to the register's accrued basis
+
+1. **Rebuilt.** `debt_interest_by_security.csv` from the committed canonical
+   register (securities, positions, flows, index ratios, reference series)
+   with `interest.py` fixed: 34,048 rows, the same keys; only bill rows on
+   the accrued basis change (FRA −43.4, GBR −26.0, DEU −20.0 EUR/GBP bn over
+   all years; no bond row moves). France's accrued total: 2025 56.6 → 51.8,
+   2026 66.2 → 62.2. The full `ggfiscal debt build` cannot run in this
+   container (the ONS, ECB/Bundesbank, Eurostat and MEF snapshots are not
+   committed), so the interest chain was not rebuilt from scratch: the only
+   rows it takes from the register are the register-step sums, and only the
+   UK's chain is on the accrued basis, so its `sum_bill`, the register
+   `official_total`, and step A's `carried_from_previous_step` and `residual`
+   were recomputed for 2000–2027 (112 rows, new run_id; the step identities
+   hold as before). France, Germany and Belgium chain on the cash basis and
+   are unchanged. `ggfiscal debt validate` raises KeyError 'variant' in V35
+   (`intermediates.package_nlb`) on inputs this work does not touch;
+   recorded, not fixed.
+2. **Linkers checked, not a bug.** The auction prices in `debt_flows` are
+   real clean prices (OAT€i 0.10% 2053 at 56.3, OAT€i 1.80% 2040 at 100.1),
+   so the premium/discount amortisation on linkers is in real terms, as it
+   should be; the index-ratio scaling to nominal is a refinement left open.
+3. **Wedge, third and last basis.** With the bill double count gone the
+   register's accrued D.41 for 2025 is 51.8 EUR bn, and the chain shows what
+   the wedge to GF01_7 is made of: S.1311 D.41 53.5 (Eurostat), local
+   government 7.4, social security 5.9, consolidation −1.6, GF01_7 65.2. So
+   GF01_7 − register = 13.4 EUR bn = 0.45% of GDP, of which 11.7 is the
+   S.13 − S.1311 wedge and 1.7 the register's shortfall to the État's D.41.
+   The roll now carries the one D.41 component it lacked — the straight-line
+   amortisation of premiums and discounts on the lines in the stock, from the
+   register's 2026 figures line by line to maturity (+1.3 EUR bn a year in
+   2026–27, almost all on linkers, running to −0.5 by 2035 as discount lines
+   mature) — and `gg_wedge_pct` is 0.45. Check against the strict matrix:
+   the register at the snapshot plus this wedge gives 75.9 for 2026 against
+   AMECO's 77.7 (the snapshot lacks the last quarter's issuance); the two
+   earlier bases gave 73.5 and 74.1.
+4. **Results (2035, D-S18-005 first pass → now).** Interest % of GDP: status
+   quo 5.47 → 5.67, Philippe majority 4.80 → 4.99, Le Pen majority
+   4.76 → 4.96, Le Pen hung 4.87 → 5.07, Mélenchon 7.75 → 7.96, benchmark
+   5.53 → 5.73. Debt: +1.1–1.4 pp (status quo 144.6, Le Pen majority 131.0,
+   Mélenchon 167.3). The 2027 bill is 2.8 EUR bn higher in every scenario.
+   Against D-S18-001 the net change is therefore +0.1 pp of GDP of interest
+   and +1 pp of debt by 2035; ordering unchanged.
+5. The briefing template reads the wedge and its S.13 − S.1311 part from the
+   engine and the chain (`{{wedge_pct_gdp}}`, `{{cal_wedge}}`,
+   `{{cal_wedge_s13}}`); Figure 8's caption reads it from `BASELINE`. Figures,
+   HTML and both notebooks regenerated.
+
+Gate: `tests/debt/test_simulate.py` 18, `test_engines.py` 10,
+`test_france_brief.py` 3 pass; the wedge test now asserts the accrued basis
+and the line-by-line amortisation carry.
+
+## D-S18-006 — Constant maturity profile as the issuance rule; linker timing anchored on the snapshot date; the engine validates its inputs (amends D-S18-001 rule 5, D-S18-005)
+
+Committee 2026-10-12, with the independent review of the engine handed over
+the same day (audit of commit 92ef962; `BUG_REPORT.md`, eight probes).
+
+**1. Issuance rule.** D-S18-001 rule 5 (the AFT's 2025 issuance shares every
+year, bills at 215 EUR bn) is replaced as the default by a constant
+maturity profile: the share of the negotiable stock in bills and in each
+DD7 residual-maturity bucket is held at the stock's own profile, and each
+year the AFT is assumed to issue into bills and into every bucket exactly
+what restores its share after a year of ageing and the year's redemptions.
+Tranches are issued at the AFT's 2025 residual maturity at issue for the
+bucket (`tranche_years`: whole years, so that at the year end the tranche
+sits in its bucket). A bucket already above its share receives nothing —
+buybacks are not modelled — and the shortfall is reported
+(`profile_deviation_bn`). The profile is measured at the year end the roll
+starts from (`Baseline.profile_as_of = 2026-12-31`, the snapshot stock seen
+from that date): the engine books by calendar year, so the 0–1 bucket at a
+year end holds a whole year of maturities, which the mid-September snapshot
+does not (5.8% against 7.4%); anchored on the snapshot date the overshoot
+in the two shortest buckets is twice as large (130–240 EUR bn against
+62–110) and the stock's average maturity drifts. Weights (end-2026 view):
+bills 7.6%, 0–1 7.4, 1–2 8.7, 2–3 10.4, 3–5 14.6, 5–7 10.7, 7–10 14.7,
+10–15 9.2, 15–20 4.9, 20–30 9.7, 30+ 2.2. `Baseline.issuance_rule =
+"constant_mix"` restores rule 5 exactly (bills 215, the 2025 shares, the
+same closed-form fixed point). Within-year interest on the new issuance,
+the bill interest and the deficit are solved jointly by iteration under
+both rules.
+
+**2. Linkers.** The index ratio at the snapshot grows at the declared
+inflation from the snapshot DATE (`index_factor`: (1+π)^(days/365.25)).
+Opening index of a year = index(1 January); uplift accrued = nominal ×
+(index(stop) − index(start)) where stop is 31 December or the maturity;
+coupon pro rata on the geometric mean of the two indexed nominals;
+redemption at nominal × index(maturity); closing stock at nominal ×
+index(31 December). The first version advanced the September ratio by a
+whole year for 2027 (1.4% too much index on 315 EUR bn), redeemed maturing
+linkers without their maturity-year uplift, and closed the stock at the
+opening index; the stock identity then held only to 0.6 EUR bn a year
+(cumulative 1.6 by 2035) and was tested with that tolerance. It now holds
+to 1e-13 and is tested at 1e-8. Effect on the results: under 0.1 EUR bn of
+interest a year (the review's F1/F2; the "1.57 bn" was a bookkeeping
+residual, not a bias in the debt).
+
+**3. Validation and API** (review F3–F6). `validate_register` runs on every
+register the engine is given: one row per security, supported classes
+only (bill, fixed_bullet, inflation_linked — `link_mask = ~fixed` no longer
+turns an unknown class into a linker), dated maturities after the
+snapshot, finite positive nominals, a finite coupon on every bond (a
+fixed bond's unknown coupon is no longer read as zero), a finite positive
+index ratio on every linker (no longer dropped from the sums by NaN
+arithmetic). `load_register` rejects duplicate metadata, duplicate
+positions, positions without metadata and negative positions
+(one-to-one checked merge). A negative gross requirement raises
+`FinancingSurplus` (a ValueError) instead of clipping issuance to zero and
+losing the residual: buybacks and cash balances are out of scope.
+`run_all` runs any subset in the order requested and resolves the status
+quo itself only when the spread feedback is live.
+
+**4. Review of the review.** Agreed and done: F1, F2 (with the snapshot
+anchoring they asked for; their probes' hard-coded 102.0 opening index is
+replaced by the derived index, as they allowed), F3 (reject), F4, F5, F6.
+Their perimeter note (AFT stock changes give 0.909 against the 0.904
+used: +0.9 EUR bn of 2035 interest) is recorded, not adopted. Two of their
+statements were already superseded at the audited commit's successor
+(be1c1e2): the wedge is 0.45% of GDP on the register's accrued basis with
+the premium amortisation carried line by line, not 0.32%. Their isolated
+linker probe also assumed no 2026 financing while declaring a 2026
+interest bill of 2 EUR bn; the ported test sets the bill to the
+post-snapshot uplift so the bridge year is clean. What the review did not
+reach: the issuance rule (this decision's point 1), which moves the
+results an order of magnitude more than F1–F6 together.
+
+**5. Results (2035, D-S18-005 addendum → now; the linker fixes alone move
+interest by ≤ 0.1 EUR bn, the rest is the rule).** Interest, EUR bn:
+status quo 216.8 → 209.9 (5.67 → 5.49% of GDP), Philippe majority
+198.8 → 193.1, Le Pen majority 182.2 → 177.0, Le Pen hung 193.6 → 187.9,
+Mélenchon 292.6 → 280.4, benchmark 219.0 → 212.0. Debt/GDP: status quo
+144.6 → 143.7, Mélenchon 167.3 → 165.7, Le Pen majority 131.0 → 130.2.
+Gross MLT issuance 2030: 430 → 470 (status quo; the bill stock now grows
+with the stock, 215 → 275 EUR bn in 2030 and 355 in 2035, and the
+issuance is shorter: 8.4–10.4 years at issue against 10.6). 2026 and
+2027 are within 1 EUR bn. Ordering unchanged; `decompose_gap` and
+`loop_size` move in proportion (Mélenchon 2035 loop 14.7 → 13.0). Stock
+residual 2027+: 0.58 EUR bn max → 4e-13.
+
+**Regenerated.** Figures, `scenarios_FRA.csv` (new columns:
+issuance_rule, bill_share_of_stock, profile_deviation_bn,
+linker_index_factor, profile_* by bucket), `scenario_decomposition.csv`,
+`scenario_loop.csv`, `key_figures.csv`, both HTML files and both
+notebooks; the template's assumption tables and section 5 describe the
+rule and the status quo's overshoot.
+
+Gate: `tests/debt/test_simulate_review.py` (new, 14),
+`tests/debt/test_simulate.py` (18), `test_france_brief.py` (3),
+`test_engines.py` (10) pass.

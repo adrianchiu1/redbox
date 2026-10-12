@@ -315,7 +315,13 @@ def floating_coupon(security: pd.Series, path: pd.Series, year: int,
 def premium_discount_amortisation(security: pd.Series, flows: pd.DataFrame, year: int) -> float:
     """§7.7: Σ over priced issuance flows of (price − 100)/100 × nominal,
     straight-line from settlement to maturity; positive = premium (reduces
-    ESA interest), reported as a separate component with that sign."""
+    ESA interest), reported as a separate component with that sign.
+
+    Bills are excluded: their issue discount IS their interest and is
+    accreted by §7.5 (`bill_discount`); amortising it here as well counted
+    every bill's discount twice on the accrued basis (D-S18-005)."""
+    if security["instrument_class"] == "bill":
+        return 0.0
     fl = flows[(flows["security_id"] == security["security_id"])
                & (flows["flow_type"].isin(["auction", "tender", "tap", "syndication"]))
                & flows["price_pct"].notna()]

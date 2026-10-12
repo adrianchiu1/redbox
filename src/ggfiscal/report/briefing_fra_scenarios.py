@@ -1,8 +1,9 @@
 """Scenario charts for the AFT briefing (D-S12-001): the register-based
 interest simulation of `ggfiscal.debt.simulate` drawn in the debtbook's
 palette. `render_all(out_dir)` writes the PNGs, `scenarios_FRA.csv` (every
-scenario-year the engine produced), `scenario_decomposition.csv` and
-`duration_by_bucket.csv` next to them, and returns {key: path}.
+scenario-year the engine produced), `scenario_decomposition.csv`,
+`scenario_loop.csv` and `duration_by_bucket.csv` next to them, and returns
+{key: path}.
 """
 from __future__ import annotations
 
@@ -114,7 +115,7 @@ def chart_interest(res, out):
         s = res[(res.scenario == name) & (res.year == 2035)].iloc[0]
         ax.annotate(f"{SHORT[name]} {s.gg_interest_pct_gdp:.1f}%, €{s.gg_interest_bn:,.0f}bn", (2035, s.gg_interest_pct_gdp),
                     xytext=(4, 0), textcoords="offset points", fontsize=7.5, color=INK, va="center")
-    _source(fig, "Source: ggfiscal.debt.simulate on deliverables/debt_positions.csv at 2026-09-10; strict_FRA.csv. Interest on the accrual basis; wedge to GF01_7 held at 0.34% of GDP.", y=-0.2)
+    _source(fig, f"Source: ggfiscal.debt.simulate on deliverables/debt_positions.csv at {sim.SNAPSHOT}; strict_FRA.csv. Interest on the accrual basis; wedge to GF01_7 held at {sim.BASELINE.gg_wedge_pct:.2f}% of GDP.", y=-0.2)
     _save(fig, out); return out
 
 
@@ -357,7 +358,7 @@ def chart_tree(res, out):
     ax.set_ylim(y_stat - 0.135, 1.0)
     ax.text(0.012, y_stat - 0.085, f"Common to every branch: Bund 10y {b.bund_curve[10]:.2f}% flat; spread {b.spread_today_bp:.0f} bp today "
             f"(Bloomberg, 11 Oct 2026); primary balance {b.primary_balance[2027]:.1f}% of GDP in 2027, policy from 2028; "
-            f"GDP deflator {100 * b.deflator_after:.0f}%; same issuance mix and bill stock.",
+            f"GDP deflator {100 * b.deflator_after:.0f}%; the stock's maturity profile (bills and buckets) held constant.",
             fontsize=7.6, color=MUTED, va="center")
     ax.text(0.012, y_stat - 0.115, "Solid border: majority. Dotted border: hung Assembly. Positive primary-balance change = smaller primary deficit. "
             "Source: ggfiscal.debt.simulate.SCENARIOS.", fontsize=7.0, color=MUTED, va="center")
@@ -370,6 +371,8 @@ def render_all(out_dir: Path) -> dict[str, Path]:
     res.to_csv(out_dir / "scenarios_FRA.csv", index=False)
     dec = pd.concat([sim.decompose_gap(sc) for sc in sim.SCENARIOS if sc.name != REF], ignore_index=True)
     dec.to_csv(out_dir / "scenario_decomposition.csv", index=False)
+    loop = pd.concat([sim.loop_size(sc) for sc in sim.SCENARIOS if sc.name != REF], ignore_index=True)
+    loop.to_csv(out_dir / "scenario_loop.csv", index=False)
     gf, gdp, led, exp = _history()
     figs = {}
     figs["scen_interest"] = chart_interest(res, out_dir / "scen_interest.png")

@@ -85,6 +85,7 @@ def values() -> dict[str, object]:
             V[f"{s}_{y}_pb"] = f"{r.primary_balance_pct:+.1f}"
             V[f"{s}_{y}_oat10"] = f"{r.oat_10y_pct:.1f}"
             V[f"{s}_{y}_iss"] = f"{r.mlt_gross_issuance_bn:,.0f}"
+            V[f"{s}_{y}_profile_dev"] = f"{r.profile_deviation_bn:,.0f}"
             V[f"{s}_{y}_cpn"] = f"{r.avg_coupon_fixed_pct:.1f}"
         for y in (2030, 2035):
             if (name, y) in D:
@@ -95,6 +96,15 @@ def values() -> dict[str, object]:
                 V[f"{s}_{y}_volume"] = f"{d.volume_effect_bn:,.0f}"
                 V[f"{s}_{y}_interaction"] = f"{d.interaction_bn:,.1f}"
                 V[f"{s}_{y}_interaction_round"] = f"{math.ceil(d.interaction_bn):,.0f}"
+
+    # the arithmetic loop, measured directly (simulate.loop_size): the gap
+    # less the gap with issuance sized on the status quo's interest bill
+    for name, s in short.items():
+        if name == sim.REFERENCE:
+            continue
+        for r in sim.loop_size(sim.scenario(name)).itertuples():
+            V[f"{s}_{int(r.year)}_loop"] = f"{r.loop_bn:,.1f}" if abs(r.loop_bn) < 10 else f"{r.loop_bn:,.0f}"
+            V[f"{s}_{int(r.year)}_loop_share"] = f"{100 * r.loop_share:.0f}"
 
     # the status quo against the EC DSM path carried in the strict file
     strict = pd.read_csv(sim.DELIV / "strict_FRA.csv").set_index("year")
@@ -107,6 +117,8 @@ def values() -> dict[str, object]:
 
     # engine summaries
     b = sim.BASELINE
+    V["profile_bill_share_pct"] = f"{100 * sim.profile_weights(sim.load_register(), b.profile_as_of)['bill']:.1f}"
+    V["profile_as_of"] = b.profile_as_of
     V["spread_today_bp"] = f"{b.spread_today_bp:.0f}"
     V["oat10_today_pct"] = f"{b.bund_curve[10] + b.spread_today_bp / 100:.2f}"
     V["bund10_pct"] = f"{b.bund_curve[10]:.2f}"
@@ -125,7 +137,13 @@ def values() -> dict[str, object]:
     V["dur_mv"] = f"{ds['market_value_bn']:,.0f}"
     V["dur_nom"] = f"{ds['nominal_bn']:,.0f}"
     cal = sim.calibration()
-    V["cal_wedge"] = f"{cal['wedge_2025_bn']:.1f}"
+    V["cal_wedge"] = f"{cal['gf01_7_2025_bn'] - cal['register_accrued_interest_2025_bn']:.1f}"
+    V["wedge_pct_gdp"] = f"{sim.BASELINE.gg_wedge_pct:.2f}"
+    # S.13 − S.1311 D.41 in 2025 from the interest chain: local government +
+    # social security funds, less the consolidation residual
+    chain = pd.read_csv(sim.DELIV / "debt_interest_reconciliation.csv", low_memory=False)
+    c25 = chain.query("iso3 == 'FRA' and year == 2025 and step == 'C_s13_gf01_7'").set_index("item").value_lcu_mn
+    V["cal_wedge_s13"] = f"{(c25['official_total'] - c25['carried_from_previous_step']) / 1000:.1f}"
     V["cal_ratio"] = f"{cal['net_issuance_over_deficit_2015_2025']:.2f}"
 
     # register bill stock at end-2025 and the Eurostat-minus-AFT wedge

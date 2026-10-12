@@ -217,13 +217,13 @@ GBR,1999,C_s13_gf01_7,carried_from_previous_step,26577.0,computed,,,20261010T144
 GBR,1999,C_s13_gf01_7,local_government_d41,277.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,1999,C_s13_gf01_7,official_total,27315.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,1999,C_s13_gf01_7,residual,461.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2000,register,sum_bill,172.38605251173038,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2000,register,sum_bill,86.19302625586516,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2000,register,sum_fixed_bullet,15835.347954266745,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2000,register,sum_inflation_linked,1859.464259515733,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2000,register,official_total,17867.198266294206,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2000,A_cg_cash,carried_from_previous_step,17867.198266294206,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2000,register,official_total,17781.005240038343,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2000,A_cg_cash,carried_from_previous_step,17781.005240038343,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2000,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2000,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2000,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2000,B_s1311_d41,carried_from_previous_step,17867.198266294206,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2000,B_s1311_d41,official_total,26614.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2000,B_s1311_d41,residual,8746.801733705794,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -231,13 +231,13 @@ GBR,2000,C_s13_gf01_7,carried_from_previous_step,26614.0,computed,,,20261010T144
 GBR,2000,C_s13_gf01_7,local_government_d41,304.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2000,C_s13_gf01_7,official_total,27323.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2000,C_s13_gf01_7,residual,405.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2001,register,sum_bill,342.7771913819289,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2001,register,sum_bill,171.38859569096434,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2001,register,sum_fixed_bullet,14263.265095337993,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2001,register,sum_inflation_linked,946.1009309178169,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2001,register,official_total,15552.143217637738,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2001,A_cg_cash,carried_from_previous_step,15552.143217637738,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2001,register,official_total,15380.754621946773,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2001,A_cg_cash,carried_from_previous_step,15380.754621946773,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2001,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2001,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2001,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2001,B_s1311_d41,carried_from_previous_step,15552.143217637738,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2001,B_s1311_d41,official_total,24106.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2001,B_s1311_d41,residual,8553.856782362262,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -245,13 +245,13 @@ GBR,2001,C_s13_gf01_7,carried_from_previous_step,24106.0,computed,,,20261010T144
 GBR,2001,C_s13_gf01_7,local_government_d41,298.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2001,C_s13_gf01_7,official_total,24766.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2001,C_s13_gf01_7,residual,362.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2002,register,sum_bill,1036.247207191692,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2002,register,sum_bill,518.1236035958459,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2002,register,sum_fixed_bullet,13808.337906606994,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2002,register,sum_inflation_linked,687.3640556970743,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2002,register,official_total,15531.94916949576,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2002,A_cg_cash,carried_from_previous_step,15531.94916949576,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2002,register,official_total,15013.825565899913,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2002,A_cg_cash,carried_from_previous_step,15013.825565899913,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2002,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2002,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2002,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2002,B_s1311_d41,carried_from_previous_step,15531.94916949576,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2002,B_s1311_d41,official_total,21905.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2002,B_s1311_d41,residual,6373.05083050424,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -259,13 +259,13 @@ GBR,2002,C_s13_gf01_7,carried_from_previous_step,21905.0,computed,,,20261010T144
 GBR,2002,C_s13_gf01_7,local_government_d41,262.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2002,C_s13_gf01_7,official_total,22404.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2002,C_s13_gf01_7,residual,237.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2003,register,sum_bill,1270.5519895867064,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2003,register,sum_bill,635.2759947933531,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2003,register,sum_fixed_bullet,14164.495726618597,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2003,register,sum_inflation_linked,2151.626742616502,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2003,register,official_total,17586.674458821806,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2003,A_cg_cash,carried_from_previous_step,17586.674458821806,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2003,register,official_total,16951.398464028454,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2003,A_cg_cash,carried_from_previous_step,16951.398464028454,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2003,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2003,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2003,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2003,B_s1311_d41,carried_from_previous_step,17586.674458821806,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2003,B_s1311_d41,official_total,22998.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2003,B_s1311_d41,residual,5411.325541178194,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -273,13 +273,13 @@ GBR,2003,C_s13_gf01_7,carried_from_previous_step,22998.0,computed,,,20261010T144
 GBR,2003,C_s13_gf01_7,local_government_d41,209.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2003,C_s13_gf01_7,official_total,23450.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2003,C_s13_gf01_7,residual,243.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2004,register,sum_bill,1675.2304186341757,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2004,register,sum_bill,837.6152093170879,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2004,register,sum_fixed_bullet,14912.257977643969,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2004,register,sum_inflation_linked,1809.1280645359661,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2004,register,official_total,18396.61646081411,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2004,A_cg_cash,carried_from_previous_step,18396.61646081411,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2004,register,official_total,17559.001251497022,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2004,A_cg_cash,carried_from_previous_step,17559.001251497022,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2004,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2004,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2004,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2004,B_s1311_d41,carried_from_previous_step,18396.61646081411,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2004,B_s1311_d41,official_total,24696.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2004,B_s1311_d41,residual,6299.383539185888,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -287,13 +287,13 @@ GBR,2004,C_s13_gf01_7,carried_from_previous_step,24696.0,computed,,,20261010T144
 GBR,2004,C_s13_gf01_7,local_government_d41,344.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2004,C_s13_gf01_7,official_total,25382.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2004,C_s13_gf01_7,residual,342.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2005,register,sum_bill,1848.8027677569153,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2005,register,sum_bill,924.4013838784576,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2005,register,sum_fixed_bullet,16196.244395969628,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2005,register,sum_inflation_linked,2350.8641619241794,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2005,register,official_total,20395.911325650723,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2005,A_cg_cash,carried_from_previous_step,20395.911325650723,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2005,register,official_total,19471.509941772267,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2005,A_cg_cash,carried_from_previous_step,19471.509941772267,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2005,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2005,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2005,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2005,B_s1311_d41,carried_from_previous_step,20395.911325650723,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2005,B_s1311_d41,official_total,27721.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2005,B_s1311_d41,residual,7325.088674349277,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -301,13 +301,13 @@ GBR,2005,C_s13_gf01_7,carried_from_previous_step,27721.0,computed,,,20261010T144
 GBR,2005,C_s13_gf01_7,local_government_d41,439.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2005,C_s13_gf01_7,official_total,28542.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2005,C_s13_gf01_7,residual,382.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2006,register,sum_bill,1781.4351405708428,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2006,register,sum_bill,890.7175702854215,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2006,register,sum_fixed_bullet,17284.593625249323,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2006,register,sum_inflation_linked,2451.9306069969803,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2006,register,official_total,21517.959372817146,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2006,A_cg_cash,carried_from_previous_step,21517.959372817146,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2006,register,official_total,20627.241802531724,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2006,A_cg_cash,carried_from_previous_step,20627.241802531724,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2006,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2006,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2006,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2006,B_s1311_d41,carried_from_previous_step,21517.959372817146,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2006,B_s1311_d41,official_total,29413.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2006,B_s1311_d41,residual,7895.040627182854,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -315,13 +315,13 @@ GBR,2006,C_s13_gf01_7,carried_from_previous_step,29413.0,computed,,,20261010T144
 GBR,2006,C_s13_gf01_7,local_government_d41,398.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2006,C_s13_gf01_7,official_total,30077.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2006,C_s13_gf01_7,residual,266.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2007,register,sum_bill,1776.1180583816113,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2007,register,sum_bill,888.0590291908057,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2007,register,sum_fixed_bullet,17476.40958463946,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2007,register,sum_inflation_linked,4822.6729944660365,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2007,register,official_total,24075.200637487105,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2007,A_cg_cash,carried_from_previous_step,24075.200637487105,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2007,register,official_total,23187.1416082963,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2007,A_cg_cash,carried_from_previous_step,23187.1416082963,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2007,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2007,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2007,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2007,B_s1311_d41,carried_from_previous_step,24075.200637487105,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2007,B_s1311_d41,official_total,33944.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2007,B_s1311_d41,residual,9868.799362512895,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -329,13 +329,13 @@ GBR,2007,C_s13_gf01_7,carried_from_previous_step,33944.0,computed,,,20261010T144
 GBR,2007,C_s13_gf01_7,local_government_d41,475.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2007,C_s13_gf01_7,official_total,34617.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2007,C_s13_gf01_7,residual,198.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2008,register,sum_bill,1660.9676850076585,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2008,register,sum_bill,830.4838425038295,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2008,register,sum_fixed_bullet,19301.05700524748,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2008,register,sum_inflation_linked,6197.428017065744,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2008,register,official_total,27159.45270732088,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2008,A_cg_cash,carried_from_previous_step,27159.45270732088,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2008,register,official_total,26328.968864817052,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2008,A_cg_cash,carried_from_previous_step,26328.968864817052,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2008,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2008,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2008,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2008,B_s1311_d41,carried_from_previous_step,27159.45270732088,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2008,B_s1311_d41,official_total,34990.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2008,B_s1311_d41,residual,7830.547292679119,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -343,14 +343,14 @@ GBR,2008,C_s13_gf01_7,carried_from_previous_step,34990.0,computed,,,20261010T144
 GBR,2008,C_s13_gf01_7,local_government_d41,595.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2008,C_s13_gf01_7,official_total,36033.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2008,C_s13_gf01_7,residual,448.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2009,register,sum_bill,625.0792565361422,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2009,register,sum_bill,312.5396282680711,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2009,register,sum_fixed_bullet,28426.919942577257,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2009,register,sum_inflation_linked,-1300.550137481953,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2009,register,official_total,27751.449061631447,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2009,A_cg_cash,carried_from_previous_step,27751.449061631447,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2009,register,official_total,27438.909433363377,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2009,A_cg_cash,carried_from_previous_step,27438.909433363377,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2009,A_cg_cash,out_of_register_national_savings,2071.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2009,A_cg_cash,official_total,38181.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2009,A_cg_cash,residual,8358.550938368553,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2009,A_cg_cash,residual,8671.090566636623,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2009,B_s1311_d41,carried_from_previous_step,38181.75,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2009,B_s1311_d41,official_total,29793.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2009,B_s1311_d41,residual,-8388.75,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -358,14 +358,14 @@ GBR,2009,C_s13_gf01_7,carried_from_previous_step,29793.0,computed,,,20261010T144
 GBR,2009,C_s13_gf01_7,local_government_d41,329.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2009,C_s13_gf01_7,official_total,30321.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2009,C_s13_gf01_7,residual,199.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2010,register,sum_bill,600.7531298479955,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2010,register,sum_bill,300.3765649239974,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2010,register,sum_fixed_bullet,33355.2782085099,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2010,register,sum_inflation_linked,9729.159222404223,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2010,register,official_total,43685.19056076212,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2010,A_cg_cash,carried_from_previous_step,43685.19056076212,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2010,register,official_total,43384.81399583812,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2010,A_cg_cash,carried_from_previous_step,43384.81399583812,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2010,A_cg_cash,out_of_register_national_savings,2413.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2010,A_cg_cash,official_total,47858.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2010,A_cg_cash,residual,1759.309439237877,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2010,A_cg_cash,residual,2059.686004161875,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2010,B_s1311_d41,carried_from_previous_step,47858.0,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2010,B_s1311_d41,official_total,46883.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2010,B_s1311_d41,residual,-975.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -373,15 +373,15 @@ GBR,2010,C_s13_gf01_7,carried_from_previous_step,46883.0,computed,,,20261010T144
 GBR,2010,C_s13_gf01_7,local_government_d41,336.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2010,C_s13_gf01_7,official_total,47373.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2010,C_s13_gf01_7,residual,154.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2011,register,sum_bill,626.675861068823,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2011,register,sum_bill,313.3379305344114,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2011,register,sum_fixed_bullet,35500.992522299384,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2011,register,sum_inflation_linked,12916.406229898514,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2011,register,official_total,49044.07461326672,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2011,A_cg_cash,carried_from_previous_step,49044.07461326672,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2011,register,official_total,48730.736682732306,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2011,A_cg_cash,carried_from_previous_step,48730.736682732306,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2011,A_cg_cash,out_of_register_national_savings,2449.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2011,A_cg_cash,out_of_register_other_nlf_finance_costs,332.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2011,A_cg_cash,official_total,52553.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2011,A_cg_cash,residual,727.1753867332809,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2011,A_cg_cash,residual,1040.5133172676924,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2011,B_s1311_d41,carried_from_previous_step,52553.0,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2011,B_s1311_d41,official_total,53587.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2011,B_s1311_d41,residual,1034.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -389,15 +389,15 @@ GBR,2011,C_s13_gf01_7,carried_from_previous_step,53587.0,computed,,,20261010T144
 GBR,2011,C_s13_gf01_7,local_government_d41,365.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2011,C_s13_gf01_7,official_total,54161.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2011,C_s13_gf01_7,residual,209.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2012,register,sum_bill,415.7386517895783,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2012,register,sum_bill,207.86932589478943,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2012,register,sum_fixed_bullet,36993.9557891902,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2012,register,sum_inflation_linked,8854.111351184276,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2012,register,official_total,46263.80579216406,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2012,A_cg_cash,carried_from_previous_step,46263.80579216406,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2012,register,official_total,46055.93646626927,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2012,A_cg_cash,carried_from_previous_step,46055.93646626927,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2012,A_cg_cash,out_of_register_national_savings,2272.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2012,A_cg_cash,out_of_register_other_nlf_finance_costs,219.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2012,A_cg_cash,official_total,53531.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2012,A_cg_cash,residual,4776.1942078359425,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2012,A_cg_cash,residual,4984.063533730731,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2012,B_s1311_d41,carried_from_previous_step,53531.75,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2012,B_s1311_d41,official_total,49822.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2012,B_s1311_d41,residual,-3709.75,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -405,15 +405,15 @@ GBR,2012,C_s13_gf01_7,carried_from_previous_step,49822.0,computed,,,20261010T144
 GBR,2012,C_s13_gf01_7,local_government_d41,395.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2012,C_s13_gf01_7,official_total,50404.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2012,C_s13_gf01_7,residual,187.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2013,register,sum_bill,273.8237862771491,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2013,register,sum_bill,136.91189313857436,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2013,register,sum_fixed_bullet,37670.687246303736,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2013,register,sum_inflation_linked,9323.252174414705,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2013,register,official_total,47267.76320699559,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2013,A_cg_cash,carried_from_previous_step,47267.76320699559,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2013,register,official_total,47130.85131385701,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2013,A_cg_cash,carried_from_previous_step,47130.85131385701,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2013,A_cg_cash,out_of_register_national_savings,2053.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2013,A_cg_cash,out_of_register_other_nlf_finance_costs,172.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2013,A_cg_cash,official_total,52384.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2013,A_cg_cash,residual,2890.986793004413,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2013,A_cg_cash,residual,3027.8986861429876,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2013,B_s1311_d41,carried_from_previous_step,52384.0,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2013,B_s1311_d41,official_total,50828.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2013,B_s1311_d41,residual,-1556.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -421,15 +421,15 @@ GBR,2013,C_s13_gf01_7,carried_from_previous_step,50828.0,computed,,,20261010T144
 GBR,2013,C_s13_gf01_7,local_government_d41,389.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2013,C_s13_gf01_7,official_total,51305.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2013,C_s13_gf01_7,residual,88.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2014,register,sum_bill,400.57066617052305,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2014,register,sum_bill,200.28533308526207,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2014,register,sum_fixed_bullet,38758.316727695536,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2014,register,sum_inflation_linked,8736.309459639626,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2014,register,official_total,47895.19685350569,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2014,A_cg_cash,carried_from_previous_step,47895.19685350569,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2014,register,official_total,47694.91152042043,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2014,A_cg_cash,carried_from_previous_step,47694.91152042043,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2014,A_cg_cash,out_of_register_national_savings,1734.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2014,A_cg_cash,out_of_register_other_nlf_finance_costs,168.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2014,A_cg_cash,official_total,49264.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2014,A_cg_cash,residual,-532.9468535056876,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2014,A_cg_cash,residual,-332.66152042042665,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2014,B_s1311_d41,carried_from_previous_step,49264.25,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2014,B_s1311_d41,official_total,49718.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2014,B_s1311_d41,residual,453.75,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -437,15 +437,15 @@ GBR,2014,C_s13_gf01_7,carried_from_previous_step,49718.0,computed,,,20261010T144
 GBR,2014,C_s13_gf01_7,local_government_d41,513.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2014,C_s13_gf01_7,official_total,50379.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2014,C_s13_gf01_7,residual,148.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2015,register,sum_bill,659.1949682482655,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2015,register,sum_bill,329.5974841241328,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2015,register,sum_fixed_bullet,38690.68149527522,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2015,register,sum_inflation_linked,3893.8213887705756,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2015,register,official_total,43243.697852294055,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2015,A_cg_cash,carried_from_previous_step,43243.697852294055,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2015,register,official_total,42914.10036816992,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2015,A_cg_cash,carried_from_previous_step,42914.10036816992,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2015,A_cg_cash,out_of_register_national_savings,1962.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2015,A_cg_cash,out_of_register_other_nlf_finance_costs,168.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2015,A_cg_cash,official_total,48289.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2015,A_cg_cash,residual,2914.3021477059447,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2015,A_cg_cash,residual,3243.8996318300774,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2015,B_s1311_d41,carried_from_previous_step,48289.5,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2015,B_s1311_d41,official_total,44504.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2015,B_s1311_d41,residual,-3785.5,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -453,15 +453,15 @@ GBR,2015,C_s13_gf01_7,carried_from_previous_step,44504.0,computed,,,20261010T144
 GBR,2015,C_s13_gf01_7,local_government_d41,574.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2015,C_s13_gf01_7,official_total,45225.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2015,C_s13_gf01_7,residual,147.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2016,register,sum_bill,681.5948048861547,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2016,register,sum_bill,340.7974024430772,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2016,register,sum_fixed_bullet,37670.202812885684,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2016,register,sum_inflation_linked,8082.056336979824,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2016,register,official_total,46433.85395475166,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2016,A_cg_cash,carried_from_previous_step,46433.85395475166,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2016,register,official_total,46093.05655230858,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2016,A_cg_cash,carried_from_previous_step,46093.05655230858,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2016,A_cg_cash,out_of_register_national_savings,2267.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2016,A_cg_cash,out_of_register_other_nlf_finance_costs,140.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2016,A_cg_cash,official_total,50709.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2016,A_cg_cash,residual,1867.396045248337,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2016,A_cg_cash,residual,2208.193447691415,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2016,B_s1311_d41,carried_from_previous_step,50709.25,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2016,B_s1311_d41,official_total,48557.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2016,B_s1311_d41,residual,-2152.25,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -469,15 +469,15 @@ GBR,2016,C_s13_gf01_7,carried_from_previous_step,48557.0,computed,,,20261010T144
 GBR,2016,C_s13_gf01_7,local_government_d41,688.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2016,C_s13_gf01_7,official_total,49623.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2016,C_s13_gf01_7,residual,378.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2017,register,sum_bill,228.13184930836684,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2017,register,sum_bill,114.06592465418318,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2017,register,sum_fixed_bullet,37432.51785669403,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2017,register,sum_inflation_linked,15452.039647759646,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2017,register,official_total,53112.68935376204,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2017,A_cg_cash,carried_from_previous_step,53112.68935376204,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2017,register,official_total,52998.62342910786,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2017,A_cg_cash,carried_from_previous_step,52998.62342910786,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2017,A_cg_cash,out_of_register_national_savings,2448.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2017,A_cg_cash,out_of_register_other_nlf_finance_costs,131.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2017,A_cg_cash,official_total,55488.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2017,A_cg_cash,residual,-205.18935376204172,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2017,A_cg_cash,residual,-91.12342910785806,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2017,B_s1311_d41,carried_from_previous_step,55488.0,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2017,B_s1311_d41,official_total,55822.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2017,B_s1311_d41,residual,334.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -485,15 +485,15 @@ GBR,2017,C_s13_gf01_7,carried_from_previous_step,55822.0,computed,,,20261010T144
 GBR,2017,C_s13_gf01_7,local_government_d41,713.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2017,C_s13_gf01_7,official_total,56693.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2017,C_s13_gf01_7,residual,158.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2018,register,sum_bill,701.3876467489105,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2018,register,sum_bill,350.6938233744551,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2018,register,sum_fixed_bullet,36455.118838369504,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2018,register,sum_inflation_linked,13088.366039546063,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2018,register,official_total,50244.872524664475,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2018,A_cg_cash,carried_from_previous_step,50244.872524664475,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2018,register,official_total,49894.17870129002,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2018,A_cg_cash,carried_from_previous_step,49894.17870129002,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2018,A_cg_cash,out_of_register_national_savings,2457.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2018,A_cg_cash,out_of_register_other_nlf_finance_costs,246.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2018,A_cg_cash,official_total,52492.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2018,A_cg_cash,residual,-456.62252466447535,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2018,A_cg_cash,residual,-105.92870129002,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2018,B_s1311_d41,carried_from_previous_step,52492.0,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2018,B_s1311_d41,official_total,53260.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2018,B_s1311_d41,residual,768.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -501,15 +501,15 @@ GBR,2018,C_s13_gf01_7,carried_from_previous_step,53260.0,computed,,,20261010T144
 GBR,2018,C_s13_gf01_7,local_government_d41,559.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2018,C_s13_gf01_7,official_total,53891.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2018,C_s13_gf01_7,residual,72.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2019,register,sum_bill,1208.4590032404967,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2019,register,sum_bill,604.2295016202486,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2019,register,sum_fixed_bullet,35642.33170879517,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2019,register,sum_inflation_linked,10108.779294773172,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2019,register,official_total,46959.57000680884,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2019,A_cg_cash,carried_from_previous_step,46959.57000680884,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2019,register,official_total,46355.34050518859,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2019,A_cg_cash,carried_from_previous_step,46355.34050518859,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2019,A_cg_cash,out_of_register_national_savings,2537.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2019,A_cg_cash,out_of_register_other_nlf_finance_costs,369.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2019,A_cg_cash,official_total,50690.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2019,A_cg_cash,residual,824.4299931911592,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2019,A_cg_cash,residual,1428.6594948114073,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2019,B_s1311_d41,carried_from_previous_step,50690.75,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2019,B_s1311_d41,official_total,48662.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2019,B_s1311_d41,residual,-2028.75,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -517,15 +517,15 @@ GBR,2019,C_s13_gf01_7,carried_from_previous_step,48662.0,computed,,,20261010T144
 GBR,2019,C_s13_gf01_7,local_government_d41,751.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2019,C_s13_gf01_7,official_total,49450.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2019,C_s13_gf01_7,residual,37.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2020,register,sum_bill,573.7487966808774,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2020,register,sum_bill,286.87439834043795,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2020,register,sum_fixed_bullet,33997.012678414954,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2020,register,sum_inflation_linked,5261.37231348115,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2020,register,official_total,39832.13378857698,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2020,A_cg_cash,carried_from_previous_step,39832.13378857698,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2020,register,official_total,39545.25939023654,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2020,A_cg_cash,carried_from_previous_step,39545.25939023654,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2020,A_cg_cash,out_of_register_national_savings,2319.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2020,A_cg_cash,out_of_register_other_nlf_finance_costs,131.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2020,A_cg_cash,official_total,43883.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2020,A_cg_cash,residual,1600.3662114230174,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2020,A_cg_cash,residual,1887.2406097634569,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2020,B_s1311_d41,carried_from_previous_step,43883.75,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2020,B_s1311_d41,official_total,41859.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2020,B_s1311_d41,residual,-2024.75,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -533,15 +533,15 @@ GBR,2020,C_s13_gf01_7,carried_from_previous_step,41859.0,computed,,,20261010T144
 GBR,2020,C_s13_gf01_7,local_government_d41,644.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2020,C_s13_gf01_7,official_total,42622.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2020,C_s13_gf01_7,residual,119.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2021,register,sum_bill,15.45582231857394,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2021,register,sum_bill,7.727911159286555,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2021,register,sum_fixed_bullet,32796.38436528575,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2021,register,sum_inflation_linked,20523.727166135046,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2021,register,official_total,53335.56735373937,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2021,A_cg_cash,carried_from_previous_step,53335.56735373937,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2021,register,official_total,53327.83944258008,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2021,A_cg_cash,carried_from_previous_step,53327.83944258008,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2021,A_cg_cash,out_of_register_national_savings,2458.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2021,A_cg_cash,out_of_register_other_nlf_finance_costs,73.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2021,A_cg_cash,official_total,62171.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2021,A_cg_cash,residual,6304.432646260633,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2021,A_cg_cash,residual,6312.16055741992,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2021,B_s1311_d41,carried_from_previous_step,62171.25,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2021,B_s1311_d41,official_total,62251.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2021,B_s1311_d41,residual,79.75,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -549,15 +549,15 @@ GBR,2021,C_s13_gf01_7,carried_from_previous_step,62251.0,computed,,,20261010T144
 GBR,2021,C_s13_gf01_7,local_government_d41,766.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2021,C_s13_gf01_7,official_total,63115.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2021,C_s13_gf01_7,residual,98.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2022,register,sum_bill,1206.0536065525728,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2022,register,sum_bill,603.0268032762865,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2022,register,sum_fixed_bullet,32374.474162217793,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2022,register,sum_inflation_linked,55548.486858017364,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2022,register,official_total,89129.01462678773,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2022,A_cg_cash,carried_from_previous_step,89129.01462678773,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2022,register,official_total,88525.98782351144,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2022,A_cg_cash,carried_from_previous_step,88525.98782351144,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2022,A_cg_cash,out_of_register_national_savings,4744.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2022,A_cg_cash,out_of_register_other_nlf_finance_costs,1042.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2022,A_cg_cash,official_total,97719.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2022,A_cg_cash,residual,2803.485373212272,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2022,A_cg_cash,residual,3406.512176488558,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2022,B_s1311_d41,carried_from_previous_step,97719.25,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2022,B_s1311_d41,official_total,107687.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2022,B_s1311_d41,residual,9967.75,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -565,15 +565,15 @@ GBR,2022,C_s13_gf01_7,carried_from_previous_step,107687.0,computed,,,20261010T14
 GBR,2022,C_s13_gf01_7,local_government_d41,871.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2022,C_s13_gf01_7,official_total,108924.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2022,C_s13_gf01_7,residual,366.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2023,register,sum_bill,6716.745509830582,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2023,register,sum_bill,3358.3727549152914,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2023,register,sum_fixed_bullet,39003.17700822976,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2023,register,sum_inflation_linked,36105.41974948946,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2023,register,official_total,81825.3422675498,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2023,A_cg_cash,carried_from_previous_step,81825.3422675498,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2023,register,official_total,78466.9695126345,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2023,A_cg_cash,carried_from_previous_step,78466.9695126345,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2023,A_cg_cash,out_of_register_national_savings,7891.0,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2023,A_cg_cash,out_of_register_other_nlf_finance_costs,3530.25,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2023,A_cg_cash,official_total,89947.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2023,A_cg_cash,residual,-3299.0922675498005,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2023,A_cg_cash,residual,59.28048736548999,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2023,B_s1311_d41,carried_from_previous_step,89947.5,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2023,B_s1311_d41,official_total,86060.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2023,B_s1311_d41,residual,-3887.5,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -581,15 +581,15 @@ GBR,2023,C_s13_gf01_7,carried_from_previous_step,86060.0,computed,,,20261010T144
 GBR,2023,C_s13_gf01_7,local_government_d41,1026.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2023,C_s13_gf01_7,official_total,87436.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2023,C_s13_gf01_7,residual,350.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2024,register,sum_bill,9755.782829452135,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2024,register,sum_bill,4877.8914147260675,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2024,register,sum_fixed_bullet,48041.921830589126,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2024,register,sum_inflation_linked,15255.957033503535,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2024,register,official_total,73053.6616935448,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2024,A_cg_cash,carried_from_previous_step,73053.6616935448,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2024,register,official_total,68175.77027881873,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2024,A_cg_cash,carried_from_previous_step,68175.77027881873,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2024,A_cg_cash,out_of_register_national_savings,9160.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2024,A_cg_cash,out_of_register_other_nlf_finance_costs,5591.75,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2024,A_cg_cash,official_total,86253.5,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2024,A_cg_cash,residual,-1552.4116935447964,residual,,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2024,A_cg_cash,residual,3325.479721181271,residual,,accrued_nlf_finance_costs,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2024,B_s1311_d41,carried_from_previous_step,86253.5,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2024,B_s1311_d41,official_total,81778.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2024,B_s1311_d41,residual,-4475.5,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -597,13 +597,13 @@ GBR,2024,C_s13_gf01_7,carried_from_previous_step,81778.0,computed,,,20261010T144
 GBR,2024,C_s13_gf01_7,local_government_d41,1107.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2024,C_s13_gf01_7,official_total,83231.0,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2024,C_s13_gf01_7,residual,346.0,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2025,register,sum_bill,8568.64605773105,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2025,register,sum_bill,4284.323028865525,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2025,register,sum_fixed_bullet,57641.53679794258,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2025,register,sum_inflation_linked,24492.745913775765,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2025,register,official_total,90702.9287694494,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2025,A_cg_cash,carried_from_previous_step,90702.9287694494,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2025,register,official_total,86418.60574058388,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2025,A_cg_cash,carried_from_previous_step,86418.60574058388,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2025,A_cg_cash,official_total,,official,HMT_NLF,accrued_nlf_finance_costs,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2025,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2025,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2025,B_s1311_d41,carried_from_previous_step,90702.9287694494,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2025,B_s1311_d41,official_total,97643.0,official,ONS_PSF_TIMESERIES,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2025,B_s1311_d41,residual,6940.071230550602,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
@@ -611,26 +611,26 @@ GBR,2025,C_s13_gf01_7,carried_from_previous_step,97643.0,computed,,,20261010T144
 GBR,2025,C_s13_gf01_7,local_government_d41,1332.0,official,ONS_PSF_APPENDIX_A,"accrued; Appendix A PSA6J_1 NUGW 'Interest', calendar-year block; sign +1 (S.13 = S.1311 + S.1313; UK has no state government or social security funds subsector)",20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2025,C_s13_gf01_7,official_total,98889.79636087423,official,package_GF01_7,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2025,C_s13_gf01_7,residual,-85.20363912577159,residual,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2026,register,sum_bill,6806.9069309040115,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2026,register,sum_bill,3403.453465452006,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2026,register,sum_fixed_bullet,66960.51932171531,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2026,register,sum_inflation_linked,22798.46106220875,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2026,register,official_total,96565.88731482807,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2026,A_cg_cash,carried_from_previous_step,96565.88731482807,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2026,register,official_total,93162.43384937606,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2026,A_cg_cash,carried_from_previous_step,93162.43384937606,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2026,A_cg_cash,official_total,,official,,,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2026,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2026,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2026,B_s1311_d41,carried_from_previous_step,96565.88731482807,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2026,B_s1311_d41,official_total,,official,,,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2026,B_s1311_d41,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2026,C_s13_gf01_7,carried_from_previous_step,96565.88731482807,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2026,C_s13_gf01_7,official_total,,official,,,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2026,C_s13_gf01_7,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2027,register,sum_bill,353.7101608592751,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
+GBR,2027,register,sum_bill,176.85508042963758,computed,ggfiscal.debt.register,accrued,20261012T083847Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2027,register,sum_fixed_bullet,69841.04335614256,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
 GBR,2027,register,sum_inflation_linked,-211.61342411739793,computed,ggfiscal.debt.register,accrued,20261010T144243Z,ggfiscal.debt.chains,,A,computed from the per-security register (debt_interest_by_security / debt_flows)
-GBR,2027,register,official_total,69983.14009288444,computed,,accrued,20261010T144243Z,ggfiscal.debt.chains,,B,
-GBR,2027,A_cg_cash,carried_from_previous_step,69983.14009288444,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2027,register,official_total,69806.2850124548,computed,,accrued,20261012T083847Z,ggfiscal.debt.chains,,B,
+GBR,2027,A_cg_cash,carried_from_previous_step,69806.2850124548,computed,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2027,A_cg_cash,official_total,,official,,,20261010T144243Z,ggfiscal.debt.chains,,A,
-GBR,2027,A_cg_cash,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
+GBR,2027,A_cg_cash,residual,,residual,,,20261012T083847Z,ggfiscal.debt.chains,,B,
 GBR,2027,B_s1311_d41,carried_from_previous_step,69983.14009288444,computed,,,20261010T144243Z,ggfiscal.debt.chains,,B,
 GBR,2027,B_s1311_d41,official_total,,official,,,20261010T144243Z,ggfiscal.debt.chains,,A,
 GBR,2027,B_s1311_d41,residual,,residual,,,20261010T144243Z,ggfiscal.debt.chains,,B,
