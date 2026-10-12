@@ -3415,11 +3415,20 @@ offset). 2026 deficit 5.12 → 5.05%, debt 117.8 → 118.2%. Gross issuance
 about 8–11 EUR bn a year lower. Ordering unchanged; "none stabilises"
 unchanged.
 
-**Not regenerated.** `reports/briefing_FRA_AFT_2026-09/figures/*`,
-`briefing*.html`, the two notebooks and `debt_interest_by_security.csv`
-carry the D-S18-004 numbers until the next
-`python3 -m ggfiscal.report.briefing_fra_scenarios && python3 tools/build_briefing_fra.py`
-and `ggfiscal debt build`.
+**Regenerated** (2026-10-12, second commit): every chart under
+`reports/briefing_FRA_AFT_2026-09/figures/` (`briefing_fra_scenarios`, then
+`briefing_fra`), `key_figures.csv` (the 2027–2030 redemptions as a share of
+the stock move by 0.01–0.05 pp with the smaller forward stock),
+`scenarios_FRA.csv`, `scenario_decomposition.csv`, the new
+`scenario_loop.csv`, `briefing.html`, `briefing_inline.html`, and both
+notebooks re-executed. The HTML the France brief notebook writes is
+byte-identical to a rebuild from the figures on disk. Note for the next
+refresh: the descriptive charts' bytes depend on whether
+`briefing_fra_scenarios` was imported first in the same process (its
+`rcParams.update` at import is inherited), so run them as the notebook does,
+in one process, or accept a byte-level difference in those PNGs.
+**Not regenerated:** `debt_interest_by_security.csv` and the files derived
+from it keep the bill double count until `ggfiscal debt build`.
 
 Gate (2026-10-12): `tests/debt/test_simulate.py` 21 passed (new: the
 deficit identity in every year, the financing identities, GDP chaining,
