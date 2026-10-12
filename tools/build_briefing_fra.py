@@ -134,7 +134,13 @@ def values() -> dict[str, object]:
     V["dur_mv"] = f"{ds['market_value_bn']:,.0f}"
     V["dur_nom"] = f"{ds['nominal_bn']:,.0f}"
     cal = sim.calibration()
-    V["cal_wedge"] = f"{cal['wedge_2025_bn']:.1f}"
+    V["cal_wedge"] = f"{cal['gf01_7_2025_bn'] - cal['register_accrued_interest_2025_bn']:.1f}"
+    V["wedge_pct_gdp"] = f"{sim.BASELINE.gg_wedge_pct:.2f}"
+    # S.13 − S.1311 D.41 in 2025 from the interest chain: local government +
+    # social security funds, less the consolidation residual
+    chain = pd.read_csv(sim.DELIV / "debt_interest_reconciliation.csv", low_memory=False)
+    c25 = chain.query("iso3 == 'FRA' and year == 2025 and step == 'C_s13_gf01_7'").set_index("item").value_lcu_mn
+    V["cal_wedge_s13"] = f"{(c25['official_total'] - c25['carried_from_previous_step']) / 1000:.1f}"
     V["cal_ratio"] = f"{cal['net_issuance_over_deficit_2015_2025']:.2f}"
 
     # register bill stock at end-2025 and the Eurostat-minus-AFT wedge

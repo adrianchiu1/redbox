@@ -63,7 +63,7 @@ def test_identities_hold(results):
     assert np.allclose(r.deficit_bn, -r.primary_balance_bn + r.gg_interest_bn - recv)
     # the interest components add up to the register interest
     parts = (r.coupon_fixed_bn + r.coupon_linker_bn + r.uplift_bn + r.bill_interest_bn
-             + r.new_issue_interest_bn)
+             - r.premium_amort_bn + r.new_issue_interest_bn)
     after = r.year > sim.FIRST_YEAR
     assert np.allclose(r.register_interest_bn[after], parts[after])
     assert (r.new_issue_interest_bn[~after] == 0).all()
@@ -129,14 +129,28 @@ def test_loop_size_is_a_small_positive_part_of_the_gap():
     assert not np.isclose(loop.loop_bn[2030], dec.interaction_bn[2030], rtol=0.05)
 
 
-def test_wedge_is_declared_on_the_engine_basis():
-    """The wedge the engine adds is GF01_7 less what the roll itself computes
-    (coupon pro rata + uplift + bill discount); the cash-basis figure the
-    first version used and the register's accrued total are reported beside
-    it, and both differ from it."""
+def test_wedge_is_declared_on_the_register_accrued_basis():
+    """The wedge the engine adds is GF01_7 less the register's accrued D.41,
+    the concept the roll reproduces (coupons + uplift + bill discount −
+    premium amortisation). The cash figure the first version used is
+    reported beside it; the gap between the accrued total and the roll's
+    pre-amortisation concept is the bonds' premium amortisation, which the
+    roll carries forward line by line."""
     c = sim.calibration()
-    assert c["wedge_2025_accrued_pct_gdp"] < c["wedge_2025_engine_concept_pct_gdp"] < c["wedge_2025_pct_gdp"]
-    assert abs(sim.BASELINE.gg_wedge_pct - c["wedge_2025_engine_concept_pct_gdp"]) < 0.005
+    assert abs(sim.BASELINE.gg_wedge_pct - c["wedge_2025_accrued_pct_gdp"]) < 0.005
+    assert c["wedge_2025_accrued_pct_gdp"] > c["wedge_2025_pct_gdp"] > c["wedge_2025_engine_concept_pct_gdp"]
+    reg = sim.load_register()
+    assert (reg.loc[reg.instrument_class == "bill", "premium_amort"] == 0).all()
+    assert 0 < reg.premium_amort.sum() < 5          # EUR bn a year of net premium on the bonds
+    r = sim.run_all().query("scenario == @sim.REFERENCE").set_index("year")
+    # carried line by line to maturity: in a year every line is outstanding
+    # for the whole of, the engine's figure is exactly the register's sum
+    # over those lines (premiums and discounts net, so the path need not be
+    # monotone — a discount line maturing raises the net)
+    bonds = reg[reg.instrument_class != "bill"]
+    frac = bonds.maturity.map(lambda m: sim._year_fraction_outstanding(m, 2028))
+    assert np.isclose(r.premium_amort_bn[2028], (bonds.premium_amort * frac).sum())
+    assert r.premium_amort_bn.abs().max() <= bonds.premium_amort.abs().sum()
 
 
 def test_five_scenarios_and_the_reference():

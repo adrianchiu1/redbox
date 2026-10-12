@@ -115,7 +115,7 @@ def chart_interest(res, out):
         s = res[(res.scenario == name) & (res.year == 2035)].iloc[0]
         ax.annotate(f"{SHORT[name]} {s.gg_interest_pct_gdp:.1f}%, €{s.gg_interest_bn:,.0f}bn", (2035, s.gg_interest_pct_gdp),
                     xytext=(4, 0), textcoords="offset points", fontsize=7.5, color=INK, va="center")
-    _source(fig, "Source: ggfiscal.debt.simulate on deliverables/debt_positions.csv at 2026-09-10; strict_FRA.csv. Interest on the accrual basis; wedge to GF01_7 held at 0.34% of GDP.", y=-0.2)
+    _source(fig, f"Source: ggfiscal.debt.simulate on deliverables/debt_positions.csv at {sim.SNAPSHOT}; strict_FRA.csv. Interest on the accrual basis; wedge to GF01_7 held at {sim.BASELINE.gg_wedge_pct:.2f}% of GDP.", y=-0.2)
     _save(fig, out); return out
 
 

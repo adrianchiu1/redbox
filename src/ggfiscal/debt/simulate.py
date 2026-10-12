@@ -32,6 +32,7 @@ engine keeps every year, and `tests/debt/test_simulate.py` checks:
 
     deficit      = −primary balance + GG interest − interest receivable
     GG interest  = register interest + wedge (a share of GDP)
+    register     = coupons + uplift + bill discount − premium amortisation + in-year issuance
     debt_t       = debt_{t−1} + deficit_t                 (no stock-flow adjustment)
     MLT gross    = redemptions + 0.90 × deficit − uplift accrual − Δbills
     Δ negotiable stock = 0.90 × deficit                   (from 2027)
@@ -60,6 +61,7 @@ DELIV = ROOT / "deliverables"
 
 ISO = "FRA"
 SNAPSHOT = "2026-09-10"          # the AFT's latest office snapshot in the register
+AMORT_YEAR = 2026                # register year whose premium amortisation is carried forward
 FIRST_YEAR, LAST_YEAR = 2026, 2035
 
 BUCKET_TENOR = {                 # residual maturity at issue, years, midpoint of the DD7 bucket
@@ -137,18 +139,16 @@ class Baseline:
 
     # Wedge GF01_7 − register interest, % of GDP (local government and social
     # security interest, non-negotiable debt, consolidation), held constant
-    # as a share of GDP. Calibrated on the engine's own concept of register
-    # interest — coupon accrued pro rata, uplift accrued, bill discount
-    # accreted: 2025 65.2 − 55.8 = 9.5 EUR bn = 0.32% of GDP
-    # (`calibration()["wedge_2025_engine_concept_pct_gdp"]`). The first
-    # version took the register's CASH total (55.2, wedge 0.34) against an
-    # accrual roll; the register's own accrued total (56.6, wedge 0.29) is not
-    # used either, because its premium/discount amortisation component counts
-    # the bill discount a second time (see `calibration()` and the note in
-    # DECISIONS D-S18-005). What the roll still omits: the amortisation of
-    # premiums/discounts on the bonds in the snapshot stock, which nets to
-    # about −1.5 EUR bn a year in 2026 on the register's figures.
-    gg_wedge_pct: float = 0.32
+    # as a share of GDP. Calibrated on the register's accrued (D.41) total,
+    # which the roll reproduces in concept: coupon pro rata, uplift accrued,
+    # bill discount accreted, less the straight-line amortisation of the
+    # premiums at which lines in the stock were reopened. 2025: 65.2 − 51.8 =
+    # 13.4 EUR bn = 0.45% of GDP (`calibration()["wedge_2025_accrued_pct_gdp"]`).
+    # The first version took the register's CASH total (55.2, 0.34%) against
+    # an accrual roll; the second the roll without the amortisation (55.8,
+    # 0.32%), and both were measured against an accrued total that counted
+    # every bill's discount twice (fixed in interest.py, D-S18-005).
+    gg_wedge_pct: float = 0.45
 
     # Feedback: spread rises with the debt ratio's deviation from the
     # reference scenario, bp per pp of GDP. Off (D-S18-001): each scenario's
@@ -306,8 +306,17 @@ def load_register(snapshot: str = SNAPSHOT) -> pd.DataFrame:
     reg["uplift_ratio"] = np.where(reg.instrument_class == "inflation_linked",
                                    reg.nominal_uplifted_lcu_mn / reg.nominal_lcu_mn, 1.0)
     reg["coupon"] = reg.coupon_pct.fillna(0.0) / 100.0
+    # Premium/discount amortisation on the lines in the stock (§7.7 of the
+    # register, EUR bn a year, positive = premium, reduces D.41): the latest
+    # full register year's figure, carried at that annual rate to maturity.
+    # Lines reopened within that year carry a part-year figure (settlement to
+    # 31 December), so the rate is slightly understated for them.
+    amort = (_load("debt_interest_by_security")
+             .query("iso3 == @ISO and basis == 'accrued' and year == @AMORT_YEAR")
+             .groupby("security_id").premium_discount_amort_lcu_mn.sum() / 1000.0)
+    reg["premium_amort"] = reg.security_id.map(amort).fillna(0.0)
     return reg[["security_id", "name", "instrument_class", "coupon", "maturity",
-                "nominal", "uplift_ratio"]].reset_index(drop=True)
+                "nominal", "uplift_ratio", "premium_amort"]].reset_index(drop=True)
 
 
 def issuance_mix(year: int = 2025) -> pd.Series:
@@ -340,9 +349,9 @@ def calibration() -> dict:
                                          "premium_discount_amort_lcu_mn", "total_lcu_mn"]].sum() / 1000
     cash = by.loc[(2025, "cash")]
     acc = by.loc[(2025, "accrued")]
-    # what run_scenario computes for the register: coupon pro rata, uplift
-    # accrued, bill discount accreted — the accrued basis without the
-    # premium/discount amortisation (§7.7), which the roll does not carry
+    # coupon pro rata, uplift accrued, bill discount accreted — the accrued
+    # basis before the premium/discount amortisation (§7.7), which the roll
+    # carries separately (`premium_amort_bn`)
     engine_concept = float(acc.coupon_lcu_mn + acc.uplift_lcu_mn + acc.discount_lcu_mn)
     strict = pd.read_csv(DELIV / "strict_FRA.csv").set_index("year")
     gf = strict["GF01_7 - Public debt transactions (interest)"] / 1000
@@ -356,11 +365,9 @@ def calibration() -> dict:
             "wedge_2025_pct_gdp": round(100 * float(gf.loc[2025] - cash.total_lcu_mn) / g25, 2),
             "wedge_2025_accrued_pct_gdp": round(100 * float(gf.loc[2025] - acc.total_lcu_mn) / g25, 2),
             "wedge_2025_engine_concept_pct_gdp": round(100 * (float(gf.loc[2025]) - engine_concept) / g25, 2),
-            # D.41 the roll omits: the premium/discount amortisation on the
-            # BONDS in the stock (positive = premium, reduces interest). Bills
-            # are left out: the published file amortises their discount on top
-            # of accreting it (fixed in interest.py, D-S18-005; the file is
-            # regenerated by `ggfiscal debt build`).
+            # the premium/discount amortisation on the bonds in the stock
+            # (positive = premium, reduces interest), which the roll carries
+            # forward from AMORT_YEAR; bills have none (D-S18-005)
             "bond_premium_amortisation_2026_bn": round(float(
                 ibs.merge(sec[["security_id", "instrument_class"]], on="security_id")
                 .query("year == 2026 and basis == 'accrued' and instrument_class != 'bill'")
@@ -451,6 +458,7 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
         uplift_accr = float((bonds.nominal * upl * base.inflation * frac)[link_mask].sum())
         redemptions = float((bonds.nominal * np.where(link_mask, upl, 1.0))[
             (bonds.maturity.dt.year == year).values].sum())
+        prem_amort = float((bonds.premium_amort * frac).sum())
 
         # new tranches from earlier simulation years
         for t in new:
@@ -467,7 +475,7 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
         bill_interest = 0.5 * (btf_prev + btf_target) * bill_rate
 
         # --- the deficit and the financing need ----------------------------
-        register_interest = coupon_fixed + coupon_link + uplift_accr + bill_interest
+        register_interest = coupon_fixed + coupon_link + uplift_accr + bill_interest - prem_amort
         y_new = {b: oat_yield(tenor_of[b], spread, base) / 100 for b in mix.index}
         avg_new_yield = float(sum(w[i] * y_new[b] for i, b in enumerate(mix.index)))
         wedge = base.gg_wedge_pct / 100 * gdp
@@ -544,7 +552,7 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
             "negotiable_stock_bn": stock, "avg_coupon_fixed_pct": avg_coupon_fixed,
             "coupon_fixed_bn": coupon_fixed, "coupon_linker_bn": coupon_link,
             "uplift_bn": uplift_accr, "bill_interest_bn": bill_interest,
-            "new_issue_interest_bn": new_year_interest,
+            "premium_amort_bn": prem_amort, "new_issue_interest_bn": new_year_interest,
         })
     return pd.DataFrame(rows)
 

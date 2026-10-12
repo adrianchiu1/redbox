@@ -3434,3 +3434,55 @@ Gate (2026-10-12): `tests/debt/test_simulate.py` 21 passed (new: the
 deficit identity in every year, the financing identities, GDP chaining,
 loop size, wedge basis); `tests/debt/test_engines.py` and
 `tests/debt/test_france_brief.py` pass.
+
+### D-S18-005, addendum (2026-10-12, same day): the debt layer rebuilt where the bundle allows, the wedge moved to the register's accrued basis
+
+1. **Rebuilt.** `debt_interest_by_security.csv` from the committed canonical
+   register (securities, positions, flows, index ratios, reference series)
+   with `interest.py` fixed: 34,048 rows, the same keys; only bill rows on
+   the accrued basis change (FRA −43.4, GBR −26.0, DEU −20.0 EUR/GBP bn over
+   all years; no bond row moves). France's accrued total: 2025 56.6 → 51.8,
+   2026 66.2 → 62.2. The full `ggfiscal debt build` cannot run in this
+   container (the ONS, ECB/Bundesbank, Eurostat and MEF snapshots are not
+   committed), so the interest chain was not rebuilt from scratch: the only
+   rows it takes from the register are the register-step sums, and only the
+   UK's chain is on the accrued basis, so its `sum_bill`, the register
+   `official_total`, and step A's `carried_from_previous_step` and `residual`
+   were recomputed for 2000–2027 (112 rows, new run_id; the step identities
+   hold as before). France, Germany and Belgium chain on the cash basis and
+   are unchanged. `ggfiscal debt validate` raises KeyError 'variant' in V35
+   (`intermediates.package_nlb`) on inputs this work does not touch;
+   recorded, not fixed.
+2. **Linkers checked, not a bug.** The auction prices in `debt_flows` are
+   real clean prices (OAT€i 0.10% 2053 at 56.3, OAT€i 1.80% 2040 at 100.1),
+   so the premium/discount amortisation on linkers is in real terms, as it
+   should be; the index-ratio scaling to nominal is a refinement left open.
+3. **Wedge, third and last basis.** With the bill double count gone the
+   register's accrued D.41 for 2025 is 51.8 EUR bn, and the chain shows what
+   the wedge to GF01_7 is made of: S.1311 D.41 53.5 (Eurostat), local
+   government 7.4, social security 5.9, consolidation −1.6, GF01_7 65.2. So
+   GF01_7 − register = 13.4 EUR bn = 0.45% of GDP, of which 11.7 is the
+   S.13 − S.1311 wedge and 1.7 the register's shortfall to the État's D.41.
+   The roll now carries the one D.41 component it lacked — the straight-line
+   amortisation of premiums and discounts on the lines in the stock, from the
+   register's 2026 figures line by line to maturity (+1.3 EUR bn a year in
+   2026–27, almost all on linkers, running to −0.5 by 2035 as discount lines
+   mature) — and `gg_wedge_pct` is 0.45. Check against the strict matrix:
+   the register at the snapshot plus this wedge gives 75.9 for 2026 against
+   AMECO's 77.7 (the snapshot lacks the last quarter's issuance); the two
+   earlier bases gave 73.5 and 74.1.
+4. **Results (2035, D-S18-005 first pass → now).** Interest % of GDP: status
+   quo 5.47 → 5.67, Philippe majority 4.80 → 4.99, Le Pen majority
+   4.76 → 4.96, Le Pen hung 4.87 → 5.07, Mélenchon 7.75 → 7.96, benchmark
+   5.53 → 5.73. Debt: +1.1–1.4 pp (status quo 144.6, Le Pen majority 131.0,
+   Mélenchon 167.3). The 2027 bill is 2.8 EUR bn higher in every scenario.
+   Against D-S18-001 the net change is therefore +0.1 pp of GDP of interest
+   and +1 pp of debt by 2035; ordering unchanged.
+5. The briefing template reads the wedge and its S.13 − S.1311 part from the
+   engine and the chain (`{{wedge_pct_gdp}}`, `{{cal_wedge}}`,
+   `{{cal_wedge_s13}}`); Figure 8's caption reads it from `BASELINE`. Figures,
+   HTML and both notebooks regenerated.
+
+Gate: `tests/debt/test_simulate.py` 18, `test_engines.py` 10,
+`test_france_brief.py` 3 pass; the wedge test now asserts the accrued basis
+and the line-by-line amortisation carry.
