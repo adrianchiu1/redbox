@@ -27,7 +27,24 @@ argued with line by line.
 
 Conventions: calendar years; EUR bn unless a name says otherwise; interest
 on the accrual basis (D.41 concept: coupons pro rata, bill discount
-accreted, indexation uplift accrued as it arises — DD3).
+accreted, indexation uplift accrued as it arises — DD3). The identities the
+engine keeps every year, and `tests/debt/test_simulate.py` checks:
+
+    deficit      = −primary balance + GG interest − interest receivable
+    GG interest  = register interest + wedge (a share of GDP)
+    debt_t       = debt_{t−1} + deficit_t                 (no stock-flow adjustment)
+    MLT gross    = redemptions + 0.90 × deficit − uplift accrual − Δbills
+    Δ negotiable stock = 0.90 × deficit                   (from 2027)
+    nominal GDP  = ledger 2025 level × AMECO growth to 2027 × (1+g)(1+π) after
+
+What feeds back into what: the interest bill enters the deficit, the deficit
+the issuance, the issuance the next year's interest — that is the only
+endogenous channel. The spread path, real growth and the primary-balance
+changes are declared per scenario and do not respond to the debt ratio,
+to each other or to the interest bill (the debt-ratio spread feedback
+exists as a parameter and is set to zero, D-S18-001). In particular a
+scenario's primary balance in EUR does not move with its growth: there are
+no automatic stabilisers (see the briefing's assumptions table).
 """
 from __future__ import annotations
 
@@ -59,10 +76,15 @@ BUCKET_TENOR = {                 # residual maturity at issue, years, midpoint o
 class Baseline:
     """Everything the scenarios share. All numbers are declared, not fitted."""
 
-    # Nominal GDP, EUR bn: 2025 ledger outturn, 2026–2027 the strict matrix
-    # (EC AMECO spring 2026). From 2028 each scenario declares its own real
-    # growth; the deflator is common.
-    gdp: dict = field(default_factory=lambda: {2025: 2979.1, 2026: 3055.8, 2027: 3150.7})
+    # Nominal GDP, EUR bn. The level is the ledger's 2025 outturn (Eurostat;
+    # the denominator of INSEE's 115.6% debt ratio). 2026–2027 chain the EC
+    # AMECO spring 2026 growth rates onto it — growth rates, never AMECO's
+    # levels (D-S4-002, as `forecast.levels`): AMECO's own 2025 is 2991.1, 0.4%
+    # above the ledger, so taking its 2026 level outright booked that 0.4% as
+    # 2026 growth and took half a point off every debt ratio. From 2028 each
+    # scenario declares its own real growth; the deflator is common.
+    gdp: dict = field(default_factory=lambda: {2025: 2979.1})
+    gdp_ameco: dict = field(default_factory=lambda: {2025: 2991.1, 2026: 3055.8, 2027: 3150.7})
     deflator_after: float = 0.020
 
     # Primary balance, % of GDP (negative = primary deficit), common to every
@@ -96,10 +118,10 @@ class Baseline:
     spread_today_date: str = "2026-10-11"
 
     # Inflation for indexation uplift (FR CPI ex-tobacco / EA HICP ex-tobacco).
+    # New linker issuance is not modelled separately: with breakeven =
+    # inflation a linker's real coupon plus uplift accrual equals the nominal
+    # yield, so every new tranche is booked at the nominal yield.
     inflation: float = 0.020
-    # Real yield spread of linkers over the fixed curve: coupon at issue
-    # = nominal yield − expected inflation (breakeven = inflation).
-    linker_share_of_mlt: float = 0.07
 
     # Share of the general-government deficit financed by the État's
     # negotiable debt: Δ(F.31+F.32) over −NLB summed over 2015–2025 is 0.90
@@ -114,9 +136,19 @@ class Baseline:
     gg_interest_2026_bn: float = 77.66
 
     # Wedge GF01_7 − register interest, % of GDP (local government and social
-    # security interest, non-negotiable debt, consolidation). 2025: 65.2 −
-    # 55.2 = 10.0 EUR bn = 0.34% of GDP. Held constant as a share of GDP.
-    gg_wedge_pct: float = 0.34
+    # security interest, non-negotiable debt, consolidation), held constant
+    # as a share of GDP. Calibrated on the engine's own concept of register
+    # interest — coupon accrued pro rata, uplift accrued, bill discount
+    # accreted: 2025 65.2 − 55.8 = 9.5 EUR bn = 0.32% of GDP
+    # (`calibration()["wedge_2025_engine_concept_pct_gdp"]`). The first
+    # version took the register's CASH total (55.2, wedge 0.34) against an
+    # accrual roll; the register's own accrued total (56.6, wedge 0.29) is not
+    # used either, because its premium/discount amortisation component counts
+    # the bill discount a second time (see `calibration()` and the note in
+    # DECISIONS D-S18-005). What the roll still omits: the amortisation of
+    # premiums/discounts on the bonds in the snapshot stock, which nets to
+    # about −1.5 EUR bn a year in 2026 on the register's figures.
+    gg_wedge_pct: float = 0.32
 
     # Feedback: spread rises with the debt ratio's deviation from the
     # reference scenario, bp per pp of GDP. Off (D-S18-001): each scenario's
@@ -227,8 +259,12 @@ def scenario(name: str) -> Scenario:
 
 
 def gdp_path(sc: Scenario, base: Baseline = BASELINE) -> dict:
-    """Nominal GDP, EUR bn, by year: common to 2027, then (1+g)(1+π)."""
+    """Nominal GDP, EUR bn, by year: the ledger level, AMECO growth chained
+    on to 2027 (common), then (1+g)(1+π)."""
     gdp = dict(base.gdp)
+    for y in sorted(base.gdp_ameco):
+        if y > max(gdp) and (y - 1) in base.gdp_ameco:
+            gdp[y] = gdp[y - 1] * base.gdp_ameco[y] / base.gdp_ameco[y - 1]
     for y in range(max(gdp) + 1, LAST_YEAR + 1):
         gdp[y] = gdp[y - 1] * (1 + sc.real_growth) * (1 + base.deflator_after)
     return gdp
@@ -298,16 +334,37 @@ def calibration() -> dict:
     led = _load("balance_ledger").query("iso3 == @ISO and variant == 'strict'").set_index("year")
     yrs = [y for y in range(2015, 2026) if y in ni.index and y in led.index]
     ratio = ni.loc[yrs].sum() / (-led.nlb_lcu_mn.loc[yrs]).sum()
-    ibs = _load("debt_interest_by_security").query("iso3 == @ISO and basis == 'cash'")
-    reg_int = ibs.groupby("year").total_lcu_mn.sum() / 1000
+    ibs = _load("debt_interest_by_security").query("iso3 == @ISO")
+    sec = _load("debt_securities").query("iso3 == @ISO")
+    by = ibs.groupby(["year", "basis"])[["coupon_lcu_mn", "uplift_lcu_mn", "discount_lcu_mn",
+                                         "premium_discount_amort_lcu_mn", "total_lcu_mn"]].sum() / 1000
+    cash = by.loc[(2025, "cash")]
+    acc = by.loc[(2025, "accrued")]
+    # what run_scenario computes for the register: coupon pro rata, uplift
+    # accrued, bill discount accreted — the accrued basis without the
+    # premium/discount amortisation (§7.7), which the roll does not carry
+    engine_concept = float(acc.coupon_lcu_mn + acc.uplift_lcu_mn + acc.discount_lcu_mn)
     strict = pd.read_csv(DELIV / "strict_FRA.csv").set_index("year")
     gf = strict["GF01_7 - Public debt transactions (interest)"] / 1000
+    g25 = BASELINE.gdp[2025]
     return {"net_issuance_over_deficit_2015_2025": round(float(ratio), 3),
-            "register_cash_interest_2025_bn": round(float(reg_int.loc[2025]), 1),
+            "register_cash_interest_2025_bn": round(float(cash.total_lcu_mn), 1),
+            "register_accrued_interest_2025_bn": round(float(acc.total_lcu_mn), 1),
+            "register_engine_concept_2025_bn": round(engine_concept, 1),
             "gf01_7_2025_bn": round(float(gf.loc[2025]), 1),
-            "wedge_2025_bn": round(float(gf.loc[2025] - reg_int.loc[2025]), 1),
-            "wedge_2025_pct_gdp": round(100 * float(gf.loc[2025] - reg_int.loc[2025])
-                                        / BASELINE.gdp[2025], 2)}
+            "wedge_2025_bn": round(float(gf.loc[2025] - cash.total_lcu_mn), 1),
+            "wedge_2025_pct_gdp": round(100 * float(gf.loc[2025] - cash.total_lcu_mn) / g25, 2),
+            "wedge_2025_accrued_pct_gdp": round(100 * float(gf.loc[2025] - acc.total_lcu_mn) / g25, 2),
+            "wedge_2025_engine_concept_pct_gdp": round(100 * (float(gf.loc[2025]) - engine_concept) / g25, 2),
+            # D.41 the roll omits: the premium/discount amortisation on the
+            # BONDS in the stock (positive = premium, reduces interest). Bills
+            # are left out: the published file amortises their discount on top
+            # of accreting it (fixed in interest.py, D-S18-005; the file is
+            # regenerated by `ggfiscal debt build`).
+            "bond_premium_amortisation_2026_bn": round(float(
+                ibs.merge(sec[["security_id", "instrument_class"]], on="security_id")
+                .query("year == 2026 and basis == 'accrued' and instrument_class != 'bill'")
+                .premium_discount_amort_lcu_mn.sum()) / 1000, 1)}
 
 
 # --------------------------------------------------------------------------
@@ -349,8 +406,17 @@ def _year_fraction_outstanding(maturity: pd.Timestamp, year: int) -> float:
 
 def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame | None = None,
                  mix: pd.Series | None = None, feedback: bool = True,
-                 baseline_debt_pct: pd.Series | None = None) -> pd.DataFrame:
-    """Roll the register forward under one scenario. One row per year."""
+                 baseline_debt_pct: pd.Series | None = None,
+                 financing_interest: pd.Series | None = None) -> pd.DataFrame:
+    """Roll the register forward under one scenario. One row per year.
+
+    `financing_interest` (EUR bn by year, general-government basis) is a
+    diagnostic: when given, the issuance of each year from 2027 is sized on
+    that interest bill instead of the scenario's own, while the deficit, the
+    debt and the interest reported stay the scenario's. `loop_size` uses it
+    with the status quo's bill to measure the arithmetic loop — the interest
+    the extra interest itself ends up costing — directly.
+    """
     reg = (register if register is not None else load_register()).copy()
     mix = mix if mix is not None else issuance_mix()
     tenor_of = {b: mix.attrs.get("tenor", {}).get(b, BUCKET_TENOR[b]) for b in mix.index}
@@ -402,33 +468,50 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
 
         # --- the deficit and the financing need ----------------------------
         register_interest = coupon_fixed + coupon_link + uplift_accr + bill_interest
-        # Issuance within the year also pays interest: half a year on average.
-        # Solve the small fixed point for gross MLT issuance and its coupon.
         y_new = {b: oat_yield(tenor_of[b], spread, base) / 100 for b in mix.index}
         avg_new_yield = float(sum(w[i] * y_new[b] for i, b in enumerate(mix.index)))
-        # linker share of new issuance carries real coupon + inflation accrual = nominal yield
         wedge = base.gg_wedge_pct / 100 * gdp
         recv = base.interest_receivable_pct / 100 * gdp
-        deficit_ex_new = -pb / 100 * gdp + register_interest + wedge - recv
-        year_share = 1.0
-        if year == FIRST_YEAR:   # bridge year: the register holds the issuance to the snapshot
-            year_share = (pd.Timestamp(year=year + 1, month=1, day=1) - pd.Timestamp(SNAPSHOT)).days / 365
-            deficit_ex_new = -pb / 100 * gdp + base.gg_interest_2026_bn - recv
-        net_issuance = base.deficit_to_net_issuance * deficit_ex_new * year_share
         d_btf = btf_target - btf_prev
-        mlt_gross = redemptions + net_issuance - d_btf
-        # interest on this year's issuance (half-year) adds to the deficit, which
-        # adds to issuance: geometric fixed point
-        k = 0.5 * avg_new_yield
-        mlt_gross = mlt_gross / (1 - k * base.deficit_to_net_issuance) if mlt_gross > 0 else mlt_gross
-        new_year_interest = max(mlt_gross, 0.0) * k
-        register_interest += new_year_interest
-        deficit = deficit_ex_new + new_year_interest
-        net_issuance = base.deficit_to_net_issuance * deficit * year_share
-        gg_interest = register_interest + wedge
+        # The deficit is financed by negotiable debt at the calibrated share,
+        # EXCEPT the indexation uplift: it is D.41 interest (in the deficit)
+        # and raises the Maastricht stock through the indexed nominal, but it
+        # is not paid until redemption, so it is not issued against. (In ESA
+        # the uplift is a reinvestment in F.32, so the 0.90 calibration
+        # already contains it; the cash issuance is 0.90 × deficit − uplift.)
+        # Booking it as issuance as well grew the stock by the uplift twice.
         if year == FIRST_YEAR:
+            # Bridge year: the register already holds the issuance to the
+            # snapshot, so only the remainder of the year is financed here,
+            # and the whole year's interest — including the in-year interest
+            # on that remainder — is the strict matrix's figure (EC AMECO).
+            # Nothing is added to it: adding the new-issuance half-year on
+            # top counted the same interest twice (2.5 EUR bn in the first
+            # version, carried in the debt of every later year).
+            year_share = (pd.Timestamp(year=year + 1, month=1, day=1) - pd.Timestamp(SNAPSHOT)).days / 365
             gg_interest = base.gg_interest_2026_bn
             register_interest = gg_interest - wedge
+            deficit = -pb / 100 * gdp + gg_interest - recv
+            new_year_interest = 0.0
+            net_issuance = base.deficit_to_net_issuance * deficit * year_share
+            mlt_gross = redemptions + net_issuance - uplift_accr * year_share - d_btf
+        else:
+            deficit_ex_new = -pb / 100 * gdp + register_interest + wedge - recv
+            k = 0.5 * avg_new_yield          # issuance within the year pays half a year
+            if financing_interest is not None and year in financing_interest.index:
+                fin_deficit = -pb / 100 * gdp + float(financing_interest.loc[year]) - recv
+                mlt_gross = redemptions + base.deficit_to_net_issuance * fin_deficit - uplift_accr - d_btf
+                new_year_interest = max(mlt_gross, 0.0) * k
+            else:
+                # the interest on this year's issuance adds to the deficit,
+                # which adds to issuance: geometric fixed point
+                mlt_gross = redemptions + base.deficit_to_net_issuance * deficit_ex_new - uplift_accr - d_btf
+                mlt_gross = mlt_gross / (1 - k * base.deficit_to_net_issuance) if mlt_gross > 0 else mlt_gross
+                new_year_interest = max(mlt_gross, 0.0) * k
+            register_interest += new_year_interest
+            deficit = deficit_ex_new + new_year_interest
+            net_issuance = base.deficit_to_net_issuance * deficit
+            gg_interest = register_interest + wedge
 
         # book the new tranches
         for i, b in enumerate(mix.index):
@@ -505,6 +588,28 @@ def decompose_gap(sc: Scenario, base: Baseline = BASELINE, years=(2030, 2035)) -
     return pd.DataFrame(rows)
 
 
+def loop_size(sc: Scenario, base: Baseline = BASELINE, years=(2030, 2035)) -> pd.DataFrame:
+    """The arithmetic loop, measured directly: a scenario's interest gap to
+    the status quo, less the gap it would show if its issuance were sized on
+    the status quo's interest bill (the extra interest not refinanced). What
+    is left is the interest the extra interest itself costs — the loop that
+    `decompose_gap`'s interaction term is often read as, but is not (that
+    term is the price × volume cross-effect of the two-lever split)."""
+    reg, mix = load_register(), issuance_mix()
+    ref_run = run_scenario(scenario(REFERENCE), base, reg, mix, feedback=False).set_index("year")
+    full = run_scenario(sc, base, reg, mix, feedback=False).set_index("year")
+    frozen = run_scenario(sc, base, reg, mix, feedback=False,
+                          financing_interest=ref_run.gg_interest_bn).set_index("year")
+    rows = []
+    for y in years:
+        gap = full.gg_interest_bn[y] - ref_run.gg_interest_bn[y]
+        no_loop = frozen.gg_interest_bn[y] - ref_run.gg_interest_bn[y]
+        rows.append({"scenario": sc.name, "label": sc.label, "year": y, "gap_bn": gap,
+                     "gap_without_loop_bn": no_loop, "loop_bn": gap - no_loop,
+                     "loop_share": (gap - no_loop) / gap if gap else np.nan})
+    return pd.DataFrame(rows)
+
+
 # --------------------------------------------------------------------------
 # Mark-to-market sensitivity of the stock (for the holders section)
 # --------------------------------------------------------------------------
@@ -534,10 +639,10 @@ def duration_table(spread10_bp: float = 135.0, base: Baseline = BASELINE,
         rows.append({"security_id": r.security_id, "name": r.name, "class": r.instrument_class,
                      "nominal_bn": r.nominal * r.uplift_ratio, "years_to_maturity": T,
                      "yield_pct": 100 * y, "price": 100 * price, "market_value_bn": mv,
-                     "modified_duration": mod, "value_per_bp_mn": mv * mod * 1e3 / 1e4 * 1e3 / 1e3})
-    out = pd.DataFrame(rows)
-    out["value_per_bp_mn"] = out.market_value_bn * out.modified_duration / 10_000 * 1000
-    return out
+                     "modified_duration": mod,
+                     # EUR mn per basis point: bn × duration / 10,000 × 1,000
+                     "value_per_bp_mn": mv * mod / 10_000 * 1000})
+    return pd.DataFrame(rows)
 
 
 def duration_summary(spread10_bp: float = 135.0) -> dict:
@@ -547,7 +652,7 @@ def duration_summary(spread10_bp: float = 135.0) -> dict:
     return {"market_value_bn": round(mv, 0), "nominal_bn": round(d.nominal_bn.sum(), 0),
             "modified_duration_years": round(dur, 2),
             "loss_per_100bp_bn": round(mv * dur / 100, 0),
-            "loss_per_100bp_pct_gdp": round(100 * mv * dur / 100 / BASELINE.gdp[2026], 2)}
+            "loss_per_100bp_pct_gdp": round(100 * mv * dur / 100 / gdp_path(scenario(REFERENCE))[2026], 2)}
 
 
 if __name__ == "__main__":       # pragma: no cover

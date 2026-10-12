@@ -96,6 +96,15 @@ def values() -> dict[str, object]:
                 V[f"{s}_{y}_interaction"] = f"{d.interaction_bn:,.1f}"
                 V[f"{s}_{y}_interaction_round"] = f"{math.ceil(d.interaction_bn):,.0f}"
 
+    # the arithmetic loop, measured directly (simulate.loop_size): the gap
+    # less the gap with issuance sized on the status quo's interest bill
+    for name, s in short.items():
+        if name == sim.REFERENCE:
+            continue
+        for r in sim.loop_size(sim.scenario(name)).itertuples():
+            V[f"{s}_{int(r.year)}_loop"] = f"{r.loop_bn:,.1f}" if abs(r.loop_bn) < 10 else f"{r.loop_bn:,.0f}"
+            V[f"{s}_{int(r.year)}_loop_share"] = f"{100 * r.loop_share:.0f}"
+
     # the status quo against the EC DSM path carried in the strict file
     strict = pd.read_csv(sim.DELIV / "strict_FRA.csv").set_index("year")
     dsm = strict["GF01_7 - Public debt transactions (interest)"] / 1000

@@ -1,8 +1,9 @@
 """Scenario charts for the AFT briefing (D-S12-001): the register-based
 interest simulation of `ggfiscal.debt.simulate` drawn in the debtbook's
 palette. `render_all(out_dir)` writes the PNGs, `scenarios_FRA.csv` (every
-scenario-year the engine produced), `scenario_decomposition.csv` and
-`duration_by_bucket.csv` next to them, and returns {key: path}.
+scenario-year the engine produced), `scenario_decomposition.csv`,
+`scenario_loop.csv` and `duration_by_bucket.csv` next to them, and returns
+{key: path}.
 """
 from __future__ import annotations
 
@@ -370,6 +371,8 @@ def render_all(out_dir: Path) -> dict[str, Path]:
     res.to_csv(out_dir / "scenarios_FRA.csv", index=False)
     dec = pd.concat([sim.decompose_gap(sc) for sc in sim.SCENARIOS if sc.name != REF], ignore_index=True)
     dec.to_csv(out_dir / "scenario_decomposition.csv", index=False)
+    loop = pd.concat([sim.loop_size(sc) for sc in sim.SCENARIOS if sc.name != REF], ignore_index=True)
+    loop.to_csv(out_dir / "scenario_loop.csv", index=False)
     gf, gdp, led, exp = _history()
     figs = {}
     figs["scen_interest"] = chart_interest(res, out_dir / "scen_interest.png")

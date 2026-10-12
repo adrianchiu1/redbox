@@ -52,14 +52,91 @@ def test_bridge_year_takes_the_strict_interest(results):
 
 def test_identities_hold(results):
     r = results
+    b = sim.BASELINE
     # interest = register + wedge; wedge is a share of GDP
-    wedge = sim.BASELINE.gg_wedge_pct / 100 * r.gdp_bn
+    wedge = b.gg_wedge_pct / 100 * r.gdp_bn
     assert np.allclose(r.gg_interest_bn, r.register_interest_bn + wedge)
+    # the deficit is the primary balance plus net interest, in every year
+    # including the bridge year (the first version added the half-year on the
+    # 2026 issuance on top of the AMECO bill that already contained it)
+    recv = b.interest_receivable_pct / 100 * r.gdp_bn
+    assert np.allclose(r.deficit_bn, -r.primary_balance_bn + r.gg_interest_bn - recv)
+    # the interest components add up to the register interest
+    parts = (r.coupon_fixed_bn + r.coupon_linker_bn + r.uplift_bn + r.bill_interest_bn
+             + r.new_issue_interest_bn)
+    after = r.year > sim.FIRST_YEAR
+    assert np.allclose(r.register_interest_bn[after], parts[after])
+    assert (r.new_issue_interest_bn[~after] == 0).all()
     # debt accumulates the deficit exactly (no stock-flow adjustment declared)
     for _, g in r.groupby("scenario"):
         g = g.sort_values("year")
-        d0 = sim.BASELINE.debt_2025_pct / 100 * sim.BASELINE.gdp[2025]
+        d0 = b.debt_2025_pct / 100 * b.gdp[2025]
         assert np.allclose(g.debt_bn.values, d0 + g.deficit_bn.cumsum().values)
+
+
+def test_financing_identities_hold(results):
+    """Gross MLT issuance = redemptions + the financed share of the deficit −
+    the uplift accrual (indexed, not issued) − the change in bills; so the
+    negotiable stock grows by exactly the financed share of the deficit, and
+    the uplift is in the stock once (through the indexed nominal), not twice."""
+    b = sim.BASELINE
+    for _, g in results.groupby("scenario"):
+        g = g.sort_values("year").set_index("year")
+        d_btf = g.btf_stock.diff()
+        later = g.index > sim.FIRST_YEAR
+        need = (g.redemptions_bn + b.deficit_to_net_issuance * g.deficit_bn - g.uplift_bn - d_btf)[later]
+        assert np.allclose(g.mlt_gross_issuance_bn[later], need)
+        assert np.allclose(g.net_issuance_bn[later], b.deficit_to_net_issuance * g.deficit_bn[later])
+        # the stock is valued at the start-of-year uplift and a maturing linker
+        # accrues its uplift pro rata but redeems in full, so the identity holds
+        # to a few hundred million, not to the cent
+        assert np.allclose(g.negotiable_stock_bn.diff()[later], g.net_issuance_bn[later], atol=0.7)
+    # bridge year: only the remainder of 2026 after the snapshot is financed
+    g = results[results.scenario == sim.REFERENCE].set_index("year")
+    share = (pd.Timestamp("2027-01-01") - pd.Timestamp(sim.SNAPSHOT)).days / 365
+    assert 0.3 < share < 0.32
+    assert np.isclose(g.net_issuance_bn[2026], b.deficit_to_net_issuance * g.deficit_bn[2026] * share)
+
+
+def test_gdp_is_the_ledger_level_chained_on_ameco_growth(results):
+    """The level is the ledger's 2025 outturn (the denominator of the 115.6%
+    debt ratio); 2026–2027 take AMECO's growth, not AMECO's levels, so the
+    0.4% by which AMECO's own 2025 exceeds the ledger is never booked as
+    growth (D-S4-002)."""
+    b = sim.BASELINE
+    led = pd.read_csv(sim.DELIV / "balance_ledger.csv").query("iso3 == 'FRA' and variant == 'strict'").set_index("year")
+    assert np.isclose(b.gdp[2025], led.gdp_lcu_mn[2025] / 1000, rtol=1e-4)
+    for sc in sim.SCENARIOS:
+        g = results[results.scenario == sc.name].set_index("year").gdp_bn
+        assert np.isclose(g[2026] / b.gdp[2025], b.gdp_ameco[2026] / b.gdp_ameco[2025])
+        assert np.isclose(g[2027] / g[2026], b.gdp_ameco[2027] / b.gdp_ameco[2026])
+    strict = pd.read_csv(sim.DELIV / "strict_FRA.csv").set_index("year")
+    ameco = strict["GDP - Gross domestic product at current market prices"] / 1000
+    for y in (2025, 2026, 2027):
+        assert np.isclose(b.gdp_ameco[y], ameco[y], rtol=2e-4)
+
+
+def test_loop_size_is_a_small_positive_part_of_the_gap():
+    """The arithmetic loop (interest on the interest) is positive and well
+    below the gap itself; it is NOT decompose_gap's interaction term."""
+    sc = sim.scenario("melenchon")
+    loop = sim.loop_size(sc).set_index("year")
+    assert (loop.loop_bn > 0).all()
+    assert (loop.loop_share < 0.25).all()
+    assert loop.loop_bn[2035] > loop.loop_bn[2030]
+    dec = sim.decompose_gap(sc).set_index("year")
+    assert np.allclose(loop.gap_bn, dec.gap_bn)
+    assert not np.isclose(loop.loop_bn[2030], dec.interaction_bn[2030], rtol=0.05)
+
+
+def test_wedge_is_declared_on_the_engine_basis():
+    """The wedge the engine adds is GF01_7 less what the roll itself computes
+    (coupon pro rata + uplift + bill discount); the cash-basis figure the
+    first version used and the register's accrued total are reported beside
+    it, and both differ from it."""
+    c = sim.calibration()
+    assert c["wedge_2025_accrued_pct_gdp"] < c["wedge_2025_engine_concept_pct_gdp"] < c["wedge_2025_pct_gdp"]
+    assert abs(sim.BASELINE.gg_wedge_pct - c["wedge_2025_engine_concept_pct_gdp"]) < 0.005
 
 
 def test_five_scenarios_and_the_reference():

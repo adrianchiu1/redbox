@@ -118,6 +118,11 @@ def test_bill_discount_accretes_linearly():
     assert r20["accrued"]["discount_lcu_mn"] == pytest.approx(5.0 * 91 / 182, rel=1e-6)  # Oct 1 -> Dec 31
     assert r20["cash"]["discount_lcu_mn"] == 0.0 and r21["cash"]["discount_lcu_mn"] == pytest.approx(5.0)
     assert r20["accrued"]["coupon_lcu_mn"] == 0.0
+    # the discount is the bill's whole interest: no second count through the
+    # premium/discount amortisation of §7.7 (D-S18-005)
+    for r in (r20, r21):
+        assert r["accrued"]["premium_discount_amort_lcu_mn"] == 0.0
+        assert r["accrued"]["total_lcu_mn"] == pytest.approx(r["accrued"]["discount_lcu_mn"])
 
 
 # --------------------------------------------------------------------- §7.6
