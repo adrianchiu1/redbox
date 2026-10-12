@@ -85,6 +85,7 @@ def values() -> dict[str, object]:
             V[f"{s}_{y}_pb"] = f"{r.primary_balance_pct:+.1f}"
             V[f"{s}_{y}_oat10"] = f"{r.oat_10y_pct:.1f}"
             V[f"{s}_{y}_iss"] = f"{r.mlt_gross_issuance_bn:,.0f}"
+            V[f"{s}_{y}_profile_dev"] = f"{r.profile_deviation_bn:,.0f}"
             V[f"{s}_{y}_cpn"] = f"{r.avg_coupon_fixed_pct:.1f}"
         for y in (2030, 2035):
             if (name, y) in D:
@@ -116,6 +117,8 @@ def values() -> dict[str, object]:
 
     # engine summaries
     b = sim.BASELINE
+    V["profile_bill_share_pct"] = f"{100 * sim.profile_weights(sim.load_register(), b.profile_as_of)['bill']:.1f}"
+    V["profile_as_of"] = b.profile_as_of
     V["spread_today_bp"] = f"{b.spread_today_bp:.0f}"
     V["oat10_today_pct"] = f"{b.bund_curve[10] + b.spread_today_bp / 100:.2f}"
     V["bund10_pct"] = f"{b.bund_curve[10]:.2f}"

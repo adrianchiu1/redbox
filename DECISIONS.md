@@ -3486,3 +3486,100 @@ loop size, wedge basis); `tests/debt/test_engines.py` and
 Gate: `tests/debt/test_simulate.py` 18, `test_engines.py` 10,
 `test_france_brief.py` 3 pass; the wedge test now asserts the accrued basis
 and the line-by-line amortisation carry.
+
+## D-S18-006 — Constant maturity profile as the issuance rule; linker timing anchored on the snapshot date; the engine validates its inputs (amends D-S18-001 rule 5, D-S18-005)
+
+Committee 2026-10-12, with the independent review of the engine handed over
+the same day (audit of commit 92ef962; `BUG_REPORT.md`, eight probes).
+
+**1. Issuance rule.** D-S18-001 rule 5 (the AFT's 2025 issuance shares every
+year, bills at 215 EUR bn) is replaced as the default by a constant
+maturity profile: the share of the negotiable stock in bills and in each
+DD7 residual-maturity bucket is held at the stock's own profile, and each
+year the AFT is assumed to issue into bills and into every bucket exactly
+what restores its share after a year of ageing and the year's redemptions.
+Tranches are issued at the AFT's 2025 residual maturity at issue for the
+bucket (`tranche_years`: whole years, so that at the year end the tranche
+sits in its bucket). A bucket already above its share receives nothing —
+buybacks are not modelled — and the shortfall is reported
+(`profile_deviation_bn`). The profile is measured at the year end the roll
+starts from (`Baseline.profile_as_of = 2026-12-31`, the snapshot stock seen
+from that date): the engine books by calendar year, so the 0–1 bucket at a
+year end holds a whole year of maturities, which the mid-September snapshot
+does not (5.8% against 7.4%); anchored on the snapshot date the overshoot
+in the two shortest buckets is twice as large (130–240 EUR bn against
+62–110) and the stock's average maturity drifts. Weights (end-2026 view):
+bills 7.6%, 0–1 7.4, 1–2 8.7, 2–3 10.4, 3–5 14.6, 5–7 10.7, 7–10 14.7,
+10–15 9.2, 15–20 4.9, 20–30 9.7, 30+ 2.2. `Baseline.issuance_rule =
+"constant_mix"` restores rule 5 exactly (bills 215, the 2025 shares, the
+same closed-form fixed point). Within-year interest on the new issuance,
+the bill interest and the deficit are solved jointly by iteration under
+both rules.
+
+**2. Linkers.** The index ratio at the snapshot grows at the declared
+inflation from the snapshot DATE (`index_factor`: (1+π)^(days/365.25)).
+Opening index of a year = index(1 January); uplift accrued = nominal ×
+(index(stop) − index(start)) where stop is 31 December or the maturity;
+coupon pro rata on the geometric mean of the two indexed nominals;
+redemption at nominal × index(maturity); closing stock at nominal ×
+index(31 December). The first version advanced the September ratio by a
+whole year for 2027 (1.4% too much index on 315 EUR bn), redeemed maturing
+linkers without their maturity-year uplift, and closed the stock at the
+opening index; the stock identity then held only to 0.6 EUR bn a year
+(cumulative 1.6 by 2035) and was tested with that tolerance. It now holds
+to 1e-13 and is tested at 1e-8. Effect on the results: under 0.1 EUR bn of
+interest a year (the review's F1/F2; the "1.57 bn" was a bookkeeping
+residual, not a bias in the debt).
+
+**3. Validation and API** (review F3–F6). `validate_register` runs on every
+register the engine is given: one row per security, supported classes
+only (bill, fixed_bullet, inflation_linked — `link_mask = ~fixed` no longer
+turns an unknown class into a linker), dated maturities after the
+snapshot, finite positive nominals, a finite coupon on every bond (a
+fixed bond's unknown coupon is no longer read as zero), a finite positive
+index ratio on every linker (no longer dropped from the sums by NaN
+arithmetic). `load_register` rejects duplicate metadata, duplicate
+positions, positions without metadata and negative positions
+(one-to-one checked merge). A negative gross requirement raises
+`FinancingSurplus` (a ValueError) instead of clipping issuance to zero and
+losing the residual: buybacks and cash balances are out of scope.
+`run_all` runs any subset in the order requested and resolves the status
+quo itself only when the spread feedback is live.
+
+**4. Review of the review.** Agreed and done: F1, F2 (with the snapshot
+anchoring they asked for; their probes' hard-coded 102.0 opening index is
+replaced by the derived index, as they allowed), F3 (reject), F4, F5, F6.
+Their perimeter note (AFT stock changes give 0.909 against the 0.904
+used: +0.9 EUR bn of 2035 interest) is recorded, not adopted. Two of their
+statements were already superseded at the audited commit's successor
+(be1c1e2): the wedge is 0.45% of GDP on the register's accrued basis with
+the premium amortisation carried line by line, not 0.32%. Their isolated
+linker probe also assumed no 2026 financing while declaring a 2026
+interest bill of 2 EUR bn; the ported test sets the bill to the
+post-snapshot uplift so the bridge year is clean. What the review did not
+reach: the issuance rule (this decision's point 1), which moves the
+results an order of magnitude more than F1–F6 together.
+
+**5. Results (2035, D-S18-005 addendum → now; the linker fixes alone move
+interest by ≤ 0.1 EUR bn, the rest is the rule).** Interest, EUR bn:
+status quo 216.8 → 209.9 (5.67 → 5.49% of GDP), Philippe majority
+198.8 → 193.1, Le Pen majority 182.2 → 177.0, Le Pen hung 193.6 → 187.9,
+Mélenchon 292.6 → 280.4, benchmark 219.0 → 212.0. Debt/GDP: status quo
+144.6 → 143.7, Mélenchon 167.3 → 165.7, Le Pen majority 131.0 → 130.2.
+Gross MLT issuance 2030: 430 → 470 (status quo; the bill stock now grows
+with the stock, 215 → 275 EUR bn in 2030 and 355 in 2035, and the
+issuance is shorter: 8.4–10.4 years at issue against 10.6). 2026 and
+2027 are within 1 EUR bn. Ordering unchanged; `decompose_gap` and
+`loop_size` move in proportion (Mélenchon 2035 loop 14.7 → 13.0). Stock
+residual 2027+: 0.58 EUR bn max → 4e-13.
+
+**Regenerated.** Figures, `scenarios_FRA.csv` (new columns:
+issuance_rule, bill_share_of_stock, profile_deviation_bn,
+linker_index_factor, profile_* by bucket), `scenario_decomposition.csv`,
+`scenario_loop.csv`, `key_figures.csv`, both HTML files and both
+notebooks; the template's assumption tables and section 5 describe the
+rule and the status quo's overshoot.
+
+Gate: `tests/debt/test_simulate_review.py` (new, 14),
+`tests/debt/test_simulate.py` (18), `test_france_brief.py` (3),
+`test_engines.py` (10) pass.

@@ -358,7 +358,7 @@ def chart_tree(res, out):
     ax.set_ylim(y_stat - 0.135, 1.0)
     ax.text(0.012, y_stat - 0.085, f"Common to every branch: Bund 10y {b.bund_curve[10]:.2f}% flat; spread {b.spread_today_bp:.0f} bp today "
             f"(Bloomberg, 11 Oct 2026); primary balance {b.primary_balance[2027]:.1f}% of GDP in 2027, policy from 2028; "
-            f"GDP deflator {100 * b.deflator_after:.0f}%; same issuance mix and bill stock.",
+            f"GDP deflator {100 * b.deflator_after:.0f}%; the stock's maturity profile (bills and buckets) held constant.",
             fontsize=7.6, color=MUTED, va="center")
     ax.text(0.012, y_stat - 0.115, "Solid border: majority. Dotted border: hung Assembly. Positive primary-balance change = smaller primary deficit. "
             "Source: ggfiscal.debt.simulate.SCENARIOS.", fontsize=7.0, color=MUTED, va="center")
