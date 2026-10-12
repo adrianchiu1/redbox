@@ -218,6 +218,83 @@ def values() -> dict[str, object]:
     V["benchmark_base_year"] = str(int(bb.base_year.iloc[0]))
     V["stat_2031_pb_bn"] = f"{R[('statistical', 2031)].primary_balance_bn:,.0f}"
 
+    V.update(balance_sheet_values())
+    return V
+
+
+def _bs_fmt(key: str, v: float) -> str:
+    """Formatting for the balance-sheet section's numbers (prefix bs_)."""
+    if key.endswith("_yield_pct") or key.startswith("eff_rate") or key.startswith("sfa_mean"):
+        return f"{v:.2f}"
+    if key.endswith("_bn"):
+        return f"{v:,.1f}" if abs(v) < 20 else f"{v:,.0f}"
+    if key.endswith(("_pct", "_debt", "_net_debt", "_gap", "_gain", "_deficit", "_pb", "_pb_star_gross", "_pb_star_net", "_growth_pct")):
+        return f"{v:.1f}"
+    return f"{v}"
+
+
+def balance_sheet_values() -> dict[str, str]:
+    """Section 7 (template id s9, D-S19-001): the asset side, net debt, the
+    stock-flow adjustments and the sell-down runs, from
+    ggfiscal.debt.balance_sheet and the CSVs briefing_fra_balance wrote."""
+    from ggfiscal.debt import balance_sheet as bs  # noqa: E402
+    S = bs.summary()
+    V = {f"bs_{k}": _bs_fmt(k, v) for k, v in S.items()}
+    V["bs_pb_star_gain"] = f"{S['sq_2030_pb_star_gross'] - S['sq_2030_pb_star_net']:.1f}"
+    V["bs_pb_star_gap_gross"] = f"{S['sq_2030_pb_star_gross'] - S['sq_2030_pb']:.1f}"
+    V["bs_pb_star_gap_net"] = f"{S['sq_2030_pb_star_net'] - S['sq_2030_pb']:.1f}"
+    V["bs_net_gap_2025_pct"] = f"{S['gross_2025_pct'] - S['net_2025_pct']:.1f}"
+    V["bs_net_gap_2035_pct"] = f"{S['sq_2035_debt'] - S['sq_2035_net_debt']:.1f}"
+    V["bs_unlisted_2025_bn"] = f"{S['equity_2025_bn'] - S['f52_2025_bn'] - S['listed_2025_bn']:,.0f}"
+    V["bs_insee_gap_abs_bn"] = f"{abs(S['insee_gap_bn']):.1f}"
+    V["bs_nfw_2025_abs_bn"] = f"{abs(S['nfw_2025_bn']):,.0f}"; V["bs_nfw_2025_abs_pct"] = f"{abs(S['nfw_2025_pct']):.1f}"
+    V["bs_insee_cash_change_abs_bn"] = f"{abs(bs.INSEE_2025['cash_change_bn']):.1f}"
+    V["bs_cge_net_position_abs_bn"] = f"{abs(bs.CGE_2025['net_position_bn']):,.0f}"
+    V["bs_realistic_carry_pct"] = f"{100 * S['realistic_2035_net_interest_gain_bn'] / S['realistic_sold_bn']:.1f}"
+    up = bs.updated()
+    V["bs_updated_ggfa"] = up["gov_10a_ggfa"]; V["bs_updated_main"] = up["gov_10a_main"]; V["bs_updated_nfa"] = up["nama_10_nfa_bs"]
+    for k, v in bs.INSEE_2025.items():
+        if isinstance(v, (int, float)):
+            V[f"bs_insee_{k}"] = f"{v:,.1f}"
+    sub = {"État": "etat", "ODAC": "odac", "APUL": "apul", "ASSO": "asso"}
+    for k, (g, n) in bs.INSEE_2025["by_subsector"].items():
+        V[f"bs_insee_{sub[k]}_gross"] = f"{g:,.0f}"; V[f"bs_insee_{sub[k]}_net"] = f"{n:,.0f}"
+    for k, v in bs.CGE_2025.items():
+        V[f"bs_cge_{k}"] = f"{v:,.2f}" if k.endswith("_pct") else f"{v:,.1f}" if abs(v) < 100 else f"{v:,.0f}"
+    V["bs_ape_total_bn"] = f"{bs.APE_2025H1['total_bn']:.1f}"; V["bs_ape_listed_bn"] = f"{bs.APE_2025H1['listed_bn']:.1f}"
+    V["bs_cdc_own_funds_bn"] = f"{bs.CDC_2025['own_funds_bn']:.0f}"; V["bs_cdc_contribution_bn"] = f"{bs.CDC_2025['contribution_to_state_bn']:.1f}"
+    V["bs_gold_bn"] = f"{bs.BDF_GOLD_2025['book_value_bn']:.0f}"; V["bs_gold_tonnes"] = f"{bs.BDF_GOLD_2025['tonnes']:,.0f}"
+    V["bs_external_sources"] = " ".join(bs.EXTERNAL)
+
+    lad = pd.read_csv(FIG / "ladder_FRA.csv")
+    rows = []
+    for r in lad.itertuples():
+        ext = " <span class='tag ext'>ext</span>" if r.ext else ""
+        rows.append(f"<tr><td class='l'>{r.label}{ext}</td><td>{r.stock_bn:,.0f}</td><td class='l'>{r.where}; {r.liquidity}</td>"
+                    f"<td>{r.sold_liquidity_bn:,.0f}</td><td>{r.sold_realistic_bn:,.0f}</td><td>{r.sold_maximal_bn:,.0f}</td>"
+                    f"<td>{r.sold_extreme_bn:,.0f}</td><td class='l'>{r.basis}. {r.note}</td></tr>")
+    V["bs_ladder_rows"] = "\n".join(rows)
+
+    sd = pd.read_csv(FIG / "selldown_FRA.csv")
+    sq = sd[sd.run == "status_quo"].set_index("year")
+    rows = []
+    for run, (label, years) in bs.RUNS.items():
+        g = sd[sd.run == run].set_index("year")
+        sold = -g.sfa_bn.sum()
+        when = f"{years[0]}–{years[-1]}" if years else "–"
+        cls = " class='hl'" if run == "status_quo" else ""
+        rows.append(f"<tr{cls}><td class='l'>{label}</td><td>{sold:,.0f}</td><td class='l'>{when}</td>"
+                    f"<td>{g.debt_pct_gdp[2030]:.0f}</td><td>{g.debt_pct_gdp[2035]:.0f}</td><td>{g.net_debt_pct_gdp[2035]:.0f}</td>"
+                    f"<td>{sq.gg_interest_bn[2035] - g.gg_interest_bn[2035]:,.0f}</td><td>{sq.asset_income_bn[2035] - g.asset_income_bn[2035]:,.0f}</td>"
+                    f"<td>{g.net_interest_bn[2035]:,.0f}</td><td>{g.deficit_pct_gdp[2035]:.1f}</td></tr>")
+    V["bs_run_rows"] = "\n".join(rows)
+
+    comp = pd.read_csv(FIG / "sfa_components_FRA.csv").set_index("year")
+    rows = []
+    for y, r in comp.iterrows():
+        rows.append(f"<tr><td class='l'>{int(y)}</td><td>{r.cash_and_deposits:+.1f}</td><td>{r.securities_and_loans:+.1f}</td><td>{r.equity:+.1f}</td>"
+                    f"<td>{r.other_receivables:+.1f}</td><td>{r.issuance_premia_and_accruals:+.1f}</td><td>{r.other:+.1f}</td><td><b>{r.total:+.1f}</b></td></tr>")
+    V["bs_sfa_rows"] = "\n".join(rows)
     return V
 
 

@@ -8,6 +8,10 @@ text and tables as HTML and the charts as images. The questions for the AFT
 (section 7 and the "To ask the AFT" boxes) are left out of the notebook;
 the HTML keeps them.
 
+Section ids are the template's: `s9` is the balance-sheet section added by
+D-S19-001, shown as section 7 of the note; the questions (`s7`) become 8 and
+the method (`s8`) 9.
+
 `chunks(section_id)` returns a section as a list of ("html", str),
 ("fig", key) and ("svg", str) items; `title(section_id)` its heading.
 """
@@ -20,7 +24,7 @@ from functools import lru_cache
 from ggfiscal.debt import simulate as sim
 
 BRIEF_DIR = sim.ROOT / "reports" / "briefing_FRA_AFT_2026-09"
-SECTIONS = ("s0", "s1", "s2", "s3", "s4", "s5", "s6", "s8")   # s7 is the AFT questions
+SECTIONS = ("s0", "s1", "s2", "s3", "s4", "s5", "s6", "s9", "s8")   # s7 is the AFT questions; s9 the balance sheet (D-S19-001), numbered 7 in the note
 
 
 def builder():

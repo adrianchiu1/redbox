@@ -1,5 +1,15 @@
 # HANDOFF.md
 
+Addendum 2026-10-12 (D-S19-001, branch `claude/clever-galileo-ajgwdx`):
+the France brief has a section 7 on the asset side — Eurostat balance
+sheet in `data/manual/FRA_balance_sheet_eurostat.csv`, module
+`ggfiscal.debt.balance_sheet`, charts `ggfiscal.report.briefing_fra_balance`,
+a declared `Scenario.sfa_bn` in the engine (zero in every committee
+scenario). Rebuild: `python3 -m ggfiscal.report.briefing_fra_balance &&
+python3 tools/build_briefing_fra.py && python3 tools/make_france_brief_notebook.py`.
+The external facts (INSEE net debt, CGE 2025, APE, CDC, gold) are declared
+constants at the top of `balance_sheet.py`; update them there.
+
 Rewritten 2026-10-07, end of session 17 (Stage E — Italy, Spain and
 Belgium, `EU3_KICKOFF.md`, on `claude/serene-thompson-soiwhn` branched
 from `main` at 4374a31).

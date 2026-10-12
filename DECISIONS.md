@@ -3583,3 +3583,116 @@ rule and the status quo's overshoot.
 Gate: `tests/debt/test_simulate_review.py` (new, 14),
 `tests/debt/test_simulate.py` (18), `test_france_brief.py` (3),
 `test_engines.py` (10) pass.
+
+
+## D-S19-001 — The other side of the balance sheet in the France brief: cash, net debt, stock-flow adjustments and a sell-down ladder (serves the France fiscal brief; adds a declared SFA to the engine of D-S12-001)
+
+Committee 2026-10-12. The question put: if the French government accounted
+for the income its assets pay, how would the sustainability assessment
+change, and what could it sell down — on the balance sheet and off it (the
+Caisse des dépôts, the public enterprises, the gold) — in an extreme stress?
+Be as generous to France as the official numbers allow.
+
+**1. Data.** The general-government financial balance sheet (Eurostat
+gov_10a_ggfa: S13 consolidated and S1311/S1313/S1314, assets and
+liabilities by ESA instrument, market value, 1998–2025, updated
+2026-07-21), the property-income flows (gov_10a_main D41PAY/D41REC/D42REC/
+D45REC), the non-financial balance sheet (nama_10_nfa_bs, 2026-09-28) and
+the Maastricht levels by sub-sector (gov_10dd_edpt1) are retrieved on
+2026-10-12 into `data/manual/FRA_balance_sheet_eurostat.csv` (long, one
+row per dataset-sector-finpos-item-year, with the Eurostat `updated` stamp
+and the retrieval date), the same shape as the debt history of D-S18-001.
+Raw JSON-stat is not kept: the API answers one sector-finpos per call and
+the file is the pull. INSEE's net-debt release (end-2025: gross 3,460.5,
+net 3,245.5 EUR bn, 108.4% of GDP, by sub-sector), the État's own accounts
+(Compte général de l'État 2025: bilan, trésorerie active 22.9 EUR bn,
+participations 394.5, engagements hors bilan 1,428 of pensions at 2.21%,
+guarantees), the APE portfolio (209.1 EUR bn at 30 June 2025, listed 67.9),
+the Caisse des dépôts' own funds (76 EUR bn) and the Banque de France's
+gold (2,436.8 t, 257 EUR bn book) are declared external facts in
+`balance_sheet.py` (INSEE_2025, CGE_2025, APE_2025H1, CDC_2025,
+BDF_GOLD_2025, EXTERNAL) and marked ext in the brief.
+
+**2. Net debt rebuilt, not keyed.** Net debt on INSEE's definition (gross
+less F.2, F.3, F.4 held) is computed from the Eurostat tables: 3,244.5 EUR
+bn at end-2025 against INSEE's 3,245.5, 108.5% against 108.4%
+(`insee_check`, tested to 5 EUR bn). A second measure, net of the equity
+book at market (F.5), is shown for the generous case (82.6%). The
+stock-flow adjustment history is Δ(Maastricht debt) + NLB from the levels
+and the strict ledger (1999–2025 mean +0.21% of GDP; 2020 +69 EUR bn,
+2024 +34); its 2021–2025 S.1311 components are read from the financing
+chain (`debt_financing_reconciliation.csv` step B, sign flipped back).
+
+**3. The engine carries a declared stock-flow adjustment.** `Scenario.sfa_bn`
+(EUR bn by year, zero unless declared) enters the Maastricht stock and the
+negotiable stock in full — the État sells, the État issues less — not
+through the 0.90 deficit share: debt_t = debt_{t−1} + deficit_t + sfa_t,
+Δ negotiable = 0.90 × deficit + sfa, MLT gross = redemptions + 0.90 ×
+deficit + sfa − uplift − Δbills. The six committee scenarios declare none,
+so no number in sections 1–6 moves (`scenarios_FRA.csv` gains an `sfa_bn`
+column, all zero). `test_simulate.py` identities carry the term; a new
+test sells 40 EUR bn in 2028 and 2029 and checks the stock, the primary
+balance and the interest.
+
+**4. The asset block and the net view (`balance_sheet.net_view`).** Liquid
+assets (216 EUR bn) held flat in euros; equity (774) grows with nominal
+GDP; each earns the yield its 2025 income implied (1.8% and 1.3%); a sale
+removes the stock and, from the half-year of sale, its income, which comes
+off the primary balance (dividends and interest receivable are revenue);
+the proceeds retire debt through the SFA; spreads are the scenario's own.
+Net interest = GG interest − asset income; net debt = gross − liquid; net
+financial debt also − equity; the primary balance before asset income is
+reported. The engine's fixed 0.2%-of-GDP interest receivable is left as
+is (the net view measures the asset income separately; the two overlap by
+the interest-receivable share and the brief says so).
+
+**5. The ladder (`LADDER`, declared).** Nine rungs with end-2025 stock,
+where it sits, liquidity, asset class and the amount four runs count:
+cash above a 30 EUR bn floor (45), paper (36), loans (0/50/105), listed
+equity (0/68 ext), fund shares (0/80/161), unlisted at own funds
+(0/100/545), CDC own funds (extreme only, 40), gold (extreme only, 128),
+non-financial assets (2,945; never). Runs on the status quo (Philippe,
+hung): liquidity 81 EUR bn (2027–28), realistic 379 (12.7% of GDP,
+2027–29), everything financial 960 (32%, 2027–31), extreme 1,128 (38%).
+On the enterprises and the CDC the brief answers the committee's question
+directly: the public enterprises are already on the balance sheet as F.51
+equity at own funds (a sale is a sale of that line); the CDC is S.12, its
+own funds are not the État's except by a law and the État's claim is
+partly inside F.51 already; the gold is the Banque's and a Eurosystem
+matter.
+
+**6. Results.** Net debt 108.5% vs gross 115.7% at end-2025; the gap is
+constant in euros, so the net measures rise exactly as fast as the gross
+(status quo 2035: 143.7 gross, 138.0 net). Asset income 13.3 EUR bn (0.4%
+of GDP); net interest 53.3 (1.8%) against 66.6 paid (2.2%); effective rate
+1.74% net against 2.02% gross. The stabilising primary balance in 2030 on
+the status quo is +0.96% of GDP gross and +0.68% net against −2.1% run:
+the generous view narrows the required adjustment by 0.3 points. Sales:
+the liquidity run is worth 2.8 points of GDP in 2035; the realistic run
+holds the ratio near 116% to 2030 and ends at 130.6% in 2035 (−13.1
+points), saving 23 EUR bn of interest and forgoing 5.9 of income, a net
+17.1 EUR bn (0.5% of GDP) off the deficit; everything financial reaches
+103% in 2030 and 112% in 2035, rising; the extreme run 99% and 106%. The
+carry is positive (assets yield 1–2%, marginal OATs about 4%) so selling
+helps the deficit by about 4.5 EUR bn a year per 100 sold; the level effect
+is one-off and the slope is untouched. Conclusion put in the brief: the
+asset side is true and beside the point for solvency, true and to the
+point for a refinancing scare.
+
+**7. Where it lives.** `src/ggfiscal/debt/balance_sheet.py` (data, history,
+ladder, runs, summary), `src/ggfiscal/report/briefing_fra_balance.py` (six
+charts: bs_assets, bs_gross_net, bs_net_interest, bs_sfa, bs_ladder,
+bs_selldown, and `balance_sheet_FRA.csv`, `sfa_components_FRA.csv`,
+`ladder_FRA.csv`, `selldown_FRA.csv` under figures/), a new section 7 in
+the template (id `s9`; the AFT questions become 8 and the method 9, the
+TOC and cross-references renumbered), `balance_sheet_values()` in
+`tools/build_briefing_fra.py` (prefix `bs_`), `france_brief.SECTIONS`
+and `tools/make_france_brief_notebook.py` (the section plus two data
+cells), both HTML files and `notebooks/France_fiscal_brief_20261013.ipynb`
+re-executed. Not done: the older `notebooks/briefing_FRA_AFT.ipynb` is
+untouched; a UK twin on PSND/PSNFL/PSNW, which would make the point about
+the choice of measure across the bundle, is the natural next step.
+
+Gate: `tests/debt/test_balance_sheet.py` (new, 9), `test_simulate.py`
+(19, one new), `test_france_brief.py` (3), `test_simulate_review.py`
+(14) pass.

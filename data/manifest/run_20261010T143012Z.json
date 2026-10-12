@@ -229,16 +229,16 @@
    "sha256": "597244f64cdb3843f7b3c283e5659eb3bea220778961baf491461b321a149ab9"
   },
   "deliverables/debt_interest_by_security.csv": {
-   "bytes": 6737824,
+   "bytes": 6494082,
    "present": true,
    "rows": 34048,
-   "sha256": "5623a604f430d5d49ac618e4df67765c7dea49ac8d9056c1a4019f7f007ad5a1"
+   "sha256": "a0d646037632e4ff101e95acdede2e489ad8e3354898cb1e9b2d45a5f344d517"
   },
   "deliverables/debt_interest_reconciliation.csv": {
-   "bytes": 399446,
+   "bytes": 399441,
    "present": true,
    "rows": 3205,
-   "sha256": "abfd01d1f37e88080431874d13500fe2c985f8a6ec066ff60e3c79a975237746"
+   "sha256": "aec52397b05e24b4545cb866ac0e89d416be383f2ecbc113b138c5aebd318896"
   },
   "deliverables/debt_issuance_by_bucket.csv": {
    "bytes": 136188,
@@ -361,7 +361,7 @@
    "sha256": "b588d3336be23b9a7aeed394fe280e4369798fc0e61231dcb82ba2b39570ff44"
   }
  },
- "flat_files_updated_at": "2026-10-10T15:00:06+00:00",
+ "flat_files_updated_at": "2026-10-12T11:23:38+00:00",
  "run_id": "20261010T143012Z",
  "snapshots": {
   "BBK_KAPITALMARKT/bund_yield_10y": "72739734958821cd2ef20b28008d9b83548dc212915e208c04cd1034d3ec2575",
