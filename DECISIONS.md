@@ -3696,3 +3696,92 @@ the choice of measure across the bundle, is the natural next step.
 Gate: `tests/debt/test_balance_sheet.py` (new, 9), `test_simulate.py`
 (19, one new), `test_france_brief.py` (3), `test_simulate_review.py`
 (14) pass.
+
+
+## D-S19-002 — The sell-down ladder line by line: valuations on the CGE, the APE and the schemes' accounts, who holds what, the État's right to sell, the income each line pays, and proposed amounts for three runs (review table; amends the ladder of D-S19-001)
+
+Committee 2026-10-13. The first-pass ladder (D-S19-001) counted Eurostat
+instrument totals. The committee asked for every line: debt securities by
+holder with the État's right to sell made explicit for the social-security
+funds; loans by loan; the listed portfolio by holding (Engie, Orange, ADP,
+Renault, Air France-KLM, FDJ, Eramet, Airbus, Safran, Thales, Eutelsat);
+fund shares by fund with their status; the unlisted book by holding (EDF,
+SNCF, La Poste, Naval Group and the rest); the Caisse des dépôts and the
+Banque de France with what the État can mobilise; non-financial assets by
+category; a dividend yield on every line; and proposed sale amounts for
+the liquidity, realistic and everything-financial runs, to be reviewed
+before anything is recomputed. The extreme run is dropped.
+
+**Sources and valuation rules** (`src/ggfiscal/debt/ladder_detail.py`,
+docstring): unlisted at the CGE 2025 valeur d'équivalence (EDF 68.5, SNCF
+27.8, EPIC Bpifrance 15.5, RATP 5.6, CCR 3.4, Orano 2.7, GIAT/KNDS 2.3,
+Naval Group 1.2, Chantiers de l'Atlantique 0.8 EUR bn; La Poste 4.9 and
+Dexia 2.3 at net book value; the public establishments, 100 EUR bn, and the
+international institutions, 43.1, listed as unsaleable); listed at the
+APE's 30 June 2025 values for the five lines it publishes (Airbus 15.2,
+Thales 13.7, Safran 13.5, Engie 11.5, Orange 4.6) and a Redbox split of
+the published 9.4 EUR bn residual by stake × market capitalisation for
+ADP, Renault, FDJ, Air France-KLM and Eramet, Eutelsat at the CGE's net
+book value (bought in July 2025); loans from CGE note 8.3 (Greece 5.7,
+Natixis-managed 4.0, development aid 1.4, conditional advances 4.2, IdF
+Mobilités 2.0, other 4.6) with the ODAC loan books (50 EUR bn, Action
+Logement et al.) as the Eurostat residual, not itemised; cash from CGE
+note 15 (the Trésor's account at the Banque de France 0.9 EUR bn, its
+placements 24.1) with the ODAC and sub-sector residuals from Eurostat;
+pension reserves by scheme (AGIRC-ARRCO 91.2 from its 2025 accounts, ERAFP
+53.6 and FRR 20.7 from their 2025 reports, Ircantec 12.9 and the
+professional schemes 36 from the Cour des comptes' 2022 report, end-2020)
+split between direct bonds and fund shares so that the schemes add to
+Eurostat's S.1314 F.3 + F.5 (219 EUR bn); CDC Section générale own funds
+25.7 and Fonds d'épargne 17.7 from the 2025 rapport financier, with the
+December 2025 prélèvement rule (50% of the current result, floored at 0.10%
+of centralised deposits, capped by the ACPR ratio plus 5%); Banque de
+France gold 257 and situation nette 283.4 from its 2025 results, dividend
+nil since 2022; non-financial from Eurostat (reference) and CGE note 7
+(buildings 59.1, land 11.2, roads 153.6, concessions 276.1 of which
+motorways 200.4, equipment 51.0; 0.9 EUR bn booked as ready for sale).
+Income: EDF 2.0 (paid 2025), the listed lines at stake × shares × the
+dividend per share paid in 2025 (Engie 1.48, Thales 3.70, Safran 2.90,
+Airbus 3.00, Orange 0.75, ADP 3.00, Renault 2.20, FDJ 2.05; AF-KLM,
+Eramet, Eutelsat nil), the CDC's versement 3.3, SNCF's dividend shown but
+recycled through the fonds de concours. The lines pay the État 10.6 EUR
+bn a year against 13.3 of D.41 + D.42 received by general government.
+
+**Right to sell.** yes / law / no on every line. Yes: the État's cash and
+paper, its loans, the listed lines (with pacts noted on Airbus, Thales and
+Air France-KLM), EDF, CCR, Orano, KNDS, Naval Group, Chantiers, the SLI,
+buildings. Law: SNCF (2018 law, capital inalienable; subsidiaries
+saleable), La Poste (2010 law, wholly public), EPIC Bpifrance, RATP, the
+FRR (assets earmarked to CADES, Parliament has redirected them twice),
+Ircantec, the ODAC deposits and loan books, the CDC's own funds, the
+motorway concessions. No: AGIRC-ARRCO (paritarian, the 2023 attempt
+failed), ERAFP (funded rights), RCI and the professional schemes, local
+and social-security cash, loans and equity, the public establishments,
+the international institutions, the Banque de France's gold (art. 123
+TFEU, art. 31 ESCB Statute), the road network and the military equipment.
+
+**Proposed amounts (EUR bn), pending review.** Liquidity 25: Trésor
+placements 10, ODAC deposits 5, FRR bonds 8, paper 2. Realistic 94.5:
+cash 15, FRR 20.7, FSPJ 2, État loans 1, listed 32.5 (Engie, Orange, ADP,
+Renault, FDJ, AF-KLM, Eramet whole, half of Safran; Airbus, Thales and
+Eutelsat kept), unlisted 20.3 (a quarter of EDF at 15, SNCF subsidiaries
+3, RATP Dev 1, Chantiers 0.8, SLI 0.5), buildings 1. Everything financial
+393: cash 33 (incl. 10 of sub-sector cash by law), FRR 20.7, AGIRC-ARRCO
+86 and Ircantec 13 by a law the Conseil constitutionnel might not allow,
+FSPJ 5, loans 21 (Greece and the foreign loans securitised, 10 of the
+ODAC books), every listed line 68.7, the enterprises at book 136.8 (EDF,
+SNCF, Bpifrance, La Poste, RATP, CCR, Orano, KNDS, Naval, Chantiers, the
+vehicles), a 5 EUR bn exceptional CDC distribution, buildings 2; ERAFP,
+RCI, the professional schemes, the gold, the public establishments and
+the international institutions at zero. Against the first pass (81 / 379
+/ 960) the realistic run is a quarter of its former size, because the
+first pass sold a third of a book that is mostly public establishments,
+hospitals, local bodies and funded pension rights.
+
+**Where it lives.** `ladder_detail.py` (declared rows, `ladder_detail()`,
+`totals()`, `runs_from_detail()`), `ladder_detail_FRA.csv` under figures/,
+Figure 21 redrawn from it (one bar per line, grouped, clipped at 100 EUR
+bn), the section-7 table replaced by the grouped line table with subtotals,
+a notebook data cell, `tests/debt/test_ladder_detail.py` (4). The engine
+runs (`balance_sheet.RUNS`, Figure 22) are unchanged and say so in the
+text; the recomputation on the reviewed amounts is the next decision.

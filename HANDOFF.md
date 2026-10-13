@@ -1,5 +1,9 @@
 # HANDOFF.md
 
+Addendum 2026-10-13 (D-S19-002): the ladder is now line by line in
+`ggfiscal.debt.ladder_detail` (review table; the runs still use the
+first-pass rung totals until the committee signs the amounts off).
+
 Addendum 2026-10-12 (D-S19-001, branch `claude/clever-galileo-ajgwdx`):
 the France brief has a section 7 on the asset side — Eurostat balance
 sheet in `data/manual/FRA_balance_sheet_eurostat.csv`, module

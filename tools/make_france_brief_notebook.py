@@ -115,6 +115,13 @@ then every run-year of section 7: gross and net debt, the interest bill, the
 asset income and the net interest, on the status-quo scenario."""))
 cells.append(nbf.v4.new_code_cell("""lad = pd.read_csv(FIG / "ladder_FRA.csv")
 lad[["label", "where", "liquidity", "stock_bn", "sold_liquidity_bn", "sold_realistic_bn", "sold_maximal_bn", "sold_extreme_bn"]].round(0).set_index("label")"""))
+cells.append(nbf.v4.new_markdown_cell("""The ladder line by line (D-S19-002): valuation on the CGE, the APE and Eurostat, who holds
+it, whether the État can sell it, what it pays the État, and the amount proposed for each run.
+A review table: the runs below still use the first-pass rung totals."""))
+cells.append(nbf.v4.new_code_cell("""det = pd.read_csv(FIG / "ladder_detail_FRA.csv", keep_default_na=False)
+pd.set_option("display.max_rows", 100); pd.set_option("display.max_colwidth", 70)
+det[~det.reference_only][["group", "line", "holder", "stock_bn", "can_sell", "liquidity", "income_bn", "yield_pct",
+                          "sold_liquidity_bn", "sold_realistic_bn", "sold_everything_bn"]].round(2).set_index(["group", "line"])"""))
 cells.append(nbf.v4.new_code_cell("""sd = pd.read_csv(FIG / "selldown_FRA.csv")
 cols = ["run_label", "year", "sfa_bn", "debt_pct_gdp", "net_debt_pct_gdp", "net_fin_debt_pct_gdp", "gg_interest_bn",
         "asset_income_bn", "net_interest_bn", "deficit_pct_gdp", "primary_balance_pct"]

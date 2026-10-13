@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from ggfiscal.debt import balance_sheet as bs
+from ggfiscal.debt import ladder_detail as ld
 from ggfiscal.debt import simulate as sim
 from ggfiscal.report.briefing_fra_scenarios import (AXIS, BLUE, GOLD, HIST, INK, MUTED, ORANGE, PH_YELLOW, PURPLE, RED,
                                                     SHADE, SURFACE, TEAL, DOTTED, DPI, HIST_FROM, _save, _source)
@@ -122,25 +123,55 @@ def chart_net_interest(h, runs, out):
     _save(fig, out); return out
 
 
-def chart_ladder(lad, out):
-    d = lad[lad.key != "nonfin"].iloc[::-1]
-    fig, ax = plt.subplots(figsize=(7.2, 3.6))
-    y = np.arange(len(d))
-    ax.barh(y, d.stock_bn, color="#e4e2db", height=0.72, lw=0, label="stock at end-2025")
-    ax.barh(y, d.sold_extreme_bn, color="#f3c6c9", height=0.72, lw=0, label="counted in the extreme run")
-    ax.barh(y, d.sold_maximal_bn, color="#cdb7ea", height=0.72, lw=0, label="counted in 'everything financial'")
-    ax.barh(y, d.sold_realistic_bn, color=BLUE, height=0.72, lw=0, label="counted in the realistic sell-down")
-    ax.barh(y, d.sold_liquidity_bn, color=TEAL, height=0.72, lw=0, label="counted in the liquidity drawdown")
-    ax.set_yticks(y)
-    ax.set_yticklabels([f"{lab}{' (ext)' if e else ''}" for lab, e in zip(d.label, d.ext)], fontsize=8.5)
-    for yy, (stock, liq, where) in enumerate(zip(d.stock_bn, d.liquidity, d["where"])):
-        ax.annotate(f"€{stock:,.0f}bn · {liq} · {where}", (stock, yy), xytext=(5, 0), textcoords="offset points", fontsize=7.3, color=MUTED, va="center")
-    ax.set_xlim(0, d.stock_bn.max() * 1.75)
-    ax.set_xlabel("EUR bn, end-2025"); ax.grid(axis="x")
-    ax.set_title("France · the sell-down ladder: what is there, and how much each run sells")
-    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.16), fontsize=7.5)
-    _source(fig, f"Source: Eurostat gov_10a_ggfa S13 consolidated, market value; ext: APE (30 Jun 2025), CDC results 2025, Banque de France rapport annuel 2025. "
-                 f"Non-financial assets (€{lad.loc[lad.key == 'nonfin', 'stock_bn'].iloc[0]:,.0f}bn) are not drawn and not counted. Amounts are declared (ggfiscal.debt.balance_sheet.LADDER).", y=-0.3)
+def chart_ladder(det, out):
+    """Figure 21: every line of the sell-down ladder (ggfiscal.debt.ladder_detail),
+    stock at end-2025 and the amount each run sells, grouped. Reference-only
+    rows (consolidated equity, the Banque's net position, the general-
+    government non-financial categories) are left out; bars beyond the axis
+    are clipped and labelled."""
+    d = det[~det.reference_only].copy()
+    d = d[(d.stock_bn > 0)]
+    groups = [g for g in ld.GROUPS if g in set(d.group)]
+    rows, ticks, labels, bands = [], [], [], []
+    y = 0
+    for g in groups:
+        sub = d[d.group == g]
+        bands.append((y, y + len(sub) + 1, ld.GROUP_LABEL[g]))
+        y += 1                                   # header line
+        for r in sub.itertuples():
+            rows.append((y, r)); ticks.append(y)
+            name = r.line if len(r.line) <= 58 else r.line[:56] + "…"
+            labels.append(name)
+            y += 1
+    n = y
+    xmax = 100.0
+    fig, ax = plt.subplots(figsize=(7.4, 0.19 * n + 1.6))
+    for y0, y1, lab in bands:
+        ax.axhspan(y0 - 0.5, y1 - 0.5, color=SHADE if bands.index((y0, y1, lab)) % 2 else SURFACE, lw=0, zorder=0)
+        ax.text(-0.5, y0, lab, fontsize=7.8, fontweight="bold", color=INK, va="center", ha="right")
+    for yy, r in rows:
+        st = min(r.stock_bn, xmax)
+        ax.barh(yy, st, color="#e4e2db", height=0.72, lw=0)
+        ax.barh(yy, min(r.sold_everything_bn, xmax), color="#cdb7ea", height=0.72, lw=0)
+        ax.barh(yy, min(r.sold_realistic_bn, xmax), color=BLUE, height=0.72, lw=0)
+        ax.barh(yy, min(r.sold_liquidity_bn, xmax), color=TEAL, height=0.72, lw=0)
+        inc = f" · pays €{r.income_bn:.2f}bn ({r.yield_pct:.1f}%)" if r.income_bn and r.income_bn > 0 else ""
+        clip = " ▸" if r.stock_bn > xmax else ""
+        ax.annotate(f"€{r.stock_bn:,.1f}bn{clip} · {r.can_sell} · {r.liquidity}{inc}", (st, yy), xytext=(4, 0), textcoords="offset points",
+                    fontsize=6.4, color=MUTED, va="center")
+    ax.set_yticks(ticks); ax.set_yticklabels(labels, fontsize=6.8)
+    ax.set_ylim(n - 0.5, -0.5)
+    ax.set_xlim(0, xmax * 1.6); ax.set_xlabel("EUR bn, end-2025 (axis clipped at €100bn)", fontsize=8); ax.grid(axis="x")
+    ax.tick_params(axis="y", length=0)
+    from matplotlib.patches import Patch
+    ax.legend(handles=[Patch(color="#e4e2db", label="stock"), Patch(color="#cdb7ea", label="sold in 'everything financial'"),
+                       Patch(color=BLUE, label="sold in the realistic run"), Patch(color=TEAL, label="sold in the liquidity drawdown")],
+              ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.03), fontsize=7)
+    ax.set_title("France · the sell-down ladder line by line: what is there, who holds it, whether the État can sell it, what it pays", fontsize=9.5)
+    t = ld.totals()
+    _source(fig, "Source: CGE 2025 (valeur d'équivalence, loans, cash, tangible assets), APE rapport 2025 (listed, 30 Jun 2025), Eurostat gov_10a_ggfa (sub-sector totals),\n"
+                 "scheme annual reports and Cour des comptes 2022 (pension reserves), CDC and Banque de France 2025 accounts. Right to sell: yes / law (a statute must change) / no.\n"
+                 f"Amounts proposed for review (ggfiscal.debt.ladder_detail): liquidity €{t.loc['total', 'sold_liquidity_bn']:.0f}bn, realistic €{t.loc['total', 'sold_realistic_bn']:.0f}bn, everything €{t.loc['total', 'sold_everything_bn']:.0f}bn.", y=-0.025)
     _save(fig, out); return out
 
 
@@ -178,6 +209,8 @@ def render_all(out_dir: Path) -> dict[str, Path]:
     comp.to_csv(out_dir / "sfa_components_FRA.csv")
     lad = bs.ladder()
     lad.to_csv(out_dir / "ladder_FRA.csv", index=False)
+    det = ld.ladder_detail()
+    det.to_csv(out_dir / "ladder_detail_FRA.csv", index=False)
     runs = bs.run_all()
     runs.to_csv(out_dir / "selldown_FRA.csv", index=False)
     figs = {}
@@ -185,7 +218,7 @@ def render_all(out_dir: Path) -> dict[str, Path]:
     figs["bs_assets"] = chart_assets(h, out_dir / "bs_assets.png")
     figs["bs_sfa"] = chart_sfa(h, comp, out_dir / "bs_sfa.png")
     figs["bs_net_interest"] = chart_net_interest(h, runs, out_dir / "bs_net_interest.png")
-    figs["bs_ladder"] = chart_ladder(lad, out_dir / "bs_ladder.png")
+    figs["bs_ladder"] = chart_ladder(det, out_dir / "bs_ladder.png")
     figs["bs_selldown"] = chart_selldown(runs, h, out_dir / "bs_selldown.png")
     return figs
 
