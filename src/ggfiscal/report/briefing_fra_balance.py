@@ -181,14 +181,21 @@ def chart_selldown(runs, h, out):
     hh = h.loc[2019:2025]
     ax1.plot(hh.index, hh.gross_pct, color=HIST, lw=2.0)
     ax2.plot(hh.index, hh.net_interest_bn, color=HIST, lw=2.0)
+    ends1, ends2 = {}, {}
     for run, st in RUN_STYLE.items():
         r = runs[runs.run == run].set_index("year")
         s = pd.concat([pd.Series({2025: hh.gross_pct[2025]}), r.debt_pct_gdp])
         ax1.plot(s.index, s.values, label=bs.RUNS[run][0], **st)
         s = pd.concat([pd.Series({2025: hh.net_interest_bn[2025]}), r.net_interest_bn])
         ax2.plot(s.index, s.values, **st)
-        ax1.annotate(f"{r.debt_pct_gdp[2035]:.0f}%", (2035, r.debt_pct_gdp[2035]), xytext=(3, 0), textcoords="offset points", fontsize=7.2, color=st["color"], va="center")
-        ax2.annotate(f"{r.net_interest_bn[2035]:,.0f}", (2035, r.net_interest_bn[2035]), xytext=(3, 0), textcoords="offset points", fontsize=7.2, color=st["color"], va="center")
+        ends1[run] = float(r.debt_pct_gdp[2035]); ends2[run] = float(r.net_interest_bn[2035])
+    for ax, ends, fmt in ((ax1, ends1, "{:.0f}%"), (ax2, ends2, "{:,.0f}")):
+        span = ax.get_ylim()[1] - ax.get_ylim()[0]
+        placed = []
+        for run, v in sorted(ends.items(), key=lambda kv: kv[1]):      # end labels nudged apart so none overlap
+            y = max(v, placed[-1] + 0.05 * span) if placed else v
+            placed.append(y)
+            ax.annotate(fmt.format(v), (2035, v), xytext=(2035.3, y), textcoords="data", fontsize=7.2, color=RUN_STYLE[run]["color"], va="center")
     ax1.set_title("Maastricht debt, gross, % of GDP", fontsize=9.5)
     ax2.set_title("Net interest: paid less asset income, EUR bn", fontsize=9.5)
     for ax in (ax1, ax2):
