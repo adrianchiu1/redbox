@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "notebooks" / "France_fiscal_brief_20261013.ipynb"
 
 SECTIONS = [("s0", "Bottom line and key figures"), ("s1", None), ("s2", None), ("s3", None),
-            ("s4", None), ("s5", None), ("s6", None), ("s8", None)]
+            ("s4", None), ("s5", None), ("s6", None), ("s9", None), ("s8", None)]
 
 cells = [nbf.v4.new_markdown_cell("""# France fiscal brief, 13 October 2026
 
@@ -31,19 +31,22 @@ This notebook is the executable form of the briefing note
 `reports/briefing_FRA_AFT_2026-09/briefing_inline.html`. Run top to bottom, it
 
 1. renders every chart from the flat files in `deliverables/` (plus the
-   Eurostat debt history in `data/manual/`) with
+   Eurostat debt history and balance sheet in `data/manual/`) with
    `ggfiscal.report.briefing_fra` (the descriptive charts and
-   `key_figures.csv`) and `ggfiscal.report.briefing_fra_scenarios` (the
-   register rolled forward under each scenario by `ggfiscal.debt.simulate`);
+   `key_figures.csv`), `ggfiscal.report.briefing_fra_scenarios` (the
+   register rolled forward under each scenario by `ggfiscal.debt.simulate`)
+   and `ggfiscal.report.briefing_fra_balance` (the asset side, net debt and
+   the sell-down runs of `ggfiscal.debt.balance_sheet`);
 2. fills the note's template with the values `tools/build_briefing_fra.py`
    computes and shows each section in the note's order;
 3. writes `briefing.html` and `briefing_inline.html`, so the published page is
    reproduced by this notebook.
 
-The questions for the AFT (section 7 of the note and the "To ask the AFT"
+The questions for the AFT (section 8 of the note and the "To ask the AFT"
 boxes) are left out here; the HTML keeps them. Facts marked **[ext]** come
-from outside Redbox and are listed in section 8. Scenario assumptions are in
-the tables of section 5; decisions D-S18-001 to D-S18-004 in `DECISIONS.md`.""")]
+from outside Redbox and are listed in section 9. Scenario assumptions are in
+the tables of section 5; decisions D-S18-001 to D-S18-006 and D-S19-001 (the
+balance-sheet section, 7) in `DECISIONS.md`.""")]
 
 cells.append(nbf.v4.new_code_cell("""import io
 
@@ -52,11 +55,12 @@ from IPython.display import HTML, SVG, Image as Image_display, display
 from PIL import Image
 
 from ggfiscal.debt import simulate as sim
-from ggfiscal.report import briefing_fra, briefing_fra_scenarios, france_brief
+from ggfiscal.report import briefing_fra, briefing_fra_balance, briefing_fra_scenarios, france_brief
 
 FIG = france_brief.BRIEF_DIR / "figures"
 FIGS = briefing_fra_scenarios.render_all(FIG)     # scenarios_FRA.csv, decomposition, duration
 FIGS.update(briefing_fra.render_all(FIG))         # descriptive charts, key_figures.csv
+FIGS.update(briefing_fra_balance.render_all(FIG)) # balance_sheet_FRA.csv, ladder, selldown (D-S19-001)
 france_brief.clear_cache()
 
 
@@ -103,6 +107,23 @@ cells.append(nbf.v4.new_code_cell("""res = pd.read_csv(FIG / "scenarios_FRA.csv"
 cols = ["label", "year", "spread_bp", "oat_10y_pct", "primary_balance_pct", "gg_interest_bn",
         "gg_interest_pct_gdp", "deficit_pct_gdp", "debt_pct_gdp", "mlt_gross_issuance_bn"]
 res[res.year.isin([2027, 2028, 2030, 2032, 2035])][cols].round(1).set_index(["label", "year"])"""))
+
+cells.append(nbf.v4.new_markdown_cell("""## The balance-sheet runs as data
+
+The sell-down ladder line by line (what is there at end-2025 and how much each run sells),
+then every run-year of section 7 (status quo, liquidity, realistic, distress): gross and net debt, the interest bill, the
+asset income and the net interest, on the status-quo scenario."""))
+cells.append(nbf.v4.new_markdown_cell("""The ladder line by line (D-S19-002/003): valuation on the CGE, the APE and Eurostat, who holds
+it, whether the État can sell it, what it pays the État, and the amount each run sells under the
+committee's rules of 14 October 2026 (the `rule` column). These amounts drive the runs below."""))
+cells.append(nbf.v4.new_code_cell("""det = pd.read_csv(FIG / "ladder_detail_FRA.csv", keep_default_na=False)
+pd.set_option("display.max_rows", 100); pd.set_option("display.max_colwidth", 70)
+det[~det.reference_only][["group", "line", "holder", "stock_bn", "can_sell", "liquidity", "income_bn", "yield_pct",
+                          "sold_liquidity_bn", "sold_realistic_bn", "sold_distress_bn", "rule"]].round(2).set_index(["group", "line"])"""))
+cells.append(nbf.v4.new_code_cell("""sd = pd.read_csv(FIG / "selldown_FRA.csv")
+cols = ["run_label", "year", "sfa_bn", "debt_pct_gdp", "net_debt_pct_gdp", "net_fin_debt_pct_gdp", "gg_interest_bn",
+        "asset_income_bn", "net_interest_bn", "deficit_pct_gdp", "primary_balance_pct"]
+sd[sd.year.isin([2027, 2030, 2035])][cols].round(1).set_index(["run_label", "year"])"""))
 
 cells.append(nbf.v4.new_markdown_cell("""## Reproducing the HTML note
 

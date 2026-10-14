@@ -33,9 +33,9 @@ engine keeps every year, and `tests/debt/test_simulate.py` checks:
     deficit      = −primary balance + GG interest − interest receivable
     GG interest  = register interest + wedge (a share of GDP)
     register     = coupons + uplift + bill discount − premium amortisation + in-year issuance
-    debt_t       = debt_{t−1} + deficit_t                 (no stock-flow adjustment)
-    MLT gross    = redemptions + 0.90 × deficit − uplift accrual − Δbills
-    Δ negotiable stock = 0.90 × deficit                   (from 2027; exact)
+    debt_t       = debt_{t−1} + deficit_t + sfa_t         (sfa declared, zero by default)
+    MLT gross    = redemptions + 0.90 × deficit + sfa − uplift accrual − Δbills
+    Δ negotiable stock = 0.90 × deficit + sfa             (from 2027; exact)
     linker index = snapshot ratio × (1+π)^(years since the snapshot date)
     nominal GDP  = ledger 2025 level × AMECO growth to 2027 × (1+g)(1+π) after
 
@@ -198,6 +198,13 @@ class Scenario:
     # Alternative to the EUR bn rule: year-on-year change of the primary
     # balance in pp of GDP (missing years = no change in the ratio).
     pb_change_pp: dict | None = None
+    # Stock-flow adjustment, EUR bn by year (D-S19-001): debt that moves
+    # without a deficit. Negative = asset sales or a cash drawdown retiring
+    # negotiable debt; positive = acquisitions, recapitalisations, guarantee
+    # calls. Missing years are zero. It enters the Maastricht stock and the
+    # negotiable stock in full (the État sells, the État issues less), not
+    # through the `deficit_to_net_issuance` share.
+    sfa_bn: dict | None = None
 
     def spread_path(self, base: "Baseline" = None) -> dict:
         if self.spread_bp is not None:
@@ -205,6 +212,10 @@ class Scenario:
         base = base or BASELINE
         return {2026: base.spread_today_bp, 2027: self.spread_2027_bp,
                 2028: (self.spread_2027_bp + self.spread_2029_bp) / 2, 2029: self.spread_2029_bp}
+
+    def sfa(self, year: int) -> float:
+        """The stock-flow adjustment declared for `year`, EUR bn (zero if none)."""
+        return float((self.sfa_bn or {}).get(year, 0.0))
 
     def pb_changes(self) -> dict:
         """Year-on-year change of the primary balance, EUR bn (the EUR bn rule
@@ -568,8 +579,10 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
     same path, and Δ(negotiable stock) = financed share × deficit exactly.
 
     Issuance (`base.issuance_rule`, D-S18-006): the year-end stock is the
-    opening stock plus the financed share of the deficit (ESA: the uplift is
-    reinvested, not issued against). Under `constant_profile` bills and each
+    opening stock plus the financed share of the deficit plus the scenario's
+    stock-flow adjustment, if any (`Scenario.sfa_bn`, D-S19-001: asset
+    sales retire negotiable debt one for one; ESA: the uplift is reinvested,
+    not issued against). Under `constant_profile` bills and each
     residual-maturity bucket are brought to their snapshot share of that
     stock; a bucket already above its share gets nothing (no buybacks) and
     the shortfall is `profile_deviation_bn`. Under `constant_mix` the bill
@@ -658,13 +671,14 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
 
         wedge = base.gg_wedge_pct / 100 * gdp
         recv = base.interest_receivable_pct / 100 * gdp
+        sfa = sc.sfa(year)                                   # EUR bn, zero unless declared
         y_new = {b: oat_yield(tenor_of[b], spread, base) / 100 for b in BUCKETS}
         bill_rate = oat_yield(0.25, spread, base) / 100
 
         def financing(d_fin: float):
             """Year-end stock, bills, gross bond issuance by bucket and the
             profile shortfall for a deficit `d_fin` financed this year."""
-            s_end = stock_prev + a * d_fin * share
+            s_end = stock_prev + a * d_fin * share + sfa
             if rule == "constant_profile":
                 btf_end = float(weights["bill"] * s_end)
                 target = weights[BUCKETS].astype(float) * s_end
@@ -722,14 +736,14 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
             s_end, btf_end, gross, issue, deviation = financing(d_fin)
             register_interest = existing_interest + bill_interest + new_year_interest
             gg_interest = register_interest + wedge
-        net_issuance = a * d_fin * share
+        net_issuance = a * d_fin * share + sfa
 
         # book the new tranches
         for b in BUCKETS:
             if issue[b] > 1e-12:
                 new.append({"issue_year": year, "nominal": float(issue[b]), "coupon": y_new[b],
                             "maturity_year": year + years_of[b], "bucket": b})
-        debt += deficit
+        debt += deficit + sfa
         stock = s_end
         assert abs(stock - (surv_total + float(issue.sum()) + btf_end)) < 1e-6
         stock_bonds_fixed = float(nominal[fixed & surviving].sum())
@@ -754,7 +768,7 @@ def run_scenario(sc: Scenario, base: Baseline = BASELINE, register: pd.DataFrame
             "register_interest_bn": register_interest, "gg_interest_bn": gg_interest,
             "gg_interest_pct_gdp": 100 * gg_interest / gdp,
             "deficit_bn": deficit, "deficit_pct_gdp": 100 * deficit / gdp,
-            "debt_bn": debt, "debt_pct_gdp": 100 * debt / gdp,
+            "sfa_bn": sfa, "debt_bn": debt, "debt_pct_gdp": 100 * debt / gdp,
             "negotiable_stock_bn": stock, "avg_coupon_fixed_pct": avg_coupon_fixed,
             "coupon_fixed_bn": coupon_fixed, "coupon_linker_bn": coupon_link,
             "uplift_bn": uplift_accr, "bill_interest_bn": bill_interest,

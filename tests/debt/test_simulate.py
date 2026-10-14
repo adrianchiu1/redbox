@@ -67,11 +67,13 @@ def test_identities_hold(results):
     after = r.year > sim.FIRST_YEAR
     assert np.allclose(r.register_interest_bn[after], parts[after])
     assert (r.new_issue_interest_bn[~after] == 0).all()
-    # debt accumulates the deficit exactly (no stock-flow adjustment declared)
+    # debt accumulates the deficit plus the declared stock-flow adjustment,
+    # which is zero in every committee scenario
+    assert (r.sfa_bn == 0).all()
     for _, g in r.groupby("scenario"):
         g = g.sort_values("year")
         d0 = b.debt_2025_pct / 100 * b.gdp[2025]
-        assert np.allclose(g.debt_bn.values, d0 + g.deficit_bn.cumsum().values)
+        assert np.allclose(g.debt_bn.values, d0 + (g.deficit_bn + g.sfa_bn).cumsum().values)
 
 
 def test_financing_identities_hold(results):
@@ -84,9 +86,9 @@ def test_financing_identities_hold(results):
         g = g.sort_values("year").set_index("year")
         d_btf = g.btf_stock.diff()
         later = g.index > sim.FIRST_YEAR
-        need = (g.redemptions_bn + b.deficit_to_net_issuance * g.deficit_bn - g.uplift_bn - d_btf)[later]
+        need = (g.redemptions_bn + b.deficit_to_net_issuance * g.deficit_bn + g.sfa_bn - g.uplift_bn - d_btf)[later]
         assert np.allclose(g.mlt_gross_issuance_bn[later], need)
-        assert np.allclose(g.net_issuance_bn[later], b.deficit_to_net_issuance * g.deficit_bn[later])
+        assert np.allclose(g.net_issuance_bn[later], b.deficit_to_net_issuance * g.deficit_bn[later] + g.sfa_bn[later])
         # the stock is valued at the start-of-year uplift and a maturing linker
         # accrues its uplift pro rata but redeems in full, so the identity holds
         # to a few hundred million, not to the cent
@@ -230,3 +232,23 @@ def test_duration_table_prices_sensibly():
     assert long > short
     s = sim.duration_summary(90.0)
     assert 3 < s["modified_duration_years"] < 10
+
+
+def test_a_declared_stock_flow_adjustment_retires_debt_one_for_one():
+    """D-S19-001: an asset sale declared as a negative SFA lowers the
+    Maastricht stock and the negotiable stock by the same euros, before any
+    interest saved; the primary balance is untouched."""
+    from dataclasses import replace
+    ref = sim.scenario(sim.REFERENCE)
+    reg, mix = sim.load_register(), sim.issuance_mix()
+    base_run = sim.run_scenario(ref, register=reg, mix=mix, feedback=False).set_index("year")
+    sale = replace(ref, name="sale", sfa_bn={2028: -40.0, 2029: -40.0})
+    run = sim.run_scenario(sale, register=reg, mix=mix, feedback=False).set_index("year")
+    assert np.allclose(run.primary_balance_bn, base_run.primary_balance_bn)
+    assert run.sfa_bn[2028] == -40.0 and run.sfa_bn[2030] == 0.0
+    # 2028: the stock falls by the sale; the interest saved arrives from 2028 on
+    assert np.isclose(run.debt_bn[2027], base_run.debt_bn[2027])
+    gap = base_run.debt_bn - run.debt_bn
+    assert gap[2028] > 40.0 - 1.0 and gap[2029] > 80.0
+    assert (run.gg_interest_bn[2028:] < base_run.gg_interest_bn[2028:]).all()
+    assert np.allclose(run.negotiable_stock_bn.diff()[2028], run.net_issuance_bn[2028], atol=0.7)
