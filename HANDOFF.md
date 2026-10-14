@@ -1,8 +1,9 @@
 # HANDOFF.md
 
-Addendum 2026-10-13 (D-S19-002): the ladder is now line by line in
-`ggfiscal.debt.ladder_detail` (review table; the runs still use the
-first-pass rung totals until the committee signs the amounts off).
+Addendum 2026-10-14 (D-S19-002/003): the ladder is line by line in
+`ggfiscal.debt.ladder_detail`; the committee's rules of 14 Oct 2026 are
+`apply_rules` there and the engine runs (liquidity / realistic / distress)
+read the line table. Change an amount there and rebuild.
 
 Addendum 2026-10-12 (D-S19-001, branch `claude/clever-galileo-ajgwdx`):
 the France brief has a section 7 on the asset side — Eurostat balance

@@ -3785,3 +3785,46 @@ bn), the section-7 table replaced by the grouped line table with subtotals,
 a notebook data cell, `tests/debt/test_ladder_detail.py` (4). The engine
 runs (`balance_sheet.RUNS`, Figure 22) are unchanged and say so in the
 text; the recomputation on the reviewed amounts is the next decision.
+
+
+## D-S19-003 — The committee's rules for the three runs; the runs recomputed from the line-by-line ladder; the third run renamed "distress" (amends D-S19-001/002)
+
+Committee 2026-10-14. Rules, applied by `ladder_detail.apply_rules` to
+every line and printed under each amount in the brief's table: "no" →
+0/0/0; "law" → 0/0/half the stock; "yes": the Trésor's placements 10/10/
+the whole buffer (24.1), the ODAC deposits 0/0/10, loans 0/0/half (nothing
+where nothing is recoverable), listed with a pact 0/0/half, listed free
+0/half/whole, unlisted 0/0/whole; everything else as declared (the État's
+paper 2/2/2, the Bpifrance- and CDC-managed State funds 0/2/5, État
+buildings 0/1/2). The extreme run is dropped; the third run is "distress:
+everything the État can reach". Totals: liquidity 12, realistic 34.6,
+distress 417.3 EUR bn (14.0% of GDP), of which the largest single item is
+half the motorway and other concession assets (138, "law"), then EDF at
+book (68.5), the cash buffer (34.1), the listed lines (53.9), the ODAC loan
+books (25), the CDC's two sections (21.7) and SNCF (13.9).
+
+**Engine.** `balance_sheet.sales(run)` now reads the line table: each line
+sold spreads evenly over the run's years with its own asset class (liquid
+/ equity / nonfin) and its own yield (income to the État over stock), so
+the income forgone is what that line paid the État, not a class average;
+non-financial proceeds retire debt and forgo nothing. `net_view` takes
+the lost income off the status-quo income path cumulatively. `RUNS`:
+status_quo, liquidity, realistic, distress. The coarse rung ladder and
+`ladder_FRA.csv` are gone; `ladder()` returns the line table.
+
+**Results (status quo 143.7% in 2035, net interest 193.8 EUR bn).**
+Liquidity: 143.3%, 0.4 points. Realistic: 142.6%, 1.1 points, net
+interest gain 0.9 EUR bn a year by 2035 (1.9 saved, 1.1 forgone).
+Distress: 117.3% in 2030 and 130.2% in 2035, 13.5 points, 23.7 EUR bn of
+interest saved for 7.6 of income forgone, deficit 6.2% against 6.6%. The
+reading in the brief is unchanged in kind and sharper in degree: within
+the rules, what the État can actually sell without a law is a rounding
+error on the path; what it can reach with a law buys thirteen points and
+a year of redemptions, and the ratio climbs at the same slope afterwards.
+
+**Regenerated.** Figure 21 (legend and source), Figure 22 (three runs),
+the section-7 table (rule under each amount), the bottom-line point, the
+method table; `selldown_FRA.csv`, both HTML files, the notebook. Gate:
+`test_ladder_detail.py` (4, the rules asserted line class by line class),
+`test_balance_sheet.py` (9), `test_france_brief.py` (3), `test_simulate.py`
+(19), `test_simulate_review.py` (14) pass.

@@ -22,10 +22,19 @@ def test_every_line_is_documented():
 def test_runs_nest_and_never_exceed_the_stock():
     d = ld.ladder_detail()
     assert (d.sold_liquidity_bn <= d.sold_realistic_bn + 1e-9).all()
-    assert (d.sold_realistic_bn <= d.sold_everything_bn + 1e-9).all()
-    assert (d.sold_everything_bn <= d.stock_bn + 1e-9).all()
-    assert (d.loc[d.can_sell == "no", ["sold_liquidity_bn", "sold_realistic_bn"]] == 0).all().all()
-    assert (d.loc[d.reference_only, ["sold_liquidity_bn", "sold_realistic_bn", "sold_everything_bn"]] == 0).all().all()
+    assert (d.sold_realistic_bn <= d.sold_distress_bn + 1e-9).all()
+    assert (d.sold_distress_bn <= d.stock_bn + 1e-9).all()
+    assert (d.loc[d.can_sell == "no", ["sold_liquidity_bn", "sold_realistic_bn", "sold_distress_bn"]] == 0).all().all()
+    law = d[(d.can_sell == "law") & ~d.line.str.startswith("Other central-government units' deposits")]
+    assert (law[["sold_liquidity_bn", "sold_realistic_bn"]] == 0).all().all()
+    assert np.allclose(law.sold_distress_bn, law.stock_bn / 2)
+    listed = d[d.group == "listed"]
+    pact = listed[listed.can_sell == "yes, pact"]; free = listed[listed.can_sell == "yes"]
+    assert (pact.sold_realistic_bn == 0).all() and np.allclose(pact.sold_distress_bn, pact.stock_bn / 2)
+    assert np.allclose(free.sold_realistic_bn, free.stock_bn / 2) and np.allclose(free.sold_distress_bn, free.stock_bn)
+    unl = d[(d.group == "unlisted") & (d.can_sell == "yes")]
+    assert (unl.sold_realistic_bn == 0).all() and np.allclose(unl.sold_distress_bn, unl.stock_bn)
+    assert (d.loc[d.reference_only, ["sold_liquidity_bn", "sold_realistic_bn", "sold_distress_bn"]] == 0).all().all()
 
 
 def test_groups_reconcile_to_eurostat():
@@ -52,4 +61,4 @@ def test_income_and_yields():
     edf = d[d.line == "EDF"].iloc[0]
     assert edf.income_bn == 2.0 and 2.5 < edf.yield_pct < 3.5
     t = ld.runs_from_detail()
-    assert t["liquidity"] < t["realistic"] < t["everything"]
+    assert t["liquidity"] < t["realistic"] < t["distress"]

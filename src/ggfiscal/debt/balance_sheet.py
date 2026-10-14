@@ -34,15 +34,15 @@ Everything the engine does not produce and Eurostat does not publish is a
 declared external fact, marked `ext` in the brief and listed in
 `EXTERNAL`: INSEE's net-debt release, the État's own accounts (Compte
 général de l'État 2025), the APE portfolio valuation, the Caisse des dépôts'
-own funds and the Banque de France's gold. The sell-down rungs
-(`LADDER`) and the amounts each run counts are declared numbers, argued
-in the brief, not estimates.
+own funds and the Banque de France's gold. The sell-down ladder is line by line in
+`ladder_detail.py`, with the committee's rules for the three runs.
 
 Forward arithmetic (`net_view`): liquid assets are held constant in euros
 (a cash buffer is not grown), equity holdings grow with nominal GDP (held
 at market value, no excess return assumed), each class earns the yield its
 2025 income implied (`AssetBlock`), and a sale removes the stock and, from
-the half-year of the sale, its income. The income forgone is taken off the
+the half-year of the sale, the income that line paid the État (its own
+yield in the ladder; non-financial proceeds retire debt and forgo nothing). The income forgone is taken off the
 primary balance (dividends and interest receivable are revenue), the
 proceeds off the debt through the engine's stock-flow adjustment
 (`Scenario.sfa_bn`). Nothing else moves: the spread paths are the
@@ -226,83 +226,13 @@ def insee_check() -> dict:
 
 
 # --------------------------------------------------------------------------
-# The sell-down ladder (declared)
+# The sell-down ladder: line by line in ladder_detail (D-S19-002/003)
 # --------------------------------------------------------------------------
 
-@dataclass(frozen=True)
-class Rung:
-    key: str
-    label: str
-    stock_bn: float               # end-2025, EUR bn
-    where: str                    # "S13 balance sheet", "État accounts", "off balance sheet"
-    basis: str
-    liquidity: str                # how fast it turns into cash, in a stress
-    asset_class: str              # "liquid" or "equity" (which yield is forgone), "none" for gold
-    counted: dict                 # run name -> EUR bn sold in that run
-    note: str
-    ext: bool = False
-
-
-def _ladder(h: pd.DataFrame) -> list[Rung]:
-    r = h.loc[2025]
-    cash_floor = 30.0
-    listed = APE_2025H1["listed_bn"]
-    unlisted = float(r.f51_bn) - listed
-    return [
-        Rung("cash", "Currency and deposits", float(r.f2_bn), "S13 balance sheet",
-             f"Eurostat F.2, consolidated; the État's own account at the Banque de France is €{CGE_2025['cash_active_bn']:.0f}bn (CGE) — the rest is social-security and local cash",
-             "days", "liquid",
-             {"liquidity": float(r.f2_bn) - cash_floor, "realistic": float(r.f2_bn) - cash_floor,
-              "maximal": float(r.f2_bn) - cash_floor, "extreme": float(r.f2_bn) - cash_floor},
-             f"Run down to a €{cash_floor:.0f}bn operating floor. INSEE: cash fell €{-INSEE_2025['cash_change_bn']:.1f}bn in 2025 already."),
-        Rung("paper", "Debt securities held", float(r.f3_bn), "S13 balance sheet",
-             "Eurostat F.3, market value; mostly the social-security reserve funds' bond portfolios", "weeks", "liquid",
-             {"liquidity": float(r.f3_bn), "realistic": float(r.f3_bn), "maximal": float(r.f3_bn), "extreme": float(r.f3_bn)},
-             "Saleable at market; the reserves belong to the pension schemes, not the État."),
-        Rung("loans", "Loans granted", float(r.f4_bn), "S13 balance sheet",
-             "Eurostat F.4; loans to foreign states, students, public bodies, the EU recovery vehicles", "years", "liquid",
-             {"liquidity": 0.0, "realistic": 50.0, "maximal": float(r.f4_bn), "extreme": float(r.f4_bn)},
-             "Securitisable at a discount; counted half in the realistic run, whole in the maximal one."),
-        Rung("listed", "Listed equity (APE portfolio)", listed, "État accounts",
-             "APE, market value at 30 June 2025: Airbus, Safran, Thales, Engie, Orange, Renault, Eramet, FDJ, Air France-KLM, ADP",
-             "months", "equity",
-             {"liquidity": 0.0, "realistic": listed, "maximal": listed, "extreme": listed},
-             "Every listed line sold, strategic or not: the 2027 programmes all touch some of these.", ext=True),
-        Rung("funds", "Investment fund shares", float(r.f52_bn), "S13 balance sheet",
-             "Eurostat F.52, market value; the FRR, AGIRC-ARRCO, CNAV and ODAC placements", "months", "equity",
-             {"liquidity": 0.0, "realistic": 80.0, "maximal": float(r.f52_bn), "extreme": float(r.f52_bn)},
-             "Half in the realistic run (the reserves of the complementary schemes are the social partners'); all in the maximal."),
-        Rung("unlisted", "Unlisted and other equity", unlisted, "S13 balance sheet",
-             "Eurostat F.51 less the listed lines; EDF, SNCF, La Poste, RATP, Bpifrance, the CDC and the Banque de France at own funds",
-             "years", "equity",
-             {"liquidity": 0.0, "realistic": 100.0, "maximal": unlisted, "extreme": unlisted},
-             "Minority stakes (EDF, La Poste, RATP, SNCF subsidiaries) €100bn in the realistic run; the whole book value in the maximal — a value no buyer would pay."),
-        Rung("cdc", "Caisse des dépôts own funds", CDC_2025["own_funds_bn"], "off balance sheet",
-             "CDC aggregated own funds, end-2025; CDC is a financial corporation (S.12) under Parliament's protection, its contribution to the État €3.3bn in 2025",
-             "a law", "equity",
-             {"liquidity": 0.0, "realistic": 0.0, "maximal": 0.0, "extreme": 40.0},
-             "An exceptional transfer of half its own funds in the extreme run; the État's claim is partly inside F.51 already, so this may double count.", ext=True),
-        Rung("gold", "Banque de France gold", BDF_GOLD_2025["book_value_bn"], "off balance sheet",
-             f"{BDF_GOLD_2025['tonnes']:,.0f} tonnes at end-2025 book value; realised gains flow to the Banque's result, then to the État as dividend",
-             "a Eurosystem decision", "none",
-             {"liquidity": 0.0, "realistic": 0.0, "maximal": 0.0, "extreme": 128.0},
-             "Half the stock in the extreme run only: an NCB's gold operations need the ECB's assent (Statute art. 31) and the proceeds are the Banque's, not the Trésor's.", ext=True),
-        Rung("nonfin", "Non-financial assets", float(r.nonfin_bn), "S13 balance sheet",
-             "Eurostat nama_10_nfa_bs: produced assets (roads, schools, hospitals, military) and land at replacement cost",
-             "decades", "none",
-             {"liquidity": 0.0, "realistic": 0.0, "maximal": 0.0, "extreme": 0.0},
-             "Not counted in any run: the État sells well under €1bn of real estate a year and the rest is the public service itself."),
-    ]
-
-
 def ladder() -> pd.DataFrame:
-    h = history()
-    rows = []
-    for g in _ladder(h):
-        rows.append({"key": g.key, "label": g.label, "stock_bn": g.stock_bn, "where": g.where, "basis": g.basis,
-                     "liquidity": g.liquidity, "asset_class": g.asset_class, "ext": g.ext, "note": g.note,
-                     **{f"sold_{k}_bn": v for k, v in g.counted.items()}})
-    return pd.DataFrame(rows)
+    """The line-by-line ladder with the committee's rules applied (ggfiscal.debt.ladder_detail)."""
+    from ggfiscal.debt import ladder_detail as ld
+    return ld.ladder_detail()
 
 
 # --------------------------------------------------------------------------
@@ -318,7 +248,6 @@ class AssetBlock:
     equity_bn: float
     liquid_yield: float            # D.41 received / average liquid stock, 2025
     equity_yield: float            # D.42 received / average equity stock, 2025
-    cdc_yield: float = CDC_2025["contribution_to_state_bn"] / CDC_2025["own_funds_bn"]
     equity_grows_with_gdp: bool = True
 
 
@@ -333,39 +262,40 @@ RUNS = {                               # run name -> (label, sale years)
     "status_quo": ("Status quo (no sale)", ()),
     "liquidity": ("Liquidity drawdown", (2027, 2028)),
     "realistic": ("Realistic sell-down", (2027, 2028, 2029)),
-    "maximal": ("Everything financial", (2027, 2028, 2029, 2030, 2031)),
-    "extreme": ("Extreme: plus CDC and gold", (2027, 2028, 2029, 2030, 2031)),
+    "distress": ("Distress: everything the État can reach", (2027, 2028, 2029, 2030, 2031)),
 }
 
 
 def sales(run: str) -> pd.DataFrame:
-    """EUR bn sold by year and asset class in `run`, spread evenly over its sale years."""
+    """EUR bn sold by year and line in `run`, spread evenly over its sale
+    years, with the line's asset class (liquid / equity / nonfin) and the
+    yield it pays the État (income over stock), from the line-by-line ladder."""
     label, years = RUNS[run]
     rows = []
     if years:
-        for g in _ladder(history()):
-            amt = g.counted.get(run, 0.0)
-            if amt > 0:
-                for y in years:
-                    rows.append({"year": y, "rung": g.key, "asset_class": g.asset_class, "sold_bn": amt / len(years)})
-    cols = ["year", "rung", "asset_class", "sold_bn"]
+        d = ladder()
+        d = d[~d.reference_only]
+        col = f"sold_{run}_bn"
+        for r in d[d[col] > 0].itertuples():
+            y_pct = 0.0 if not r.income_bn or r.stock_bn == 0 else float(r.income_bn) / float(r.stock_bn)
+            for y in years:
+                rows.append({"year": y, "rung": r.line, "asset_class": r.asset_class, "sold_bn": float(getattr(r, col)) / len(years),
+                             "yield": y_pct})
+    cols = ["year", "rung", "asset_class", "sold_bn", "yield"]
     return pd.DataFrame(rows, columns=cols)
 
 
 def selldown_scenario(run: str, base_sc: sim.Scenario | None = None, block: AssetBlock | None = None) -> sim.Scenario:
     """The status-quo scenario with the run's sales as a negative stock-flow
-    adjustment and the income forgone (half in the year of sale, the rest
-    the year after) taken off the primary balance."""
+    adjustment and the income forgone (at each line's own yield; half in the
+    year of sale, the rest the year after) taken off the primary balance."""
     sc = base_sc or sim.scenario(sim.REFERENCE)
     block = block or asset_block()
     s = sales(run)
     if s.empty:
         return replace(sc, name=f"{sc.name}__{run}", label=RUNS[run][0])
     by_year = s.groupby("year").sold_bn.sum()
-    yield_of = {"liquid": block.liquid_yield, "equity": block.equity_yield, "none": 0.0}
-    s = s.assign(y=s.asset_class.map(yield_of))
-    s.loc[s.rung == "cdc", "y"] = block.cdc_yield
-    lost = (s.sold_bn * s.y).groupby(s.year).sum()           # full-year income lost per vintage
+    lost = (s.sold_bn * s["yield"]).groupby(s.year).sum()    # full-year income lost per vintage, at each line's own yield
     changes = dict(sc.pb_changes())
     for y, v in lost.items():
         changes[int(y)] = changes.get(int(y), 0.0) - 0.5 * v
@@ -385,15 +315,23 @@ def net_view(res: pd.DataFrame, run: str = "status_quo", block: AssetBlock | Non
     r = res.sort_values("year").set_index("year").copy()
     liquid, equity, income = {}, {}, {}
     liq, eq = block.liquid_bn, block.equity_bn
+    eq_sq = block.equity_bn                       # the equity stock with no sale, for the income base
     gdp_prev = sim.BASELINE.gdp[2025]
+    lost_cum = 0.0                                                        # full-year income lost on sales of earlier years
     for y in r.index:
-        inc = block.liquid_yield * liq + block.equity_yield * eq          # on the opening stocks
+        inc = block.liquid_yield * block.liquid_bn + block.equity_yield * eq_sq - lost_cum  # status-quo income less what sold lines paid
         if block.equity_grows_with_gdp:
             eq *= r.gdp_bn[y] / gdp_prev
+            eq_sq *= r.gdp_bn[y] / gdp_prev
         sl = float(sold.get("liquid", pd.Series(dtype=float)).get(y, 0.0)) if not sold.empty else 0.0
         se = float(sold.get("equity", pd.Series(dtype=float)).get(y, 0.0)) if not sold.empty else 0.0
-        inc -= 0.5 * (block.liquid_yield * sl + block.equity_yield * se)   # half a year lost on this year's sales
-        liq, eq = liq - sl, eq - se
+        # income lost on this year's sales, at the lines' own yields, half a year
+        if not s.empty:
+            sy = s[s.year == y]
+            this_year = float((sy.sold_bn * sy["yield"]).sum())
+            inc -= 0.5 * this_year
+            lost_cum += this_year
+        liq, eq = liq - sl, eq - se              # non-financial proceeds retire debt without touching either stock
         liquid[y], equity[y], income[y] = liq, eq, inc
         gdp_prev = r.gdp_bn[y]
     r["liquid_assets_bn"] = pd.Series(liquid)
@@ -481,7 +419,7 @@ def summary() -> dict:
         if run == "status_quo":
             continue
         rr = runs[runs.run == run].set_index("year")
-        sold = sales(run).sold_bn.sum()
+        sold = float(-rr.sfa_bn.sum())
         out[f"{run}_sold_bn"] = float(sold)
         out[f"{run}_sold_pct"] = 100 * float(sold) / sim.BASELINE.gdp[2025]
         for y in (2030, 2035):
@@ -505,7 +443,7 @@ if __name__ == "__main__":       # pragma: no cover
                         "net_interest_bn", "sfa_bn", "sfa_pct"]].round(1))
     print(insee_check())
     print(sfa_components_s1311().round(1))
-    print(ladder()[["label", "stock_bn", "sold_realistic_bn", "sold_maximal_bn", "sold_extreme_bn"]])
+    print(ladder()[["line", "stock_bn", "sold_liquidity_bn", "sold_realistic_bn", "sold_distress_bn"]])
     r = run_all()
     print(r[r.year.isin([2027, 2030, 2035])][["run", "year", "debt_pct_gdp", "net_debt_pct_gdp", "gg_interest_bn",
                                              "asset_income_bn", "net_interest_bn", "deficit_pct_gdp"]].round(1).to_string())

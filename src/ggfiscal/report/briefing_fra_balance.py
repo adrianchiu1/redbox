@@ -25,8 +25,7 @@ RUN_STYLE = {
     "status_quo": {"color": PH_YELLOW, "ls": DOTTED, "lw": 2.5, "zorder": 4},
     "liquidity": {"color": TEAL, "ls": "-", "lw": 2.0},
     "realistic": {"color": BLUE, "ls": "-", "lw": 2.0},
-    "maximal": {"color": PURPLE, "ls": "-", "lw": 2.0},
-    "extreme": {"color": RED, "ls": "-", "lw": 2.0},
+    "distress": {"color": PURPLE, "ls": "-", "lw": 2.0},
 }
 CLASS_COLOURS = {"f2_pct": TEAL, "f3_pct": BLUE, "f4_pct": ORANGE, "f51_pct": PURPLE, "f52_pct": GOLD, "f8_pct": "#b9b7ae"}
 CLASS_LABELS = {"f2_pct": "currency and deposits (F.2)", "f3_pct": "debt securities (F.3)", "f4_pct": "loans (F.4)",
@@ -152,7 +151,7 @@ def chart_ladder(det, out):
     for yy, r in rows:
         st = min(r.stock_bn, xmax)
         ax.barh(yy, st, color="#e4e2db", height=0.72, lw=0)
-        ax.barh(yy, min(r.sold_everything_bn, xmax), color="#cdb7ea", height=0.72, lw=0)
+        ax.barh(yy, min(r.sold_distress_bn, xmax), color="#cdb7ea", height=0.72, lw=0)
         ax.barh(yy, min(r.sold_realistic_bn, xmax), color=BLUE, height=0.72, lw=0)
         ax.barh(yy, min(r.sold_liquidity_bn, xmax), color=TEAL, height=0.72, lw=0)
         inc = f" · pays €{r.income_bn:.2f}bn ({r.yield_pct:.1f}%)" if r.income_bn and r.income_bn > 0 else ""
@@ -164,14 +163,14 @@ def chart_ladder(det, out):
     ax.set_xlim(0, xmax * 1.6); ax.set_xlabel("EUR bn, end-2025 (axis clipped at €100bn)", fontsize=8); ax.grid(axis="x")
     ax.tick_params(axis="y", length=0)
     from matplotlib.patches import Patch
-    ax.legend(handles=[Patch(color="#e4e2db", label="stock"), Patch(color="#cdb7ea", label="sold in 'everything financial'"),
+    ax.legend(handles=[Patch(color="#e4e2db", label="stock"), Patch(color="#cdb7ea", label="sold in the distress run"),
                        Patch(color=BLUE, label="sold in the realistic run"), Patch(color=TEAL, label="sold in the liquidity drawdown")],
               ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.03), fontsize=7)
     ax.set_title("France · the sell-down ladder line by line: what is there, who holds it, whether the État can sell it, what it pays", fontsize=9.5)
     t = ld.totals()
     _source(fig, "Source: CGE 2025 (valeur d'équivalence, loans, cash, tangible assets), APE rapport 2025 (listed, 30 Jun 2025), Eurostat gov_10a_ggfa (sub-sector totals),\n"
                  "scheme annual reports and Cour des comptes 2022 (pension reserves), CDC and Banque de France 2025 accounts. Right to sell: yes / law (a statute must change) / no.\n"
-                 f"Amounts proposed for review (ggfiscal.debt.ladder_detail): liquidity €{t.loc['total', 'sold_liquidity_bn']:.0f}bn, realistic €{t.loc['total', 'sold_realistic_bn']:.0f}bn, everything €{t.loc['total', 'sold_everything_bn']:.0f}bn.", y=-0.025)
+                 f"Amounts by the committee's rules of 14 Oct 2026 (ggfiscal.debt.ladder_detail.apply_rules): liquidity €{t.loc['total', 'sold_liquidity_bn']:.0f}bn, realistic €{t.loc['total', 'sold_realistic_bn']:.0f}bn, distress €{t.loc['total', 'sold_distress_bn']:.0f}bn.", y=-0.025)
     _save(fig, out); return out
 
 
@@ -196,8 +195,8 @@ def chart_selldown(runs, h, out):
         ax.set_xlim(2018.7, 2037.5)
     fig.suptitle("France · selling the assets: the status quo with each rung of the ladder deployed", x=0.01, y=1.04, ha="left", fontsize=10.5, fontweight="bold", color=INK)
     ax1.legend(ncol=3, loc="upper center", bbox_to_anchor=(1.12, -0.14), fontsize=7.5)
-    _source(fig, "Source: ggfiscal.debt.simulate with the sales as a stock-flow adjustment (D-S19-001) on the Philippe-hung scenario; income forgone taken off the primary balance at the 2025 yields; "
-                 "spreads as the status quo. ggfiscal.debt.balance_sheet.RUNS for the sale years.", y=-0.26)
+    _source(fig, "Source: ggfiscal.debt.simulate with the sales as a stock-flow adjustment (D-S19-001) on the Philippe-hung scenario; income forgone taken off the primary balance at each line's own yield; "
+                 "spreads as the status quo. Amounts per line from ggfiscal.debt.ladder_detail; sale years in balance_sheet.RUNS.", y=-0.26)
     _save(fig, out); return out
 
 
@@ -207,8 +206,6 @@ def render_all(out_dir: Path) -> dict[str, Path]:
     h.to_csv(out_dir / "balance_sheet_FRA.csv")
     comp = bs.sfa_components_s1311()
     comp.to_csv(out_dir / "sfa_components_FRA.csv")
-    lad = bs.ladder()
-    lad.to_csv(out_dir / "ladder_FRA.csv", index=False)
     det = ld.ladder_detail()
     det.to_csv(out_dir / "ladder_detail_FRA.csv", index=False)
     runs = bs.run_all()

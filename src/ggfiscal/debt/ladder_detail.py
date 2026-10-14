@@ -5,9 +5,10 @@ portfolio valuation (30 June 2025) and Eurostat's balance sheet, with who
 holds it, whether the État has the right to sell it, how fast it turns
 into cash, what it pays the État, and the amount three runs would sell.
 
-Status: a review table. The amounts in `sold_*` are proposals for the
-committee; the engine runs of the brief (`balance_sheet.RUNS`) still use
-the first-pass rung totals until the committee signs these off.
+The amounts in `sold_*` follow the committee's rules of 2026-10-14
+(`apply_rules`, D-S19-003) and drive the engine runs of the brief
+(`balance_sheet.RUNS`): a liquidity drawdown, a realistic sell-down and a
+distress run (everything the État can reach, by law where a law is needed).
 
 Valuation rules, in order of preference:
   * listed equity: the APE's market value at 30 June 2025 (rapport de
@@ -60,6 +61,7 @@ GROUP_LABEL = {
     "bdf": "H · Banque de France (off balance sheet)",
     "nonfin": "I · Non-financial assets",
 }
+RUN_LABEL = {"liquidity": "Liquidity drawdown", "realistic": "Realistic sell-down", "distress": "Distress: everything the État can reach"}
 
 # One row per line: group, line, holder/where, stock (EUR bn), basis, as-of,
 # can_sell, liquidity, income to the État (EUR bn a year), sales in the three
@@ -71,7 +73,7 @@ R = []
 def _r(group, line, holder, stock, basis, as_of, can_sell, liquidity, income, sl, sr, se, note, source, flags=""):
     R.append({"group": group, "line": line, "holder": holder, "stock_bn": float(stock), "basis": basis, "as_of": as_of,
               "can_sell": can_sell, "liquidity": liquidity, "income_bn": None if income is None else float(income),
-              "sold_liquidity_bn": float(sl), "sold_realistic_bn": float(sr), "sold_everything_bn": float(se),
+              "sold_liquidity_bn": float(sl), "sold_realistic_bn": float(sr), "sold_distress_bn": float(se),
               "note": note, "source": source, "flags": flags})
 
 
@@ -83,7 +85,7 @@ _r("cash", "Trésor single account at the Banque de France", "État (AFT)", 0.88
 _r("cash", "Trésor short-term placements (loans and reverse repos of État cash)", "État (AFT)", 24.1,
    "CGE note 15: placements de trésorerie, 31 Dec 2025 (€38.3bn a year earlier); Eurostat books most of this as F.4 short-term loans", "2025-12-31",
    "yes", "days", 0.55,
-   10, 10, 15, "The real cash buffer. Run down to a €10bn floor in the liquidity and realistic runs, €9bn in the everything run; INSEE: general-government cash fell €19.9bn in 2025 already.",
+   10, 10, 15, "The real cash buffer. Run down to a €10bn floor in the liquidity and realistic runs, €9bn in the distress run; INSEE: general-government cash fell €19.9bn in 2025 already.",
    "CGE 2025 note 15.1; money-market yield ~2.3% (Redbox)", "ext,est")
 _r("cash", "Other central-government units' deposits (CADES, Bpifrance EPIC, agencies, universities)", "ODAC", 11.0,
    "Eurostat S.1311 F.2 consolidated (€36.0bn) less the État's own cash above; not itemised by any source reached", "2025-12-31",
@@ -93,7 +95,7 @@ _r("cash", "Other central-government units' deposits (CADES, Bpifrance EPIC, age
 _r("cash", "Local-government and social-security cash outside the Trésor", "S.1313, S.1314", 39.0,
    "Eurostat S.13 consolidated F.2 (€75.1bn) less S.1311 (€36.0bn): the sub-sectors' bank deposits net of what they hold at the Trésor", "2025-12-31",
    "no", "weeks", 0.0,
-   0, 0, 10, "Not the État's money. The everything run assumes a law extending the Trésor deposit obligation to the social-security funds' and schemes' working cash (€10bn).",
+   0, 0, 10, "Not the État's money. The distress run assumes a law extending the Trésor deposit obligation to the social-security funds' and schemes' working cash (€10bn).",
    "Eurostat gov_10a_ggfa", "est")
 
 # --- B. debt securities held ------------------------------------------------
@@ -126,7 +128,7 @@ _r("paper", "Paper held by the État, its agencies and local government", "S.131
 _r("loans", "Bilateral loan to Greece (2010 Greek Loan Facility)", "État", 5.674,
    "CGE note 8.3: outstanding principal after €5.7bn of repayments", "2025-12-31",
    "yes", "years", 0.15,
-   0, 0, 5, "Transferable in principle under the 2010 intercreditor agreement; no market. Pays 3-month Euribor + 50 bp. Counted in the everything run as a securitisation.",
+   0, 0, 5, "Transferable in principle under the 2010 intercreditor agreement; no market. Pays 3-month Euribor + 50 bp. Counted in the distress run as a securitisation.",
    "CGE 2025 note 8.3.1.1", "ext")
 _r("loans", "Loans to foreign states and banks via Natixis (programme 851, export-linked)", "État", 3.961,
    "CGE note 8.3: gross; €0.9bn of impairment sits across the foreign-loan lines", "2025-12-31",
@@ -148,7 +150,7 @@ _r("loans", "Loans to private bodies and other État loans and advances", "État
 _r("loans", "Other central-government units' loan books (Action Logement Services' housing loans, State funds managed by Bpifrance and the CDC, agencies)", "ODAC", 50.0,
    "Eurostat S.1311 F.4 (€93bn) less the État's loans above (€18.8bn net) and the Trésor's placements (group A); Action Logement's loan book was €10.9bn in 2022", "2025-12-31",
    "law", "years", 0.5,
-   0, 0, 10, "Not itemised by any source reached. Mostly housing and SME loans at below-market rates; securitisable at a discount; counted €10bn in the everything run.",
+   0, 0, 10, "Not itemised by any source reached. Mostly housing and SME loans at below-market rates; securitisable at a discount; counted €10bn in the distress run.",
    "Eurostat gov_10a_ggfa; Action Logement 2022 accounts (press)", "est")
 _r("loans", "Local-government and social-security loans", "S.1313, S.1314", 14.0,
    "Eurostat S.1313 F.4 (€12bn) + S.1314 F.4 (€2bn)", "2025-12-31", "no", "years", 0.0,
@@ -186,7 +188,7 @@ for name, stake, value, dps, shares, basis, note in LISTED:
 _r("funds", "AGIRC-ARRCO reserves held through funds", "AGIRC-ARRCO, S.1314", 86.0,
    "Reserves €91.2bn at end-2025 (2025 accounts) less the direct bonds in group B — Redbox split", "2025-12-31",
    "no", "months", 0.0,
-   0, 0, 86.0, "The paritarian complementary scheme's buffer (about nine months of benefits). The State tried to take €1–3bn a year in 2023 and backed down; the reserves are the social partners'. The everything run assumes a law taking them, which the Conseil constitutionnel might not allow. Return accrues to the scheme (about 3% a year in cash income).",
+   0, 0, 86.0, "The paritarian complementary scheme's buffer (about nine months of benefits). The State tried to take €1–3bn a year in 2023 and backed down; the reserves are the social partners'. The distress run assumes a law taking them, which the Conseil constitutionnel might not allow. Return accrues to the scheme (about 3% a year in cash income).",
    "AGIRC-ARRCO comptes 2025 (press); Cour des comptes, Les réserves des caisses de retraite, 2022", "ext,est")
 _r("funds", "ERAFP: equities and funds", "ERAFP, S.1314", 28.6,
    "ERAFP net assets €53.6bn less the direct bonds in group B — Redbox split", "2025-12-31",
@@ -200,7 +202,7 @@ _r("funds", "FRR: performance portfolio (equities, funds)", "FRR, S.1314", 12.7,
 _r("funds", "Ircantec reserves", "Ircantec (managed by the CDC), S.1314", 12.9,
    "Cour des comptes 2022: €12.9bn at end-2020 market value; no 2025 figure reached", "2020-12-31",
    "law", "months", 0.0,
-   0, 0, 12.9, "A public scheme for contractual public employees, piloted by decree; a law could take the reserves, which back no individual rights. Counted in the everything run only.",
+   0, 0, 12.9, "A public scheme for contractual public employees, piloted by decree; a law could take the reserves, which back no individual rights. Counted in the distress run only.",
    "Cour des comptes, 2022", "ext")
 _r("funds", "RCI (self-employed) and the professional schemes (Cipav, Carmf, CRPNPAC and others)", "S.1314", 36.0,
    "Cour des comptes 2022: RCI €17.1bn, Cipav €7.2bn, Carmf €6.4bn, CRPNPAC €5.2bn at end-2020 market value, plus smaller schemes; residual to Eurostat S.1314 F.5", "2020-12-31",
@@ -285,7 +287,7 @@ _r("unlisted", "Local-government and social-security equity (SEMs, social-housin
 _r("cdc", "CDC Section générale: own funds (social accounts, incl. FRBG)", "CDC, S.12 — under Parliament's protection", 25.717,
    "CDC rapport financier 2025: capitaux propres hors FRBG €25,161m + FRBG €556m", "2025-12-31",
    "law", "a decree sets the annual versement; a law for more", 3.337,
-   0, 0, 5, "The État's claim is the annual versement (a fraction of the result plus the CRIS, €3.3bn in 2025 across both sections), set by decree after the Commission de surveillance's opinion; the own funds are the Caisse's, supervised by the ACPR. The everything run assumes an exceptional €5bn distribution of surplus over the prudential model. In the État's own accounts the CDC is carried at €31.6bn.",
+   0, 0, 5, "The État's claim is the annual versement (a fraction of the result plus the CRIS, €3.3bn in 2025 across both sections), set by decree after the Commission de surveillance's opinion; the own funds are the Caisse's, supervised by the ACPR. The distress run assumes an exceptional €5bn distribution of surplus over the prudential model. In the État's own accounts the CDC is carried at €31.6bn.",
    "CDC rapport financier 2025; CGE 2025 note 8.1.2.1", "ext")
 _r("cdc", "CDC Fonds d'épargne: own funds (incl. FRBG)", "CDC, S.12", 17.742,
    "CDC rapport financier 2025: capitaux propres hors FRBG €11,592m + FRBG €6,150m", "2025-12-31",
@@ -320,7 +322,7 @@ for lab, v in NONFIN_GG:
     _r("nonfin", f"General government: {lab}", "S.13 (reference, not summed)", v, "Eurostat nama_10_nfa_bs, replacement cost", "2025-12-31",
        "no", "—", None, 0, 0, 0, "The public service itself (roads, schools, hospitals, barracks); local government owns most buildings. Overlaps the État's categories below, so shown for reference only.", "Eurostat nama_10_nfa_bs", "")
 NONFIN_ETAT = [  # CGE note 7, net values, EUR bn
-    ("buildings (parc immobilier, prisons)", 59.082, "yes", 0, 1, 2, "Surplus real estate: €0.9bn is booked as ready for sale (note 7.11); the État sells a few hundred million a year. €1bn in the realistic run, €2bn in the everything run."),
+    ("buildings (parc immobilier, prisons)", 59.082, "yes", 0, 1, 2, "Surplus real estate: €0.9bn is booked as ready for sale (note 7.11); the État sells a few hundred million a year. €1bn in the realistic run, €2bn in the distress run."),
     ("land", 11.181, "yes", 0, 0, 0, "Mostly the land under the buildings and military land."),
     ("road infrastructure", 153.631, "no", 0, 0, 0, "Public domain; the non-concessioned network."),
     ("concession assets: motorways €200.4bn, hydro €57.8bn, rail tunnels €6.5bn, airports €5.7bn, Stade de France", 276.097, "law", 0, 0, 0,
@@ -333,9 +335,52 @@ for lab, v, can, sl, sr, se, note in NONFIN_ETAT:
        0.0, sl, sr, se, note, "CGE 2025 note 7", "ext")
 
 
+# Committee rules of 2026-10-14 (D-S19-003) for the three runs, applied to
+# every line after the rows above are declared; the declared amounts are
+# kept only where the rules say "otherwise, stay with your assumptions".
+#   no                       -> 0 / 0 / 0
+#   law                      -> 0 / 0 / half the stock
+#   yes, cash: Trésor placements 10 / 10 / the whole buffer; ODAC deposits 0 / 0 / 10
+#   yes, loans               -> 0 / 0 / half the stock (nothing where nothing is recoverable)
+#   yes, pact (listed)       -> 0 / 0 / half the stock
+#   yes, listed              -> 0 / half / whole
+#   yes, unlisted            -> 0 / 0 / whole
+#   everything else "yes"    -> as declared
+RULE_OVERRIDES = {
+    "Trésor short-term placements (loans and reverse repos of État cash)": (10.0, 10.0, 24.1),
+    "Other central-government units' deposits (CADES, Bpifrance EPIC, agencies, universities)": (0.0, 0.0, 10.0),
+}
+
+
+def apply_rules(row: dict) -> dict:
+    r = dict(row)
+    st = r["stock_bn"]
+    if r["line"] in RULE_OVERRIDES:
+        sl, sr, se = RULE_OVERRIDES[r["line"]]; rule = "committee: stated"
+    elif r["can_sell"] == "no":
+        sl, sr, se = 0.0, 0.0, 0.0; rule = "no -> 0/0/0"
+    elif r["can_sell"] == "law":
+        sl, sr, se = 0.0, 0.0, st / 2; rule = "law -> 0/0/half"
+    elif r["group"] == "loans":
+        half = 0.0 if r["liquidity"] == "never" else st / 2
+        sl, sr, se = 0.0, 0.0, half; rule = "yes, loan -> 0/0/half"
+    elif r["group"] == "listed" and r["can_sell"] == "yes, pact":
+        sl, sr, se = 0.0, 0.0, st / 2; rule = "yes, pact -> 0/0/half"
+    elif r["group"] == "listed":
+        sl, sr, se = 0.0, st / 2, st; rule = "yes, listed -> 0/half/whole"
+    elif r["group"] == "unlisted":
+        sl, sr, se = 0.0, 0.0, st; rule = "yes, unlisted -> 0/0/whole"
+    else:
+        sl, sr, se = r["sold_liquidity_bn"], r["sold_realistic_bn"], r["sold_distress_bn"]; rule = "as declared"
+    r.update(sold_liquidity_bn=float(sl), sold_realistic_bn=float(sr), sold_distress_bn=float(se), rule=rule)
+    return r
+
+
 def ladder_detail() -> pd.DataFrame:
-    d = pd.DataFrame(R)
+    d = pd.DataFrame([apply_rules(r) for r in R])
     d["group_label"] = d.group.map(GROUP_LABEL)
+    d["asset_class"] = d.group.map({"cash": "liquid", "paper": "liquid", "loans": "liquid", "listed": "equity", "funds": "equity",
+                                    "unlisted": "equity", "cdc": "equity", "bdf": "none", "nonfin": "nonfin"})
     d["yield_pct"] = 100 * d.income_bn / d.stock_bn
     # reference rows (flagged by a None income and a "—" liquidity) are not summed
     d["reference_only"] = d.liquidity.eq("—")
@@ -348,7 +393,7 @@ def totals(d: pd.DataFrame | None = None) -> pd.DataFrame:
     non-financial rows (the État's categories are the ones with a sale)."""
     d = ladder_detail() if d is None else d
     s = d[~d.reference_only].copy()
-    cols = ["stock_bn", "income_bn", "sold_liquidity_bn", "sold_realistic_bn", "sold_everything_bn"]
+    cols = ["stock_bn", "income_bn", "sold_liquidity_bn", "sold_realistic_bn", "sold_distress_bn"]
     g = s.groupby("group")[cols].sum().reindex(GROUPS)
     g.loc["total"] = g.sum()
     return g
@@ -358,11 +403,11 @@ def runs_from_detail() -> dict[str, float]:
     """The three runs' totals from the line-by-line table (EUR bn)."""
     t = totals()
     return {"liquidity": float(t.loc["total", "sold_liquidity_bn"]), "realistic": float(t.loc["total", "sold_realistic_bn"]),
-            "everything": float(t.loc["total", "sold_everything_bn"])}
+            "distress": float(t.loc["total", "sold_distress_bn"])}
 
 
 if __name__ == "__main__":       # pragma: no cover
     pd.set_option("display.width", 250); pd.set_option("display.max_colwidth", 60)
     d = ladder_detail()
-    print(d[["group", "line", "stock_bn", "can_sell", "income_bn", "yield_pct", "sold_liquidity_bn", "sold_realistic_bn", "sold_everything_bn"]].round(2).to_string())
+    print(d[["group", "line", "stock_bn", "can_sell", "income_bn", "yield_pct", "sold_liquidity_bn", "sold_realistic_bn", "sold_distress_bn"]].round(2).to_string())
     print(totals().round(1))

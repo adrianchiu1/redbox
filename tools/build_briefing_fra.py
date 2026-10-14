@@ -266,15 +266,6 @@ def balance_sheet_values() -> dict[str, str]:
     V["bs_gold_bn"] = f"{bs.BDF_GOLD_2025['book_value_bn']:.0f}"; V["bs_gold_tonnes"] = f"{bs.BDF_GOLD_2025['tonnes']:,.0f}"
     V["bs_external_sources"] = " ".join(bs.EXTERNAL)
 
-    lad = pd.read_csv(FIG / "ladder_FRA.csv")
-    rows = []
-    for r in lad.itertuples():
-        ext = " <span class='tag ext'>ext</span>" if r.ext else ""
-        rows.append(f"<tr><td class='l'>{r.label}{ext}</td><td>{r.stock_bn:,.0f}</td><td class='l'>{r.where}; {r.liquidity}</td>"
-                    f"<td>{r.sold_liquidity_bn:,.0f}</td><td>{r.sold_realistic_bn:,.0f}</td><td>{r.sold_maximal_bn:,.0f}</td>"
-                    f"<td>{r.sold_extreme_bn:,.0f}</td><td class='l'>{r.basis}. {r.note}</td></tr>")
-    V["bs_ladder_rows"] = "\n".join(rows)
-
     from ggfiscal.debt import ladder_detail as ld  # noqa: E402
     det = pd.read_csv(FIG / "ladder_detail_FRA.csv", keep_default_na=False)
     tot = ld.totals()
@@ -289,22 +280,22 @@ def balance_sheet_values() -> dict[str, str]:
             if "est" in str(r.flags): flags.append("<span class='tag rb'>est</span>")
             inc = "–" if ref or r.income_bn == "" else f"{float(r.income_bn):.2f}"
             yl = "–" if ref or r.income_bn == "" or float(r.stock_bn) == 0 else f"{100 * float(r.income_bn) / float(r.stock_bn):.1f}"
-            sold = ["–"] * 3 if ref else [f"{float(v):.1f}" for v in (r.sold_liquidity_bn, r.sold_realistic_bn, r.sold_everything_bn)]
+            sold = ["–"] * 3 if ref else [f"{float(v):.1f}" for v in (r.sold_liquidity_bn, r.sold_realistic_bn, r.sold_distress_bn)]
             rows.append(f"<tr{' style=color:#898781' if ref else ''}><td class='l'>{r.line} {' '.join(flags)}</td><td class='l'>{r.holder}</td>"
                         f"<td>{float(r.stock_bn):,.1f}</td><td class='l'>{r.basis} ({r.as_of})</td><td>{r.can_sell}</td><td class='l'>{r.liquidity}</td>"
-                        f"<td>{inc}</td><td>{yl}</td><td>{sold[0]} / {sold[1]} / {sold[2]}</td><td class='l'>{r.note}</td></tr>")
+                        f"<td>{inc}</td><td>{yl}</td><td>{sold[0]} / {sold[1]} / {sold[2]}<br><small>{'' if ref else r.rule}</small></td><td class='l'>{r.note}</td></tr>")
         tg = tot.loc[g]
         rows.append(f"<tr class='hl'><td class='l'><i>Subtotal</i></td><td></td><td><b>{tg.stock_bn:,.1f}</b></td><td></td><td></td><td></td>"
-                    f"<td><b>{tg.income_bn:.2f}</b></td><td></td><td><b>{tg.sold_liquidity_bn:.1f} / {tg.sold_realistic_bn:.1f} / {tg.sold_everything_bn:.1f}</b></td><td></td></tr>")
+                    f"<td><b>{tg.income_bn:.2f}</b></td><td></td><td><b>{tg.sold_liquidity_bn:.1f} / {tg.sold_realistic_bn:.1f} / {tg.sold_distress_bn:.1f}</b></td><td></td></tr>")
     tt = tot.loc["total"]
     rows.append(f"<tr class='hl'><td class='l'><b>Total (summed lines)</b></td><td></td><td><b>{tt.stock_bn:,.0f}</b></td><td></td><td></td><td></td>"
-                f"<td><b>{tt.income_bn:.1f}</b></td><td></td><td><b>{tt.sold_liquidity_bn:.0f} / {tt.sold_realistic_bn:.0f} / {tt.sold_everything_bn:.0f}</b></td><td></td></tr>")
+                f"<td><b>{tt.income_bn:.1f}</b></td><td></td><td><b>{tt.sold_liquidity_bn:.0f} / {tt.sold_realistic_bn:.0f} / {tt.sold_distress_bn:.0f}</b></td><td></td></tr>")
     V["bs_ladder_detail_rows"] = "\n".join(rows)
-    V["bs_det_liq"] = f"{tt.sold_liquidity_bn:.0f}"; V["bs_det_real"] = f"{tt.sold_realistic_bn:.0f}"; V["bs_det_every"] = f"{tt.sold_everything_bn:.0f}"
+    V["bs_det_liq"] = f"{tt.sold_liquidity_bn:.0f}"; V["bs_det_real"] = f"{tt.sold_realistic_bn:.0f}"; V["bs_det_distress"] = f"{tt.sold_distress_bn:.0f}"
     V["bs_det_income"] = f"{tt.income_bn:.1f}"
     for g in ld.GROUPS:
         V[f"bs_det_{g}_stock"] = f"{tot.loc[g, 'stock_bn']:,.0f}"; V[f"bs_det_{g}_real"] = f"{tot.loc[g, 'sold_realistic_bn']:.0f}"
-        V[f"bs_det_{g}_every"] = f"{tot.loc[g, 'sold_everything_bn']:.0f}"; V[f"bs_det_{g}_income"] = f"{tot.loc[g, 'income_bn']:.1f}"
+        V[f"bs_det_{g}_distress"] = f"{tot.loc[g, 'sold_distress_bn']:.0f}"; V[f"bs_det_{g}_income"] = f"{tot.loc[g, 'income_bn']:.1f}"
 
     sd = pd.read_csv(FIG / "selldown_FRA.csv")
     sq = sd[sd.run == "status_quo"].set_index("year")
