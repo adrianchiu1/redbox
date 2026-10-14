@@ -110,11 +110,9 @@ res[res.year.isin([2027, 2028, 2030, 2032, 2035])][cols].round(1).set_index(["la
 
 cells.append(nbf.v4.new_markdown_cell("""## The balance-sheet runs as data
 
-The sell-down ladder (what is there at end-2025 and how much each run sells),
+The sell-down ladder line by line (what is there at end-2025 and how much each run sells),
 then every run-year of section 7 (status quo, liquidity, realistic, distress): gross and net debt, the interest bill, the
 asset income and the net interest, on the status-quo scenario."""))
-cells.append(nbf.v4.new_code_cell("""lad = pd.read_csv(FIG / "ladder_FRA.csv")
-lad[["label", "where", "liquidity", "stock_bn", "sold_liquidity_bn", "sold_realistic_bn", "sold_maximal_bn", "sold_extreme_bn"]].round(0).set_index("label")"""))
 cells.append(nbf.v4.new_markdown_cell("""The ladder line by line (D-S19-002/003): valuation on the CGE, the APE and Eurostat, who holds
 it, whether the État can sell it, what it pays the État, and the amount each run sells under the
 committee's rules of 14 October 2026 (the `rule` column). These amounts drive the runs below."""))
