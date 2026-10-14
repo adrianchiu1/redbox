@@ -65,6 +65,19 @@ def figure_img(key: str) -> str:
     return f'<img src="data:image/png;base64,{b64}" alt="{key}">'
 
 
+def ladder_table(s9: str) -> str:
+    """The line-by-line ladder table of section 7, every column, with the
+    header row repeated on each printed page and the notes kept."""
+    m = re.search(r'<table style="font-size:\.78rem">(.*?)</table>', s9, re.S)
+    if not m:
+        raise SystemExit("ladder table not found in section 7")
+    inner = clean_inline(m.group(1))
+    head, rest = re.match(r"\s*(<tr>.*?</tr>)(.*)", inner, re.S).groups()
+    return (f'<div class="ladder-wrap"><p class="tabhead">Figure 21, the table: every line of the ladder, with its valuation basis, '
+            f'who holds it, whether the État can sell it, how fast, what it pays the État, and what each run sells (the rule under each amount).</p>'
+            f'<table class="ladder"><thead>{head}</thead><tbody>{rest}</tbody></table></div>')
+
+
 def build() -> str:
     b = fb.builder()
     V = b.values()
@@ -119,6 +132,8 @@ def build() -> str:
                 ci += 1
                 cap = drop_banned_sentences(clean_inline(cap))
                 body.append(f'<figure class="plate">{figure_img(v)}<figcaption>{cap}</figcaption></figure>')
+                if v == "bs_ladder":             # the whole Figure 21 table follows its plate
+                    body.append(ladder_table(section_html("s9")))
             else:
                 body.append(f'<figure class="plate loop">{v}<figcaption>The wrong-way loop: the interest bill feeds the deficit, '
                             f'the deficit the issuance, the issuance the next year\'s interest; the market-pricing loop (spread, ratings, index '
@@ -170,6 +185,19 @@ ol.points li{margin:0 0 2.6mm;font-size:9.4pt}
 figcaption{font-size:8.8pt;color:#333;margin-top:2mm;line-height:1.35}
 p.ctx{font-size:9.4pt;margin:0 0 3mm}
 .sources p{font-size:9.2pt}
+.ladder-wrap{break-before:page}
+p.tabhead{font-size:8.8pt;color:#333;margin:0 0 3mm}
+table.ladder{width:100%;border-collapse:collapse;table-layout:fixed;font-size:6.2pt;line-height:1.25}
+table.ladder th,table.ladder td{padding:1.6px 2px;vertical-align:top;border-bottom:1px solid var(--line);text-align:right;overflow-wrap:anywhere}
+table.ladder th{background:var(--soft);text-align:right;font-weight:600}
+table.ladder th.l,table.ladder td.l{text-align:left}
+table.ladder thead{display:table-header-group}
+table.ladder tr{break-inside:avoid}
+table.ladder tr.hl td{background:#f6f5f0;font-weight:600}
+table.ladder th:nth-child(1){width:12%} table.ladder th:nth-child(2){width:8%} table.ladder th:nth-child(3){width:5%}
+table.ladder th:nth-child(4){width:15%} table.ladder th:nth-child(5){width:4.5%} table.ladder th:nth-child(6){width:6.5%}
+table.ladder th:nth-child(7){width:5%} table.ladder th:nth-child(8){width:4%} table.ladder th:nth-child(9){width:9%} table.ladder th:nth-child(10){width:31%}
+table.ladder small{color:var(--muted)}
 p.fine{font-size:8pt;color:var(--muted);margin-top:8mm}
 code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:8.5pt}
 """
