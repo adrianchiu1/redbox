@@ -3828,3 +3828,33 @@ method table; `selldown_FRA.csv`, both HTML files, the notebook. Gate:
 `test_ladder_detail.py` (4, the rules asserted line class by line class),
 `test_balance_sheet.py` (9), `test_france_brief.py` (3), `test_simulate.py`
 (19), `test_simulate_review.py` (14) pass.
+
+
+## D-S19-005 — Official baselines beside the scenario paths: the EC DSM 2025 baseline and the IMF WEO October 2026 on the deficit and debt-ratio charts (serves the France brief; extends the AMECO/DSM line of Figure 4 to Figures 14a and 14b)
+
+Committee 2026-10-15. The interest chart carries the strict file's EC
+AMECO/DSM path as a benchmark; the committee asked for the same on the
+deficit and the Maastricht ratio. Two official paths are now drawn on
+both, from `data/manual/FRA_benchmark_paths.csv` (retrieved 2026-10-15,
+with provenance): the EC Debt Sustainability Monitor 2025 baseline for
+France (country fiches tables, published 2026-02-12; calculatedDebt,
+primaryBalance and (2.1) interest expenditure 2024–2036, the headline
+deficit derived as interest less primary balance), and the IMF WEO of
+October 2026 (IMF data API, dataflow IMF.RES:WEO 9.0.0, publication
+2026-10-13, latest actual 2025; GGXWDG_NGDP and GGXCNL_NGDP, 2020–2031).
+The bundle's WEO reconciliation stays on the April 2026 vintage; the API
+now serves October 2026 under the same dataflow version, which is why the
+two differ (2031 deficit 3.9% against 2.9%).
+
+Numbers: DSM deficit 5.5% (2025), 5.6% (2030), 7.2% (2035), 7.5% (2036);
+DSM debt 116.3 → 126.5 (2030) → 140.8 (2035) → 144.0 (2036), rising every
+year; WEO deficit 5.1 → 4.2 (2030) → 3.9 (2031); WEO debt 115.5 → 123.2
+(2030) → 123.6 (2031). The status quo here: 6.0% and 127.9% in 2030, 6.6%
+and 143.7% in 2035 — on the DSM's path on debt, above both on the deficit.
+
+Implementation: `briefing_fra_scenarios.benchmark_paths()`, `BENCH_STYLE`
+(DSM in the brown dash-dot of the interest chart, WEO in gold dots),
+`chart_paths(bench=...)`; captions of Figures 14a and 14b carry the
+numbers through placeholders; method table row and sources list;
+`tests/debt/test_benchmark_paths.py`. Notebook, HTML, picture book
+regenerated.

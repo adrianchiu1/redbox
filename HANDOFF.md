@@ -1,5 +1,8 @@
 # HANDOFF.md
 
+Addendum 2026-10-15 (D-S19-005): Figures 14a/14b carry the EC DSM 2025
+baseline and the IMF WEO Oct 2026 from `data/manual/FRA_benchmark_paths.csv`.
+
 Addendum 2026-10-14 (D-S19-002/003): the ladder is line by line in
 `ggfiscal.debt.ladder_detail`; the committee's rules of 14 Oct 2026 are
 `apply_rules` there and the engine runs (liquidity / realistic / distress)

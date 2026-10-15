@@ -219,6 +219,15 @@ def values() -> dict[str, object]:
     V["stat_2031_pb_bn"] = f"{R[('statistical', 2031)].primary_balance_bn:,.0f}"
 
     V.update(balance_sheet_values())
+    # official baselines beside the scenario paths (D-S19-005)
+    from ggfiscal.report.briefing_fra_scenarios import benchmark_paths  # noqa: E402
+    bp = benchmark_paths()
+    for y in (2030, 2035, 2036):
+        V[f"dsm_{y}_deficit"] = f"{bp[('EC_DSM_2025', 'deficit_pct_gdp')][y]:.1f}"
+        V[f"dsm_{y}_debt"] = f"{bp[('EC_DSM_2025', 'debt_pct_gdp')][y]:.0f}"
+    for y in (2030, 2031):
+        V[f"weo_{y}_deficit"] = f"{bp[('IMF_WEO_2026_10', 'deficit_pct_gdp')][y]:.1f}"
+        V[f"weo_{y}_debt"] = f"{bp[('IMF_WEO_2026_10', 'debt_pct_gdp')][y]:.0f}"
     return V
 
 
