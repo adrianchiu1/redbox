@@ -119,12 +119,37 @@ def chart_interest(res, out):
     _save(fig, out); return out
 
 
-def chart_paths(res, out, col, ylabel, title, ref=None, hist=None, annotate=False, source=None):
+def benchmark_paths() -> pd.DataFrame:
+    """Official forward paths beside the engine's (D-S19-005): the EC's Debt
+    Sustainability Monitor 2025 baseline (debt, primary balance, interest and
+    the headline deficit derived from them, 2024–2036) and the IMF WEO of
+    October 2026 (debt and deficit, 2020–2031), from
+    data/manual/FRA_benchmark_paths.csv. Index year, columns (source, series)."""
+    d = pd.read_csv(sim.ROOT / "data" / "manual" / "FRA_benchmark_paths.csv")
+    return d.pivot_table(index="year", columns=["source_id", "series"], values="value")
+
+
+# Benchmark line styles: the DSM in the brown dash-dot the interest chart
+# already uses for the AMECO/DSM path; the WEO in gold dots.
+BENCH_STYLE = {"EC_DSM_2025": {"color": BROWN, "ls": "-.", "lw": 1.3},
+               "IMF_WEO_2026_10": {"color": GOLD, "ls": (0, (2.0, 1.6)), "lw": 1.4}}
+BENCH_LABEL = {"EC_DSM_2025": "EC DSM 2025 baseline (Feb 2026)", "IMF_WEO_2026_10": "IMF WEO October 2026"}
+
+
+def chart_paths(res, out, col, ylabel, title, ref=None, hist=None, annotate=False, source=None, bench=None):
+    """`bench`: series name in benchmark_paths() to draw for each source,
+    e.g. "debt_pct_gdp" — the DSM to 2036 and the WEO to 2031, from 2025."""
     fig, ax = plt.subplots()
     ax.axvspan(2025.5, 2035.5, color=SHADE, lw=0, zorder=0)
     ends = {}
     if hist is not None:
         ax.plot(hist.index, hist.values, color=HIST, lw=2.2, label="outturn")
+    if bench is not None:
+        bp = benchmark_paths()
+        for src, st in BENCH_STYLE.items():
+            if (src, bench) in bp.columns:
+                b = bp[(src, bench)].dropna().loc[2025:]
+                ax.plot(b.index, b.values, zorder=2, label=BENCH_LABEL[src], **st)
     for name in SCEN_STYLE:
         s = res[res.scenario == name].set_index("year")[col]
         if hist is not None and 2025 in hist.index:
@@ -142,8 +167,8 @@ def chart_paths(res, out, col, ylabel, title, ref=None, hist=None, annotate=Fals
     if ref is not None:
         ax.axhline(ref, color=AXIS, ls="--", lw=1)
     ax.set_ylabel(ylabel); ax.grid(axis="y"); ax.set_title(title)
-    ax.set_xlim((hist.index.min() if hist is not None else 2025) - 0.3, 2038.8 if annotate else 2035.5)
-    ax.legend(ncol=2, loc="upper left")
+    ax.set_xlim((hist.index.min() if hist is not None else 2025) - 0.3, 2038.8 if annotate else 2036.5)
+    ax.legend(ncol=2, loc="upper left", fontsize=7.2)
     _source(fig, source or "Source: ggfiscal.debt.simulate (declared scenarios, see the assumptions table); balance_ledger.csv for the outturn.")
     _save(fig, out); return out
 
@@ -377,12 +402,15 @@ def render_all(out_dir: Path) -> dict[str, Path]:
     figs = {}
     figs["scen_interest"] = chart_interest(res, out_dir / "scen_interest.png")
     figs["scen_deficit"] = chart_paths(res, out_dir / "scen_deficit.png", "deficit_pct_gdp", "% of GDP (deficit, positive)",
-                                       "France · general-government deficit each scenario implies", ref=3.0,
-                                       hist=(-led.loc[HIST_FROM:2025, "nlb_pct_gdp"]))
+                                       "France · general-government deficit each scenario implies, with the EC and IMF baselines", ref=3.0,
+                                       hist=(-led.loc[HIST_FROM:2025, "nlb_pct_gdp"]), bench="deficit_pct_gdp",
+                                       source="Source: ggfiscal.debt.simulate (declared scenarios); balance_ledger.csv for the outturn; EC DSM 2025 country fiche (baseline: interest less primary balance) "
+                                              "and IMF WEO October 2026 (GGXCNL) in data/manual/FRA_benchmark_paths.csv.")
     figs["scen_debt"] = chart_paths(res, out_dir / "scen_debt.png", "debt_pct_gdp", "% of GDP",
-                                    "France · Maastricht debt ratio, outturn and the path each scenario implies", ref=None,
-                                    hist=debt_history().loc[HIST_FROM:2025], annotate=True,
-                                    source="Source: Eurostat gov_10dd_edpt1 (S13, GD) to 2025, data/manual; ggfiscal.debt.simulate from 2026 (declared scenarios).")
+                                    "France · Maastricht debt ratio, outturn, the path each scenario implies, and the EC and IMF baselines", ref=None,
+                                    hist=debt_history().loc[HIST_FROM:2025], annotate=True, bench="debt_pct_gdp",
+                                    source="Source: Eurostat gov_10dd_edpt1 (S13, GD) to 2025, data/manual; ggfiscal.debt.simulate from 2026 (declared scenarios); "
+                                           "EC DSM 2025 baseline and IMF WEO October 2026 (GGXWDG) in data/manual/FRA_benchmark_paths.csv.")
     figs["scen_spread"] = chart_spread(res, out_dir / "scen_spread.png")
     figs["scen_tree"] = chart_tree(res, out_dir / "scen_tree.png")
     figs["scen_decomposition"] = chart_decomposition(dec, out_dir / "scen_decomposition.png")

@@ -1,0 +1,77 @@
+iso3,source_id,scenario,series,year,value,unit,note,retrieved
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2024,113.19778442382812,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2025,116.3292465209961,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2026,118.06900024414062,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2027,120.01416778564453,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2028,122.19640350341797,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2029,124.2213363647461,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2030,126.51615142822266,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2031,129.06277465820312,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2032,131.72059631347656,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2033,134.5126190185547,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2034,137.5565948486328,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2035,140.80825805664062,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,debt_pct_gdp,2036,144.0201416015625,PC_GDP,"DSM 2025 country fiche FR, baseline scenario, calculatedDebt (gross debt, % of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2024,5.810287952423096,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2025,5.520243167877197,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2026,4.8746559619903564,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2027,5.171300172805786,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2028,5.5089216232299805,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2029,5.421550989151001,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2030,5.609572649002075,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2031,5.881830930709839,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2032,6.163292169570923,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2033,6.455205678939819,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2034,6.858766317367554,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2035,7.181191682815552,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,deficit_pct_gdp,2036,7.4571473598480225,PC_GDP,"derived: interest expenditure less primary balance (headline deficit, positive = deficit)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2024,2.060556650161743,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2025,2.305396556854248,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2026,2.5279734134674072,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2027,2.7812845706939697,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2028,3.0278680324554443,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2029,3.2867655754089355,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2030,3.5464463233947754,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2031,3.8157596588134766,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2032,4.094275951385498,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2033,4.383244514465332,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2034,4.68386173248291,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2035,5.003340244293213,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,interest_pct_gdp,2036,5.276350975036621,PC_GDP,"DSM 2025 country fiche FR, baseline, (2.1) Interest expenditure (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2024,-3.7497313022613525,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2025,-3.214846611022949,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2026,-2.346682548522949,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2027,-2.3900156021118164,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2028,-2.481053590774536,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2029,-2.1347854137420654,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2030,-2.0631263256073,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2031,-2.0660712718963623,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2032,-2.069016218185425,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2033,-2.0719611644744873,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2034,-2.1749045848846436,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2035,-2.177851438522339,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,EC_DSM_2025,baseline,primary_balance_pct_gdp,2036,-2.1807963848114014,PC_GDP,"DSM 2025 country fiche FR, baseline, primaryBalance (% of GDP)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2020,114.906594,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2021,112.785724,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2022,111.365574,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2023,109.507359,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2024,112.572509,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2025,115.534073,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2026,118.458123,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2027,120.422321,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2028,121.671783,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2029,122.570945,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2030,123.243572,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,debt_pct_gdp,2031,123.629065,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), GGXWDG_NGDP",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2020,8.930231,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2021,6.583672,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2022,4.737402,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2023,5.432655,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2024,5.758467,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2025,5.064854,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2026,5.352314,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2027,5.223875,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2028,4.875521,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2029,4.522864,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2030,4.240631,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
+FRA,IMF_WEO_2026_10,baseline,deficit_pct_gdp,2031,3.873846,PC_GDP,"IMF WEO October 2026 (dataflow IMF.RES:WEO 9.0.0, publication 2026-10-13), −GGXCNL_NGDP (positive = deficit)",2026-10-15
