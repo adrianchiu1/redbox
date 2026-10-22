@@ -219,6 +219,8 @@ def values() -> dict[str, object]:
     V["stat_2031_pb_bn"] = f"{R[('statistical', 2031)].primary_balance_bn:,.0f}"
 
     V.update(balance_sheet_values())
+    from ggfiscal.report import pension_values  # noqa: E402
+    V.update(pension_values.values(FIG))          # section 8, the retirement age (D-S20-001)
     # official baselines beside the scenario paths (D-S19-005)
     from ggfiscal.report.briefing_fra_scenarios import benchmark_paths  # noqa: E402
     bp = benchmark_paths()

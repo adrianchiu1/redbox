@@ -1,5 +1,9 @@
 # Retirement age and the Le Pen scenario: grounding research
 
+> Superseded in part by section 8 of the brief (D-S20-001, 22 Oct 2026): the
+> approaches of §5 are built in `ggfiscal.debt.pension_age` and the
+> assumptions are in the brief's register. This note keeps the research trail.
+
 Research note for the France fiscal brief, 20 October 2026. Scope: how sensitive
 the categories of general-government expenditure and revenue are to the legal
 retirement age, and how that could be brought into the Le Pen branches of the

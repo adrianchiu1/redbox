@@ -28,7 +28,7 @@ from ggfiscal.report import france_brief as fb  # noqa: E402
 
 OUT_DIR = fb.BRIEF_DIR
 FIG = OUT_DIR / "figures"
-SECTIONS = [("s1", 1), ("s2", 2), ("s3", 3), ("s4", 4), ("s5", 5), ("s6", 6), ("s9", 7)]
+SECTIONS = [("s1", 1), ("s2", 2), ("s3", 3), ("s4", 4), ("s5", 5), ("s6", 6), ("s9", 7), ("s10", 8)]
 CHROME = next((p for p in Path("/opt/pw-browsers").glob("chromium*/chrome-linux*/chrome")), None)
 
 # Sentences containing any of these are dropped from every piece of text kept.

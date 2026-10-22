@@ -3858,3 +3858,87 @@ Implementation: `briefing_fra_scenarios.benchmark_paths()`, `BENCH_STYLE`
 numbers through placeholders; method table row and sources list;
 `tests/debt/test_benchmark_paths.py`. Notebook, HTML, picture book
 regenerated.
+
+
+## D-S20-001 — The retirement age in the France brief: a per-line, per-year impact matrix across five methods, the exposure engine and the assumptions register (serves the France fiscal brief; adds section 8)
+
+Committee 2026-10-20/22. The Le Pen branches of D-S18-001 fold pensions
+into one declared number a year. The committee asked for the sensitivity
+of each category of expenditure and revenue to the legal retirement age
+(62 against 60, against the 64 of the 2023 law), line by line on the
+Redbox COFOG/ESA lines, the timing, the range across methodologies, and
+every assumption floated rather than silent; scope general government,
+not the pension system alone; starting point the law as it stands (the
+LFSS 2026 suspension, 62 years 9 months frozen, 64 from the 1969 cohort);
+a linear loading, each cohort-year of age moving line X by y, invariant to
+whose plan it is, to be loaded on the scenarios afterwards.
+
+**Design (`ggfiscal.debt.pension_age`).** impact(line, year) =
+Σ_groups exposure(group, year, policy) × unit(line, group, year, method).
+*Exposure* is computed month by month on Eurostat population by single
+year of age (demo_pjan 2024–25, proj_23np baseline 2027–45, retrieved
+2026-10-22, `data/manual/FRA_population_by_age.csv`) and the age each
+birth cohort faces under the LFSS 2026 path (COR June 2026, Tableau 1.4),
+in cohort-person-years; a cohort is split into early starters already on
+carrière longue (17%, CNAV 2024), other early starters (B3, 35%,
+**missing**: nobody publishes it) and the rest; bound shares 45% / 80%.
+Policies: p62 "62 for all" from 1 Jan 2028; p60 "62, and 60 with 40
+annuités for a start before 20"; p64 "the 2023 law resumed"; plus the
+suspension, the repeal and repeal+60 as the exposures the published
+costings refer to. *Units* per cohort-person-year by line are where the
+methods differ: 1a DG Trésor/COR Jan 2022 decomposition (pensions 0.4,
+contributions 0.1, other benefits 0.2, other levies 0.6% GDP for two
+years) with the Mésange time path; 1b Cour des comptes Feb 2025 (63 vs
+64: €5.8bn in 2035); 1c the DREES €1.8bn a year of the suspension divided
+by the suspension's own exposure (0.21 cohort-years); 2 bottom-up cohort
+arithmetic (pension €1,600 a month, wage €36,700, contributions 50% of
+gross, income taxes 15.5% / 11%, ARE €16k, DREES spillover €2,250 per
+cohort-person-year); 3 the published costings (RN €9bn, OFCE €15.6bn,
+CNAV €16bn, Zemmour €21bn, Montaigne €34.7bn) each converted to € per
+cohort-year on the exposure of the measure it costs; 4 the growth channel
+(−0.35% of GDP per cohort-year at ten years, Mésange; OFCE −0.15,
+Rexecode −0.55) with revenue at unit elasticity; 5 the central matrix on
+the strict file's GF10_2 path. 36 assumptions in `ASSUMPTIONS`, each with
+a source and a status (15 sourced, 10 inferred, 8 declared, 3 missing:
+B3, U2, U10); `register()` prints them and the brief carries them in full.
+
+**Linearity, confirmed with limits.** The unit is plan-invariant by
+construction; the plan is only an exposure schedule. Limits recorded:
+asymmetry (the Cour's 5.8 vs 8.4), group heterogeneity (early starters'
+fuller careers), the macro second round (not linear in the stock), the
+durée (42 vs 43 annuités, omitted, more cost), the lower pension for life
+(omitted to 2040, less cost over time).
+
+**Results (central, bottom-up; the range is across methods 1a–4).** Unit:
+€13.4bn per cohort-year in 2030 (€5.3–13.4 across methods; pension-system
+part €5.6bn, between the Cour and the DREES unit). "62 for all": €10.9bn
+in 2028, €16.0bn (6.3–16.0) in 2030, €25.9bn (10.1–25.9) in 2035; with 60
+for early starters €23.5bn, €30.3bn (9.8–30.3), €42.9bn (14.4–42.9). By
+line in 2030, "62 for all": GF10_2 +11.4, R06 −7.2, GF10_X −2.8 and
+GF10_5 −0.7 (savings), R03 −1.0. "64 resumed" saves €3.0–3.5bn a year to
+2032 and nothing after 2033. Timing: a cut is front-loaded (49% of the
+steady-state exposure in 2028, 69% in 2030, plateau 2033 when the law's
+own path reaches 64); the pension cheque and lost contributions are
+immediate, the second-round revenue (methods 1a, 4) builds over ten to
+fifteen years. Growth channel: −0.49% of GDP by 2035 for "62 for all"
+(−0.21 to −0.77), a haircut of up to 9 bp of growth a year.
+
+**Brief.** New section 8 (template id `s10`; the questions become 9, the
+method 10), Figures 23–28 (`briefing_fra_pensions`), the timing table,
+the two line-by-line matrices (bottom-up with the min–max across methods
+and the low–high of its own assumptions), the units table, the published
+costings conversion, the "where this is uncertain" box and the assumptions
+register. Placeholders `pa_*` from `ggfiscal.report.pension_values` on the
+CSVs under figures/ (`pension_age_matrix.csv`, `_exposure`, `_units`,
+`_published`, `_assumptions`). Notebook cells for the section and the
+data; `france_brief.SECTIONS` carries `s10`. Not yet done, by design: the
+matrix is not loaded on the scenarios (`pension_age.balance_overlay` and
+`growth_haircut` are the hooks); that waits on the committee's reading of
+the assumptions and on the RN's costed plan of 17 November 2026.
+
+Gate: `tests/debt/test_pension_age.py` (8: register statuses, the COR
+table, exposure signs and front-loading, the suspension calibration in
+5–12 €bn per cohort-year, matrix identities, plan-invariance of the unit,
+variant ordering, the overlay hooks), `test_france_brief.py` (3).
+Notebook executed end to end; the full regeneration left every existing
+figure and CSV byte-identical.
